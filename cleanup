@@ -1,0 +1,5 @@
+#!/bin/sh
+
+## Kindly supplied by Dirk Eddelbuettel
+
+rm src/*.o src/*.so src/Makevars

@@ -1,0 +1,26 @@
+Package: cgalMeshes
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0.9000
+Authors@R: 
+    person("Stéphane", "Laurent", , "laurent_step@outlook.fr", role = c("aut", "cre"))
+Maintainer: Stéphane Laurent <laurent_step@outlook.fr>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: GPL-3
+URL: https://github.com/stla/XXX
+BugReports: https://github.com/stla/XXX/issues
+Imports: 
+    data.table,
+    methods,
+    Rcpp (>= 1.0.9)
+Suggests: 
+    rgl
+LinkingTo: 
+    BH,
+    Rcpp,
+    RcppCGAL,
+    RcppEigen
+Encoding: UTF-8
+SystemRequirements: C++ 17, gmp, mpfr
+RoxygenNote: 7.2.1

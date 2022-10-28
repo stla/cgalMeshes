@@ -1,0 +1,5 @@
+## Kindly supplied by Dirk Eddelbuettel
+
+CXX_STD = CXX17
+PKG_CXXFLAGS = -DCGAL_HEADER_ONLY=1 @PKG_CXXFLAGS@
+PKG_LIBS = @PKG_LIBS@

@@ -1,0 +1,36 @@
+#!/bin/sh
+
+## Kindly supplied by Dirk Eddelbuettel
+
+## check for pkg-config
+pkg-config --version >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo "*** pkg-config is not installed."
+    echo "*** We need pkg-config to proceed. Exiting."
+    exit 1
+fi
+
+## check for gmp
+pkg-config --exists gmp
+if [ $? -ne 0 ]; then
+    echo "*** pkg-config is installed but 'pkg-config --exists gmp' did not return 0."
+    echo "*** We need gmp to proceed. Exiting."
+    exit 2
+fi
+
+## check for mpfr
+pkg-config --exists mpfr
+if [ $? -ne 0 ]; then
+    echo "*** pkg-config is installed but 'pkg-config --exists mpfr' did not return 0."
+    echo "*** We need mpfr to proceed. Exiting."
+    exit 3
+fi
+
+## get compiler flags and libs
+pkgcflags=`pkg-config --cflags gmp mpfr`
+pkglibs=`pkg-config --libs gmp mpfr`
+
+## substitute them in
+sed -e "s|@PKG_CXXFLAGS@|$pkgcflags|" -e "s|@PKG_LIBS@|$pkglibs|" src/Makevars.in > src/Makevars
+
+exit 0
