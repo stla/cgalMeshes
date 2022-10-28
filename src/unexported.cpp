@@ -7,10 +7,8 @@ MeshT csoup2mesh(std::vector<PointT> points,
                  std::vector<std::vector<int>> faces,
                  const bool clean) {
   const bool success = PMP::orient_polygon_soup(points, faces);
-  if(success) {
-    Message("Successful polygon orientation.");
-  } else {
-    Message("Polygon orientation failed.");
+  if(!success) {
+    Rcpp::warning("Polygon orientation failed.");
   }
   if(clean) {
     PMP::repair_polygon_soup(points, faces);
@@ -19,7 +17,7 @@ MeshT csoup2mesh(std::vector<PointT> points,
   PMP::polygon_soup_to_polygon_mesh(points, faces, mesh);
   const bool valid = mesh.is_valid(false);
   if(!valid) {
-    Message("The mesh is not valid.");
+    Rcpp::warning("The mesh is not valid.");
   }
   return mesh;
 }

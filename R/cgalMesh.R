@@ -42,6 +42,13 @@ cgalMesh <- R6Class(
       private[[".meshXPtr"]] <- 
         CGALmesh$new(VF[["vertices"]], VF[["faces"]], clean)
       invisible(self)
+    },
+    
+    #' @description Print a \code{cgalMesh} object.
+    #' @param ... ignored
+    #' @return No value returned, just prints some information about the mesh.
+    "print" = function(...) {
+      private[[".meshXPtr"]]$print()
     }
     
   )

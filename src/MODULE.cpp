@@ -14,5 +14,6 @@ RCPP_MODULE(class_CGALmesh) {
     .method("doesSelfIntersect", &CGALmesh::doesSelfIntersect)
     .method("getRmesh", &CGALmesh::getRmesh)
     .method("isTriangle", &CGALmesh::isTriangle)
+    .method("print", &CGALmesh::print)
     .method("triangulate", &CGALmesh::triangulate);
 }

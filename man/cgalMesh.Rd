@@ -19,6 +19,7 @@ cgalMesh$new(cube3d())
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-cgalMesh-new}{\code{cgalMesh$new()}}
+\item \href{#method-cgalMesh-print}{\code{cgalMesh$print()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -59,5 +60,25 @@ cgalMesh$new(cube3d())
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-print"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-print}{}}}
+\subsection{Method \code{print()}}{
+Print a \code{cgalMesh} object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$print(...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{ignored}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+No value returned, just prints some information about the mesh.
+}
 }
 }

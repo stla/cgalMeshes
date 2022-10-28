@@ -41,6 +41,11 @@ public:
     return CGAL::is_triangle_mesh(mesh);
   }
   
+  void print() {
+    Rcpp::Rcout << "Mesh with " << mesh.number_of_vertices() 
+                << " vertices and " << mesh.number_of_faces() << " faces.\n";
+  }
+  
   void triangulate() {
     const bool success = PMP::triangulate_faces(mesh);
     if(!success) {
