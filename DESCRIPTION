@@ -8,11 +8,12 @@ Maintainer: Stéphane Laurent <laurent_step@outlook.fr>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: GPL-3
-URL: https://github.com/stla/XXX
-BugReports: https://github.com/stla/XXX/issues
+URL: https://github.com/stla/cgalMeshes
+BugReports: https://github.com/stla/cgalMeshes/issues
 Imports: 
     data.table,
     methods,
+    R6,
     Rcpp (>= 1.0.9)
 Suggests: 
     rgl

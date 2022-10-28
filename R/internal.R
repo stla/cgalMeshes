@@ -6,41 +6,45 @@ isBoolean <- function(x) {
   is.logical(x) && length(x) == 1L && !is.na(x)
 }
 
-#' @importFrom gmp is.bigq is.matrixZQ
 #' @importFrom data.table uniqueN
 #' @noRd
-checkMesh <- function(vertices, faces, gmp, aslist) {
-  if(gmp) {
-    if(!is.matrixZQ(vertices) || ncol(vertices) != 3L || !is.bigq(vertices)) {
-      stop("The `vertices` argument must be a `bigq` matrix with three columns.")
-    }
-    vertices <- as.character(vertices)
-  } else {
-    if(!is.matrix(vertices) || ncol(vertices) != 3L) {
-      stop("The `vertices` argument must be a matrix with three columns.")
-    }
-    stopifnot(is.numeric(vertices))
-    storage.mode(vertices) <- "double"
+checkMesh <- function(vertices, faces, aslist) {
+  if(!is.matrix(vertices) || ncol(vertices) != 3L) {
+    stop(
+      "The vertices must be given as a matrix with three columns.",
+      call. = FALSE
+    )
   }
+  stopifnot(is.numeric(vertices))
+  storage.mode(vertices) <- "double"
   if(anyNA(vertices)) {
-    stop("Found missing values in `vertices`.")
+    stop("Found missing values in the vertices.", call. = FALSE)
   }
   homogeneousFaces <- FALSE
   isTriangle       <- FALSE
   toRGL            <- FALSE
   if(is.matrix(faces)) {
     if(ncol(faces) < 3L) {
-      stop("Faces must be given by at least three indices.")
+      stop("Faces must be given by at least three indices.", call. = FALSE)
     }
     storage.mode(faces) <- "integer"
     if(anyNA(faces)) {
-      stop("Found missing values in `faces`.")
+      stop("Found missing values in `faces`.", call. = FALSE)
     }
     if(any(faces < 1L)) {
-      stop("Faces cannot contain indices lower than 1.")
+      stop("Faces cannot contain indices lower than 1.", call. = FALSE)
     }
     if(any(faces > nrow(vertices))) {
-      stop("Faces cannot contain indices higher than the number of vertices.")
+      stop(
+        "Faces cannot contain indices higher than the number of vertices.",
+        call. = FALSE
+      )
+    }
+    dups <- vapply(1L:nrow(faces), function(i) {
+      anyDuplicated(faces[i, ])
+    }, integer(1L))
+    if(any(dups)) {
+      stop("A face cannot contain duplicated indices.", call. = FALSE)
     }
     homogeneousFaces <- ncol(faces)
     if(homogeneousFaces %in% c(3L, 4L)) {
@@ -52,19 +56,23 @@ checkMesh <- function(vertices, faces, gmp, aslist) {
     } else {
       faces <- t(faces - 1L)
     }
-  }else if(is.list(faces)) {
+  } else if(is.list(faces)) {
     check <- all(vapply(faces, isAtomicVector, logical(1L)))
     if(!check) {
-      stop("The `faces` argument must be a list of integer vectors.")
-    }
-    check <- any(vapply(faces, anyNA, logical(1L)))
-    if(check) {
-      stop("Found missing values in `faces`.")
+      stop("A face must be given as an integer vector.", call. = FALSE)
     }
     faces <- lapply(faces, function(x) as.integer(x) - 1L)
+    someNA <- any(vapply(faces, anyNA, logical(1L)))
+    if(someNA) {
+      stop("A face cannot contain missing values.", call. = FALSE)
+    }
+    dups <- vapply(faces, function(x) anyDuplicated(x), integer(1L))
+    if(any(dups)) {
+      stop("A face cannot contain duplicated indices.", call. = FALSE)
+    }
     sizes <- lengths(faces)
     if(any(sizes < 3L)) {
-      stop("Faces must be given by at least three indices.")
+      stop("Faces must be given by at least three indices.", call. = FALSE)
     }
     check <- any(vapply(faces, function(f) {
       any(f < 0L) || any(f >= nrow(vertices))
@@ -86,7 +94,7 @@ checkMesh <- function(vertices, faces, gmp, aslist) {
       toRGL <- 34L
     }
   } else {
-    stop("The `faces` argument must be a list or a matrix.")
+    stop("Faces must be given as a list or a matrix.", call. = FALSE)
   }
   list(
     "vertices"         = t(vertices),
@@ -97,48 +105,17 @@ checkMesh <- function(vertices, faces, gmp, aslist) {
   )
 }
 
-getVFT <- function(mesh, beforeCheck = FALSE) {
-  transposed <- !beforeCheck
-  i0 <- as.integer(transposed)
-  if(inherits(mesh, "mesh3d")) {
-    triangles <- mesh[["it"]]
-    if(!is.null(triangles)) {
-      triangles <- lapply(1L:ncol(triangles), function(i) triangles[, i] - i0)
-    }
-    quads <- mesh[["ib"]]
-    isTriangle <- is.null(quads)
-    if(!isTriangle) {
-      quads <- lapply(1L:ncol(quads), function(i) quads[, i] - i0)
-    }
-    faces <- c(triangles, quads)
-    vertices <- mesh[["vb"]][-4L, ]
-    if(!transposed) {
-      vertices <- t(vertices)
-    }
-    rmesh <- list("vertices" = vertices, "faces" = faces)
-  } else if(inherits(mesh, "cgalMesh")) {
-    isTriangle <- attr(mesh, "toRGL") == 3L
-    vertices <- mesh[["vertices"]]
-    if(transposed) {
-      vertices <- t(vertices)
-    }
-    faces <- mesh[["faces"]]
-    if(is.matrix(faces)) {
-      faces <- lapply(1L:nrow(faces), function(i) faces[i, ] - i0)
-    }else if(!beforeCheck) {
-      faces <- lapply(faces, function(face) face - 1L)
-    }
-    rmesh <- list("vertices" = vertices, "faces" = faces)
-  } else if(is.list(mesh)) {
-    rmesh <-
-      checkMesh(mesh[["vertices"]], mesh[["faces"]], gmp = FALSE, aslist = TRUE)
-    isTriangle <- rmesh[["isTriangle"]]
-    if(beforeCheck) {
-      rmesh[["vertices"]] <- t(rmesh[["vertices"]])
-      rmesh[["faces"]] <- lapply(rmesh[["faces"]], function(face) face + 1L)
-    }
-  } else {
-    stop("Invalid `mesh` argument.", call. = FALSE)
+getVF <- function(mesh) {
+  triangles <- mesh[["it"]]
+  if(!is.null(triangles)) {
+    triangles <- lapply(1L:ncol(triangles), function(i) triangles[, i])
   }
-  list("rmesh" = rmesh, "isTriangle" = isTriangle)
+  quads <- mesh[["ib"]]
+  isTriangle <- is.null(quads)
+  if(!isTriangle) {
+    quads <- lapply(1L:ncol(quads), function(i) quads[, i])
+  }
+  faces <- c(triangles, quads)
+  vertices <- t(mesh[["vb"]][-4L, ])
+  list("vertices" = vertices, "faces" = faces)
 }
