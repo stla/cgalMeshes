@@ -11,7 +11,7 @@ RCPP_MODULE(class_CGALmesh) {
     .constructor<XPtr<EMesh3>>()
     .field("xptr", &CGALmesh::xptr)
     .method("centroid", &CGALmesh::centroid)
-    .method("copy", &CGALmesh::copy)
+    .method("clone", &CGALmesh::clone)
     .method("doesSelfIntersect", &CGALmesh::doesSelfIntersect)
     .method("getRmesh", &CGALmesh::getRmesh)
     .method("isTriangle", &CGALmesh::isTriangle)

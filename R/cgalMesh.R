@@ -76,7 +76,7 @@ cgalMesh <- R6Class(
     #' tmesh <- mesh$copy()$triangulate()
     #' mesh$isTriangle() # FALSE
     "copy" = function() {
-      xptr <- private[[".meshXPtr"]]$copy()
+      xptr <- private[[".meshXPtr"]]$clone()
       cgalMesh$new(clean = xptr)
     },
     
