@@ -10,5 +10,7 @@ RCPP_MODULE(class_CGALmesh) {
     .constructor<const NumericMatrix, const List, const bool>()
     .constructor<XPtr<EMesh3>>()
     .field("xptr", &CGALmesh::xptr)
-    .method("centroid", &CGALmesh::centroid);
+    .method("centroid", &CGALmesh::centroid)
+    .method("getRmesh", &CGALmesh::getRmesh)
+    .method("isTriangle", &CGALmesh::isTriangle);
 }

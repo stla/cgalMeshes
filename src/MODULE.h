@@ -29,4 +29,12 @@ public:
     return out;
   }
   
+  Rcpp::List getRmesh(const bool normals) {
+    return RSurfEKmesh(mesh, normals);
+  }
+  
+  bool isTriangle() {
+    return CGAL::is_triangle_mesh(mesh);
+  }
+  
 };
