@@ -29,6 +29,10 @@ public:
     return out;
   }
   
+  bool doesSelfIntersect() {
+    return PMP::does_self_intersect(mesh);
+  }
+  
   Rcpp::List getRmesh(const bool normals) {
     return RSurfEKMesh(mesh, normals);
   }
