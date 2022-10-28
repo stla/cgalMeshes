@@ -30,7 +30,7 @@ public:
   }
   
   Rcpp::List getRmesh(const bool normals) {
-    return RSurfEKmesh(mesh, normals);
+    return RSurfEKMesh(mesh, normals);
   }
   
   bool isTriangle() {
