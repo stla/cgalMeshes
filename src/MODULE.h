@@ -37,4 +37,11 @@ public:
     return CGAL::is_triangle_mesh(mesh);
   }
   
+  void triangulate() {
+    const bool success = PMP::triangulate_faces(mesh);
+    if(!success) {
+      Rcpp::stop("Triangulation has failed.");
+    }
+  }
+  
 };

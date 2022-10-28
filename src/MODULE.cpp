@@ -12,5 +12,6 @@ RCPP_MODULE(class_CGALmesh) {
     .field("xptr", &CGALmesh::xptr)
     .method("centroid", &CGALmesh::centroid)
     .method("getRmesh", &CGALmesh::getRmesh)
-    .method("isTriangle", &CGALmesh::isTriangle);
+    .method("isTriangle", &CGALmesh::isTriangle)
+    .method("triangulate", &CGALmesh::triangulate);
 }
