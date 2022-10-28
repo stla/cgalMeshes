@@ -6,6 +6,9 @@
 \description{
 R6 class to represent a CGAL mesh.
 }
+\note{
+The mesh must be triangle.
+}
 \examples{
 
 ## ------------------------------------------------
@@ -14,12 +17,22 @@ R6 class to represent a CGAL mesh.
 
 library(rgl)
 cgalMesh$new(cube3d())
+
+## ------------------------------------------------
+## Method `cgalMesh$isTriangle`
+## ------------------------------------------------
+
+library(rgl)
+mesh <- cgalMesh$new(cube3d())
+mesh$isTriangle()
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-cgalMesh-new}{\code{cgalMesh$new()}}
 \item \href{#method-cgalMesh-print}{\code{cgalMesh$print()}}
+\item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
+\item \href{#method-cgalMesh-isTriangle}{\code{cgalMesh$isTriangle()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -80,5 +93,41 @@ Print a \code{cgalMesh} object.
 \subsection{Returns}{
 No value returned, just prints some information about the mesh.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-centroid"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-centroid}{}}}
+\subsection{Method \code{centroid()}}{
+Centroid of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$centroid()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The Cartesian coordinates of the centroid of the mesh.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-isTriangle"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-isTriangle}{}}}
+\subsection{Method \code{isTriangle()}}{
+Check whether the mesh is triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$isTriangle()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A Boolean value, whether the mesh is triangle.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(rgl)
+mesh <- cgalMesh$new(cube3d())
+mesh$isTriangle()
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 }

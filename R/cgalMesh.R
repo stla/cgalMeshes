@@ -49,6 +49,26 @@ cgalMesh <- R6Class(
     #' @return No value returned, just prints some information about the mesh.
     "print" = function(...) {
       private[[".meshXPtr"]]$print()
+    },
+    
+    #' @description Centroid of the mesh.
+    #' @return The Cartesian coordinates of the centroid of the mesh.
+    #' @note The mesh must be triangle.
+    "centroid" = function() {
+      if(!self$isTriangle()) {
+        stop("The mesh is not triangle.")
+      }
+      private[[".meshXPtr"]]$centroid()
+    },
+    
+    #' @description Check whether the mesh is triangle.
+    #' @return A Boolean value, whether the mesh is triangle.
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(cube3d())
+    #' mesh$isTriangle()
+    "isTriangle" = function() {
+      private[[".meshXPtr"]]$isTriangle()
     }
     
   )
