@@ -19,6 +19,7 @@
 #include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
 #include <CGAL/Polygon_mesh_processing/measure.h>
 #include <CGAL/number_utils.h>
+#include <CGAL/boost/graph/copy_face_graph.h>
 
 // -------------------------------------------------------------------------- //
 //typedef CGAL::Exact_predicates_inexact_constructions_kernel K;

@@ -30,6 +30,10 @@ cgalMesh <- R6Class(
     #' library(rgl)
     #' cgalMesh$new(cube3d())
     "initialize" = function(mesh, vertices, faces, clean = TRUE){
+      if(inherits(clean, "externalptr")) {
+        private[[".meshXPtr"]] <- CGALmesh$new(clean)
+        return(invisible(self))
+      }
       stopifnot(isBoolean(clean))
       if(!missing(mesh)) {
         if(inherits(mesh, "mesh3d")) {
@@ -51,14 +55,40 @@ cgalMesh <- R6Class(
       private[[".meshXPtr"]]$print()
     },
     
-    #' @description Centroid of the mesh.
+    #' @description Centroid of the mesh. The mesh must be triangle.
     #' @return The Cartesian coordinates of the centroid of the mesh.
-    #' @note The mesh must be triangle.
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(icosahedron3d())
+    #' mesh$centroid()
     "centroid" = function() {
       if(!self$isTriangle()) {
         stop("The mesh is not triangle.")
       }
       private[[".meshXPtr"]]$centroid()
+    },
+
+    #' @description Copy the mesh.
+    #' @return A new \code{cgalMesh} object.
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(cube3d())
+    #' tmesh <- mesh$copy()$triangulate()
+    #' mesh$isTriangle() # FALSE
+    "copy" = function() {
+      xptr <- private[[".meshXPtr"]]$copy()
+      cgalMesh$new(clean = xptr)
+    },
+    
+    #' @description Get the mesh.
+    #' @param normals Boolean, whether to return the per-vertex normals 
+    #' @return xxxxxx
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(cube3d())$triangulate()
+    #' mesh$getMesh(FALSE)
+    "getMesh" = function(normals = TRUE) {
+      private[[".meshXPtr"]]$getRmesh(normals)
     },
     
     #' @description Check whether the mesh is triangle.
@@ -69,6 +99,33 @@ cgalMesh <- R6Class(
     #' mesh$isTriangle()
     "isTriangle" = function() {
       private[[".meshXPtr"]]$isTriangle()
+    },
+    
+    #' @description Check whether the mesh self-intersects.
+    #' @return A Boolean value, whether the mesh self-intersects.
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(cube3d())
+    #' mesh$selfIntersects()
+    "selfIntersects" = function() {
+      private[[".meshXPtr"]]$doesSelfIntersect()
+    },
+    
+    #' @description Triangulate mesh.
+    #' @return The modified \code{cgalMesh} object. \strong{WARNING}: even if 
+    #'   you store the result in a new variable, the original mesh is modified 
+    #'   (see the example). You may want to triangulate a copy of the mesh; 
+    #'   see the \code{copy} method.
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(cube3d())
+    #' mesh$isTriangle() # FALSE
+    #' # warning: triangulating the mesh modifies it
+    #' x <- mesh$triangulate()
+    #' mesh$isTriangle() # TRUE
+    "triangulate" = function() {
+      private[[".meshXPtr"]]$triangulate()
+      invisible(self)
     }
     
   )

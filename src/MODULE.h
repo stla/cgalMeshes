@@ -29,6 +29,12 @@ public:
     return out;
   }
   
+  Rcpp::XPtr<EMesh3> copy() {
+    EMesh3 clone;
+    CGAL::copy_face_graph(mesh, clone);
+    return Rcpp::XPtr<EMesh3>(&clone, false);
+  }
+  
   bool doesSelfIntersect() {
     return PMP::does_self_intersect(mesh);
   }
