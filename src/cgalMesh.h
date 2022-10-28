@@ -47,9 +47,9 @@ std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix);
 template <typename KernelT, typename MeshT, typename PointT>
 Rcpp::DataFrame getEdges(MeshT);
 
-Rcpp::NumericMatrix getEKNormals(EMesh3);
+//Rcpp::NumericMatrix getEKNormals(EMesh3);
 
 Rcpp::List RSurfEKMesh(EMesh3, const bool);
-Rcpp::List RSurfTEKMesh(EMesh3, const bool);
+Rcpp::List RSurfEKMesh2(EMesh3, const bool, const int);
 
 void Message(std::string);

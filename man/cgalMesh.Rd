@@ -33,6 +33,14 @@ tmesh <- mesh$copy()$triangulate()
 mesh$isTriangle() # FALSE
 
 ## ------------------------------------------------
+## Method `cgalMesh$edges`
+## ------------------------------------------------
+
+library(rgl)
+mesh <- cgalMesh$new(dodecahedron3d())
+mesh$edges()
+
+## ------------------------------------------------
 ## Method `cgalMesh$getMesh`
 ## ------------------------------------------------
 
@@ -74,6 +82,7 @@ mesh$isTriangle() # TRUE
 \item \href{#method-cgalMesh-print}{\code{cgalMesh$print()}}
 \item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
 \item \href{#method-cgalMesh-copy}{\code{cgalMesh$copy()}}
+\item \href{#method-cgalMesh-edges}{\code{cgalMesh$edges()}}
 \item \href{#method-cgalMesh-getMesh}{\code{cgalMesh$getMesh()}}
 \item \href{#method-cgalMesh-isTriangle}{\code{cgalMesh$isTriangle()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
@@ -187,18 +196,47 @@ mesh$isTriangle() # FALSE
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-edges"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-edges}{}}}
+\subsection{Method \code{edges()}}{
+Get the edges of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$edges()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+xxxxxx
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(rgl)
+mesh <- cgalMesh$new(dodecahedron3d())
+mesh$edges()
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-getMesh"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-getMesh}{}}}
 \subsection{Method \code{getMesh()}}{
 Get the mesh.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getMesh(normals = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getMesh(normals = TRUE, rgl = TRUE, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{normals}}{Boolean, whether to return the per-vertex normals}
+
+\item{\code{rgl}}{Boolean, whether to return a \strong{rgl} mesh if possible, 
+i.e. if the mesh only has triangular or quadrilateral faces}
+
+\item{\code{...}}{arguments passed to \code{\link[rgl:mesh3d]{mesh3d}} (if 
+a \strong{rgl} mesh is returned)}
 }
 \if{html}{\out{</div>}}
 }

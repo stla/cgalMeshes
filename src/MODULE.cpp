@@ -13,6 +13,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("centroid", &CGALmesh::centroid)
     .method("clone", &CGALmesh::clone)
     .method("doesSelfIntersect", &CGALmesh::doesSelfIntersect)
+    .method("edges", &CGALmesh::edges)
     .method("getRmesh", &CGALmesh::getRmesh)
     .method("isTriangle", &CGALmesh::isTriangle)
     .method("print", &CGALmesh::print)

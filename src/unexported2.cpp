@@ -28,7 +28,6 @@ Rcpp::DataFrame getEdges(MeshT mesh) {
   Rcpp::NumericVector Length(nedges);
   Rcpp::NumericVector Angle(nedges);
   Rcpp::LogicalVector Exterior(nedges);
-  Rcpp::LogicalVector Coplanar(nedges);
   {
     size_t i = 0;
     for(typename MeshT::Edge_index ed : mesh.edges()) {
@@ -47,7 +46,6 @@ Rcpp::DataFrame getEdges(MeshT mesh) {
           points[0], points[1], points[2], points[3]));
       Angle(i) = CGAL::to_double(angle);
       Exterior(i) = angle < 179.0 || angle > 181.0;
-      Coplanar(i) = CGAL::coplanar(points[0], points[1], points[2], points[3]);
       typename KernelT::FT el = PMP::edge_length(h0, mesh);
       Length(i) = CGAL::to_double(el);
       i++;
@@ -58,8 +56,7 @@ Rcpp::DataFrame getEdges(MeshT mesh) {
     Rcpp::Named("i2")       = I2,
     Rcpp::Named("length")   = Length,
     Rcpp::Named("angle")    = Angle,
-    Rcpp::Named("exterior") = Exterior,
-    Rcpp::Named("coplanar") = Coplanar
+    Rcpp::Named("exterior") = Exterior
   );
   return Edges;
 }
@@ -86,12 +83,13 @@ Rcpp::List getFaces(MeshT mesh) {
 }
 
 template <typename MeshT>
-Rcpp::IntegerMatrix getTFaces(MeshT mesh) {
+Rcpp::IntegerMatrix getFaces2(MeshT mesh, const int nsides) {
   const size_t nfaces = mesh.number_of_faces();
-  Rcpp::IntegerMatrix Faces(3, nfaces);
+  Rcpp::IntegerMatrix Faces(nsides, nfaces);
   {
     size_t i = 0;
     for(typename MeshT::Face_index fd : mesh.faces()) {
+      // bool TEST = CGAL::is_triangle(mesh.halfedge(fd), mesh);
       Rcpp::IntegerVector col_i;
       for(typename MeshT::Vertex_index vd :
           vertices_around_face(mesh.halfedge(fd), mesh)) {
@@ -130,11 +128,9 @@ Rcpp::NumericMatrix getEKNormals(EMesh3 mesh) {
 }
 
 Rcpp::List RSurfEKMesh(EMesh3 mesh, const bool normals) {
-  Rcpp::DataFrame Edges = getEdges<EK, EMesh3, EPoint3>(mesh);
   Rcpp::NumericMatrix Vertices = getVertices_EK(mesh);
   Rcpp::List Faces = getFaces<EMesh3>(mesh);
   Rcpp::List out = Rcpp::List::create(Rcpp::Named("vertices") = Vertices,
-                                      Rcpp::Named("edges") = Edges,
                                       Rcpp::Named("faces") = Faces);
   if(normals) {
     Rcpp::NumericMatrix Normals = getEKNormals(mesh);
@@ -143,12 +139,10 @@ Rcpp::List RSurfEKMesh(EMesh3 mesh, const bool normals) {
   return out;
 }
 
-Rcpp::List RSurfTEKMesh(EMesh3 mesh, const bool normals) {
-  Rcpp::DataFrame Edges = getEdges<EK, EMesh3, EPoint3>(mesh);
+Rcpp::List RSurfEKMesh2(EMesh3 mesh, const bool normals, const int nsides) {
   Rcpp::NumericMatrix Vertices = getVertices_EK(mesh);
-  Rcpp::IntegerMatrix Faces = getTFaces<EMesh3>(mesh);
+  Rcpp::IntegerMatrix Faces = getFaces2<EMesh3>(mesh, nsides);
   Rcpp::List out = Rcpp::List::create(Rcpp::Named("vertices") = Vertices,
-                                      Rcpp::Named("edges") = Edges,
                                       Rcpp::Named("faces") = Faces);
   if(normals) {
     Rcpp::NumericMatrix Normals = getEKNormals(mesh);

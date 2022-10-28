@@ -39,7 +39,17 @@ public:
     return PMP::does_self_intersect(mesh);
   }
   
+  Rcpp::DataFrame edges() {
+    return getEdges<EK, EMesh3, EPoint3>(mesh);
+  }
+  
   Rcpp::List getRmesh(const bool normals) {
+    if(CGAL::is_triangle_mesh(mesh)) {
+      return RSurfEKMesh2(mesh, normals, 3);
+    }
+    if(CGAL::is_quad_mesh(mesh)) {
+      return RSurfEKMesh2(mesh, normals, 4);
+    }
     return RSurfEKMesh(mesh, normals);
   }
   

@@ -26,6 +26,7 @@ cgalMesh <- R6Class(
     #'   vertices and duplicated faces, remove isolated vertices); set to 
     #'   \code{FALSE} if you know your mesh is already clean
     #' @return A \code{cgalMesh} object.
+    #' @importFrom rgl tmesh3d qmesh3d
     #' @examples 
     #' library(rgl)
     #' cgalMesh$new(cube3d())
@@ -79,16 +80,77 @@ cgalMesh <- R6Class(
       xptr <- private[[".meshXPtr"]]$clone()
       cgalMesh$new(clean = xptr)
     },
+
+    #' @description Get the edges of the mesh.
+    #' @return xxxxxx
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(dodecahedron3d())
+    #' mesh$edges()
+    "edges" = function() {
+      private[[".meshXPtr"]]$edges()
+    },
     
     #' @description Get the mesh.
     #' @param normals Boolean, whether to return the per-vertex normals 
+    #' @param rgl Boolean, whether to return a \strong{rgl} mesh if possible, 
+    #'   i.e. if the mesh only has triangular or quadrilateral faces
+    #' @param ... arguments passed to \code{\link[rgl:mesh3d]{mesh3d}} (if 
+    #'   a \strong{rgl} mesh is returned)
     #' @return xxxxxx
     #' @examples 
     #' library(rgl)
     #' mesh <- cgalMesh$new(cube3d())$triangulate()
     #' mesh$getMesh(FALSE)
-    "getMesh" = function(normals = TRUE) {
-      private[[".meshXPtr"]]$getRmesh(normals)
+    "getMesh" = function(normals = TRUE, rgl = TRUE, ...) {
+      stopifnot(isBoolean(normals))
+      stopifnot(isBoolean(rgl))
+      mesh <- private[[".meshXPtr"]]$getRmesh(normals)
+      if(rgl) {
+        if(is.matrix(mesh[["faces"]])) {
+          nsides <- nrow(mesh[["faces"]])
+          if(nsides == 3L) {
+            mesh <- mesh3d(
+              x         = mesh[["vertices"]],
+              triangles = mesh[["faces"]],
+              normals   = mesh[["normals"]],
+              ...
+            )
+          } else {
+            mesh <- mesh3d(
+              x       = mesh[["vertices"]],
+              quads   = mesh[["faces"]],
+              normals = mesh[["normals"]],
+              ...
+            )
+          }
+        } else {
+          faces <- split(mesh[["faces"]], lengths(mesh[["faces"]]))
+          if(all(names(faces) %in% c("3", "4"))) {
+            mesh <- mesh3d(
+              x         = mesh[["vertices"]],
+              normals   = mesh[["normals"]],
+              triangles = do.call(cbind, faces[["3"]]),
+              quads     = do.call(cbind, faces[["4"]]),
+              ...
+            )
+          } else {
+            warning("Cannot make a rgl mesh.")
+            mesh[["vertices"]] <- t(mesh[["vertices"]])
+            mesh[["faces"]] <- t(mesh[["faces"]])
+            if(normals) {
+              mesh[["normals"]] <- t(mesh[["normals"]])
+            }
+          }
+        }
+      } else {
+        mesh[["vertices"]] <- t(mesh[["vertices"]])
+        mesh[["faces"]] <- t(mesh[["faces"]])
+        if(normals) {
+          mesh[["normals"]] <- t(mesh[["normals"]])
+        }
+      }
+      mesh
     },
     
     #' @description Check whether the mesh is triangle.
