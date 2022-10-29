@@ -24,7 +24,7 @@ exteriorEdges <- function(edgesDF, angleThreshold = 1) {
   stopifnot(is.data.frame(edgesDF))
   stopifnot(isNonNegativeNumber(angleThreshold))
   angles <- edgesDF[["angle"]]
-  keep <- abs(angles - 180) > angleThreshold
+  keep <- abs(angles - 180) >= angleThreshold
   as.matrix(edgesDF[, c("i1", "i2")])[keep, ]
 }
 
@@ -71,12 +71,12 @@ exteriorEdges <- function(edgesDF, angleThreshold = 1) {
 #' 
 #' # or only plot the edges whose corresponding dihedral angle is acute:
 #' sharpEdges <- as.matrix(subset(edges, angle <= 91, select = c("i1", "i2")))
-# open3d(windowRect = c(50, 50, 562, 562), zoom = 0.9)
-# shade3d(tmesh, color = "maroon")
-# plotEdges(
-#   vertices, sharpEdges, color = "darkred", 
-#   tubesRadius = 0.02, spheresRadius = 0.02
-# )
+#' open3d(windowRect = c(50, 50, 562, 562), zoom = 0.9)
+#' shade3d(tmesh, color = "maroon")
+#' plotEdges(
+#'   vertices, sharpEdges, color = "darkred", 
+#'   tubesRadius = 0.02, spheresRadius = 0.02
+#' )
 plotEdges <- function(
     vertices,
     edges,
