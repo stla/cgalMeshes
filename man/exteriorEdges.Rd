@@ -26,7 +26,7 @@ library(cgalMeshes)
 library(rgl)
 mesh <- cgalMesh$new(dodecahedron3d())
 extEdges <- exteriorEdges(mesh$edges())
-vertices <- mesh$getMesh(normals = FALSE, rgl = FALSE)[["vertices"]]
+vertices <- mesh$vertices()
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(dodecahedron3d(), color = "tomato")
 plotEdges(vertices, extEdges)

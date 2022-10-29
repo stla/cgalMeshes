@@ -84,6 +84,10 @@ public:
     }
   }
   
+  Rcpp::NumericMatrix vertices() {
+    return getVertices_EK(mesh);
+  }
+  
   void writeFile(
       Rcpp::String filename, const int precision, const bool binary
   ) {

@@ -54,6 +54,7 @@ Rcpp::DataFrame getEdges(MeshT);
 
 //Rcpp::NumericMatrix getEKNormals(EMesh3);
 
+Rcpp::NumericMatrix getVertices_EK(EMesh3);
 Rcpp::List RSurfEKMesh(EMesh3, const bool);
 Rcpp::List RSurfEKMesh2(EMesh3, const bool, const int);
 

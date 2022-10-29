@@ -243,6 +243,12 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$triangulate()
       invisible(self)
     },
+
+    #' @description Get the vertices of the mesh.
+    #' @return The vertices in a matrix.
+    "vertices" = function() {
+      t(private[[".CGALmesh"]]$vertices())
+    },
     
     #' @description Write mesh to a file.
     #' @param filename path to the file to be written, with extension 

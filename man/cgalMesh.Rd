@@ -101,6 +101,7 @@ mesh$isTriangle() # TRUE
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
 \item \href{#method-cgalMesh-triangulate}{\code{cgalMesh$triangulate()}}
+\item \href{#method-cgalMesh-vertices}{\code{cgalMesh$vertices()}}
 \item \href{#method-cgalMesh-writeMeshFile}{\code{cgalMesh$writeMeshFile()}}
 }
 }
@@ -411,6 +412,19 @@ mesh$isTriangle() # TRUE
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-vertices"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-vertices}{}}}
+\subsection{Method \code{vertices()}}{
+Get the vertices of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$vertices()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The vertices in a matrix.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-writeMeshFile"></a>}}

@@ -16,7 +16,7 @@
 #' library(rgl)
 #' mesh <- cgalMesh$new(dodecahedron3d())
 #' extEdges <- exteriorEdges(mesh$edges())
-#' vertices <- mesh$getMesh(normals = FALSE, rgl = FALSE)[["vertices"]]
+#' vertices <- mesh$vertices()
 #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 #' shade3d(dodecahedron3d(), color = "tomato")
 #' plotEdges(vertices, extEdges)
@@ -56,12 +56,12 @@ exteriorEdges <- function(edgesDF, angleThreshold = 1) {
 #' library(rgl)
 #' 
 #' mesh <- cgalMesh$new(pentagrammicPrism, clean = FALSE)
-#' vertices <- mesh$getMesh(normals = FALSE, rgl = FALSE)[["vertices"]]
+#' vertices <- mesh$vertices()
 #' edges <- mesh$edges()
 #' extEdges <- exteriorEdges(edges)
 #' tmesh <- mesh$triangulate()$getMesh(normals = FALSE)
 #' 
-#' \donttest{open3d(windowRect = c(50, 50, 562, 562), zoom = 0.9)
+#' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 #' shade3d(tmesh, color = "navy")
 #' # we plot the exterior edges only
 #' plotEdges(
@@ -71,7 +71,7 @@ exteriorEdges <- function(edgesDF, angleThreshold = 1) {
 #' 
 #' # or only plot the edges whose corresponding dihedral angle is acute:
 #' sharpEdges <- as.matrix(subset(edges, angle <= 91, select = c("i1", "i2")))
-#' open3d(windowRect = c(50, 50, 562, 562), zoom = 0.9)
+#' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 #' shade3d(tmesh, color = "maroon")
 #' plotEdges(
 #'   vertices, sharpEdges, color = "darkred", 
