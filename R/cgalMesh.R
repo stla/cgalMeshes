@@ -36,7 +36,6 @@ cgalMesh <- R6Class(
     #'   vertices and duplicated faces, remove isolated vertices); set to 
     #'   \code{FALSE} if you know your mesh is already clean
     #' @return A \code{cgalMesh} object.
-    #' @importFrom rgl tmesh3d qmesh3d
     #' @examples 
     #' library(cgalMeshes)
     #' meshFile <- system.file(
@@ -95,9 +94,6 @@ cgalMesh <- R6Class(
     #' mesh$reverseOrientation()
     #' mesh$boundsVolume() # TRUE
     "boundsVolume" = function() {
-      if(!self$isTriangle()) {
-        stop("The mesh is not triangle.")
-      }
       private[[".CGALmesh"]]$doesBoundVolume()
     },
     
@@ -108,9 +104,6 @@ cgalMesh <- R6Class(
     #' mesh <- cgalMesh$new(icosahedron3d())
     #' mesh$centroid()
     "centroid" = function() {
-      if(!self$isTriangle()) {
-        stop("The mesh is not triangle.")
-      }
       private[[".CGALmesh"]]$centroid()
     },
     
@@ -210,6 +203,19 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$isClosed()
     },
     
+    #' @description Check whether the mesh is outward oriented. The mesh must 
+    #'   be triangle.
+    #' @return A Boolean value, whether the mesh is outward oriented.
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(tetrahedron3d())
+    #' mesh$isOutwardOriented() # TRUE
+    #' mesh$reverseOrientation()
+    #' mesh$isOutwardOriented() # FALSE
+    "isOutwardOriented" = function() {
+      private[[".CGALmesh"]]$isOutwardOriented()
+    },
+    
     #' @description Check whether the mesh is triangle.
     #' @return A Boolean value, whether the mesh is triangle.
     #' @examples 
@@ -218,6 +224,15 @@ cgalMesh <- R6Class(
     #' mesh$isTriangle()
     "isTriangle" = function() {
       private[[".CGALmesh"]]$isTriangle()
+    },
+    
+    #' @description Reorient the mesh in order that it bounds a volume. The 
+    #'   mesh must be triangle.
+    #' @return The modified \code{cgalMesh} object. \strong{WARNING}: even if 
+    #'   you store the result in a new variable, the original mesh is modified. 
+    "orientToBoundVolume" = function() {
+      private[[".CGALmesh"]]$orientToBoundVolume()
+      invisible(self)
     },
     
     #' @description Reverse the orientation of the faces of the mesh.

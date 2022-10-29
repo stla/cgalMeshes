@@ -70,6 +70,16 @@ mesh <- cgalMesh$new(cube3d())$triangulate()
 mesh$getMesh(normals = FALSE)
 
 ## ------------------------------------------------
+## Method `cgalMesh$isOutwardOriented`
+## ------------------------------------------------
+
+library(rgl)
+mesh <- cgalMesh$new(tetrahedron3d())
+mesh$isOutwardOriented() # TRUE
+mesh$reverseOrientation()
+mesh$isOutwardOriented() # FALSE
+
+## ------------------------------------------------
 ## Method `cgalMesh$isTriangle`
 ## ------------------------------------------------
 
@@ -107,7 +117,9 @@ mesh$isTriangle() # TRUE
 \item \href{#method-cgalMesh-edges}{\code{cgalMesh$edges()}}
 \item \href{#method-cgalMesh-getMesh}{\code{cgalMesh$getMesh()}}
 \item \href{#method-cgalMesh-isClosed}{\code{cgalMesh$isClosed()}}
+\item \href{#method-cgalMesh-isOutwardOriented}{\code{cgalMesh$isOutwardOriented()}}
 \item \href{#method-cgalMesh-isTriangle}{\code{cgalMesh$isTriangle()}}
+\item \href{#method-cgalMesh-orientToBoundVolume}{\code{cgalMesh$orientToBoundVolume()}}
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
 \item \href{#method-cgalMesh-triangulate}{\code{cgalMesh$triangulate()}}
@@ -345,6 +357,32 @@ A Boolean value, whether the mesh is closed.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-isOutwardOriented"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-isOutwardOriented}{}}}
+\subsection{Method \code{isOutwardOriented()}}{
+Check whether the mesh is outward oriented. The mesh must 
+  be triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$isOutwardOriented()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A Boolean value, whether the mesh is outward oriented.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(rgl)
+mesh <- cgalMesh$new(tetrahedron3d())
+mesh$isOutwardOriented() # TRUE
+mesh$reverseOrientation()
+mesh$isOutwardOriented() # FALSE
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-isTriangle"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-isTriangle}{}}}
 \subsection{Method \code{isTriangle()}}{
@@ -366,6 +404,21 @@ mesh$isTriangle()
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-orientToBoundVolume"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-orientToBoundVolume}{}}}
+\subsection{Method \code{orientToBoundVolume()}}{
+Reorient the mesh in order that it bounds a volume. The 
+  mesh must be triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$orientToBoundVolume()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The modified \code{cgalMesh} object. \strong{WARNING}: even if 
+  you store the result in a new variable, the original mesh is modified.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-reverseOrientation"></a>}}

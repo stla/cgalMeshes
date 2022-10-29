@@ -24,6 +24,9 @@ public:
       xptr(Rcpp::XPtr<EMesh3>(&mesh, false)) {}
   
   Rcpp::NumericVector centroid() {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
     const EPoint3 centroid = PMP::centroid(mesh);
     Rcpp::NumericVector out(3);
     out(0) = CGAL::to_double<EK::FT>(centroid.x());
@@ -39,6 +42,9 @@ public:
   }
 
   bool doesBoundVolume() {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
     return PMP::does_bound_a_volume(mesh);
   }
   
@@ -63,9 +69,23 @@ public:
   bool isClosed() {
     return CGAL::is_closed(mesh);
   }
+
+  bool isOutwardOriented() {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    return PMP::is_outward_oriented(mesh);
+  }
   
   bool isTriangle() {
     return CGAL::is_triangle_mesh(mesh);
+  }
+
+  void orientToBoundVolume() {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    PMP::orient_to_bound_a_volume(mesh);
   }
   
   void print() {
