@@ -27,7 +27,6 @@ Rcpp::DataFrame getEdges(MeshT mesh) {
   Rcpp::IntegerVector I2(nedges);
   Rcpp::NumericVector Length(nedges);
   Rcpp::NumericVector Angle(nedges);
-  Rcpp::LogicalVector Exterior(nedges);
   {
     size_t i = 0;
     for(typename MeshT::Edge_index ed : mesh.edges()) {
@@ -45,7 +44,6 @@ Rcpp::DataFrame getEdges(MeshT mesh) {
       typename KernelT::FT angle = CGAL::abs(CGAL::approximate_dihedral_angle(
           points[0], points[1], points[2], points[3]));
       Angle(i) = CGAL::to_double(angle);
-      Exterior(i) = angle < 179.0 || angle > 181.0;
       typename KernelT::FT el = PMP::edge_length(h0, mesh);
       Length(i) = CGAL::to_double(el);
       i++;
@@ -55,8 +53,7 @@ Rcpp::DataFrame getEdges(MeshT mesh) {
     Rcpp::Named("i1")       = I1,
     Rcpp::Named("i2")       = I2,
     Rcpp::Named("length")   = Length,
-    Rcpp::Named("angle")    = Angle,
-    Rcpp::Named("exterior") = Exterior
+    Rcpp::Named("angle")    = Angle
   );
   return Edges;
 }
