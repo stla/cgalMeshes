@@ -11,6 +11,7 @@ RCPP_MODULE(class_CGALmesh) {
     .constructor<XPtr<EMesh3>>()
     .constructor<Rcpp::String, const bool>()
     .field("xptr", &CGALmesh::xptr)
+    .method("area", &CGALmesh::area)
     .method("centroid", &CGALmesh::centroid)
     .method("clone", &CGALmesh::clone)
     .method("doesBoundVolume", &CGALmesh::doesBoundVolume)
@@ -25,5 +26,6 @@ RCPP_MODULE(class_CGALmesh) {
     .method("reverseFaceOrientations", &CGALmesh::reverseFaceOrientations)
     .method("triangulate", &CGALmesh::triangulate)
     .method("vertices", &CGALmesh::vertices)
+    .method("volume", &CGALmesh::volume)
     .method("writeFile", &CGALmesh::writeFile);
 }

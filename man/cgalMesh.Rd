@@ -26,6 +26,14 @@ shade3d(rglmesh, color = "tomato")
 )}
 
 ## ------------------------------------------------
+## Method `cgalMesh$area`
+## ------------------------------------------------
+
+library(rgl)
+mesh <- cgalMesh$new(cube3d())$triangulate()
+mesh$area()
+
+## ------------------------------------------------
 ## Method `cgalMesh$boundsVolume`
 ## ------------------------------------------------
 
@@ -91,6 +99,7 @@ mesh$isTriangle()
 ## Method `cgalMesh$orientToBoundVolume`
 ## ------------------------------------------------
 
+# two disjoint tetrahedra ####
 vertices <- rbind(
   c(0, 0, 0),
   c(2, 2, 0),
@@ -134,12 +143,21 @@ mesh$isTriangle() # FALSE
 # warning: triangulating the mesh modifies it
 x <- mesh$triangulate()
 mesh$isTriangle() # TRUE
+
+## ------------------------------------------------
+## Method `cgalMesh$volume`
+## ------------------------------------------------
+
+library(rgl)
+mesh <- cgalMesh$new(cube3d())$triangulate()
+mesh$volume()
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-cgalMesh-new}{\code{cgalMesh$new()}}
 \item \href{#method-cgalMesh-print}{\code{cgalMesh$print()}}
+\item \href{#method-cgalMesh-area}{\code{cgalMesh$area()}}
 \item \href{#method-cgalMesh-boundsVolume}{\code{cgalMesh$boundsVolume()}}
 \item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
 \item \href{#method-cgalMesh-copy}{\code{cgalMesh$copy()}}
@@ -153,6 +171,7 @@ mesh$isTriangle() # TRUE
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
 \item \href{#method-cgalMesh-triangulate}{\code{cgalMesh$triangulate()}}
 \item \href{#method-cgalMesh-vertices}{\code{cgalMesh$vertices()}}
+\item \href{#method-cgalMesh-volume}{\code{cgalMesh$volume()}}
 \item \href{#method-cgalMesh-writeMeshFile}{\code{cgalMesh$writeMeshFile()}}
 }
 }
@@ -233,6 +252,30 @@ Print a \code{cgalMesh} object.
 \subsection{Returns}{
 No value returned, just prints some information about the mesh.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-area"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-area}{}}}
+\subsection{Method \code{area()}}{
+Compute the area of the mesh. The mesh must be triangle 
+  and must not self-intersect.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$area()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A number, the mesh area.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(rgl)
+mesh <- cgalMesh$new(cube3d())$triangulate()
+mesh$area()
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-boundsVolume"></a>}}
@@ -450,7 +493,8 @@ The modified \code{cgalMesh} object. \strong{WARNING}: even if
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{vertices <- rbind(
+\preformatted{# two disjoint tetrahedra ####
+vertices <- rbind(
   c(0, 0, 0),
   c(2, 2, 0),
   c(2, 0, 2),
@@ -558,6 +602,30 @@ Get the vertices of the mesh.
 \subsection{Returns}{
 The vertices in a matrix.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-volume"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-volume}{}}}
+\subsection{Method \code{volume()}}{
+Compute the volume of the mesh. The mesh must be closed,
+  triangle, and must not self-intersect.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$volume()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A number, the mesh volume.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(rgl)
+mesh <- cgalMesh$new(cube3d())$triangulate()
+mesh$volume()
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-writeMeshFile"></a>}}

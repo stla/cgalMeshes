@@ -22,6 +22,17 @@ public:
   CGALmesh(const std::string filename, const bool binary)
     : mesh(readMeshFile(filename)), 
       xptr(Rcpp::XPtr<EMesh3>(&mesh, false)) {}
+
+  double area() {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    if(PMP::does_self_intersect(mesh)) {
+      Rcpp::stop("The mesh self-intersects.");
+    }
+    const EK::FT ar = PMP::area(mesh);
+    return CGAL::to_double<EK::FT>(ar);
+  }
   
   Rcpp::NumericVector centroid() {
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -107,6 +118,21 @@ public:
   Rcpp::NumericMatrix vertices() {
     return getVertices_EK(mesh);
   }
+  
+  double volume() {
+    if(!CGAL::is_closed(mesh)) {
+      Rcpp::stop("The mesh is not closed.");
+    }
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    if(PMP::does_self_intersect(mesh)) {
+      Rcpp::stop("The mesh self-intersects.");
+    }
+    const EK::FT vol = PMP::volume(mesh);
+    return CGAL::to_double<EK::FT>(vol);
+  }
+  
   
   void writeFile(
       Rcpp::String filename, const int precision, const bool binary

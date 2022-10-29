@@ -83,6 +83,17 @@ cgalMesh <- R6Class(
     "print" = function(...) {
       private[[".CGALmesh"]]$print()
     },
+
+    #' @description Compute the area of the mesh. The mesh must be triangle 
+    #'   and must not self-intersect.
+    #' @return A number, the mesh area.
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(cube3d())$triangulate()
+    #' mesh$area()
+    "area" = function() {
+      private[[".CGALmesh"]]$area()
+    },
     
     #' @description Check whether the mesh bounds a volume. The mesh must be 
     #'   triangle.
@@ -231,6 +242,7 @@ cgalMesh <- R6Class(
     #' @return The modified \code{cgalMesh} object. \strong{WARNING}: even if 
     #'   you store the result in a new variable, the original mesh is modified. 
     #' @examples 
+    #' # two disjoint tetrahedra ####
     #' vertices <- rbind(
     #'   c(0, 0, 0),
     #'   c(2, 2, 0),
@@ -299,6 +311,17 @@ cgalMesh <- R6Class(
     #' @return The vertices in a matrix.
     "vertices" = function() {
       t(private[[".CGALmesh"]]$vertices())
+    },
+
+    #' @description Compute the volume of the mesh. The mesh must be closed,
+    #'   triangle, and must not self-intersect.
+    #' @return A number, the mesh volume.
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(cube3d())$triangulate()
+    #' mesh$volume()
+    "volume" = function() {
+      private[[".CGALmesh"]]$volume()
     },
     
     #' @description Write mesh to a file.
