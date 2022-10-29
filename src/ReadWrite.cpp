@@ -30,6 +30,7 @@ EMesh3 readMeshFile(const std::string filename) {
   } else if(ext == "off") {
     ok = CGAL::IO::read_OFF(infile, mesh);
   } else {
+    infile.close();
     Rcpp::stop("Unknown file extension.");
   }
   infile.close();
@@ -45,7 +46,8 @@ void writeMeshFile(const std::string filename,
                    EMesh3 mesh) {
   const std::string ext = toLower(filename.substr(filename.length() - 3, 3));
   bool ok = false;
-  std::ofstream outfile(filename); // open ?
+  std::ofstream outfile; // open ?
+  outfile.open(filename);
   if(binary) {
     CGAL::IO::set_binary_mode(outfile);
   }
@@ -60,8 +62,10 @@ void writeMeshFile(const std::string filename,
       CGAL::parameters::stream_precision(precision)
     );
   } else {
+    outfile.close();
     Rcpp::stop("Unknown file extension.");
   }
+  outfile.close();
   if(!ok) {
     Rcpp::stop("Failed to write file.");
   }
