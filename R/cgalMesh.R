@@ -228,6 +228,13 @@ cgalMesh <- R6Class(
     "triangulate" = function() {
       private[[".meshXPtr"]]$triangulate()
       invisible(self)
+    },
+    
+    "writeMeshFile" = function(filename, precision = 17L, binary = FALSE) {
+      stopifnot(isString(filename))
+      stopifnot(isBoolean(binary))
+      stopifnot(TRUE)
+      private[[".meshXPtr"]]$writeFile(filename, binary, precision)
     }
     
   )
