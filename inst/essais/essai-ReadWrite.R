@@ -14,5 +14,7 @@ faces <- rbind(
   c(4, 3, 1)
 )
 
-mesh <- cgalMesh$new(vertices = vertices, faces = faces)
-mesh$writeMeshFile("illOrientedTetrahedron.off")
+# mesh <- cgalMesh$new(vertices = vertices, faces = faces)
+# mesh$writeMeshFile("illOrientedTetrahedron.off")
+
+mesh <- cgalMesh$new("illOrientedTetrahedron.off")

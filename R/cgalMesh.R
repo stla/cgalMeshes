@@ -31,7 +31,7 @@ cgalMesh <- R6Class(
     #' library(rgl)
     #' cgalMesh$new(cube3d())
     "initialize" = function(
-    mesh, vertices, faces, clean = TRUE, binary = FALSE
+    mesh, vertices, faces, clean = TRUE
     ){
       if(inherits(clean, "externalptr")) {
         private[[".meshXPtr"]] <- CGALmesh$new(clean)
@@ -45,7 +45,7 @@ cgalMesh <- R6Class(
         if(is.list(mesh)) {
           VF <- checkMesh(mesh[["vertices"]], mesh[["faces"]], aslist = TRUE)
         } else if(isFilename(mesh)) {
-          private[[".meshXPtr"]] <- CGALmesh$new(mesh, FALSE)
+          private[[".meshXPtr"]] <- CGALmesh$new(mesh, TRUE)
           return(invisible(self))
         } else {
           stop("Invalid `mesh` argument.")
@@ -233,13 +233,11 @@ cgalMesh <- R6Class(
     #' @description Write mesh to a file.
     #' @param filename x
     #' @param precision x
-    #' @param binary x
     #' @return Nothing, just writes a file.
-    "writeMeshFile" = function(filename, precision = 17L, binary = FALSE) {
+    "writeMeshFile" = function(filename, precision = 17L) {
       stopifnot(isString(filename))
-      stopifnot(isBoolean(binary))
       stopifnot(TRUE)
-      private[[".meshXPtr"]]$writeFile(filename, binary, precision)
+      private[[".meshXPtr"]]$writeFile(filename, precision)
     }
     
   )
