@@ -58,5 +58,5 @@ Rcpp::List RSurfEKMesh2(EMesh3, const bool, const int);
 
 void Message(std::string);
 
-EMesh3 readMeshFile(const std::string);
+EMesh3 readMeshFile(const std::string, const bool);
 void writeMeshFile(const std::string, const bool, const int precision, EMesh3);

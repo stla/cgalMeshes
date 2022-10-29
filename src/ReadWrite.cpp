@@ -9,12 +9,8 @@ std::string toLower(std::string s) {
   return s;
 }
 
-EMesh3 readMeshFile(const std::string filename) {
+EMesh3 readMeshFile(const std::string filename, const bool binary) {
   const std::string ext = toLower(filename.substr(filename.length() - 3, 3));
-  std::ifstream infile0;
-  infile0.open(filename);
-  const bool binary = CGAL::IO::is_binary(infile0);
-  infile0.close();
   EMesh3 mesh;
   bool ok = false;
   std::ifstream infile;
@@ -46,10 +42,12 @@ void writeMeshFile(const std::string filename,
                    EMesh3 mesh) {
   const std::string ext = toLower(filename.substr(filename.length() - 3, 3));
   bool ok = false;
-  std::ofstream outfile; // open ?
-  outfile.open(filename);
+  std::ofstream outfile; 
   if(binary) {
+    outfile.open(filename, std::ios::binary);
     CGAL::IO::set_binary_mode(outfile);
+  } else {
+    outfile.open(filename);
   }
   if(ext == "ply") {
     ok = CGAL::IO::write_PLY(

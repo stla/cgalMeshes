@@ -11,13 +11,13 @@ cgalMesh <- R6Class(
   cloneable = FALSE,
   
   private = list(
-    .meshXPtr = NULL
+    ".meshXPtr" = NULL
   ),
   
   public = list(
     
     #' @description Creates a new \code{cgalMesh} object.
-    #' @param mesh either xxx
+    #' @param mesh either xxx or file name
     #' @param vertices a numeric matrix with three columns
     #' @param faces either a matrix of integers (each row gives the vertex 
     #'   indices of a face) or a list of vectors of integers (each one gives 
@@ -30,7 +30,9 @@ cgalMesh <- R6Class(
     #' @examples 
     #' library(rgl)
     #' cgalMesh$new(cube3d())
-    "initialize" = function(mesh, vertices, faces, clean = TRUE){
+    "initialize" = function(
+    mesh, vertices, faces, clean = TRUE, binary = FALSE
+    ){
       if(inherits(clean, "externalptr")) {
         private[[".meshXPtr"]] <- CGALmesh$new(clean)
         return(invisible(self))
@@ -40,7 +42,14 @@ cgalMesh <- R6Class(
         if(inherits(mesh, "mesh3d")) {
           mesh <- getVF(mesh)
         }
-        VF <- checkMesh(mesh[["vertices"]], mesh[["faces"]], aslist = TRUE)
+        if(is.list(mesh)) {
+          VF <- checkMesh(mesh[["vertices"]], mesh[["faces"]], aslist = TRUE)
+        } else if(isFilename(mesh)) {
+          private[[".meshXPtr"]] <- CGALmesh$new(mesh, FALSE)
+          return(invisible(self))
+        } else {
+          stop("Invalid `mesh` argument.")
+        }
       } else {
         VF <- checkMesh(vertices, faces, aslist = TRUE)
       }
@@ -84,7 +93,7 @@ cgalMesh <- R6Class(
       }
       private[[".meshXPtr"]]$centroid()
     },
-
+    
     #' @description Copy the mesh.
     #' @return A new \code{cgalMesh} object.
     #' @examples 
@@ -97,7 +106,7 @@ cgalMesh <- R6Class(
       xptr <- private[[".meshXPtr"]]$clone()
       cgalMesh$new(clean = xptr)
     },
-
+    
     #' @description Get the edges of the mesh.
     #' @return xxxxxx
     #' @examples 
@@ -169,7 +178,7 @@ cgalMesh <- R6Class(
       }
       mesh
     },
-
+    
     #' @description Check whether the mesh is closed.
     #' @return A Boolean value, whether the mesh is closed.
     "isClosed" = function() {
@@ -185,7 +194,7 @@ cgalMesh <- R6Class(
     "isTriangle" = function() {
       private[[".meshXPtr"]]$isTriangle()
     },
-
+    
     #' @description Reverse the orientation of the faces of the mesh.
     #' @return The modified \code{cgalMesh} object. \strong{WARNING}: even if 
     #'   you store the result in a new variable, the original mesh is modified. 

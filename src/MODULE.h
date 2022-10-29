@@ -19,6 +19,9 @@ public:
       xptr(Rcpp::XPtr<EMesh3>(&mesh, false)) {}
   CGALmesh(Rcpp::XPtr<EMesh3> xptr_)
     : mesh(*(xptr_.get())), xptr(Rcpp::XPtr<EMesh3>(&mesh, false)) {}
+  CGALmesh(const std::string filename, const bool binary)
+    : mesh(readMeshFile(filename, binary)), 
+      xptr(Rcpp::XPtr<EMesh3>(&mesh, false)) {}
   
   Rcpp::NumericVector centroid() {
     const EPoint3 centroid = PMP::centroid(mesh);

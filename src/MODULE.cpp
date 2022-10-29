@@ -9,6 +9,7 @@ RCPP_MODULE(class_CGALmesh) {
   class_<CGALmesh>("CGALmesh")
     .constructor<const NumericMatrix, const List, const bool>()
     .constructor<XPtr<EMesh3>>()
+    .constructor<const std::string, const bool>()
     .field("xptr", &CGALmesh::xptr)
     .method("centroid", &CGALmesh::centroid)
     .method("clone", &CGALmesh::clone)
