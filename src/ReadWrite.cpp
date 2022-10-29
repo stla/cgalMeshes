@@ -40,9 +40,9 @@ EMesh3 readMeshFile(const std::string filename) {
 }
 
 void writeMeshFile(const std::string filename,
-               const bool binary,
-               const int precision,
-               EMesh3 mesh) {
+                   const bool binary,
+                   const int precision,
+                   EMesh3 mesh) {
   const std::string ext = toLower(filename.substr(filename.length() - 3, 3));
   bool ok = false;
   std::ofstream outfile(filename); // open ?

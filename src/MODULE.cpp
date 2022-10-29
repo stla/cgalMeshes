@@ -20,5 +20,6 @@ RCPP_MODULE(class_CGALmesh) {
     .method("isTriangle", &CGALmesh::isTriangle)
     .method("print", &CGALmesh::print)
     .method("reverseFaceOrientations", &CGALmesh::reverseFaceOrientations)
-    .method("triangulate", &CGALmesh::triangulate);
+    .method("triangulate", &CGALmesh::triangulate)
+    .method("writeFile", &CGALmesh::writeFile);
 }
