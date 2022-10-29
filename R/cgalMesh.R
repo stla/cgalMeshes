@@ -69,12 +69,25 @@ cgalMesh <- R6Class(
       private[[".meshXPtr"]]$centroid()
     },
 
+    #' @description Check whether the mesh bounds a volume.
+    #' @return A Boolean value, whether the mesh bounds a volume.
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(cube3d())
+    #' mesh$boundsVolume()
+    #' mesh$reverseOrientation()
+    #' mesh$boundsVolume()
+    "boundsVolume" = function() {
+      private[[".meshXPtr"]]$doesBoundVolume()
+    },
+    
     #' @description Copy the mesh.
     #' @return A new \code{cgalMesh} object.
     #' @examples 
     #' library(rgl)
     #' mesh <- cgalMesh$new(cube3d())
     #' tmesh <- mesh$copy()$triangulate()
+    #' tmesh$isTriangle() # TRUE
     #' mesh$isTriangle() # FALSE
     "copy" = function() {
       xptr <- private[[".meshXPtr"]]$clone()
@@ -152,6 +165,12 @@ cgalMesh <- R6Class(
       }
       mesh
     },
+
+    #' @description Check whether the mesh is closed.
+    #' @return A Boolean value, whether the mesh is closed.
+    "isClosed" = function() {
+      private[[".meshXPtr"]]$isClosed()
+    },
     
     #' @description Check whether the mesh is triangle.
     #' @return A Boolean value, whether the mesh is triangle.
@@ -162,6 +181,14 @@ cgalMesh <- R6Class(
     "isTriangle" = function() {
       private[[".meshXPtr"]]$isTriangle()
     },
+
+    #' @description Reverse the orientation of the faces of the mesh.
+    #' @return The modified \code{cgalMesh} object. \strong{WARNING}: even if 
+    #'   you store the result in a new variable, the original mesh is modified. 
+    "reverseOrientation" = function() {
+      private[[".meshXPtr"]]$reverseFaceOrientations()
+      invisible(self)
+    }
     
     #' @description Check whether the mesh self-intersects.
     #' @return A Boolean value, whether the mesh self-intersects.

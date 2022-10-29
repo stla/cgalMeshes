@@ -12,10 +12,13 @@ RCPP_MODULE(class_CGALmesh) {
     .field("xptr", &CGALmesh::xptr)
     .method("centroid", &CGALmesh::centroid)
     .method("clone", &CGALmesh::clone)
+    .method("doesBoundVolume", &CGALmesh::doesBoundVolume)
     .method("doesSelfIntersect", &CGALmesh::doesSelfIntersect)
     .method("edges", &CGALmesh::edges)
     .method("getRmesh", &CGALmesh::getRmesh)
+    .method("isClosed", &CGALmesh::isClosed)
     .method("isTriangle", &CGALmesh::isTriangle)
     .method("print", &CGALmesh::print)
+    .method("reverseFaceOrientations", &CGALmesh::reverseFaceOrientations)
     .method("triangulate", &CGALmesh::triangulate);
 }

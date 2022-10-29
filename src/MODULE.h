@@ -34,6 +34,10 @@ public:
     CGAL::copy_face_graph(mesh, copy);
     return Rcpp::XPtr<EMesh3>(new EMesh3(copy), false);
   }
+
+  bool doesBoundVolume() {
+    return PMP::does_bound_a_volume(mesh);
+  }
   
   bool doesSelfIntersect() {
     return PMP::does_self_intersect(mesh);
@@ -52,6 +56,10 @@ public:
     }
     return RSurfEKMesh(mesh, normals);
   }
+
+  bool isClosed() {
+    return CGAL::is_closed(mesh);
+  }
   
   bool isTriangle() {
     return CGAL::is_triangle_mesh(mesh);
@@ -60,6 +68,10 @@ public:
   void print() {
     Rcpp::Rcout << "Mesh with " << mesh.number_of_vertices() 
                 << " vertices and " << mesh.number_of_faces() << " faces.\n";
+  }
+  
+  void reverseFaceOrientations() {
+    PMP::reverse_face_orientations(mesh);  
   }
   
   void triangulate() {
