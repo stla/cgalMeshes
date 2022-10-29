@@ -14,6 +14,17 @@ isFilename <- function(x) {
   isString(x) && file.exists(x)
 }
 
+isNonNegativeNumber <- function(x) {
+  is.numeric(x) && length(x) == 1L && x >= 0 && !is.na(x)
+}
+
+isPositiveInteger <- function(x) {
+  is.numeric(x) && length(x) == 1L && !is.na(x) && floor(x) == x
+}
+
+isStrictPositiveInteger <- function(x) {
+  isPositiveInteger(x) && x > 0
+}
 
 #' @importFrom data.table uniqueN
 #' @noRd
