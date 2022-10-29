@@ -89,6 +89,7 @@ plotEdges <- function(
     spheresRadius = 0.05,
     spheresColor = color
 ){
+  edges <- as.matrix(edges[, c(1L, 2L)])
   for(i in 1L:nrow(edges)){
     edge <- edges[i, ]
     if(edgesAsTubes){

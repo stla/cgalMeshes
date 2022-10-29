@@ -12,8 +12,18 @@ R6 class to represent a CGAL mesh.
 ## Method `cgalMesh$new`
 ## ------------------------------------------------
 
+library(cgalMeshes)
+meshFile <- system.file(
+  "extdata", "bigPolyhedron.off", package = "cgalMeshes"
+)
+mesh <- cgalMesh$new(meshFile)
+rglmesh <- mesh$getMesh(normals = FALSE)
 library(rgl)
-cgalMesh$new(cube3d())
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(rglmesh, color = "tomato")
+\donttest{plotEdges(
+  mesh$vertices(), exteriorEdges(mesh$edges()), color = "darkred"
+)}
 
 ## ------------------------------------------------
 ## Method `cgalMesh$boundsVolume`
@@ -145,8 +155,18 @@ A \code{cgalMesh} object.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{library(rgl)
-cgalMesh$new(cube3d())
+\preformatted{library(cgalMeshes)
+meshFile <- system.file(
+  "extdata", "bigPolyhedron.off", package = "cgalMeshes"
+)
+mesh <- cgalMesh$new(meshFile)
+rglmesh <- mesh$getMesh(normals = FALSE)
+library(rgl)
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(rglmesh, color = "tomato")
+\donttest{plotEdges(
+  mesh$vertices(), exteriorEdges(mesh$edges()), color = "darkred"
+)}
 }
 \if{html}{\out{</div>}}
 

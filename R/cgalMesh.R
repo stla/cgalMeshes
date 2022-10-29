@@ -2,6 +2,7 @@
 #' @description R6 class to represent a CGAL mesh.
 #'
 #' @importFrom R6 R6Class
+#' @importFrom rgl mesh3d
 #' @export
 cgalMesh <- R6Class(
   "cgalMesh",
@@ -37,10 +38,20 @@ cgalMesh <- R6Class(
     #' @return A \code{cgalMesh} object.
     #' @importFrom rgl tmesh3d qmesh3d
     #' @examples 
+    #' library(cgalMeshes)
+    #' meshFile <- system.file(
+    #'   "extdata", "bigPolyhedron.off", package = "cgalMeshes"
+    #' )
+    #' mesh <- cgalMesh$new(meshFile)
+    #' rglmesh <- mesh$getMesh(normals = FALSE)
     #' library(rgl)
-    #' cgalMesh$new(cube3d())
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+    #' shade3d(rglmesh, color = "tomato")
+    #' \donttest{plotEdges(
+    #'   mesh$vertices(), exteriorEdges(mesh$edges()), color = "darkred"
+    #' )}
     "initialize" = function(
-    mesh, vertices, faces, clean = TRUE
+      mesh, vertices, faces, clean = TRUE
     ){
       if(inherits(clean, "externalptr")) {
         private[[".CGALmesh"]] <- CGALmesh$new(clean)
@@ -54,7 +65,7 @@ cgalMesh <- R6Class(
         if(is.list(mesh)) {
           VF <- checkMesh(mesh[["vertices"]], mesh[["faces"]], aslist = TRUE)
         } else if(isFilename(mesh)) {
-          private[[".CGALmesh"]] <- CGALmesh$new(mesh, TRUE)
+          private[[".CGALmesh"]] <- CGALmesh$new(path.expand(mesh), TRUE)
           return(invisible(self))
         } else {
           stop("Invalid `mesh` argument.")
