@@ -67,5 +67,5 @@ plotEdges(
 )}
 
 # or only plot the edges whose corresponding dihedral angle is acute:
-sharpEdges <- as.matrix(subset(allEdges, angle <= 91, select = c("i1", "i2")))
+sharpEdges <- as.matrix(subset(edges, angle <= 91, select = c("i1", "i2")))
 }

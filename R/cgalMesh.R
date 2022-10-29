@@ -151,14 +151,14 @@ cgalMesh <- R6Class(
           nsides <- nrow(mesh[["faces"]])
           if(nsides == 3L) {
             mesh <- mesh3d(
-              x         = mesh[["vertices"]],
+              x         = t(mesh[["vertices"]]),
               triangles = mesh[["faces"]],
               normals   = mesh[["normals"]],
               ...
             )
           } else {
             mesh <- mesh3d(
-              x       = mesh[["vertices"]],
+              x       = t(mesh[["vertices"]]),
               quads   = mesh[["faces"]],
               normals = mesh[["normals"]],
               ...
@@ -168,7 +168,7 @@ cgalMesh <- R6Class(
           faces <- split(mesh[["faces"]], lengths(mesh[["faces"]]))
           if(all(names(faces) %in% c("3", "4"))) {
             mesh <- mesh3d(
-              x         = mesh[["vertices"]],
+              x         = t(mesh[["vertices"]]),
               normals   = mesh[["normals"]],
               triangles = do.call(cbind, faces[["3"]]),
               quads     = do.call(cbind, faces[["4"]]),

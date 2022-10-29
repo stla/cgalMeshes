@@ -2,3 +2,5 @@
 ^\.Rproj\.user$
 ^inst/essais$
 ^\.github$
+^cran-comments\.md$
+^data-raw$

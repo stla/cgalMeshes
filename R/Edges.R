@@ -70,7 +70,7 @@ exteriorEdges <- function(edgesDF, angleThreshold = 1) {
 #' )}
 #' 
 #' # or only plot the edges whose corresponding dihedral angle is acute:
-#' sharpEdges <- as.matrix(subset(allEdges, angle <= 91, select = c("i1", "i2")))
+#' sharpEdges <- as.matrix(subset(edges, angle <= 91, select = c("i1", "i2")))
 # open3d(windowRect = c(50, 50, 562, 562), zoom = 0.9)
 # shade3d(tmesh, color = "maroon")
 # plotEdges(
