@@ -56,6 +56,22 @@ cgalMesh <- R6Class(
       private[[".meshXPtr"]]$print()
     },
     
+    #' @description Check whether the mesh bounds a volume. The mesh must be 
+    #'   triangle.
+    #' @return A Boolean value, whether the mesh bounds a volume.
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(tetrahedron3d())
+    #' mesh$boundsVolume() # TRUE
+    #' mesh$reverseOrientation()
+    #' mesh$boundsVolume() # TRUE
+    "boundsVolume" = function() {
+      if(!self$isTriangle()) {
+        stop("The mesh is not triangle.")
+      }
+      private[[".meshXPtr"]]$doesBoundVolume()
+    },
+    
     #' @description Centroid of the mesh. The mesh must be triangle.
     #' @return The Cartesian coordinates of the centroid of the mesh.
     #' @examples 
@@ -69,18 +85,6 @@ cgalMesh <- R6Class(
       private[[".meshXPtr"]]$centroid()
     },
 
-    #' @description Check whether the mesh bounds a volume.
-    #' @return A Boolean value, whether the mesh bounds a volume.
-    #' @examples 
-    #' library(rgl)
-    #' mesh <- cgalMesh$new(cube3d())
-    #' mesh$boundsVolume()
-    #' mesh$reverseOrientation()
-    #' mesh$boundsVolume()
-    "boundsVolume" = function() {
-      private[[".meshXPtr"]]$doesBoundVolume()
-    },
-    
     #' @description Copy the mesh.
     #' @return A new \code{cgalMesh} object.
     #' @examples 
@@ -188,7 +192,7 @@ cgalMesh <- R6Class(
     "reverseOrientation" = function() {
       private[[".meshXPtr"]]$reverseFaceOrientations()
       invisible(self)
-    }
+    },
     
     #' @description Check whether the mesh self-intersects.
     #' @return A Boolean value, whether the mesh self-intersects.

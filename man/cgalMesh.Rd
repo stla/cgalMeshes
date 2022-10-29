@@ -24,12 +24,23 @@ mesh <- cgalMesh$new(icosahedron3d())
 mesh$centroid()
 
 ## ------------------------------------------------
+## Method `cgalMesh$boundsVolume`
+## ------------------------------------------------
+
+library(rgl)
+mesh <- cgalMesh$new(cube3d())
+mesh$boundsVolume()
+mesh$reverseOrientation()
+mesh$boundsVolume()
+
+## ------------------------------------------------
 ## Method `cgalMesh$copy`
 ## ------------------------------------------------
 
 library(rgl)
 mesh <- cgalMesh$new(cube3d())
 tmesh <- mesh$copy()$triangulate()
+tmesh$isTriangle() # TRUE
 mesh$isTriangle() # FALSE
 
 ## ------------------------------------------------
@@ -81,10 +92,13 @@ mesh$isTriangle() # TRUE
 \item \href{#method-cgalMesh-new}{\code{cgalMesh$new()}}
 \item \href{#method-cgalMesh-print}{\code{cgalMesh$print()}}
 \item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
+\item \href{#method-cgalMesh-boundsVolume}{\code{cgalMesh$boundsVolume()}}
 \item \href{#method-cgalMesh-copy}{\code{cgalMesh$copy()}}
 \item \href{#method-cgalMesh-edges}{\code{cgalMesh$edges()}}
 \item \href{#method-cgalMesh-getMesh}{\code{cgalMesh$getMesh()}}
+\item \href{#method-cgalMesh-isClosed}{\code{cgalMesh$isClosed()}}
 \item \href{#method-cgalMesh-isTriangle}{\code{cgalMesh$isTriangle()}}
+\item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
 \item \href{#method-cgalMesh-triangulate}{\code{cgalMesh$triangulate()}}
 }
@@ -172,6 +186,31 @@ mesh$centroid()
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-boundsVolume"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-boundsVolume}{}}}
+\subsection{Method \code{boundsVolume()}}{
+Check whether the mesh bounds a volume.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$boundsVolume()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A Boolean value, whether the mesh bounds a volume.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(rgl)
+mesh <- cgalMesh$new(cube3d())
+mesh$boundsVolume()
+mesh$reverseOrientation()
+mesh$boundsVolume()
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-copy"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-copy}{}}}
 \subsection{Method \code{copy()}}{
@@ -188,6 +227,7 @@ A new \code{cgalMesh} object.
 \preformatted{library(rgl)
 mesh <- cgalMesh$new(cube3d())
 tmesh <- mesh$copy()$triangulate()
+tmesh$isTriangle() # TRUE
 mesh$isTriangle() # FALSE
 }
 \if{html}{\out{</div>}}
@@ -255,6 +295,19 @@ mesh$getMesh(FALSE)
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-isClosed"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-isClosed}{}}}
+\subsection{Method \code{isClosed()}}{
+Check whether the mesh is closed.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$isClosed()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A Boolean value, whether the mesh is closed.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-isTriangle"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-isTriangle}{}}}
 \subsection{Method \code{isTriangle()}}{
@@ -276,6 +329,20 @@ mesh$isTriangle()
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-reverseOrientation"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-reverseOrientation}{}}}
+\subsection{Method \code{reverseOrientation()}}{
+Reverse the orientation of the faces of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$reverseOrientation()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The modified \code{cgalMesh} object. \strong{WARNING}: even if 
+  you store the result in a new variable, the original mesh is modified.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-selfIntersects"></a>}}
