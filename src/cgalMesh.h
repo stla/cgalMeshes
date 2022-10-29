@@ -20,6 +20,10 @@
 #include <CGAL/Polygon_mesh_processing/measure.h>
 #include <CGAL/number_utils.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
+#include <CGAL/Surface_mesh/IO/OFF.h>
+#include <CGAL/Surface_mesh/IO/PLY.h>
+#include <locale>  // tolower
+#include <CGAL/IO/io.h>
 
 // -------------------------------------------------------------------------- //
 //typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
@@ -53,3 +57,6 @@ Rcpp::List RSurfEKMesh(EMesh3, const bool);
 Rcpp::List RSurfEKMesh2(EMesh3, const bool, const int);
 
 void Message(std::string);
+
+EMesh3 readMeshFile(const std::string);
+void writeMeshFile(const std::string, const bool, const int precision, EMesh3);

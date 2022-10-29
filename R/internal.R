@@ -6,6 +6,15 @@ isBoolean <- function(x) {
   is.logical(x) && length(x) == 1L && !is.na(x)
 }
 
+isString <- function(x) {
+  is.character(x) && length(x) == 1L && !is.na(x)
+}
+
+isFilename <- function(x) {
+  isString(x) && file.exists(x)
+}
+
+
 #' @importFrom data.table uniqueN
 #' @noRd
 checkMesh <- function(vertices, faces, aslist) {
