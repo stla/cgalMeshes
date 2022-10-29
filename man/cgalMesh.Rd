@@ -110,7 +110,7 @@ mesh$isTriangle() # TRUE
 \subsection{Method \code{new()}}{
 Creates a new \code{cgalMesh} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$new(mesh, vertices, faces, clean = TRUE, binary = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$new(mesh, vertices, faces, clean = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -404,7 +404,7 @@ mesh$isTriangle() # TRUE
 \subsection{Method \code{writeMeshFile()}}{
 Write mesh to a file.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$writeMeshFile(filename, precision = 17L, binary = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$writeMeshFile(filename, precision = 17, binary = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
