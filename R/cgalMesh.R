@@ -230,6 +230,11 @@ cgalMesh <- R6Class(
       invisible(self)
     },
     
+    #' @description Write mesh to a file.
+    #' @param filename x
+    #' @param precision x
+    #' @param binary x
+    #' @return Nothing, just writes a file.
     "writeMeshFile" = function(filename, precision = 17L, binary = FALSE) {
       stopifnot(isString(filename))
       stopifnot(isBoolean(binary))

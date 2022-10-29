@@ -85,7 +85,7 @@ public:
   }
   
   void writeFile(
-      const std::string filename, const bool binary, const int precision
+      Rcpp::String filename, const bool binary, const int precision
   ) {
     writeMeshFile(filename, binary, precision, mesh);
   }

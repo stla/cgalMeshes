@@ -16,22 +16,22 @@ library(rgl)
 cgalMesh$new(cube3d())
 
 ## ------------------------------------------------
+## Method `cgalMesh$boundsVolume`
+## ------------------------------------------------
+
+library(rgl)
+mesh <- cgalMesh$new(tetrahedron3d())
+mesh$boundsVolume() # TRUE
+mesh$reverseOrientation()
+mesh$boundsVolume() # TRUE
+
+## ------------------------------------------------
 ## Method `cgalMesh$centroid`
 ## ------------------------------------------------
 
 library(rgl)
 mesh <- cgalMesh$new(icosahedron3d())
 mesh$centroid()
-
-## ------------------------------------------------
-## Method `cgalMesh$boundsVolume`
-## ------------------------------------------------
-
-library(rgl)
-mesh <- cgalMesh$new(cube3d())
-mesh$boundsVolume()
-mesh$reverseOrientation()
-mesh$boundsVolume()
 
 ## ------------------------------------------------
 ## Method `cgalMesh$copy`
@@ -91,8 +91,8 @@ mesh$isTriangle() # TRUE
 \itemize{
 \item \href{#method-cgalMesh-new}{\code{cgalMesh$new()}}
 \item \href{#method-cgalMesh-print}{\code{cgalMesh$print()}}
-\item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
 \item \href{#method-cgalMesh-boundsVolume}{\code{cgalMesh$boundsVolume()}}
+\item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
 \item \href{#method-cgalMesh-copy}{\code{cgalMesh$copy()}}
 \item \href{#method-cgalMesh-edges}{\code{cgalMesh$edges()}}
 \item \href{#method-cgalMesh-getMesh}{\code{cgalMesh$getMesh()}}
@@ -101,6 +101,7 @@ mesh$isTriangle() # TRUE
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
 \item \href{#method-cgalMesh-triangulate}{\code{cgalMesh$triangulate()}}
+\item \href{#method-cgalMesh-writeMeshFile}{\code{cgalMesh$writeMeshFile()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -109,13 +110,13 @@ mesh$isTriangle() # TRUE
 \subsection{Method \code{new()}}{
 Creates a new \code{cgalMesh} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$new(mesh, vertices, faces, clean = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$new(mesh, vertices, faces, clean = TRUE, binary = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{mesh}}{either xxx}
+\item{\code{mesh}}{either xxx or file name}
 
 \item{\code{vertices}}{a numeric matrix with three columns}
 
@@ -163,6 +164,32 @@ No value returned, just prints some information about the mesh.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-boundsVolume"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-boundsVolume}{}}}
+\subsection{Method \code{boundsVolume()}}{
+Check whether the mesh bounds a volume. The mesh must be 
+  triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$boundsVolume()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A Boolean value, whether the mesh bounds a volume.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(rgl)
+mesh <- cgalMesh$new(tetrahedron3d())
+mesh$boundsVolume() # TRUE
+mesh$reverseOrientation()
+mesh$boundsVolume() # TRUE
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-centroid"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-centroid}{}}}
 \subsection{Method \code{centroid()}}{
@@ -179,31 +206,6 @@ The Cartesian coordinates of the centroid of the mesh.
 \preformatted{library(rgl)
 mesh <- cgalMesh$new(icosahedron3d())
 mesh$centroid()
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cgalMesh-boundsVolume"></a>}}
-\if{latex}{\out{\hypertarget{method-cgalMesh-boundsVolume}{}}}
-\subsection{Method \code{boundsVolume()}}{
-Check whether the mesh bounds a volume.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$boundsVolume()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-A Boolean value, whether the mesh bounds a volume.
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{library(rgl)
-mesh <- cgalMesh$new(cube3d())
-mesh$boundsVolume()
-mesh$reverseOrientation()
-mesh$boundsVolume()
 }
 \if{html}{\out{</div>}}
 
@@ -395,5 +397,29 @@ mesh$isTriangle() # TRUE
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-writeMeshFile"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-writeMeshFile}{}}}
+\subsection{Method \code{writeMeshFile()}}{
+Write mesh to a file.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$writeMeshFile(filename, precision = 17L, binary = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{filename}}{x}
+
+\item{\code{precision}}{x}
+
+\item{\code{binary}}{x}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Nothing, just writes a file.
+}
 }
 }
