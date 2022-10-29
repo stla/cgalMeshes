@@ -22,7 +22,7 @@
 #' plotEdges(vertices, extEdges)
 exteriorEdges <- function(edgesDF, angleThreshold = 1) {
   stopifnot(is.data.frame(edgesDF))
-  stopifnot(isPositiveNumber(angleThreshold))
+  stopifnot(isNonNegativeNumber(angleThreshold))
   angles <- edgesDF[["angle"]]
   keep <- abs(angles - 180) > angleThreshold
   as.matrix(edgesDF[, c("i1", "i2")])[keep, ]
