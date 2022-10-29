@@ -88,6 +88,35 @@ mesh <- cgalMesh$new(cube3d())
 mesh$isTriangle()
 
 ## ------------------------------------------------
+## Method `cgalMesh$orientToBoundVolume`
+## ------------------------------------------------
+
+vertices <- rbind(
+  c(0, 0, 0),
+  c(2, 2, 0),
+  c(2, 0, 2),
+  c(0, 2, 2),
+  c(3, 3, 3),
+  c(5, 5, 3),
+  c(5, 3, 5),
+  c(3, 5, 5)
+)
+faces <- rbind(
+  c(3, 2, 1),
+  c(3, 4, 2),
+  c(1, 2, 4),
+  c(4, 3, 1),
+  c(5, 6, 7),
+  c(6, 8, 7),
+  c(8, 6, 5),
+  c(5, 7, 8)
+)
+mesh <- cgalMesh$new(vertices = vertices, faces = faces)
+mesh$boundsVolume() # FALSE
+mesh$orientToBoundVolume()
+mesh$boundsVolume() # TRUE
+
+## ------------------------------------------------
 ## Method `cgalMesh$selfIntersects`
 ## ------------------------------------------------
 
@@ -409,8 +438,8 @@ mesh$isTriangle()
 \if{html}{\out{<a id="method-cgalMesh-orientToBoundVolume"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-orientToBoundVolume}{}}}
 \subsection{Method \code{orientToBoundVolume()}}{
-Reorient the mesh in order that it bounds a volume. The 
-  mesh must be triangle.
+Reorient the connected components of the mesh in order that 
+it bounds a volume. The mesh must be triangle.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$orientToBoundVolume()}\if{html}{\out{</div>}}
 }
@@ -419,6 +448,37 @@ Reorient the mesh in order that it bounds a volume. The
 The modified \code{cgalMesh} object. \strong{WARNING}: even if 
   you store the result in a new variable, the original mesh is modified.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{vertices <- rbind(
+  c(0, 0, 0),
+  c(2, 2, 0),
+  c(2, 0, 2),
+  c(0, 2, 2),
+  c(3, 3, 3),
+  c(5, 5, 3),
+  c(5, 3, 5),
+  c(3, 5, 5)
+)
+faces <- rbind(
+  c(3, 2, 1),
+  c(3, 4, 2),
+  c(1, 2, 4),
+  c(4, 3, 1),
+  c(5, 6, 7),
+  c(6, 8, 7),
+  c(8, 6, 5),
+  c(5, 7, 8)
+)
+mesh <- cgalMesh$new(vertices = vertices, faces = faces)
+mesh$boundsVolume() # FALSE
+mesh$orientToBoundVolume()
+mesh$boundsVolume() # TRUE
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-reverseOrientation"></a>}}
