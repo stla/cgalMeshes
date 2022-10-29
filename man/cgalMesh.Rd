@@ -57,7 +57,7 @@ mesh$edges()
 
 library(rgl)
 mesh <- cgalMesh$new(cube3d())$triangulate()
-mesh$getMesh(FALSE)
+mesh$getMesh(normals = FALSE)
 
 ## ------------------------------------------------
 ## Method `cgalMesh$isTriangle`
@@ -116,15 +116,24 @@ Creates a new \code{cgalMesh} object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{mesh}}{either xxx or file name}
+\item{\code{mesh}}{there are four possibilities for this argument: it can be 
+missing, in which case the arguments \code{vertices} and \code{faces} 
+must be given, or it can be the path to a mesh file (accepted formats: 
+\code{off}, \code{obj}, \code{stl}, \code{ply}, \code{ts}, \code{vtp}),
+or it can be a \strong{rgl} mesh (i.e. a \code{mesh3d} object), or it 
+can be a list containing (at least) the fields \code{vertices} 
+(numeric matrix with three columns) and \code{faces} (matrix of 
+integers or list of vectors of integers)}
 
-\item{\code{vertices}}{a numeric matrix with three columns}
+\item{\code{vertices}}{if \code{mesh} is missing, must be a numeric matrix with 
+three columns}
 
-\item{\code{faces}}{either a matrix of integers (each row gives the vertex 
-indices of a face) or a list of vectors of integers (each one gives 
-the vertex indices of a face)}
+\item{\code{faces}}{if \code{mesh} is missing, must be either a matrix of 
+integers (each row gives the vertex indices of a face) or a list of 
+vectors of integers (each one gives the vertex indices of a face)}
 
-\item{\code{clean}}{Boolean, whether to clean the mesh (merge duplicated 
+\item{\code{clean}}{Boolean, no effect if the mesh is given by a file, 
+otherwise it indicates whether to clean the mesh (merge duplicated 
 vertices and duplicated faces, remove isolated vertices); set to 
 \code{FALSE} if you know your mesh is already clean}
 }
@@ -247,7 +256,10 @@ Get the edges of the mesh.
 }
 
 \subsection{Returns}{
-xxxxxx
+A dataframe with four columns; the first two ones give the 
+  vertex indices of each edge (one edge per row), the third one gives 
+  the lengths of each edge, and the fourth one gives the dihedral angles 
+  in degrees between the two faces adjacent to each edge
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -283,13 +295,15 @@ a \strong{rgl} mesh is returned)}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-xxxxxx
+A \strong{rgl} mesh or a list with two or three fields: 
+  \code{vertices}, \code{faces}, and \code{normals} if the argument 
+  \code{normals} is set to \code{TRUE}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{library(rgl)
 mesh <- cgalMesh$new(cube3d())$triangulate()
-mesh$getMesh(FALSE)
+mesh$getMesh(normals = FALSE)
 }
 \if{html}{\out{</div>}}
 
@@ -410,11 +424,14 @@ Write mesh to a file.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{filename}}{x}
+\item{\code{filename}}{path to the file to be written, with extension 
+\code{off} or \code{ply}}
 
-\item{\code{precision}}{x}
+\item{\code{precision}}{a positive integer, the desired number of decimal 
+places}
 
-\item{\code{binary}}{x}
+\item{\code{binary}}{Boolean, whether to write a binary PLY file if 
+\code{filename} has the \code{ply} extension}
 }
 \if{html}{\out{</div>}}
 }

@@ -1,6 +1,6 @@
 Package: cgalMeshes
 Type: Package
-Title: What the Package Does (Title Case)
+Title: R6 Based Utilities for 3D Meshes
 Version: 0.1.0.9000
 Authors@R: 
     person("Stéphane", "Laurent", , "laurent_step@outlook.fr", role = c("aut", "cre"))
@@ -14,8 +14,7 @@ Imports:
     data.table,
     methods,
     R6,
-    Rcpp (>= 1.0.9)
-Suggests: 
+    Rcpp (>= 1.0.9),
     rgl
 LinkingTo: 
     BH,

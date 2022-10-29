@@ -36,7 +36,7 @@ void writeMeshFile(const std::string filename,
                    const int precision,
                    const bool binary,
                    EMesh3 mesh) {
-  const std::string ext = toLower(filename.substr(filename.length() - 3, 3));
+  const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
   bool ok = false;
   std::ofstream outfile;
   if(binary) {
@@ -45,12 +45,12 @@ void writeMeshFile(const std::string filename,
   } else {
     outfile.open(filename);
   }
-  if(ext == "ply") {
+  if(ext == ".ply") {
     ok = CGAL::IO::write_PLY(
       outfile, mesh,
       CGAL::parameters::stream_precision(precision)
     );
-  } else if(ext == "off") {
+  } else if(ext == ".off") {
     ok = CGAL::IO::write_OFF(
       outfile, mesh,
       CGAL::parameters::stream_precision(precision)
