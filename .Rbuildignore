@@ -4,3 +4,4 @@
 ^\.github$
 ^cran-comments\.md$
 ^data-raw$
+^inst/screenshots$

@@ -58,6 +58,25 @@ rglmesh[["material"]] <- list("color" = colors)
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
 shade3d(rglmesh)
+
+movie3d(spin3d(axis = c(1, 1, 0), rpm = 10),
+        duration = 6, fps = 20,
+        movie = "zzpic", dir = ".",
+        convert = FALSE, webshot = FALSE,
+        startTime = 1/20)
+
+library(gifski)
+gifski(
+  png_files = Sys.glob("zzpic*.png"),
+  gif_file = "trefoilKnot.gif",
+  width = 512,
+  height = 512,
+  delay = 1/11
+)
+
+
+
+
 if(!rgl.useNULL()) {
   play3d(spin3d(axis = c(1, 1, 0), rpm = 5), duration = 20)  
 }
