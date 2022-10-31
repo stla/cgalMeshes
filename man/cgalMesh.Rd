@@ -120,7 +120,28 @@ shade3d(rglMesh, color = "firebrick")
 next3d()
 view3d(0, -70, zoom = 0.8)
 shade3d(rglClippedMesh, color = "firebrick")
-shade3d(sphere, color = "yellow", alpha = 0.3)}
+shade3d(sphere, color = "yellow", alpha = 0.15)}
+
+## ------------------------------------------------
+## Method `cgalMesh$distance`
+## ------------------------------------------------
+
+# cube example ####
+library(cgalMeshes)
+mesh <- cgalMesh$new(rgl::cube3d())$triangulate()
+points <- rbind(
+  c(0, 0, 0),
+  c(1, 1, 1)
+)
+mesh$distance(points) # should be 1 and 0
+
+# cyclide example ####
+library(cgalMeshes)
+a <- 100; c <- 30; mu <- 80
+mesh <- cgalMesh$new(cyclideMesh(a, c, mu, nu = 100L, nv = 100L))
+O2 <- c(c, 0, 0)
+# should be a - mu = 20 (see ?cyclideMesh):
+mesh$distance(O2)    
 
 ## ------------------------------------------------
 ## Method `cgalMesh$edges`
@@ -223,6 +244,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
 \item \href{#method-cgalMesh-copy}{\code{cgalMesh$copy()}}
 \item \href{#method-cgalMesh-clip}{\code{cgalMesh$clip()}}
+\item \href{#method-cgalMesh-distance}{\code{cgalMesh$distance()}}
 \item \href{#method-cgalMesh-edges}{\code{cgalMesh$edges()}}
 \item \href{#method-cgalMesh-getMesh}{\code{cgalMesh$getMesh()}}
 \item \href{#method-cgalMesh-isClosed}{\code{cgalMesh$isClosed()}}
@@ -496,7 +518,53 @@ shade3d(rglMesh, color = "firebrick")
 next3d()
 view3d(0, -70, zoom = 0.8)
 shade3d(rglClippedMesh, color = "firebrick")
-shade3d(sphere, color = "yellow", alpha = 0.3)}
+shade3d(sphere, color = "yellow", alpha = 0.15)}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-distance"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-distance}{}}}
+\subsection{Method \code{distance()}}{
+Distance from one or more points to the mesh. The mesh 
+  must be triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$distance(points)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{points}}{either one point given as a numeric vector or several 
+points given as a numeric matrix with three columns}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A numeric vector providing the distances between the given 
+  point(s) to the mesh.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{# cube example ####
+library(cgalMeshes)
+mesh <- cgalMesh$new(rgl::cube3d())$triangulate()
+points <- rbind(
+  c(0, 0, 0),
+  c(1, 1, 1)
+)
+mesh$distance(points) # should be 1 and 0
+
+# cyclide example ####
+library(cgalMeshes)
+a <- 100; c <- 30; mu <- 80
+mesh <- cgalMesh$new(cyclideMesh(a, c, mu, nu = 100L, nv = 100L))
+O2 <- c(c, 0, 0)
+# should be a - mu = 20 (see ?cyclideMesh):
+mesh$distance(O2)    
 }
 \if{html}{\out{</div>}}
 
