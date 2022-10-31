@@ -59,7 +59,7 @@ public:
     if(!CGAL::is_triangle_mesh(clipper)) {
       Rcpp::stop("The clipping mesh is not triangle.");
     }
-    if(!CGAL::is_closed(mesh)) {
+    if(!CGAL::is_closed(clipper)) {
       Rcpp::stop("The clipping mesh is not closed.");
     }
     if(PMP::does_self_intersect(clipper)) {

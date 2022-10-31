@@ -135,7 +135,74 @@ cgalMesh <- R6Class(
       cgalMesh$new(clean = xptr)
     },
     
-    "clipMesh" = function(clipper, clipVolume) {
+    #' @description Clip mesh to the volume bounded by another mesh. 
+    #'   \strong{WARNING}: the reference mesh is then replaced by its 
+    #'   clipped version.
+    #'
+    #' @param clipper a \code{cgalMesh} object; it must represent a closed 
+    #'   triangle mesh which doesn't self-intersect
+    #' @param clipVolume Boolean, whether the clipping has to be done on the 
+    #'   volume bounded by the reference mesh rather than on its surface (i.e. 
+    #'   the reference mesh will be kept closed if it is closed)
+    #' @return The modified \code{cgalObject}.
+    #' @examples 
+    #' # cube clipped to sphere ####
+    #' library(cgalMeshes)
+    #' library(rgl)
+    #' mesh    <- cgalMesh$new(cube3d())$triangulate()
+    #' clipper <- cgalMesh$new(sphereMesh(r= sqrt(2)))
+    #' mesh$clip(clipper, clipVolume = TRUE)
+    #' rglmesh <- mesh$getMesh(normals = FALSE)
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512))
+    #' view3d(45, 45, zoom = 0.9)
+    #' shade3d(rglmesh, col = "darkorange")
+    #' 
+    #' # Togliatti surface clipped to a ball ####
+    #' library(rmarchingcubes)
+    #' library(rgl)
+    #' library(cgalMeshes)
+    #' # Togliatti surface equation: f(x,y,z) = 0
+    #' f <- function(x, y, z) {
+    #'   64*(x-1) *
+    #'     (x^4 - 4*x^3 - 10*x^2*y^2 - 4*x^2 + 16*x - 20*x*y^2 + 5*y^4 + 16 - 20*y^2) - 
+    #'     5*sqrt(5-sqrt(5))*(2*z - sqrt(5-sqrt(5))) * 
+    #'     (4*(x^2 + y^2 - z^2) + (1 + 3*sqrt(5)))^2
+    #' }
+    #' # grid
+    #' n <- 200L
+    #' x <- y <- seq(-5, 5, length.out = n)
+    #' z <- seq(-4, 4, length.out = n)
+    #' Grid <- expand.grid(X = x, Y = y, Z = z)
+    #' # calculate voxel
+    #' voxel <- array(with(Grid, f(X, Y, Z)), dim = c(n, n, n))
+    #' # calculate isosurface
+    #' contour_shape <- contour3d(
+    #'   griddata = voxel, level = 0, x = x, y = y, z = z
+    #' )
+    #' # make rgl mesh (plotted later)
+    #' rglMesh <- tmesh3d(
+    #'   vertices = t(contour_shape[["vertices"]]),
+    #'   indices  = t(contour_shape[["triangles"]]),
+    #'   normals  = contour_shape[["normals"]],
+    #'   homogeneous = FALSE
+    #' )
+    #' # make CGAL mesh
+    #' mesh <- cgalMesh$new(rglMesh)
+    #' # clip to sphere of radius 4.8
+    #' sphere <- sphereMesh(r = 4.8)
+    #' clipper <- cgalMesh$new(sphere)
+    #' \donttest{mesh$clip(clipper, clipVolume = FALSE)
+    #' rglClippedMesh <- mesh$getMesh()
+    #' # plot
+    #' open3d(windowRect = 50 + c(0, 0, 900, 450))
+    #' mfrow3d(1L, 2L)
+    #' view3d(0, -70, zoom = 0.8)
+    #' shade3d(rglMesh, color = "firebrick")
+    #' next3d()
+    #' view3d(0, -70, zoom = 0.8)
+    #' shade3d(rglClippedMesh, color = "firebrick")
+    #' shade3d(sphere, color = "yellow", alpha = 0.15)}
+    "clip" = function(clipper, clipVolume) {
       clipperXPtr <- getXPtr(clipper)
       private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
       invisible(self)
@@ -197,7 +264,7 @@ cgalMesh <- R6Class(
           if(all(names(faces) %in% c("3", "4"))) {
             mesh <- mesh3d(
               x         = t(mesh[["vertices"]]),
-              normals   = t(mesh[["normals"]]),
+              normals   = mesh[["normals"]],
               triangles = do.call(cbind, faces[["3"]]),
               quads     = do.call(cbind, faces[["4"]]),
               ...

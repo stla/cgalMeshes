@@ -18,6 +18,8 @@ Imports:
     R6,
     Rcpp (>= 1.0.9),
     rgl
+Suggests:
+    rmarchingcubes
 LinkingTo: 
     BH,
     Rcpp,
