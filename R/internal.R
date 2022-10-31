@@ -14,8 +14,16 @@ isFilename <- function(x) {
   isString(x) && file.exists(x)
 }
 
+isNumber <- function(x) {
+  is.numeric(x) && length(x) == 1L && !is.na(x)
+}
+
+isPositiveNumber <- function(x) {
+  isNumber(x) && x > 0
+}
+
 isNonNegativeNumber <- function(x) {
-  is.numeric(x) && length(x) == 1L && x >= 0 && !is.na(x)
+  isNumber(x) && x >= 0
 }
 
 isPositiveInteger <- function(x) {
