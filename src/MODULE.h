@@ -82,6 +82,47 @@ public:
     return Rcpp::XPtr<EMesh3>(new EMesh3(copy), false);
   }
   
+  Rcpp::List convexParts(const bool triangulate){
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    NefPol nef(mesh);
+    CGAL::convex_decomposition_3(nef);
+    std::list<EMesh3> convex_parts;
+    // the first volume is the outer volume, which is
+    // ignored in the decomposition
+    NefPol::Volume_const_iterator ci = ++nef.volumes_begin();
+    for( ; ci != nef.volumes_end(); ++ci) {
+      if(ci->mark()) {
+        EPolyhedron pol;
+        nef.convert_inner_shell_to_polyhedron(ci->shells_begin(), pol);
+        EMesh3 cmesh;
+        CGAL::copy_face_graph(pol, cmesh);
+        convex_parts.push_back(cmesh);
+      }
+    }
+    const size_t ncp = convex_parts.size();
+    std::string msg;
+    if(ncp == 1) {
+      msg = "Only one convex part found.";
+    } else {
+      msg = "Found " + std::to_string(ncp) + " convex parts.";
+    }
+    Message(msg);
+    Rcpp::List out(ncp);
+    size_t i = 0;
+    for(EMesh3 cmesh : convex_parts) {
+      if(triangulate && !CGAL::is_triangle_mesh(cmesh)) {
+        if(!PMP::triangulate_faces(cmesh)) {
+          Rcpp::stop("Triangulation has failed.");
+        }
+      }
+      out(i) = Rcpp::XPtr<EMesh3>(new EMesh3(cmesh), false);
+      i++;
+    }
+    return out;
+  }
+  
   Rcpp::NumericVector distance(Rcpp::NumericMatrix points) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");

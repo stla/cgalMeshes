@@ -34,6 +34,12 @@ isStrictPositiveInteger <- function(x) {
   isPositiveInteger(x) && x > 0
 }
 
+#' @importFrom R6 is.R6
+#' @noRd
+isCGALmesh <- function(x) {
+  is.R6(x) && inherits(x, "cgalMesh")
+}
+
 #' @importFrom data.table uniqueN
 #' @noRd
 checkMesh <- function(vertices, faces, aslist) {

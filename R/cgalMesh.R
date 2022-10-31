@@ -203,9 +203,33 @@ cgalMesh <- R6Class(
     #' shade3d(rglClippedMesh, color = "firebrick")
     #' shade3d(sphere, color = "yellow", alpha = 0.15)}
     "clip" = function(clipper, clipVolume) {
+      stopifnot(isCGALmesh(clipper))
+      stopifnot(isBoolean(clipVolume))
       clipperXPtr <- getXPtr(clipper)
       private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
       invisible(self)
+    },
+    
+    #' @description Decomposition into convex parts. The mesh must be triangle.
+    #' @param triangulate Boolean, whether to triangulate the convex parts
+    #' @return A list of \code{cgalMesh} objects, one for each convex part.
+    #' @examples 
+    #' library(cgalMeshes)
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(pentagrammicPrism)$triangulate()
+    #' cxparts <- mesh$convexParts()
+    #' ncxparts <- length(cxparts)
+    #' colors <- hcl.colors(ncxparts, palette = "plasma")
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512))
+    #' view3d(20, -20, zoom = 0.8)
+    #' for(i in 1L:ncxparts) {
+    #'   cxmesh <- cxparts[[i]]$getMesh(normals = FALSE)
+    #'   shade3d(cxmesh, color = colors[i])
+    #' }
+    "convexParts" = function(triangulate = TRUE) {
+      stopifnot(isBoolean(triangulate))
+      xptrs <- private[[".CGALmesh"]]$convexParts(triangulate)
+      lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
     },
 
     #' @description Distance from one or more points to the mesh. The mesh 

@@ -123,6 +123,23 @@ shade3d(rglClippedMesh, color = "firebrick")
 shade3d(sphere, color = "yellow", alpha = 0.15)}
 
 ## ------------------------------------------------
+## Method `cgalMesh$convexParts`
+## ------------------------------------------------
+
+library(cgalMeshes)
+library(rgl)
+mesh <- cgalMesh$new(pentagrammicPrism)$triangulate()
+cxparts <- mesh$convexParts()
+ncxparts <- length(cxparts)
+colors <- hcl.colors(ncxparts, palette = "plasma")
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(20, -20, zoom = 0.8)
+for(i in 1L:ncxparts) {
+  cxmesh <- cxparts[[i]]$getMesh(normals = FALSE)
+  shade3d(cxmesh, color = colors[i])
+}
+
+## ------------------------------------------------
 ## Method `cgalMesh$distance`
 ## ------------------------------------------------
 
@@ -244,6 +261,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
 \item \href{#method-cgalMesh-copy}{\code{cgalMesh$copy()}}
 \item \href{#method-cgalMesh-clip}{\code{cgalMesh$clip()}}
+\item \href{#method-cgalMesh-convexParts}{\code{cgalMesh$convexParts()}}
 \item \href{#method-cgalMesh-distance}{\code{cgalMesh$distance()}}
 \item \href{#method-cgalMesh-edges}{\code{cgalMesh$edges()}}
 \item \href{#method-cgalMesh-getMesh}{\code{cgalMesh$getMesh()}}
@@ -519,6 +537,45 @@ next3d()
 view3d(0, -70, zoom = 0.8)
 shade3d(rglClippedMesh, color = "firebrick")
 shade3d(sphere, color = "yellow", alpha = 0.15)}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-convexParts"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-convexParts}{}}}
+\subsection{Method \code{convexParts()}}{
+Decomposition into convex parts. The mesh must be triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$convexParts(triangulate = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{triangulate}}{Boolean, whether to triangulate the convex parts}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A list of \code{cgalMesh} objects, one for each convex part.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(cgalMeshes)
+library(rgl)
+mesh <- cgalMesh$new(pentagrammicPrism)$triangulate()
+cxparts <- mesh$convexParts()
+ncxparts <- length(cxparts)
+colors <- hcl.colors(ncxparts, palette = "plasma")
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(20, -20, zoom = 0.8)
+for(i in 1L:ncxparts) {
+  cxmesh <- cxparts[[i]]$getMesh(normals = FALSE)
+  shade3d(cxmesh, color = colors[i])
+}
 }
 \if{html}{\out{</div>}}
 

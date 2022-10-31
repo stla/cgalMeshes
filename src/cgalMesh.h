@@ -22,6 +22,9 @@
 #include <CGAL/Polygon_mesh_processing/clip.h>
 #include <CGAL/number_utils.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
+#include <CGAL/Nef_3/SNC_indexed_items.h>
+#include <CGAL/convex_decomposition_3.h>
+#include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
 // #include <CGAL/boost/graph/IO/polygon_mesh_io.h>
 #include <CGAL/Surface_mesh/IO/PLY.h>
@@ -35,6 +38,8 @@ typedef CGAL::Exact_predicates_exact_constructions_kernel EK;
 typedef EK::Point_3 EPoint3;
 typedef CGAL::Surface_mesh<EPoint3> EMesh3;
 typedef EK::Vector_3 EVector3;
+typedef CGAL::Nef_polyhedron_3<EK, CGAL::SNC_indexed_items> NefPol;
+typedef CGAL::Polyhedron_3<EK> EPolyhedron;
 
 // -------------------------------------------------------------------------- //
 namespace PMP = CGAL::Polygon_mesh_processing;
