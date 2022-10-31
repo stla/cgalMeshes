@@ -71,5 +71,6 @@ cleanRd <- function(RdFile){
   writeLines(Rd_new, RdFile)
 }
 
+cleanRd("man/cgalMesh.Rd")
 
 

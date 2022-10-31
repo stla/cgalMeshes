@@ -51,7 +51,7 @@ cgalMesh <- R6Class(
     #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
     #' shade3d(rglmesh, color = "tomato")
     #' plotEdges(
-    #'   mesh$vertices(), exteriorEdges(mesh$edges()), color = "darkred"
+    #'   mesh$vertices(), mesh$edges(), color = "darkred"
     #' )}
     "initialize" = function(
       mesh, vertices, faces, clean = TRUE
@@ -476,7 +476,9 @@ cgalMesh <- R6Class(
       stopifnot(isPositiveInteger(precision))
       stopifnot(isBoolean(binary))
       filename <- path.expand(filename)
-      private[[".CGALmesh"]]$writeFile(filename, as.integer(precision))
+      private[[".CGALmesh"]]$writeFile(
+        filename, as.integer(precision), binary
+      )
     }
     
   )

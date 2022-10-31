@@ -22,7 +22,7 @@ rglmesh <- mesh$getMesh(normals = FALSE)
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglmesh, color = "tomato")
 plotEdges(
-  mesh$vertices(), exteriorEdges(mesh$edges()), color = "darkred"
+  mesh$vertices(), mesh$edges(), color = "darkred"
 )}
 
 ## ------------------------------------------------
@@ -327,7 +327,7 @@ library(rgl)
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglmesh, color = "tomato")
 plotEdges(
-  mesh$vertices(), exteriorEdges(mesh$edges()), color = "darkred"
+  mesh$vertices(), mesh$edges(), color = "darkred"
 )
 }
 \if{html}{\out{</div>}}
