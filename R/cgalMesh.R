@@ -47,10 +47,10 @@ cgalMesh <- R6Class(
     #' )
     #' mesh <- cgalMesh$new(meshFile)
     #' rglmesh <- mesh$getMesh(normals = FALSE)
-    #' library(rgl)
+    #' \donttest{library(rgl)
     #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
     #' shade3d(rglmesh, color = "tomato")
-    #' \donttest{plotEdges(
+    #' plotEdges(
     #'   mesh$vertices(), exteriorEdges(mesh$edges()), color = "darkred"
     #' )}
     "initialize" = function(
@@ -153,9 +153,9 @@ cgalMesh <- R6Class(
     #' clipper <- cgalMesh$new(sphereMesh(r= sqrt(2)))
     #' mesh$clip(clipper, clipVolume = TRUE)
     #' rglmesh <- mesh$getMesh(normals = FALSE)
-    #' open3d(windowRect = 50 + c(0, 0, 512, 512))
+    #' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
     #' view3d(45, 45, zoom = 0.9)
-    #' shade3d(rglmesh, col = "darkorange")
+    #' shade3d(rglmesh, col = "darkorange")}
     #' 
     #' # Togliatti surface clipped to a ball ####
     #' library(rmarchingcubes)
@@ -220,12 +220,12 @@ cgalMesh <- R6Class(
     #' cxparts <- mesh$convexParts()
     #' ncxparts <- length(cxparts)
     #' colors <- hcl.colors(ncxparts, palette = "plasma")
-    #' open3d(windowRect = 50 + c(0, 0, 512, 512))
+    #' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
     #' view3d(20, -20, zoom = 0.8)
     #' for(i in 1L:ncxparts) {
     #'   cxmesh <- cxparts[[i]]$getMesh(normals = FALSE)
     #'   shade3d(cxmesh, color = colors[i])
-    #' }
+    #' }}
     "convexParts" = function(triangulate = TRUE) {
       stopifnot(isBoolean(triangulate))
       xptrs <- private[[".CGALmesh"]]$convexParts(triangulate)
