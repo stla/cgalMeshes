@@ -171,6 +171,9 @@ cgalMesh <- R6Class(
       stopifnot(isBoolean(normals))
       stopifnot(isBoolean(rgl))
       mesh <- private[[".CGALmesh"]]$getRmesh(normals)
+      if(normals) {
+        mesh[["normals"]] <- t(mesh[["normals"]])
+      }
       if(rgl) {
         if(is.matrix(mesh[["faces"]])) {
           nsides <- nrow(mesh[["faces"]])
@@ -194,7 +197,7 @@ cgalMesh <- R6Class(
           if(all(names(faces) %in% c("3", "4"))) {
             mesh <- mesh3d(
               x         = t(mesh[["vertices"]]),
-              normals   = mesh[["normals"]],
+              normals   = t(mesh[["normals"]]),
               triangles = do.call(cbind, faces[["3"]]),
               quads     = do.call(cbind, faces[["4"]]),
               ...
@@ -203,17 +206,11 @@ cgalMesh <- R6Class(
             warning("Cannot make a rgl mesh.")
             mesh[["vertices"]] <- t(mesh[["vertices"]])
             mesh[["faces"]] <- t(mesh[["faces"]])
-            if(normals) {
-              mesh[["normals"]] <- t(mesh[["normals"]])
-            }
           }
         }
       } else {
         mesh[["vertices"]] <- t(mesh[["vertices"]])
         mesh[["faces"]] <- t(mesh[["faces"]])
-        if(normals) {
-          mesh[["normals"]] <- t(mesh[["normals"]])
-        }
       }
       mesh
     },
