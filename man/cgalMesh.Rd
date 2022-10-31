@@ -472,7 +472,8 @@ triangle mesh which doesn't self-intersect}
 
 \item{\code{clipVolume}}{Boolean, whether the clipping has to be done on the 
 volume bounded by the reference mesh rather than on its surface (i.e. 
-the reference mesh will be kept closed if it is closed)}
+the reference mesh will be kept closed if it is closed); if 
+\code{TRUE}, the mesh to be clipped must not self-intersect}
 }
 \if{html}{\out{</div>}}
 }

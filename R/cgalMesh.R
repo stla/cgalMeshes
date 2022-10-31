@@ -143,7 +143,8 @@ cgalMesh <- R6Class(
     #'   triangle mesh which doesn't self-intersect
     #' @param clipVolume Boolean, whether the clipping has to be done on the 
     #'   volume bounded by the reference mesh rather than on its surface (i.e. 
-    #'   the reference mesh will be kept closed if it is closed)
+    #'   the reference mesh will be kept closed if it is closed); if 
+    #'   \code{TRUE}, the mesh to be clipped must not self-intersect
     #' @return The modified \code{cgalObject}.
     #' @examples 
     #' # cube clipped to sphere ####
