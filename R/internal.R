@@ -150,6 +150,12 @@ getVF <- function(mesh) {
     quads <- lapply(1L:ncol(quads), function(i) quads[, i])
   }
   faces <- c(triangles, quads)
+  h <- mesh[["vb"]][4L, ]
+  zeros <- h == 0
+  h[zeros] <- 1 # these vertices should not be referenced
   vertices <- t(mesh[["vb"]][-4L, ])
+  vertices[, 1L] <- vertices[, 1L] / h 
+  vertices[, 2L] <- vertices[, 2L] / h 
+  vertices[, 3L] <- vertices[, 3L] / h 
   list("vertices" = vertices, "faces" = faces)
 }
