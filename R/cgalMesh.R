@@ -207,6 +207,47 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
       invisible(self)
     },
+
+    #' @description Distance from one or more points to the mesh. The mesh 
+    #'   must be triangle.
+    #' @param points either one point given as a numeric vector or several 
+    #'   points given as a numeric matrix with three columns
+    #' @return A numeric vector providing the distances between the given 
+    #'   point(s) to the mesh.
+    #' @examples
+    #' # cube example ####
+    #' library(cgalMeshes)
+    #' mesh <- cgalMesh$new(rgl::cube3d())$triangulate()
+    #' points <- rbind(
+    #'   c(0, 0, 0),
+    #'   c(1, 1, 1)
+    #' )
+    #' mesh$distance(points) # should be 1 and 0
+    #'
+    #' # cyclide example ####
+    #' library(cgalMeshes)
+    #' a <- 100; c <- 30; mu <- 80
+    #' mesh <- cgalMesh$new(cyclideMesh(a, c, mu, nu = 100L, nv = 100L))
+    #' O2 <- c(c, 0, 0)
+    #' # should be a - mu = 20 (see ?cyclideMesh):
+    #' mesh$distance(O2)    
+    "distance" = function(points){
+      if(!is.matrix(points)){
+        points <- rbind(points)
+      }
+      if(ncol(points) != 3L){
+        stop(
+          "The `points` argument must be a vector of length three or ",
+          "a matrix with three columns."
+        )
+      }
+      stopifnot(is.numeric(points))
+      storage.mode(points) <- "double"
+      if(anyNA(points)){
+        stop("Found missing values in `points`.")
+      }
+      private[[".CGALmesh"]]$distance(t(points))
+    },
     
     #' @description Get the edges of the mesh.
     #' @return A dataframe with four columns; the first two ones give the 

@@ -81,6 +81,23 @@ public:
     CGAL::copy_face_graph(mesh, copy);
     return Rcpp::XPtr<EMesh3>(new EMesh3(copy), false);
   }
+  
+  Rcpp::NumericVector distance(Rcpp::NumericMatrix points) {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    const size_t npoints = points.ncol();
+    Rcpp::NumericVector distances(npoints);
+    for(size_t i = 0; i < npoints; i++){
+      Rcpp::NumericVector point_i = points(Rcpp::_, i);
+      std::vector<EPoint3> pt = {EPoint3(point_i(0), point_i(1), point_i(2))};
+      distances(i) = PMP::max_distance_to_triangle_mesh<CGAL::Sequential_tag>(
+        pt, mesh
+      );
+    }
+    return distances;
+  }  
+  
 
   bool doesBoundVolume() {
     if(!CGAL::is_triangle_mesh(mesh)) {
