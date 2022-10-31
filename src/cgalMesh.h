@@ -18,6 +18,7 @@
 #include <CGAL/Polygon_mesh_processing/repair_polygon_soup.h>
 #include <CGAL/Polygon_mesh_processing/triangulate_faces.h>
 #include <CGAL/Polygon_mesh_processing/measure.h>
+#include <CGAL/Polygon_mesh_processing/clip.h>
 #include <CGAL/number_utils.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
 #include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>

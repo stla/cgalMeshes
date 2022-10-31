@@ -46,6 +46,36 @@ public:
     return out;
   }
   
+  void clipMesh(Rcpp::XPtr<EMesh3> clipperXPtr, const bool clipVolume) {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    if(clipVolume) {
+      if(PMP::does_self_intersect(mesh)) {
+        Rcpp::stop("The mesh self-intersects.");
+      }
+    }
+    EMesh3 clipper = *(clipperXPtr.get());
+    if(!CGAL::is_triangle_mesh(clipper)) {
+      Rcpp::stop("The clipping mesh is not triangle.");
+    }
+    if(!CGAL::is_closed(mesh)) {
+      Rcpp::stop("The clipping mesh is not closed.");
+    }
+    if(PMP::does_self_intersect(clipper)) {
+      Rcpp::stop("The clipping mesh self-intersects.");
+    }
+    const bool doNotModify = !clipVolume;
+    const bool clipping = PMP::clip(
+      mesh, clipper, PMP::parameters::clip_volume(clipVolume),
+      PMP::parameters::clip_volume(clipVolume).do_not_modify(doNotModify)
+    );
+    if(!clipping) {
+      Rcpp::stop("Clipping has failed.");
+    }
+    mesh.collect_garbage();
+  }
+  
   Rcpp::XPtr<EMesh3> clone() {
     EMesh3 copy;
     CGAL::copy_face_graph(mesh, copy);

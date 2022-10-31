@@ -13,6 +13,7 @@ RCPP_MODULE(class_CGALmesh) {
     .field("xptr", &CGALmesh::xptr)
     .method("area", &CGALmesh::area)
     .method("centroid", &CGALmesh::centroid)
+    .method("clipMesh", &CGALmesh::clipMesh)
     .method("clone", &CGALmesh::clone)
     .method("doesBoundVolume", &CGALmesh::doesBoundVolume)
     .method("doesSelfIntersect", &CGALmesh::doesSelfIntersect)

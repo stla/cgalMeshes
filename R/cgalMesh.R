@@ -1,3 +1,7 @@
+getXPtr <- function(cMesh){
+  cMesh[[".__enclos_env__"]][["private"]][[".CGALmesh"]][["xptr"]]
+}
+
 #' @title R6 class to represent a CGAL mesh
 #' @description R6 class to represent a CGAL mesh.
 #'
@@ -129,6 +133,12 @@ cgalMesh <- R6Class(
     "copy" = function() {
       xptr <- private[[".CGALmesh"]]$clone()
       cgalMesh$new(clean = xptr)
+    },
+    
+    "clipMesh" = function(clipper, clipVolume) {
+      clipperXPtr <- getXPtr(clipper)
+      private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
+      invisible(self)
     },
     
     #' @description Get the edges of the mesh.
