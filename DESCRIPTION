@@ -23,7 +23,8 @@ Imports:
     Rcpp (>= 1.0.9),
     rgl
 Suggests:
-    rmarchingcubes
+    rmarchingcubes,
+    viridisLite
 LinkingTo: 
     BH,
     Rcpp,

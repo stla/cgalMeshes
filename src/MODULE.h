@@ -89,8 +89,7 @@ public:
     NefPol nef(mesh);
     CGAL::convex_decomposition_3(nef);
     std::list<EMesh3> convex_parts;
-    // the first volume is the outer volume, which is
-    // ignored in the decomposition
+    // the first volume is the outer volume, ignored in the decomposition
     NefPol::Volume_const_iterator ci = ++nef.volumes_begin();
     for( ; ci != nef.volumes_end(); ++ci) {
       if(ci->mark()) {
@@ -139,7 +138,6 @@ public:
     return distances;
   }  
   
-
   bool doesBoundVolume() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -153,6 +151,40 @@ public:
   
   Rcpp::DataFrame edges() {
     return getEdges<EK, EMesh3, EPoint3>(mesh);
+  }
+  
+  // void fair() {
+  //   if(!CGAL::is_triangle_mesh(mesh)) {
+  //     Rcpp::stop("The mesh is not triangle.");
+  //   }
+  //   const bool success = PMP::fair(mesh, mesh.vertices());
+  //   if(!success) {
+  //     Rcpp::stop("Failed to fair the mesh.");
+  //   }
+  // }
+  
+  Rcpp::NumericVector geoDists(const int index) {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    int nvertices = mesh.number_of_vertices();
+    if(index >= nvertices) {
+      Rcpp::stop("Too large index.");
+    }
+    //property map for the distance values to the source set
+    Vertex_distance_map vertex_distance = 
+      mesh.add_property_map<vertex_descriptor, double>("v:distance", 0).first;
+    vertex_descriptor source = *(std::next(mesh.vertices().begin(), index));
+    CGAL::Heat_method_3::estimate_geodesic_distances(
+      mesh, vertex_distance, source
+    );
+    Rcpp::NumericVector gdistances(nvertices);
+    int i = 0;
+    for(vertex_descriptor vd : mesh.vertices()) {
+      gdistances(i) = get(vertex_distance, vd);
+      i++;
+    }
+    return gdistances;    
   }
   
   Rcpp::List getRmesh(const bool normals) {

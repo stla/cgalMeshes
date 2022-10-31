@@ -20,6 +20,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("doesBoundVolume", &CGALmesh::doesBoundVolume)
     .method("doesSelfIntersect", &CGALmesh::doesSelfIntersect)
     .method("edges", &CGALmesh::edges)
+    .method("geoDists", &CGALmesh::geoDists)
     .method("getRmesh", &CGALmesh::getRmesh)
     .method("isClosed", &CGALmesh::isClosed)
     .method("isOutwardOriented", &CGALmesh::isOutwardOriented)

@@ -20,6 +20,7 @@
 #include <CGAL/Polygon_mesh_processing/measure.h>
 #include <CGAL/Polygon_mesh_processing/distance.h>
 #include <CGAL/Polygon_mesh_processing/clip.h>
+//#include <CGAL/Polygon_mesh_processing/fair.h>
 #include <CGAL/number_utils.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
 #include <CGAL/Nef_3/SNC_indexed_items.h>
@@ -30,6 +31,7 @@
 #include <CGAL/Surface_mesh/IO/PLY.h>
 #include <locale>  // tolower
 #include <CGAL/IO/io.h>
+#include <CGAL/Heat_method_3/Surface_mesh_geodesic_distances_3.h>
 
 // -------------------------------------------------------------------------- //
 //typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
@@ -40,6 +42,9 @@ typedef CGAL::Surface_mesh<EPoint3> EMesh3;
 typedef EK::Vector_3 EVector3;
 typedef CGAL::Nef_polyhedron_3<EK, CGAL::SNC_indexed_items> NefPol;
 typedef CGAL::Polyhedron_3<EK> EPolyhedron;
+
+typedef boost::graph_traits<EMesh3>::vertex_descriptor vertex_descriptor;
+typedef EMesh3::Property_map<vertex_descriptor,double> Vertex_distance_map;
 
 // -------------------------------------------------------------------------- //
 namespace PMP = CGAL::Polygon_mesh_processing;

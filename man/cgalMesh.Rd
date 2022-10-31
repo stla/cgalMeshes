@@ -169,6 +169,31 @@ mesh <- cgalMesh$new(dodecahedron3d())
 mesh$edges()
 
 ## ------------------------------------------------
+## Method `cgalMesh$geoDists`
+## ------------------------------------------------
+
+library(cgalMeshes)
+library(rgl)
+rglmesh <- torusMesh(R = 3, r = 2, nu = 90, nv = 60)
+mesh <- cgalMesh$new(rglmesh)
+# estimated geodesic distances
+geodists <- mesh$geoDists(1L)
+# normalization to (0, 1)
+geodists <- (geodists - min(geodists)) / (max(geodists) - min(geodists))
+# color each vertex according to its geodesic distance from the source
+fcolor <- colorRamp(viridisLite::turbo(200L))
+colors <- fcolor(geodists)
+colors <- rgb(colors[, 1L], colors[, 2L], colors[, 3L], maxColorValue = 255)
+rglmesh[["material"]] <- list("color" = colors)
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
+shade3d(rglmesh)
+wire3d(rglmesh, color = "black")
+if(!rgl.useNULL()) {
+  play3d(spin3d(axis = c(1, 1, 1), rpm = 5), duration = 20)  
+}
+
+## ------------------------------------------------
 ## Method `cgalMesh$getMesh`
 ## ------------------------------------------------
 
@@ -264,6 +289,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-convexParts}{\code{cgalMesh$convexParts()}}
 \item \href{#method-cgalMesh-distance}{\code{cgalMesh$distance()}}
 \item \href{#method-cgalMesh-edges}{\code{cgalMesh$edges()}}
+\item \href{#method-cgalMesh-geoDists}{\code{cgalMesh$geoDists()}}
 \item \href{#method-cgalMesh-getMesh}{\code{cgalMesh$getMesh()}}
 \item \href{#method-cgalMesh-isClosed}{\code{cgalMesh$isClosed()}}
 \item \href{#method-cgalMesh-isOutwardOriented}{\code{cgalMesh$isOutwardOriented()}}
@@ -323,12 +349,12 @@ meshFile <- system.file(
 )
 mesh <- cgalMesh$new(meshFile)
 rglmesh <- mesh$getMesh(normals = FALSE)
-library(rgl)
+\donttest{library(rgl)
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglmesh, color = "tomato")
 plotEdges(
   mesh$vertices(), mesh$edges(), color = "darkred"
-)
+)}
 }
 \if{html}{\out{</div>}}
 
@@ -489,9 +515,9 @@ mesh    <- cgalMesh$new(cube3d())$triangulate()
 clipper <- cgalMesh$new(sphereMesh(r= sqrt(2)))
 mesh$clip(clipper, clipVolume = TRUE)
 rglmesh <- mesh$getMesh(normals = FALSE)
-open3d(windowRect = 50 + c(0, 0, 512, 512))
+\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(45, 45, zoom = 0.9)
-shade3d(rglmesh, col = "darkorange")
+shade3d(rglmesh, col = "darkorange")}
 
 # Togliatti surface clipped to a ball ####
 library(rmarchingcubes)
@@ -527,7 +553,7 @@ mesh <- cgalMesh$new(rglMesh)
 # clip to sphere of radius 4.8
 sphere <- sphereMesh(r = 4.8)
 clipper <- cgalMesh$new(sphere)
-mesh$clip(clipper, clipVolume = FALSE)
+\donttest{mesh$clip(clipper, clipVolume = FALSE)
 rglClippedMesh <- mesh$getMesh()
 # plot
 open3d(windowRect = 50 + c(0, 0, 900, 450))
@@ -537,7 +563,7 @@ shade3d(rglMesh, color = "firebrick")
 next3d()
 view3d(0, -70, zoom = 0.8)
 shade3d(rglClippedMesh, color = "firebrick")
-shade3d(sphere, color = "yellow", alpha = 0.15)
+shade3d(sphere, color = "yellow", alpha = 0.15)}
 }
 \if{html}{\out{</div>}}
 
@@ -571,12 +597,12 @@ mesh <- cgalMesh$new(pentagrammicPrism)$triangulate()
 cxparts <- mesh$convexParts()
 ncxparts <- length(cxparts)
 colors <- hcl.colors(ncxparts, palette = "plasma")
-open3d(windowRect = 50 + c(0, 0, 512, 512))
+\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(20, -20, zoom = 0.8)
 for(i in 1L:ncxparts) {
   cxmesh <- cxparts[[i]]$getMesh(normals = FALSE)
   shade3d(cxmesh, color = colors[i])
-}
+}}
 }
 \if{html}{\out{</div>}}
 
@@ -649,6 +675,55 @@ A dataframe with four columns; the first two ones give the
 \preformatted{library(rgl)
 mesh <- cgalMesh$new(dodecahedron3d())
 mesh$edges()
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-geoDists"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-geoDists}{}}}
+\subsection{Method \code{geoDists()}}{
+Estimated geodesic distances between vertices. The mesh 
+  must be triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$geoDists(index)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{index}}{index of the source vertex}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The estimated geodesic distances from the source vertex to each
+  vertex.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(cgalMeshes)
+library(rgl)
+rglmesh <- torusMesh(R = 3, r = 2, nu = 90, nv = 60)
+mesh <- cgalMesh$new(rglmesh)
+# estimated geodesic distances
+geodists <- mesh$geoDists(1L)
+# normalization to (0, 1)
+geodists <- (geodists - min(geodists)) / (max(geodists) - min(geodists))
+# color each vertex according to its geodesic distance from the source
+fcolor <- colorRamp(viridisLite::turbo(200L))
+colors <- fcolor(geodists)
+colors <- rgb(colors[, 1L], colors[, 2L], colors[, 3L], maxColorValue = 255)
+rglmesh[["material"]] <- list("color" = colors)
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
+shade3d(rglmesh)
+wire3d(rglmesh, color = "black")
+if(!rgl.useNULL()) {
+  play3d(spin3d(axis = c(1, 1, 1), rpm = 5), duration = 20)  
+}
 }
 \if{html}{\out{</div>}}
 
