@@ -1,12 +1,16 @@
-Package: cgalMeshes
 Type: Package
+Package: cgalMeshes
 Title: R6 Based Utilities for 3D Meshes
 Version: 0.1.0.9000
 Authors@R: 
     person("Stéphane", "Laurent", , "laurent_step@outlook.fr", role = c("aut", "cre"))
 Maintainer: Stéphane Laurent <laurent_step@outlook.fr>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Provides some utilities for 3D meshes: clipping of a mesh to
+    the volume bounded by another mesh, decomposition into convex parts,
+    distance between a mesh and a point, triangulation, volume, area, and
+    centroid. Meshes in this package are represented by R6 classes. All
+    algorithms are performed by the 'C++' library 'CGAL'
+    (<https://www.cgal.org/>).
 License: GPL-3
 URL: https://github.com/stla/cgalMeshes
 BugReports: https://github.com/stla/cgalMeshes/issues
@@ -27,5 +31,5 @@ LinkingTo:
     RcppEigen
 Encoding: UTF-8
 LazyData: TRUE
-SystemRequirements: C++ 17, gmp, mpfr
 RoxygenNote: 7.2.1
+SystemRequirements: C++ 17, gmp, mpfr
