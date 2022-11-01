@@ -252,11 +252,59 @@ public:
     PMP::reverse_face_orientations(mesh);  
   }
   
+  Rcpp::XPtr<EMesh3> subtract(Rcpp::XPtr<EMesh3> mesh2XPtr) {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The reference mesh is not triangle.");
+    }
+    if(PMP::does_self_intersect(mesh)) {
+      Rcpp::stop("The reference mesh self-intersects.");
+    }
+    EMesh3 mesh2 = *(mesh2XPtr.get());
+    if(!CGAL::is_triangle_mesh(mesh2)) {
+      Rcpp::stop("The second mesh is not triangle.");
+    }
+    if(PMP::does_self_intersect(mesh2)) {
+      Rcpp::stop("The second mesh self-intersects.");
+    }
+    EMesh3 imesh;
+    const bool success = PMP::corefine_and_compute_difference(
+      mesh, mesh2, imesh
+    );
+    if(!success) {
+      Rcpp::stop("Difference computation has failed.");
+    }
+    return Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false);
+  }
+  
   void triangulate() {
     const bool success = PMP::triangulate_faces(mesh);
     if(!success) {
       Rcpp::stop("Triangulation has failed.");
     }
+  }
+
+  Rcpp::XPtr<EMesh3> Union(Rcpp::XPtr<EMesh3> mesh2XPtr) {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The reference mesh is not triangle.");
+    }
+    if(PMP::does_self_intersect(mesh)) {
+      Rcpp::stop("The reference mesh self-intersects.");
+    }
+    EMesh3 mesh2 = *(mesh2XPtr.get());
+    if(!CGAL::is_triangle_mesh(mesh2)) {
+      Rcpp::stop("The second mesh is not triangle.");
+    }
+    if(PMP::does_self_intersect(mesh2)) {
+      Rcpp::stop("The second mesh self-intersects.");
+    }
+    EMesh3 imesh;
+    const bool success = PMP::corefine_and_compute_union(
+      mesh, mesh2, imesh
+    );
+    if(!success) {
+      Rcpp::stop("Union computation has failed.");
+    }
+    return Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false);
   }
   
   Rcpp::NumericMatrix vertices() {

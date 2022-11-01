@@ -53,16 +53,6 @@ mesh <- cgalMesh$new(icosahedron3d())
 mesh$centroid()}
 
 ## ------------------------------------------------
-## Method `cgalMesh$copy`
-## ------------------------------------------------
-
-library(rgl)
-mesh <- cgalMesh$new(cube3d())
-tmesh <- mesh$copy()$triangulate()
-tmesh$isTriangle() # TRUE
-mesh$isTriangle() # FALSE
-
-## ------------------------------------------------
 ## Method `cgalMesh$clip`
 ## ------------------------------------------------
 
@@ -141,6 +131,16 @@ for(i in 1L:ncxparts) {
 }}
 
 ## ------------------------------------------------
+## Method `cgalMesh$copy`
+## ------------------------------------------------
+
+library(rgl)
+mesh <- cgalMesh$new(cube3d())
+tmesh <- mesh$copy()$triangulate()
+tmesh$isTriangle() # TRUE
+mesh$isTriangle() # FALSE
+
+## ------------------------------------------------
 ## Method `cgalMesh$distance`
 ## ------------------------------------------------
 
@@ -173,7 +173,7 @@ mesh$edges()
 ## Method `cgalMesh$geoDists`
 ## ------------------------------------------------
 
-\donttest{#' # torus ####
+\donttest{# torus ####
 library(cgalMeshes)
 library(rgl)
 rglmesh <- torusMesh(R = 3, r = 2, nu = 90, nv = 60)
@@ -320,6 +320,31 @@ mesh <- cgalMesh$new(cube3d())
 mesh$selfIntersects()
 
 ## ------------------------------------------------
+## Method `cgalMesh$subtract`
+## ------------------------------------------------
+
+\donttest{library(cgalMeshes)
+library(rgl)
+# take two cubes
+rglmesh1 <- cube3d()
+rglmesh2 <- translate3d(cube3d(), 1, 1, 1)
+mesh1 <- cgalMesh$new(rglmesh1)
+mesh2 <- cgalMesh$new(rglmesh2)
+# the two meshes must be triangle
+mesh1$triangulate()
+mesh2$triangulate()
+# difference
+mesh <- mesh1$subtract(mesh2)
+rglmesh <- mesh$getMesh(normals = FALSE)
+# extract edges for plotting
+extEdges <- exteriorEdges(mesh$edges())
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(rglmesh, color = "red")
+plotEdges(mesh$vertices(), extEdges)
+shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
+
+## ------------------------------------------------
 ## Method `cgalMesh$triangulate`
 ## ------------------------------------------------
 
@@ -329,6 +354,30 @@ mesh$isTriangle() # FALSE
 # warning: triangulating the mesh modifies it
 x <- mesh$triangulate()
 mesh$isTriangle() # TRUE
+
+## ------------------------------------------------
+## Method `cgalMesh$union`
+## ------------------------------------------------
+
+\donttest{library(cgalMeshes)
+library(rgl)
+# take two cubes
+rglmesh1 <- cube3d()
+rglmesh2 <- translate3d(cube3d(), 1, 1, 1)
+mesh1 <- cgalMesh$new(rglmesh1)
+mesh2 <- cgalMesh$new(rglmesh2)
+# the two meshes must be triangle
+mesh1$triangulate()
+mesh2$triangulate()
+# union
+umesh <- mesh1$union(mesh2)
+rglumesh <- umesh$getMesh(normals = FALSE)
+# extract edges for plotting
+extEdges <- exteriorEdges(umesh$edges())
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(rglumesh, color = "red")
+plotEdges(umesh$vertices(), extEdges)}
 
 ## ------------------------------------------------
 ## Method `cgalMesh$volume`
@@ -346,9 +395,9 @@ mesh$volume()
 \item \href{#method-cgalMesh-area}{\code{cgalMesh$area()}}
 \item \href{#method-cgalMesh-boundsVolume}{\code{cgalMesh$boundsVolume()}}
 \item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
-\item \href{#method-cgalMesh-copy}{\code{cgalMesh$copy()}}
 \item \href{#method-cgalMesh-clip}{\code{cgalMesh$clip()}}
 \item \href{#method-cgalMesh-convexParts}{\code{cgalMesh$convexParts()}}
+\item \href{#method-cgalMesh-copy}{\code{cgalMesh$copy()}}
 \item \href{#method-cgalMesh-distance}{\code{cgalMesh$distance()}}
 \item \href{#method-cgalMesh-edges}{\code{cgalMesh$edges()}}
 \item \href{#method-cgalMesh-geoDists}{\code{cgalMesh$geoDists()}}
@@ -360,7 +409,9 @@ mesh$volume()
 \item \href{#method-cgalMesh-orientToBoundVolume}{\code{cgalMesh$orientToBoundVolume()}}
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
+\item \href{#method-cgalMesh-subtract}{\code{cgalMesh$subtract()}}
 \item \href{#method-cgalMesh-triangulate}{\code{cgalMesh$triangulate()}}
+\item \href{#method-cgalMesh-union}{\code{cgalMesh$union()}}
 \item \href{#method-cgalMesh-vertices}{\code{cgalMesh$vertices()}}
 \item \href{#method-cgalMesh-volume}{\code{cgalMesh$volume()}}
 \item \href{#method-cgalMesh-writeMeshFile}{\code{cgalMesh$writeMeshFile()}}
@@ -519,31 +570,6 @@ mesh$centroid()}
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cgalMesh-copy"></a>}}
-\if{latex}{\out{\hypertarget{method-cgalMesh-copy}{}}}
-\subsection{Method \code{copy()}}{
-Copy the mesh.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$copy()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-A new \code{cgalMesh} object.
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{library(rgl)
-mesh <- cgalMesh$new(cube3d())
-tmesh <- mesh$copy()$triangulate()
-tmesh$isTriangle() # TRUE
-mesh$isTriangle() # FALSE
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-clip"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-clip}{}}}
 \subsection{Method \code{clip()}}{
@@ -674,6 +700,31 @@ for(i in 1L:ncxparts) {
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-copy"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-copy}{}}}
+\subsection{Method \code{copy()}}{
+Copy the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$copy()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A new \code{cgalMesh} object.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(rgl)
+mesh <- cgalMesh$new(cube3d())
+tmesh <- mesh$copy()$triangulate()
+tmesh$isTriangle() # TRUE
+mesh$isTriangle() # FALSE
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-distance"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-distance}{}}}
 \subsection{Method \code{distance()}}{
@@ -768,7 +819,7 @@ The estimated geodesic distances from the source vertex to each
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{#' # torus ####
+\preformatted{\donttest{# torus ####
 library(cgalMeshes)
 library(rgl)
 rglmesh <- torusMesh(R = 3, r = 2, nu = 90, nv = 60)
@@ -1062,6 +1113,53 @@ mesh$selfIntersects()
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-subtract"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-subtract}{}}}
+\subsection{Method \code{subtract()}}{
+Subtract another mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$subtract(mesh2)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{mesh2}}{a \code{cgalMesh} object}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{cgalMesh} object.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
+# take two cubes
+rglmesh1 <- cube3d()
+rglmesh2 <- translate3d(cube3d(), 1, 1, 1)
+mesh1 <- cgalMesh$new(rglmesh1)
+mesh2 <- cgalMesh$new(rglmesh2)
+# the two meshes must be triangle
+mesh1$triangulate()
+mesh2$triangulate()
+# difference
+mesh <- mesh1$subtract(mesh2)
+rglmesh <- mesh$getMesh(normals = FALSE)
+# extract edges for plotting
+extEdges <- exteriorEdges(mesh$edges())
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(rglmesh, color = "red")
+plotEdges(mesh$vertices(), extEdges)
+shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-triangulate"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-triangulate}{}}}
 \subsection{Method \code{triangulate()}}{
@@ -1084,6 +1182,52 @@ mesh$isTriangle() # FALSE
 # warning: triangulating the mesh modifies it
 x <- mesh$triangulate()
 mesh$isTriangle() # TRUE
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-union"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-union}{}}}
+\subsection{Method \code{union()}}{
+Union with another mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$union(mesh2)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{mesh2}}{a \code{cgalMesh} object}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{cgalMesh} object.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
+# take two cubes
+rglmesh1 <- cube3d()
+rglmesh2 <- translate3d(cube3d(), 1, 1, 1)
+mesh1 <- cgalMesh$new(rglmesh1)
+mesh2 <- cgalMesh$new(rglmesh2)
+# the two meshes must be triangle
+mesh1$triangulate()
+mesh2$triangulate()
+# union
+umesh <- mesh1$union(mesh2)
+rglumesh <- umesh$getMesh(normals = FALSE)
+# extract edges for plotting
+extEdges <- exteriorEdges(umesh$edges())
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(rglumesh, color = "red")
+plotEdges(umesh$vertices(), extEdges)}
 }
 \if{html}{\out{</div>}}
 

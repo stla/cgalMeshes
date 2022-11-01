@@ -29,7 +29,9 @@ RCPP_MODULE(class_CGALmesh) {
     .method("orientToBoundVolume", &CGALmesh::orientToBoundVolume)
     .method("print", &CGALmesh::print)
     .method("reverseFaceOrientations", &CGALmesh::reverseFaceOrientations)
+    .method("subtract", &CGALmesh::subtract)
     .method("triangulate", &CGALmesh::triangulate)
+    .method("Union", &CGALmesh::Union)
     .method("vertices", &CGALmesh::vertices)
     .method("volume", &CGALmesh::volume)
     .method("writeFile", &CGALmesh::writeFile);

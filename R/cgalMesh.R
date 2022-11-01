@@ -294,7 +294,7 @@ cgalMesh <- R6Class(
     #' @return The estimated geodesic distances from the source vertex to each
     #'   vertex.
     #' @examples 
-    #' \donttest{#' # torus ####
+    #' \donttest{# torus ####
     #' library(cgalMeshes)
     #' library(rgl)
     #' rglmesh <- torusMesh(R = 3, r = 2, nu = 90, nv = 60)
@@ -529,6 +529,37 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$doesSelfIntersect()
     },
     
+    #' @description Subtract another mesh.
+    #' @param mesh2 a \code{cgalMesh} object
+    #' @return A \code{cgalMesh} object.
+    #' @examples 
+    #' \donttest{library(cgalMeshes)
+    #' library(rgl)
+    #' # take two cubes
+    #' rglmesh1 <- cube3d()
+    #' rglmesh2 <- translate3d(cube3d(), 1, 1, 1)
+    #' mesh1 <- cgalMesh$new(rglmesh1)
+    #' mesh2 <- cgalMesh$new(rglmesh2)
+    #' # the two meshes must be triangle
+    #' mesh1$triangulate()
+    #' mesh2$triangulate()
+    #' # difference
+    #' mesh <- mesh1$subtract(mesh2)
+    #' rglmesh <- mesh$getMesh(normals = FALSE)
+    #' # extract edges for plotting
+    #' extEdges <- exteriorEdges(mesh$edges())
+    #' # plot
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+    #' shade3d(rglmesh, color = "red")
+    #' plotEdges(mesh$vertices(), extEdges)
+    #' shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
+    "subtract" = function(mesh2) {
+      stopifnot(isCGALmesh(mesh2))
+      xptr2 <- getXPtr(mesh2)
+      dxptr <- private[[".CGALmesh"]]$subtract(xptr2)
+      cgalMesh$new(clean = dxptr)
+    },
+    
     #' @description Triangulate mesh.
     #' @return The modified \code{cgalMesh} object. \strong{WARNING}: even if 
     #'   you store the result in a new variable, the original mesh is modified 
@@ -546,6 +577,36 @@ cgalMesh <- R6Class(
       invisible(self)
     },
 
+    #' @description Union with another mesh.
+    #' @param mesh2 a \code{cgalMesh} object
+    #' @return A \code{cgalMesh} object.
+    #' @examples 
+    #' \donttest{library(cgalMeshes)
+    #' library(rgl)
+    #' # take two cubes
+    #' rglmesh1 <- cube3d()
+    #' rglmesh2 <- translate3d(cube3d(), 1, 1, 1)
+    #' mesh1 <- cgalMesh$new(rglmesh1)
+    #' mesh2 <- cgalMesh$new(rglmesh2)
+    #' # the two meshes must be triangle
+    #' mesh1$triangulate()
+    #' mesh2$triangulate()
+    #' # union
+    #' umesh <- mesh1$union(mesh2)
+    #' rglumesh <- umesh$getMesh(normals = FALSE)
+    #' # extract edges for plotting
+    #' extEdges <- exteriorEdges(umesh$edges())
+    #' # plot
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+    #' shade3d(rglumesh, color = "red")
+    #' plotEdges(umesh$vertices(), extEdges)}
+    "union" = function(mesh2) {
+      stopifnot(isCGALmesh(mesh2))
+      xptr2 <- getXPtr(mesh2)
+      uxptr <- private[[".CGALmesh"]]$Union(xptr2)
+      cgalMesh$new(clean = uxptr)
+    },
+    
     #' @description Get the vertices of the mesh.
     #' @return The vertices in a matrix.
     "vertices" = function() {
