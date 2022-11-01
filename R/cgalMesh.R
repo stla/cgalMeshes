@@ -511,6 +511,14 @@ cgalMesh <- R6Class(
       invisible(self)
     },
     
+    #' @description Remove self-intersections (experimental). The mesh must 
+    #'   be triangle.
+    #' @return The modified \code{cgalMesh} object.
+    "removeSelfIntersections" = function() {
+      private[[".CGALmesh"]]$removeSelfIntersections()
+      invisible(self)
+    },
+    
     #' @description Reverse the orientation of the faces of the mesh.
     #' @return The modified \code{cgalMesh} object. \strong{WARNING}: even if 
     #'   you store the result in a new variable, the original mesh is modified. 
@@ -530,7 +538,7 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$doesSelfIntersect()
     },
     
-    #' @description Subtract another mesh.
+    #' @description Subtract another mesh. Both meshes must be triangle.
     #' @param mesh2 a \code{cgalMesh} object
     #' @return A \code{cgalMesh} object.
     #' @examples 
@@ -578,7 +586,7 @@ cgalMesh <- R6Class(
       invisible(self)
     },
 
-    #' @description Union with another mesh.
+    #' @description Union with another mesh. Both meshes must be triangle.
     #' @param mesh2 a \code{cgalMesh} object
     #' @return A \code{cgalMesh} object.
     #' @examples 

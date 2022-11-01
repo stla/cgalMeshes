@@ -251,6 +251,13 @@ public:
                 << " vertices and " << mesh.number_of_faces() << " faces.\n";
   }
   
+  void removeSelfIntersections() {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    PMP::experimental::remove_self_intersections(mesh);
+  }
+  
   void reverseFaceOrientations() {
     PMP::reverse_face_orientations(mesh);  
   }

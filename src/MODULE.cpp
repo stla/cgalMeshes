@@ -28,6 +28,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("isTriangle", &CGALmesh::isTriangle)
     .method("orientToBoundVolume", &CGALmesh::orientToBoundVolume)
     .method("print", &CGALmesh::print)
+    .method("removeSelfIntersections", &CGALmesh::removeSelfIntersections)
     .method("reverseFaceOrientations", &CGALmesh::reverseFaceOrientations)
     .method("subtract", &CGALmesh::subtract)
     .method("triangulate", &CGALmesh::triangulate)
