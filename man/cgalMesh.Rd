@@ -170,6 +170,29 @@ mesh <- cgalMesh$new(dodecahedron3d())
 mesh$edges()
 
 ## ------------------------------------------------
+## Method `cgalMesh$fair`
+## ------------------------------------------------
+
+library(cgalMeshes)
+rglHopf <- HopfTorusMesh(nu = 100, nv = 100)
+hopf <- cgalMesh$new(rglhopf)
+# squared norms of the vertices
+normsq <- apply(hopf$vertices(), 1L, crossprod)
+# fair the region where the squared norm is > 19
+indices <- which(normsq > 19)
+hopf$fair(indices)
+rglHopf_faired <- hopf$getMesh()
+# plot
+\donttest{library(rgl)
+open3d(windowRect = 50 + c(0, 0, 900, 450))
+mfrow3d(1L, 2L)
+view3d(0, 0, zoom = 0.8)
+shade3d(rglHopf, color = "orangered")
+next3d()
+view3d(0, 0, zoom = 0.8)
+shade3d(rglHopf_faired, color = "orangered")}
+
+## ------------------------------------------------
 ## Method `cgalMesh$geoDists`
 ## ------------------------------------------------
 
@@ -400,6 +423,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-copy}{\code{cgalMesh$copy()}}
 \item \href{#method-cgalMesh-distance}{\code{cgalMesh$distance()}}
 \item \href{#method-cgalMesh-edges}{\code{cgalMesh$edges()}}
+\item \href{#method-cgalMesh-fair}{\code{cgalMesh$fair()}}
 \item \href{#method-cgalMesh-geoDists}{\code{cgalMesh$geoDists()}}
 \item \href{#method-cgalMesh-getMesh}{\code{cgalMesh$getMesh()}}
 \item \href{#method-cgalMesh-intersection}{\code{cgalMesh$intersection()}}
@@ -791,6 +815,52 @@ A dataframe with four columns; the first two ones give the
 \preformatted{library(rgl)
 mesh <- cgalMesh$new(dodecahedron3d())
 mesh$edges()
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-fair"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-fair}{}}}
+\subsection{Method \code{fair()}}{
+Fair a region of the mesh, i.e. make it smooth. The mesh 
+  must be triangle. This modifies the reference mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$fair(indices)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{indices}}{the indices of the vertices in the region}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The modified \code{cgalMesh} object.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(cgalMeshes)
+rglHopf <- HopfTorusMesh(nu = 100, nv = 100)
+hopf <- cgalMesh$new(rglhopf)
+# squared norms of the vertices
+normsq <- apply(hopf$vertices(), 1L, crossprod)
+# fair the region where the squared norm is > 19
+indices <- which(normsq > 19)
+hopf$fair(indices)
+rglHopf_faired <- hopf$getMesh()
+# plot
+\donttest{library(rgl)
+open3d(windowRect = 50 + c(0, 0, 900, 450))
+mfrow3d(1L, 2L)
+view3d(0, 0, zoom = 0.8)
+shade3d(rglHopf, color = "orangered")
+next3d()
+view3d(0, 0, zoom = 0.8)
+shade3d(rglHopf_faired, color = "orangered")}
 }
 \if{html}{\out{</div>}}
 

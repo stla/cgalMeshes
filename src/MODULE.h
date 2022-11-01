@@ -161,9 +161,13 @@ public:
       Rcpp::stop("The mesh is not triangle.");
     }
     std::list<vertex_descriptor> selectedVertices;
-    int nvertices = indices.size();
+    const int nvertices = indices.size();
     for(int i = 0; i < nvertices; i++) {
-      selectedVertices.push_back(*(mesh.vertices().begin() + indices(i)));
+      const int idx = indices(i);
+      if(idx >= nvertices) {
+        Rcpp::stop("Too large index.");
+      }
+      selectedVertices.push_back(*(mesh.vertices().begin() + idx));
     }
     const bool success = PMP::fair(mesh, selectedVertices);
     if(!success) {

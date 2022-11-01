@@ -288,7 +288,40 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$edges()
     },
 
+    #' @description Fair a region of the mesh, i.e. make it smooth. The mesh 
+    #'   must be triangle. This modifies the reference mesh.
+    #' @param indices the indices of the vertices in the region
+    #' @return The modified \code{cgalMesh} object.
+    #' @examples 
+    #' library(cgalMeshes)
+    #' rglHopf <- HopfTorusMesh(nu = 100, nv = 100)
+    #' hopf <- cgalMesh$new(rglhopf)
+    #' # squared norms of the vertices
+    #' normsq <- apply(hopf$vertices(), 1L, crossprod)
+    #' # fair the region where the squared norm is > 19
+    #' indices <- which(normsq > 19)
+    #' hopf$fair(indices)
+    #' rglHopf_faired <- hopf$getMesh()
+    #' # plot
+    #' \donttest{library(rgl)
+    #' open3d(windowRect = 50 + c(0, 0, 900, 450))
+    #' mfrow3d(1L, 2L)
+    #' view3d(0, 0, zoom = 0.8)
+    #' shade3d(rglHopf, color = "orangered")
+    #' next3d()
+    #' view3d(0, 0, zoom = 0.8)
+    #' shade3d(rglHopf_faired, color = "orangered")}
     "fair" = function(indices) {
+      stopifnot(isAtomicVector(indices))
+      stopifnot(is.numeric(indices))
+      integers <- isTRUE(all.equal(indices, floor(indices)))
+      if(!integers) {
+        stop("The indices must be positive integers.")
+      }
+      positive <- isTRUE(all(indices >= 1))
+      if(!positive) {
+        stop("The indices must be positive integers.")
+      }
       private[[".CGALmesh"]]$fair(as.integer(indices) - 1L)
       invisible(self)
     },
