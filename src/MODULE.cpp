@@ -22,6 +22,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("edges", &CGALmesh::edges)
     .method("geoDists", &CGALmesh::geoDists)
     .method("getRmesh", &CGALmesh::getRmesh)
+    .method("intersection", &CGALmesh::intersection)
     .method("isClosed", &CGALmesh::isClosed)
     .method("isOutwardOriented", &CGALmesh::isOutwardOriented)
     .method("isTriangle", &CGALmesh::isTriangle)

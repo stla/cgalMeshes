@@ -238,6 +238,32 @@ mesh <- cgalMesh$new(cube3d())$triangulate()
 mesh$getMesh(normals = FALSE)
 
 ## ------------------------------------------------
+## Method `cgalMesh$intersection`
+## ------------------------------------------------
+
+\donttest{library(cgalMeshes)
+library(rgl)
+# take two cubes
+rglmesh1 <- cube3d()
+rglmesh2 <- translate3d(cube3d(), 1, 1, 1)
+mesh1 <- cgalMesh$new(rglmesh1)
+mesh2 <- cgalMesh$new(rglmesh2)
+# the two meshes must be triangle
+mesh1$triangulate()
+mesh2$triangulate()
+# intersection
+imesh <- mesh1$intersection(mesh2)
+rglimesh <- imesh$getMesh(normals = FALSE)
+# extract edges for plotting
+extEdges <- exteriorEdges(imesh$edges())
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(rglimesh, color = "red")
+plotEdges(imesh$vertices(), extEdges)
+shade3d(rglmesh1, color = "yellow", alpha = 0.2)
+shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
+
+## ------------------------------------------------
 ## Method `cgalMesh$isOutwardOriented`
 ## ------------------------------------------------
 
@@ -327,6 +353,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-edges}{\code{cgalMesh$edges()}}
 \item \href{#method-cgalMesh-geoDists}{\code{cgalMesh$geoDists()}}
 \item \href{#method-cgalMesh-getMesh}{\code{cgalMesh$getMesh()}}
+\item \href{#method-cgalMesh-intersection}{\code{cgalMesh$intersection()}}
 \item \href{#method-cgalMesh-isClosed}{\code{cgalMesh$isClosed()}}
 \item \href{#method-cgalMesh-isOutwardOriented}{\code{cgalMesh$isOutwardOriented()}}
 \item \href{#method-cgalMesh-isTriangle}{\code{cgalMesh$isTriangle()}}
@@ -834,6 +861,54 @@ A \strong{rgl} mesh or a list with two or three fields:
 \preformatted{library(rgl)
 mesh <- cgalMesh$new(cube3d())$triangulate()
 mesh$getMesh(normals = FALSE)
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-intersection"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-intersection}{}}}
+\subsection{Method \code{intersection()}}{
+Intersection with another mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$intersection(mesh2)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{mesh2}}{a \code{cgalMesh} object}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{cgalMesh} object.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
+# take two cubes
+rglmesh1 <- cube3d()
+rglmesh2 <- translate3d(cube3d(), 1, 1, 1)
+mesh1 <- cgalMesh$new(rglmesh1)
+mesh2 <- cgalMesh$new(rglmesh2)
+# the two meshes must be triangle
+mesh1$triangulate()
+mesh2$triangulate()
+# intersection
+imesh <- mesh1$intersection(mesh2)
+rglimesh <- imesh$getMesh(normals = FALSE)
+# extract edges for plotting
+extEdges <- exteriorEdges(imesh$edges())
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(rglimesh, color = "red")
+plotEdges(imesh$vertices(), extEdges)
+shade3d(rglmesh1, color = "yellow", alpha = 0.2)
+shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
 }
 \if{html}{\out{</div>}}
 

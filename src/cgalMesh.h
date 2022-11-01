@@ -20,6 +20,7 @@
 #include <CGAL/Polygon_mesh_processing/measure.h>
 #include <CGAL/Polygon_mesh_processing/distance.h>
 #include <CGAL/Polygon_mesh_processing/clip.h>
+#include <CGAL/Polygon_mesh_processing/corefinement.h>
 //#include <CGAL/Polygon_mesh_processing/fair.h>
 #include <CGAL/number_utils.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
