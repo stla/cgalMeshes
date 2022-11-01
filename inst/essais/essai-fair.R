@@ -1,5 +1,5 @@
 library(cgalMeshes)
-rglHopf <- HopfTorusMesh(nu = 100, nv = 100)
+rglHopf <- HopfTorusMesh(nu = 200, nv = 200)
 hopf <- cgalMesh$new(rglhopf)
 # squared norms of the vertices
 normsq <- apply(hopf$vertices(), 1L, crossprod)
