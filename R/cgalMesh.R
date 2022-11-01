@@ -283,7 +283,7 @@ cgalMesh <- R6Class(
     #' @examples 
     #' library(rgl)
     #' mesh <- cgalMesh$new(dodecahedron3d())
-    #' mesh$edges()
+    #' head(mesh$edges())
     "edges" = function() {
       private[[".CGALmesh"]]$edges()
     },
@@ -295,7 +295,7 @@ cgalMesh <- R6Class(
     #' @examples 
     #' library(cgalMeshes)
     #' rglHopf <- HopfTorusMesh(nu = 100, nv = 100)
-    #' hopf <- cgalMesh$new(rglhopf)
+    #' hopf <- cgalMesh$new(rglHopf)
     #' # squared norms of the vertices
     #' normsq <- apply(hopf$vertices(), 1L, crossprod)
     #' # fair the region where the squared norm is > 19
