@@ -115,9 +115,10 @@ cgalMesh <- R6Class(
     #' @description Centroid of the mesh. The mesh must be triangle.
     #' @return The Cartesian coordinates of the centroid of the mesh.
     #' @examples 
+    #' \donttest{library(cgalMeshes)
     #' library(rgl)
     #' mesh <- cgalMesh$new(icosahedron3d())
-    #' mesh$centroid()
+    #' mesh$centroid()}
     "centroid" = function() {
       private[[".CGALmesh"]]$centroid()
     },
@@ -293,8 +294,7 @@ cgalMesh <- R6Class(
     #' @return The estimated geodesic distances from the source vertex to each
     #'   vertex.
     #' @examples 
-    #' \donttest{
-    #' # torus ####
+    #' \donttest{#' # torus ####
     #' library(cgalMeshes)
     #' library(rgl)
     #' rglmesh <- torusMesh(R = 3, r = 2, nu = 90, nv = 60)

@@ -47,9 +47,10 @@ mesh$boundsVolume() # TRUE
 ## Method `cgalMesh$centroid`
 ## ------------------------------------------------
 
+\donttest{library(cgalMeshes)
 library(rgl)
 mesh <- cgalMesh$new(icosahedron3d())
-mesh$centroid()
+mesh$centroid()}
 
 ## ------------------------------------------------
 ## Method `cgalMesh$copy`
@@ -172,8 +173,7 @@ mesh$edges()
 ## Method `cgalMesh$geoDists`
 ## ------------------------------------------------
 
-\donttest{
-# torus ####
+\donttest{#' # torus ####
 library(cgalMeshes)
 library(rgl)
 rglmesh <- torusMesh(R = 3, r = 2, nu = 90, nv = 60)
@@ -508,9 +508,10 @@ The Cartesian coordinates of the centroid of the mesh.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{library(rgl)
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
 mesh <- cgalMesh$new(icosahedron3d())
-mesh$centroid()
+mesh$centroid()}
 }
 \if{html}{\out{</div>}}
 
@@ -767,8 +768,7 @@ The estimated geodesic distances from the source vertex to each
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{
-# torus ####
+\preformatted{\donttest{#' # torus ####
 library(cgalMeshes)
 library(rgl)
 rglmesh <- torusMesh(R = 3, r = 2, nu = 90, nv = 60)

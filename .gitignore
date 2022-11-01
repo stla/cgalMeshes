@@ -47,7 +47,6 @@ src-x64/
 
 # other
 inst/trash/
-.Rprofile
 
 # Eclipse
 .settings/
