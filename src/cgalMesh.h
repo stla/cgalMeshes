@@ -23,7 +23,7 @@
 #include <CGAL/Polygon_mesh_processing/corefinement.h>
 #include <CGAL/Polygon_mesh_processing/repair.h>
 #include <CGAL/Polygon_mesh_processing/self_intersections.h>
-//#include <CGAL/Polygon_mesh_processing/fair.h>
+#include <CGAL/Polygon_mesh_processing/fair.h>
 #include <CGAL/number_utils.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
 #include <CGAL/Nef_3/SNC_indexed_items.h>

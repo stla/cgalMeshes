@@ -156,15 +156,20 @@ public:
     return getEdges<EK, EMesh3, EPoint3>(mesh);
   }
   
-  // void fair() {
-  //   if(!CGAL::is_triangle_mesh(mesh)) {
-  //     Rcpp::stop("The mesh is not triangle.");
-  //   }
-  //   const bool success = PMP::fair(mesh, mesh.vertices());
-  //   if(!success) {
-  //     Rcpp::stop("Failed to fair the mesh.");
-  //   }
-  // }
+  void fair(Rcpp::IntegerVector indices) {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    std::list<vertex_descriptor> selectedVertices;
+    int nvertices = indices.size();
+    for(int i = 0; i < nvertices; i++) {
+      selectedVertices.push_back(*(mesh.vertices().begin() + indices(i)));
+    }
+    const bool success = PMP::fair(mesh, selectedVertices);
+    if(!success) {
+      Rcpp::stop("Failed to fair the mesh.");
+    }
+  }
   
   Rcpp::NumericVector geoDists(const int index) {
     if(!CGAL::is_triangle_mesh(mesh)) {

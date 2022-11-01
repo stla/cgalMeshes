@@ -288,6 +288,11 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$edges()
     },
 
+    "fair" = function(indices) {
+      private[[".CGALmesh"]]$fair(as.integer(indices) - 1L)
+      invisible(self)
+    },
+    
     #' @description Estimated geodesic distances between vertices. The mesh 
     #'   must be triangle.
     #' @param index index of the source vertex
