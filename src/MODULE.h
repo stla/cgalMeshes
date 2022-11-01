@@ -146,6 +146,9 @@ public:
   }
   
   bool doesSelfIntersect() {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
     return PMP::does_self_intersect(mesh);
   }
   

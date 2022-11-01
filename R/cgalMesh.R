@@ -519,11 +519,12 @@ cgalMesh <- R6Class(
       invisible(self)
     },
     
-    #' @description Check whether the mesh self-intersects.
+    #' @description Check whether the mesh self-intersects. The mesh must be 
+    #'   triangle.
     #' @return A Boolean value, whether the mesh self-intersects.
     #' @examples 
     #' library(rgl)
-    #' mesh <- cgalMesh$new(cube3d())
+    #' mesh <- cgalMesh$new(dodecahedron3d())
     #' mesh$selfIntersects()
     "selfIntersects" = function() {
       private[[".CGALmesh"]]$doesSelfIntersect()

@@ -316,7 +316,7 @@ mesh$boundsVolume() # TRUE
 ## ------------------------------------------------
 
 library(rgl)
-mesh <- cgalMesh$new(cube3d())
+mesh <- cgalMesh$new(dodecahedron3d())
 mesh$selfIntersects()
 
 ## ------------------------------------------------
@@ -463,12 +463,12 @@ meshFile <- system.file(
 )
 mesh <- cgalMesh$new(meshFile)
 rglmesh <- mesh$getMesh(normals = FALSE)
-\donttest{library(rgl)
+library(rgl)
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglmesh, color = "tomato")
 plotEdges(
   mesh$vertices(), mesh$edges(), color = "darkred"
-)}
+)
 }
 \if{html}{\out{</div>}}
 
@@ -559,10 +559,10 @@ The Cartesian coordinates of the centroid of the mesh.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 mesh <- cgalMesh$new(icosahedron3d())
-mesh$centroid()}
+mesh$centroid()
 }
 \if{html}{\out{</div>}}
 
@@ -605,12 +605,12 @@ mesh    <- cgalMesh$new(cube3d())$triangulate()
 clipper <- cgalMesh$new(sphereMesh(r= sqrt(2)))
 mesh$clip(clipper, clipVolume = TRUE)
 rglmesh <- mesh$getMesh(normals = FALSE)
-\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(45, 45, zoom = 0.9)
-shade3d(rglmesh, col = "darkorange")}
+shade3d(rglmesh, col = "darkorange")
 
 # Togliatti surface clipped to a ball ####
-\donttest{library(rmarchingcubes)
+library(rmarchingcubes)
 library(rgl)
 library(cgalMeshes)
 # Togliatti surface equation: f(x,y,z) = 0
@@ -653,7 +653,7 @@ shade3d(rglMesh, color = "firebrick")
 next3d()
 view3d(0, -70, zoom = 0.8)
 shade3d(rglClippedMesh, color = "firebrick")
-shade3d(sphere, color = "yellow", alpha = 0.15)}
+shade3d(sphere, color = "yellow", alpha = 0.15)
 }
 \if{html}{\out{</div>}}
 
@@ -681,7 +681,7 @@ A list of \code{cgalMesh} objects, one for each convex part.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 mesh <- cgalMesh$new(pentagrammicPrism)$triangulate()
 cxparts <- mesh$convexParts()
@@ -692,7 +692,7 @@ view3d(20, -20, zoom = 0.8)
 for(i in 1L:ncxparts) {
   cxmesh <- cxparts[[i]]$getMesh(normals = FALSE)
   shade3d(cxmesh, color = colors[i])
-}}
+}
 }
 \if{html}{\out{</div>}}
 
@@ -758,12 +758,12 @@ points <- rbind(
 mesh$distance(points) # should be 1 and 0
 
 # cyclide example ####
-\donttest{library(cgalMeshes)
+library(cgalMeshes)
 a <- 100; c <- 30; mu <- 80
 mesh <- cgalMesh$new(cyclideMesh(a, c, mu, nu = 100L, nv = 100L))
 O2 <- c(c, 0, 0)
 # should be a - mu = 20 (see ?cyclideMesh):
-mesh$distance(O2)}    
+mesh$distance(O2)    
 }
 \if{html}{\out{</div>}}
 
@@ -819,7 +819,7 @@ The estimated geodesic distances from the source vertex to each
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{# torus ####
+\preformatted{# torus ####
 library(cgalMeshes)
 library(rgl)
 rglmesh <- torusMesh(R = 3, r = 2, nu = 90, nv = 60)
@@ -839,10 +839,10 @@ shade3d(rglmesh)
 wire3d(rglmesh, color = "black")
 if(!rgl.useNULL()) {
   play3d(spin3d(axis = c(1, 1, 1), rpm = 5), duration = 20)  
-}}
+}
 
 # a trefoil knot (taken from `?rgl::cylinder3d`) ####
-\donttest{library(cgalMeshes)
+library(cgalMeshes)
 library(rgl)
 theta <- seq(0, 2*pi, length.out = 50L)
 knot <- cylinder3d(
@@ -873,7 +873,7 @@ open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
 shade3d(rglmesh)
 if(!rgl.useNULL()) {
   play3d(spin3d(axis = c(1, 1, 0), rpm = 5), duration = 20)  
-}}
+}
 }
 \if{html}{\out{</div>}}
 
@@ -939,7 +939,7 @@ A \code{cgalMesh} object.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 # take two cubes
 rglmesh1 <- cube3d()
@@ -959,7 +959,7 @@ open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglimesh, color = "red")
 plotEdges(imesh$vertices(), extEdges)
 shade3d(rglmesh1, color = "yellow", alpha = 0.2)
-shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
+shade3d(rglmesh2, color = "cyan", alpha = 0.2)
 }
 \if{html}{\out{</div>}}
 
@@ -1093,7 +1093,8 @@ The modified \code{cgalMesh} object. \strong{WARNING}: even if
 \if{html}{\out{<a id="method-cgalMesh-selfIntersects"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-selfIntersects}{}}}
 \subsection{Method \code{selfIntersects()}}{
-Check whether the mesh self-intersects.
+Check whether the mesh self-intersects. The mesh must be 
+  triangle.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$selfIntersects()}\if{html}{\out{</div>}}
 }
@@ -1104,7 +1105,7 @@ A Boolean value, whether the mesh self-intersects.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{library(rgl)
-mesh <- cgalMesh$new(cube3d())
+mesh <- cgalMesh$new(dodecahedron3d())
 mesh$selfIntersects()
 }
 \if{html}{\out{</div>}}
@@ -1133,7 +1134,7 @@ A \code{cgalMesh} object.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 # take two cubes
 rglmesh1 <- cube3d()
@@ -1152,7 +1153,7 @@ extEdges <- exteriorEdges(mesh$edges())
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglmesh, color = "red")
 plotEdges(mesh$vertices(), extEdges)
-shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
+shade3d(rglmesh2, color = "cyan", alpha = 0.2)
 }
 \if{html}{\out{</div>}}
 
@@ -1209,7 +1210,7 @@ A \code{cgalMesh} object.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 # take two cubes
 rglmesh1 <- cube3d()
@@ -1227,7 +1228,7 @@ extEdges <- exteriorEdges(umesh$edges())
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglumesh, color = "red")
-plotEdges(umesh$vertices(), extEdges)}
+plotEdges(umesh$vertices(), extEdges)
 }
 \if{html}{\out{</div>}}
 

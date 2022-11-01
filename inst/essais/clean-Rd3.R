@@ -32,7 +32,7 @@ cleanRd <- function(RdFile){
   rd <- paste0(readLines(RdFile), collapse = "\n")
   
   # split the string at the closing brace of the \examples section 
-  examples_openingBrace <- str_locate(rd, "examples")[1L, "end"] + 1L
+  examples_openingBrace <- stringr::str_locate(rd, "examples")[1L, "end"] + 1L
   examples_closingBrace <- getClosingBrace(rd, examples_openingBrace)
   Rd_before <- substr(rd, 1L, examples_closingBrace)
   Rd_after  <- substr(rd, examples_closingBrace + 1L, nchar(rd))
