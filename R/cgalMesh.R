@@ -123,19 +123,6 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$centroid()
     },
     
-    #' @description Copy the mesh.
-    #' @return A new \code{cgalMesh} object.
-    #' @examples 
-    #' library(rgl)
-    #' mesh <- cgalMesh$new(cube3d())
-    #' tmesh <- mesh$copy()$triangulate()
-    #' tmesh$isTriangle() # TRUE
-    #' mesh$isTriangle() # FALSE
-    "copy" = function() {
-      xptr <- private[[".CGALmesh"]]$clone()
-      cgalMesh$new(clean = xptr)
-    },
-    
     #' @description Clip mesh to the volume bounded by another mesh. 
     #'   \strong{WARNING}: the reference mesh is then replaced by its 
     #'   clipped version.
@@ -234,6 +221,19 @@ cgalMesh <- R6Class(
       lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
     },
 
+    #' @description Copy the mesh.
+    #' @return A new \code{cgalMesh} object.
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(cube3d())
+    #' tmesh <- mesh$copy()$triangulate()
+    #' tmesh$isTriangle() # TRUE
+    #' mesh$isTriangle() # FALSE
+    "copy" = function() {
+      xptr <- private[[".CGALmesh"]]$clone()
+      cgalMesh$new(clean = xptr)
+    },
+    
     #' @description Distance from one or more points to the mesh. The mesh 
     #'   must be triangle.
     #' @param points either one point given as a numeric vector or several 
