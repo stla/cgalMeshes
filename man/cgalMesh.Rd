@@ -77,7 +77,7 @@ view3d(45, 45, zoom = 0.9)
 shade3d(rglmesh, col = "darkorange")}
 
 # Togliatti surface clipped to a ball ####
-library(rmarchingcubes)
+\donttest{library(rmarchingcubes)
 library(rgl)
 library(cgalMeshes)
 # Togliatti surface equation: f(x,y,z) = 0
@@ -110,7 +110,7 @@ mesh <- cgalMesh$new(rglMesh)
 # clip to sphere of radius 4.8
 sphere <- sphereMesh(r = 4.8)
 clipper <- cgalMesh$new(sphere)
-\donttest{mesh$clip(clipper, clipVolume = FALSE)
+mesh$clip(clipper, clipVolume = FALSE)
 rglClippedMesh <- mesh$getMesh()
 # plot
 open3d(windowRect = 50 + c(0, 0, 900, 450))
@@ -126,13 +126,13 @@ shade3d(sphere, color = "yellow", alpha = 0.15)}
 ## Method `cgalMesh$convexParts`
 ## ------------------------------------------------
 
-library(cgalMeshes)
+\donttest{library(cgalMeshes)
 library(rgl)
 mesh <- cgalMesh$new(pentagrammicPrism)$triangulate()
 cxparts <- mesh$convexParts()
 ncxparts <- length(cxparts)
 colors <- hcl.colors(ncxparts, palette = "plasma")
-\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(20, -20, zoom = 0.8)
 for(i in 1L:ncxparts) {
   cxmesh <- cxparts[[i]]$getMesh(normals = FALSE)
@@ -153,12 +153,12 @@ points <- rbind(
 mesh$distance(points) # should be 1 and 0
 
 # cyclide example ####
-library(cgalMeshes)
+\donttest{library(cgalMeshes)
 a <- 100; c <- 30; mu <- 80
 mesh <- cgalMesh$new(cyclideMesh(a, c, mu, nu = 100L, nv = 100L))
 O2 <- c(c, 0, 0)
 # should be a - mu = 20 (see ?cyclideMesh):
-mesh$distance(O2)    
+mesh$distance(O2)}    
 
 ## ------------------------------------------------
 ## Method `cgalMesh$edges`
@@ -583,7 +583,7 @@ view3d(45, 45, zoom = 0.9)
 shade3d(rglmesh, col = "darkorange")}
 
 # Togliatti surface clipped to a ball ####
-library(rmarchingcubes)
+\donttest{library(rmarchingcubes)
 library(rgl)
 library(cgalMeshes)
 # Togliatti surface equation: f(x,y,z) = 0
@@ -616,7 +616,7 @@ mesh <- cgalMesh$new(rglMesh)
 # clip to sphere of radius 4.8
 sphere <- sphereMesh(r = 4.8)
 clipper <- cgalMesh$new(sphere)
-\donttest{mesh$clip(clipper, clipVolume = FALSE)
+mesh$clip(clipper, clipVolume = FALSE)
 rglClippedMesh <- mesh$getMesh()
 # plot
 open3d(windowRect = 50 + c(0, 0, 900, 450))
@@ -654,13 +654,13 @@ A list of \code{cgalMesh} objects, one for each convex part.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{library(cgalMeshes)
+\preformatted{\donttest{library(cgalMeshes)
 library(rgl)
 mesh <- cgalMesh$new(pentagrammicPrism)$triangulate()
 cxparts <- mesh$convexParts()
 ncxparts <- length(cxparts)
 colors <- hcl.colors(ncxparts, palette = "plasma")
-\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(20, -20, zoom = 0.8)
 for(i in 1L:ncxparts) {
   cxmesh <- cxparts[[i]]$getMesh(normals = FALSE)
@@ -706,12 +706,12 @@ points <- rbind(
 mesh$distance(points) # should be 1 and 0
 
 # cyclide example ####
-library(cgalMeshes)
+\donttest{library(cgalMeshes)
 a <- 100; c <- 30; mu <- 80
 mesh <- cgalMesh$new(cyclideMesh(a, c, mu, nu = 100L, nv = 100L))
 O2 <- c(c, 0, 0)
 # should be a - mu = 20 (see ?cyclideMesh):
-mesh$distance(O2)    
+mesh$distance(O2)}    
 }
 \if{html}{\out{</div>}}
 
