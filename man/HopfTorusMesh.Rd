@@ -25,7 +25,7 @@ A triangle \strong{rgl} mesh (class \code{mesh3d}).
 Triangle mesh of a Hopf torus.
 }
 \examples{
-library(MeshesTools)
+library(cgalMeshes)
 library(rgl)
 mesh <- HopfTorusMesh(nu = 90, nv = 90)
 open3d(windowRect = 50 + c(0, 0, 512, 512))

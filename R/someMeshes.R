@@ -229,7 +229,7 @@ HopfTorusMeshHelper <- function(u, cos_v, sin_v, nlobes, A, alpha){
 #' @importFrom rgl tmesh3d addNormals
 #'
 #' @examples
-#' library(MeshesTools)
+#' library(cgalMeshes)
 #' library(rgl)
 #' mesh <- HopfTorusMesh(nu = 90, nv = 90)
 #' open3d(windowRect = 50 + c(0, 0, 512, 512))
