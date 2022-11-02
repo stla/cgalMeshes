@@ -24,7 +24,7 @@ getClosingBrace <- function(string, index) {
   stop("No closing brace found.")
 }
 
-#' clean Rd file with R6 examples
+#' clean Rd file containing R6 examples
 #' @param RdFile Rd file to be cleaned
 cleanRd <- function(RdFile){
   

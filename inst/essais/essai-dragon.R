@@ -7,12 +7,12 @@ vs <- dragon$vertices()
 
 index <- which.max(vs[, 1L])
 geoDists <- dragon$geoDists(index)
-geoDists <- geoDists / max(geoDists)
+geoDists <- geoDists
 
 rglDragon <- dragon$getMesh()
 
 fcolor <- colorRamp(viridisLite::plasma(200L))
-colors <- fcolor(geoDists)
+colors <- fcolor(geoDists / max(geoDists))
 colors <- rgb(colors[, 1L], colors[, 2L], colors[, 3L], maxColorValue = 255)
 rglDragon[["material"]] <- list("color" = colors)
 # plot

@@ -91,6 +91,40 @@ bg3d(rgb(54, 57, 64, maxColorValue = 255))
 view3d(0, 0, zoom = 0.8)
 shade3d(m, color = "magenta")
 
+# anim
+mesh <- cgalMesh$new(m)
+rglmesh <- mesh$getMesh()
+rglmesh0 <- rglmesh
+vs <- mesh$vertices()
+# estimated geodesic distances
+index <- which.min(vs[, 1L])
+geodists <- mesh$geoDists(index)
+x <- seq(min(geodists), max(geodists), length.out = 90L)
+# coloring function
+fcolor <- colorRamp(viridisLite::magma(200L))
+cols <- fcolor(geodists / max(geodists))
+colors0 <- rgb(cols[, 1L], cols[, 2L], cols[, 3L], maxColorValue = 255)
+
+for(i in seq_along(x)) {
+  rglmesh <- rglmesh0
+  colors <- colors0
+  red <- geodists >= x[i]
+  colors[red] <- "white"
+  rglmesh[["vb"]][, which(red)] <- NA_real_
+  rglmesh[["material"]] <- list("color" = colors)
+  # plot
+  open3d(windowRect = 50 + c(0, 0, 512, 512))
+  view3d(0, 0, zoom = 0.8)
+  shade3d(rglmesh0, alpha = 0)
+  shade3d(rglmesh)
+  snapshot3d(sprintf("zzpic%03d.png", i), webshot = FALSE)
+  close3d()
+}
+
+command <- "convert -delay 1x11 -duplicate 1,-2-1 -layers OptimizePlus zzpic*.png knot-2-5.gif"
+system(command)
+file.remove(Sys.glob("zzpic*.png"))
+
 rglmesh <- m 
 mesh <- cgalMesh$new(rglmesh)
 # estimated geodesic distances

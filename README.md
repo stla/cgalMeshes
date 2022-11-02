@@ -7,9 +7,12 @@ R6 based utilities for 3D meshes.
 [![R-CMD-check-valgrind](https://github.com/stla/cgalMeshes/actions/workflows/R-CMD-check-valgrind.yaml/badge.svg)](https://github.com/stla/cgalMeshes/actions/workflows/R-CMD-check-valgrind.yaml)
 <!-- badges: end -->
 
+
 ### Geodesic distance 
 
 ![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/trefoilKnot.gif)
+
+![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/knot-2-5.gif)
 
 ![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/dragon.png)
 
