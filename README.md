@@ -19,6 +19,11 @@ R6 based utilities for 3D meshes.
 ![](https://raw.githubusercontent.com/stla/MeshesTools/main/inst/screenshots/Togliatti.gif)
 
 
+### Fairing
+
+![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/HopfTorus.gif)
+
+
 ### Decomposition into convex parts
 
 ![](https://raw.githubusercontent.com/stla/MeshesOperations/master/inst/screenshots/pentagrammicPrism.png)
