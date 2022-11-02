@@ -1,7 +1,8 @@
 library(cgalMeshes)
 library(rgl)
 
-#mesh <- cgalMesh$new(cube3d())$triangulate()
+data(bunny, package = "onion")
+rglmesh <- SurfaceReconstruction::AFSreconstruction(bunny)
 
 
 

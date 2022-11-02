@@ -17,6 +17,10 @@ EMesh3 readMeshFile(const std::string filename) {
   if(!ok) {
     Rcpp::stop("Reading failure.");
   }
+  const bool valid = mesh.is_valid(false);
+  if(!valid) {
+    Rcpp::warning("The mesh is not valid.");
+  }
   return mesh;
 }
 
