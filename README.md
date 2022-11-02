@@ -11,6 +11,8 @@ R6 based utilities for 3D meshes.
 
 ![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/trefoilKnot.gif)
 
+![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/dragon.png)
+
 
 ### Clipping
 
