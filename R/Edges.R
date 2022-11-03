@@ -9,6 +9,11 @@
 #'   if its corresponding dihedral angle is lower than 179 or higher than 181
 #'
 #' @return An integer matrix giving the vertex indices of the exterior edges.
+#' 
+#' @note Once you get the exterior edges, say in \code{extEdges}, then you can 
+#'   get the indices of the exterior vertices with 
+#'   \code{which(table(extEdges) != 2)}.
+#' 
 #' @export
 #'
 #' @examples
