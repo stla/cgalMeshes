@@ -56,6 +56,10 @@ R6 based utilities for 3D meshes.
 Volume, area, centroid, distance between a point and a mesh.
 
 
+### Blog post
+
+['CGAL' meets 'R6': the 'cgalMeshes' package](https://laustep.github.io/stlahblog/posts/cgalMeshes.html)
+
 
 
 ## License

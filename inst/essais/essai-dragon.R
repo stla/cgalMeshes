@@ -7,7 +7,6 @@ vs <- dragon$vertices()
 
 index <- which.max(vs[, 1L])
 geoDists <- dragon$geoDists(index)
-geoDists <- geoDists
 
 rglDragon <- dragon$getMesh()
 
@@ -20,4 +19,4 @@ library(rgl)
 open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(-30, 0, zoom = 0.7)
 shade3d(rglDragon)
-snapshot3d("dragon.png", webshot = FALSE)
+snapshot3d("StanfordDragon_colors.png", webshot = FALSE)

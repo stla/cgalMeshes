@@ -84,7 +84,7 @@ TubularKnotMesh <- function(p, q, a, nu, nv){
   addNormals(out)
 }
 
-m <- TubularKnotMesh(p = 2, q = 5, a = 0.5, 10*60, 60)
+m <- TubularKnotMesh(p = 3, q = 11, a = 0.15, 10*60, 60)
 
 open3d(windowRect = c(50, 50, 562, 562))
 bg3d(rgb(54, 57, 64, maxColorValue = 255))
@@ -109,7 +109,6 @@ for(i in seq_along(x)) {
   rglmesh <- rglmesh0
   colors <- colors0
   red <- geodists >= x[i]
-  colors[red] <- "white"
   rglmesh[["vb"]][, which(red)] <- NA_real_
   rglmesh[["material"]] <- list("color" = colors)
   # plot
@@ -121,7 +120,11 @@ for(i in seq_along(x)) {
   close3d()
 }
 
-command <- "convert -delay 1x11 -duplicate 1,-2-1 -layers OptimizePlus zzpic*.png knot-2-5.gif"
+for(k in 1:10){
+  file.copy("zzpic090.png", sprintf("zzpic%03d.png", 90+k))
+}
+
+command <- "convert -delay 1x11 -duplicate 1,-2-1 -layers OptimizePlus zzpic*.png knot-3-11.gif"
 system(command)
 file.remove(Sys.glob("zzpic*.png"))
 

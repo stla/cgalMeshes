@@ -1,0 +1,10 @@
+library(cgalMeshes)
+library(rgl)
+
+rglhopf1 <- HopfTorusMesh(nu = 300, nv = 300)
+rglhopf2 <- rotate3d(rotate3d(rglhopf1, pi, 0, 0, 1), pi/2, 1, 0, 0)
+rglhopf2 <- rotate3d(rglhopf1, pi, 1, 0, 0)
+open3d()
+view3d(0, 0)
+shade3d(rglhopf1, color = "red")
+shade3d(rglhopf2, color = "green")
