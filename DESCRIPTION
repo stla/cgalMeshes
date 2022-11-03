@@ -25,7 +25,8 @@ Imports:
     rgl
 Suggests:
     rmarchingcubes,
-    viridisLite
+    viridisLite,
+    onion
 LinkingTo: 
     BH,
     Rcpp,

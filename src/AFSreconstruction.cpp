@@ -48,6 +48,6 @@ Rcpp::XPtr<EMesh3> AFSreconstruction_cpp(const Rcpp::NumericMatrix pts) {
     triangles.emplace_back(triangle);
   }
   
-  EMesh3 mesh = csoup2mesh<EMesh3, EPoint3>(vertices, triangles, true);
-  return Rcpp::XPtr<EMesh3>(new EMesh3(mesh), false);
+//  EMesh3 mesh = csoup2mesh<EMesh3, EPoint3>(vertices, triangles, true);
+  return Rcpp::XPtr<EMesh3>(new EMesh3(csoup2mesh<EMesh3, EPoint3>(vertices, triangles, true)), false);
 }
