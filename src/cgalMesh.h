@@ -6,10 +6,9 @@
 
 #define CGAL_EIGEN3_ENABLED 1
 
-//#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include "cgalMeshes_types.h"
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Kernel/global_functions.h>
-#include <CGAL/Surface_mesh.h>
 #include <CGAL/Vector_3.h>
 #include <CGAL/Polygon_mesh_processing/compute_normal.h>
 #include <CGAL/Polygon_mesh_processing/orient_polygon_soup.h>
@@ -36,19 +35,21 @@
 #include <CGAL/IO/io.h>
 #include <CGAL/Heat_method_3/Surface_mesh_geodesic_distances_3.h>
 #include <CGAL/Polygon_mesh_processing/connected_components.h>
+#include <CGAL/Advancing_front_surface_reconstruction.h>
 
 // -------------------------------------------------------------------------- //
-//typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
-typedef CGAL::Exact_predicates_exact_constructions_kernel EK;
-//typedef K::Point_3 Point3;
-typedef EK::Point_3 EPoint3;
-typedef CGAL::Surface_mesh<EPoint3> EMesh3;
+typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef K::Point_3 Point3;
 typedef EK::Vector_3 EVector3;
 typedef CGAL::Nef_polyhedron_3<EK, CGAL::SNC_indexed_items> NefPol;
 typedef CGAL::Polyhedron_3<EK> EPolyhedron;
 
 typedef boost::graph_traits<EMesh3>::vertex_descriptor vertex_descriptor;
 typedef EMesh3::Property_map<vertex_descriptor,double> Vertex_distance_map;
+
+typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
+typedef AFS_reconstruction::Triangulation_3 AFS_triangulation3;
+typedef AFS_reconstruction::Triangulation_data_structure_2 AFS_Tds2;
 
 // -------------------------------------------------------------------------- //
 namespace PMP = CGAL::Polygon_mesh_processing;
