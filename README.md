@@ -53,7 +53,8 @@ R6 based utilities for 3D meshes.
 
 ### Other tools
 
-Volume, area, centroid, distance between a point and a mesh.
+Volume, area, centroid, distance between a point and a mesh, connected 
+components.
 
 
 ### Blog post

@@ -199,6 +199,46 @@ cgalMesh <- R6Class(
       invisible(self)
     },
 
+    #' @description Decomposition into connected components.
+    #' @param triangulate Boolean, whether to triangulate the connected 
+    #'   components.
+    #' @return A list of \code{cgalMesh} objects, one for each connected 
+    #'   component.
+    #' @examples 
+    #' \donttest{library(cgalMeshes)
+    #' library(rmarchingcubes)
+    #' # isosurface function (slice of a seven-dimensional toratope)
+    #' f <- function(x, y, z, a) {
+    #'   (sqrt(
+    #'     (sqrt((sqrt((x*sin(a))^2 + (z*cos(a))^2) - 5)^2 + (y*sin(a))^2) - 2.5)^2 + 
+    #'       (x*cos(a))^2) - 1.25
+    #'   )^2 + (sqrt((sqrt((z*sin(a))^2 + (y*cos(a))^2) - 2.5)^2) - 1.25)^2
+    #' }
+    #' # make grid
+    #' n <- 200L
+    #' x <- seq(-10, 10, len = n)
+    #' y <- seq(-10, 10, len = n)
+    #' z <- seq(-10, 10, len = n)
+    #' Grid <- expand.grid(X = x, Y = y, Z = z)
+    #' # compute isosurface
+    #' voxel <- array(with(Grid, f(X, Y, Z, a = pi/2)), dim = c(n, n, n))
+    #' isosurface <- contour3d(voxel, level = 0.25, x = x, y = y, z = z)
+    #' # make CGAL mesh
+    #' mesh <- cgalMesh$new(
+    #'   vertices = isosurface[["vertices"]], faces = isosurface[["triangles"]]
+    #' )
+    #' # connected components
+    #' components <- mesh$connectedComponents()
+    #' ncc <- length(components)
+    #' # plot
+    #' library(rgl)
+    #' colors <- rainbow(ncc)
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512))
+    #' view3d(30, 50)
+    #' for(i in 1L:ncc) {
+    #'   rglMesh <- components[[i]]$getMesh()
+    #'   shade3d(rglMesh, color = colors[i])
+    #' }}
     "connectedComponents" = function(triangulate = TRUE) {
       stopifnot(isBoolean(triangulate))
       xptrs <- private[[".CGALmesh"]]$connectedComponents(triangulate)
