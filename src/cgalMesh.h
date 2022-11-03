@@ -35,6 +35,7 @@
 #include <locale>  // tolower
 #include <CGAL/IO/io.h>
 #include <CGAL/Heat_method_3/Surface_mesh_geodesic_distances_3.h>
+#include <CGAL/Polygon_mesh_processing/connected_components.h>
 
 // -------------------------------------------------------------------------- //
 //typedef CGAL::Exact_predicates_inexact_constructions_kernel K;

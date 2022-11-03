@@ -198,6 +198,12 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
       invisible(self)
     },
+
+    "connectedComponents" = function(triangulate = TRUE) {
+      stopifnot(isBoolean(triangulate))
+      xptrs <- private[[".CGALmesh"]]$connectedComponents(triangulate)
+      lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
+    },
     
     #' @description Decomposition into convex parts. The mesh must be triangle.
     #' @param triangulate Boolean, whether to triangulate the convex parts

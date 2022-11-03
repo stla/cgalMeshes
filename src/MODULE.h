@@ -82,7 +82,36 @@ public:
     return Rcpp::XPtr<EMesh3>(new EMesh3(copy), false);
   }
   
-  Rcpp::List convexParts(const bool triangulate){
+  Rcpp::List connectedComponents(const bool triangulate) {
+    std::vector<EMesh3> cc_meshes;
+    PMP::split_connected_components(mesh, cc_meshes);
+    const size_t ncc = cc_meshes.size();
+    if(ncc == 1) {
+      Message("Only one component found.\n");
+    } else {
+      const std::string msg = "Found " + std::to_string(ncc) + " components.\n";
+      Message(msg);
+    }
+    const bool really_triangulate = 
+      triangulate && !CGAL::is_triangle_mesh(mesh);
+    Rcpp::List xptrs(ncc);
+    int i = 0;
+    for(auto cc = cc_meshes.begin(); cc != cc_meshes.end(); ++cc) {
+      if(really_triangulate) {
+        const bool success = PMP::triangulate_faces(*cc);
+        if(!success) {
+          const std::string msg = "Triangulation has failed (component " +
+            std::to_string(i + 1) + ").";
+          Rcpp::stop(msg);
+        }
+      }
+      xptrs(i) = Rcpp::XPtr<EMesh3>(new EMesh3(*cc), false);
+      i++;
+    }
+    return xptrs;
+  }
+  
+  Rcpp::List convexParts(const bool triangulate) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
