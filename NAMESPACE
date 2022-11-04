@@ -3,7 +3,6 @@
 export(AFSreconstruction)
 export(HopfTorusMesh)
 export(cgalMesh)
-export(crashcentroid)
 export(cyclideMesh)
 export(exteriorEdges)
 export(plotEdges)
