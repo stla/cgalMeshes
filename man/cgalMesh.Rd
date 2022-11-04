@@ -374,6 +374,16 @@ mesh$orientToBoundVolume()
 mesh$boundsVolume() # TRUE
 
 ## ------------------------------------------------
+## Method `cgalMesh$reverseOrientation`
+## ------------------------------------------------
+
+library(rgl)
+mesh <- cgalMesh$new(tetrahedron3d())
+mesh$isOutwardOriented() # TRUE
+mesh$reverseOrientation()
+mesh$isOutwardOriented() # FALSE
+
+## ------------------------------------------------
 ## Method `cgalMesh$selfIntersects`
 ## ------------------------------------------------
 
@@ -414,7 +424,7 @@ library(rgl)
 mesh <- cgalMesh$new(cube3d())
 mesh$isTriangle() # FALSE
 # warning: triangulating the mesh modifies it
-x <- mesh$triangulate()
+mesh$triangulate()
 mesh$isTriangle() # TRUE
 
 ## ------------------------------------------------
@@ -937,7 +947,7 @@ Fair a region of the mesh, i.e. make it smooth. The mesh
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{indices}}{the indices of the vertices in the region}
+\item{\code{indices}}{the indices of the vertices in the region to be faired}
 }
 \if{html}{\out{</div>}}
 }
@@ -1276,6 +1286,18 @@ Reverse the orientation of the faces of the mesh.
 The modified \code{cgalMesh} object. \strong{WARNING}: even if 
   you store the result in a new variable, the original mesh is modified.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(rgl)
+mesh <- cgalMesh$new(tetrahedron3d())
+mesh$isOutwardOriented() # TRUE
+mesh$reverseOrientation()
+mesh$isOutwardOriented() # FALSE
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-selfIntersects"></a>}}
@@ -1369,7 +1391,7 @@ The modified \code{cgalMesh} object. \strong{WARNING}: even if
 mesh <- cgalMesh$new(cube3d())
 mesh$isTriangle() # FALSE
 # warning: triangulating the mesh modifies it
-x <- mesh$triangulate()
+mesh$triangulate()
 mesh$isTriangle() # TRUE
 }
 \if{html}{\out{</div>}}

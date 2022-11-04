@@ -56,6 +56,8 @@ cgalMesh <- R6Class(
     "initialize" = function(
       mesh, vertices, faces, clean = TRUE
     ){
+      # one can also initialize from an external pointer, but 
+      # this is hidden to the user
       if(inherits(clean, "externalptr")) {
         private[[".CGALmesh"]] <- CGALmesh$new(clean)
         return(invisible(self))
@@ -336,7 +338,7 @@ cgalMesh <- R6Class(
 
     #' @description Fair a region of the mesh, i.e. make it smooth. The mesh 
     #'   must be triangle. This modifies the reference mesh.
-    #' @param indices the indices of the vertices in the region
+    #' @param indices the indices of the vertices in the region to be faired
     #' @return The modified \code{cgalMesh} object.
     #' @examples 
     #' library(cgalMeshes)
@@ -606,6 +608,12 @@ cgalMesh <- R6Class(
     #' @description Reverse the orientation of the faces of the mesh.
     #' @return The modified \code{cgalMesh} object. \strong{WARNING}: even if 
     #'   you store the result in a new variable, the original mesh is modified. 
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(tetrahedron3d())
+    #' mesh$isOutwardOriented() # TRUE
+    #' mesh$reverseOrientation()
+    #' mesh$isOutwardOriented() # FALSE
     "reverseOrientation" = function() {
       private[[".CGALmesh"]]$reverseFaceOrientations()
       invisible(self)
@@ -663,7 +671,7 @@ cgalMesh <- R6Class(
     #' mesh <- cgalMesh$new(cube3d())
     #' mesh$isTriangle() # FALSE
     #' # warning: triangulating the mesh modifies it
-    #' x <- mesh$triangulate()
+    #' mesh$triangulate()
     #' mesh$isTriangle() # TRUE
     "triangulate" = function() {
       private[[".CGALmesh"]]$triangulate()
