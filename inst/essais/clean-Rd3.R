@@ -9,14 +9,14 @@ getClosingBrace <- function(string, index) {
   if(ithCharacter(string, index) != "{") {
     stop("Not an opening brace at the given index.")
   }  
-  stack <- logical(0L)
+  stack <- 0L
   for(i in index:nchar(string)) {
     char <- ithCharacter(string, i)
     if(char == "{") {
-      stack <- c(stack, TRUE)
+      stack <- stack + 1L
     } else if(char == "}") {
-      stack <- stack[-1L]
-      if(length(stack) == 0L) {
+      stack <- stack - 1L
+      if(stack == 0L) {
         return(i)
       }
     }
