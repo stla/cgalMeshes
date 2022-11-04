@@ -6,12 +6,12 @@ template <typename MeshT, typename PointT>
 MeshT csoup2mesh(std::vector<PointT> points,
                  std::vector<std::vector<int>> faces,
                  const bool clean) {
+  if(clean) {
+    PMP::repair_polygon_soup(points, faces);
+  }
   const bool success = PMP::orient_polygon_soup(points, faces);
   if(!success) {
     Rcpp::warning("Polygon orientation failed.");
-  }
-  if(clean) {
-    PMP::repair_polygon_soup(points, faces);
   }
   MeshT mesh;
   PMP::polygon_soup_to_polygon_mesh(points, faces, mesh);
