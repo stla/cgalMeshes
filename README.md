@@ -51,6 +51,25 @@ R6 based utilities for 3D meshes.
 ![](https://raw.githubusercontent.com/stla/MeshesOperations/master/inst/screenshots/tetrahedraCompound.gif)
 
 
+### Advanced front surface reconstruction
+
+*Stanford bunny:*
+
+![](https://raw.githubusercontent.com/stla/SurfaceReconstruction/master/inst/AFSexamples/Bunny.png)
+
+*Stanford dragon:*
+
+![](https://raw.githubusercontent.com/stla/SurfaceReconstruction/master/inst/AFSexamples/StanfordDragon.png)
+
+*Dummy head:*
+
+![](https://raw.githubusercontent.com/stla/SurfaceReconstruction/master/inst/AFSexamples/DummyHead.png)
+
+*Skull:*
+
+![](https://raw.githubusercontent.com/stla/SurfaceReconstruction/master/inst/AFSexamples/Skull.png)
+
+
 ### Other tools
 
 Volume, area, centroid, distance between a point and a mesh, connected 
