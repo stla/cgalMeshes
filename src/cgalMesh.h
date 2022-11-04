@@ -40,6 +40,7 @@
 // -------------------------------------------------------------------------- //
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef K::Point_3 Point3;
+typedef CGAL::Surface_mesh<Point3> Mesh3;
 typedef EK::Vector_3 EVector3;
 typedef CGAL::Nef_polyhedron_3<EK, CGAL::SNC_indexed_items> NefPol;
 typedef CGAL::Polyhedron_3<EK> EPolyhedron;

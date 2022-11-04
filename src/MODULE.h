@@ -38,11 +38,17 @@ public:
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
-    const EPoint3 centroid = PMP::centroid(mesh);
+    Mesh3 epickCopy;
+    CGAL::copy_face_graph(mesh, epickCopy);
+    const Point3 centroid = PMP::centroid(epickCopy);
+    // const EPoint3 centroid = PMP::centroid(mesh);
     Rcpp::NumericVector out(3);
-    out(0) = CGAL::to_double<EK::FT>(centroid.x());
-    out(1) = CGAL::to_double<EK::FT>(centroid.y());
-    out(2) = CGAL::to_double<EK::FT>(centroid.z());
+    out(0) = centroid.x();
+    out(1) = centroid.y();
+    out(2) = centroid.z();
+    // out(0) = CGAL::to_double<EK::FT>(centroid.x());
+    // out(1) = CGAL::to_double<EK::FT>(centroid.y());
+    // out(2) = CGAL::to_double<EK::FT>(centroid.z());
     return out;
   }
   
@@ -213,7 +219,7 @@ public:
     if(index >= nvertices) {
       Rcpp::stop("Too large index.");
     }
-    //property map for the distance values to the source set
+    // property map for the distance values to the source set
     Vertex_distance_map vertex_distance = 
       mesh.add_property_map<vertex_descriptor, double>("v:distance", 0).first;
     vertex_descriptor source = *(std::next(mesh.vertices().begin(), index));

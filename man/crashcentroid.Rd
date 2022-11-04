@@ -19,4 +19,5 @@ xxx
 off <- system.file("extdata", "crash_centroid.off", package = "cgalMeshes")
 mesh <- cgalMesh$new(off)
 print(mesh$centroid())
+print(mesh$volume())
 }
