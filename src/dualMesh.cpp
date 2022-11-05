@@ -2,6 +2,7 @@
 #include "cgalMesh.h"
 #endif
 
+// centroid of a face of the mesh
 EPoint3 centroid(EMesh3& mesh, EMesh3::Face_index f) {
   EK::FT x = 0;
   EK::FT y = 0;

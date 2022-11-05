@@ -322,7 +322,7 @@ cgalMesh <- R6Class(
       }
       private[[".CGALmesh"]]$distance(t(points))
     },
-    
+
     #' @description Get the edges of the mesh.
     #' @return A dataframe with four columns; the first two ones give the 
     #'   vertex indices of each edge (one edge per row), the third one gives 
@@ -491,12 +491,10 @@ cgalMesh <- R6Class(
           } else {
             warning("Cannot make a rgl mesh.")
             mesh[["vertices"]] <- t(mesh[["vertices"]])
-            mesh[["faces"]] <- t(mesh[["faces"]])
           }
         }
       } else {
         mesh[["vertices"]] <- t(mesh[["vertices"]])
-        mesh[["faces"]] <- t(mesh[["faces"]])
       }
       mesh
     },

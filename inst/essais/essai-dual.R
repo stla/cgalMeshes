@@ -18,7 +18,10 @@ wire3d(rgl_icosphere, color = "yellow", lwd = 2)
 next3d()
 view3d(zoom = 0.6)
 shade3d(rgl_dual, color = "navy")
-plotEdges(vertices, edges, edgesAsTubes = FALSE, color = "yellow")
+plotEdges(
+  vertices, edges, color = "yellow",
+  edgesAsTubes = FALSE, verticesAsSpheres = FALSE
+)
 
 snapshot3d("icosphere_dual.png", webshot = FALSE)
 
