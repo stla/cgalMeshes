@@ -3,6 +3,4 @@
 #' @importFrom methods new
 NULL
 
-CGALmesh <- Rcpp::setRcppClass("CGALmesh")
-
-utils::globalVariables("exterior")
+CGALmesh <- setRcppClass("CGALmesh")

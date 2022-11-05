@@ -8,10 +8,10 @@ Maintainer: Stéphane Laurent <laurent_step@outlook.fr>
 Description: Provides some utilities for 3D meshes: clipping of a mesh to
     the volume bounded by another mesh, decomposition into convex parts,
     distance between a mesh and a point, triangulation, geodesic distance,
-    Boolean operations (intersection, union, difference), volume, area,
-    and centroid. Meshes in this package are represented by R6 classes.
-    All algorithms are performed by the 'C++' library 'CGAL'
-    (<https://www.cgal.org/>).
+    Boolean operations (intersection, union, difference), connected
+    components, volume, area, and centroid. Meshes in this package are
+    represented by R6 classes. All algorithms are performed by the 'C++'
+    library 'CGAL' (<https://www.cgal.org/>).
 License: GPL-3
 URL: https://github.com/stla/cgalMeshes
 BugReports: https://github.com/stla/cgalMeshes/issues
@@ -24,9 +24,9 @@ Imports:
     Rcpp (>= 1.0.9),
     rgl
 Suggests:
+    onion,
     rmarchingcubes,
-    viridisLite,
-    onion
+    viridisLite
 LinkingTo: 
     BH,
     Rcpp,
