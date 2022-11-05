@@ -61,24 +61,21 @@ MeshT csoup2mesh(std::vector<PointT>, std::vector<std::vector<int>>, const bool)
 
 std::vector<std::vector<int>> list_to_faces(const Rcpp::List);
 
-
-
-
 template <typename PointT>
 std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix);
 
 template <typename KernelT, typename MeshT, typename PointT>
-Rcpp::DataFrame getEdges(MeshT);
+Rcpp::DataFrame getEdges(MeshT&);
 
 //Rcpp::NumericMatrix getEKNormals(EMesh3);
 
-Rcpp::NumericMatrix getVertices_EK(EMesh3);
-Rcpp::List RSurfEKMesh(EMesh3, const bool);
-Rcpp::List RSurfEKMesh2(EMesh3, const bool, const int);
+Rcpp::NumericMatrix getVertices_EK(EMesh3&);
+Rcpp::List RSurfEKMesh(EMesh3&, const bool);
+Rcpp::List RSurfEKMesh2(EMesh3&, const bool, const int);
 
 void Message(std::string);
 
 EMesh3 readMeshFile(const std::string);
-void writeMeshFile(const std::string, const int, const bool, EMesh3);
+void writeMeshFile(const std::string, const int, const bool, EMesh3&);
 
 EMesh3 dualMesh(EMesh3&);
