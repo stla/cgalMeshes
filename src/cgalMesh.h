@@ -80,3 +80,5 @@ void Message(std::string);
 
 EMesh3 readMeshFile(const std::string);
 void writeMeshFile(const std::string, const int, const bool, EMesh3);
+
+EMesh3 dualMesh(EMesh3&);

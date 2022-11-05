@@ -186,6 +186,11 @@ public:
     }
     return PMP::does_self_intersect(mesh);
   }
+
+  Rcpp::XPtr<EMesh3> dual() {
+    EMesh3 dualmesh = dualMesh(mesh);
+    return Rcpp::XPtr<EMesh3>(new EMesh3(dualmesh), false);
+  }
   
   Rcpp::DataFrame edges() {
     return getEdges<EK, EMesh3, EPoint3>(mesh);

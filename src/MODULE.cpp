@@ -20,6 +20,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("distance", &CGALmesh::distance)
     .method("doesBoundVolume", &CGALmesh::doesBoundVolume)
     .method("doesSelfIntersect", &CGALmesh::doesSelfIntersect)
+    .method("dual", &CGALmesh::dual)
     .method("edges", &CGALmesh::edges)
     .method("fair", &CGALmesh::fair)
     .method("geoDists", &CGALmesh::geoDists)
