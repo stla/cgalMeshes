@@ -1237,8 +1237,9 @@ it bounds a volume. The mesh must be triangle.
 }
 
 \subsection{Returns}{
-The modified \code{cgalMesh} object. \strong{WARNING}: even if 
-  you store the result in a new variable, the original mesh is modified.
+The modified \code{cgalMesh} object, invisibly. \strong{WARNING}: 
+  even if you store the result in a new variable, the original mesh is 
+  modified.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1284,7 +1285,7 @@ Remove self-intersections (experimental). The mesh must
 }
 
 \subsection{Returns}{
-The modified \code{cgalMesh} object.
+The modified \code{cgalMesh} object, invisibly.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1297,8 +1298,9 @@ Reverse the orientation of the faces of the mesh.
 }
 
 \subsection{Returns}{
-The modified \code{cgalMesh} object. \strong{WARNING}: even if 
-  you store the result in a new variable, the original mesh is modified.
+The modified \code{cgalMesh} object, invisibly. \strong{WARNING}: 
+  even if you store the result in a new variable, the original mesh is 
+  modified.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1394,10 +1396,10 @@ Triangulate mesh.
 }
 
 \subsection{Returns}{
-The modified \code{cgalMesh} object. \strong{WARNING}: even if 
-  you store the result in a new variable, the original mesh is modified 
-  (see the example). You may want to triangulate a copy of the mesh; 
-  see the \code{copy} method.
+The modified \code{cgalMesh} object, invisibly. \strong{WARNING}: 
+  even if you store the result in a new variable, the original mesh is 
+  modified (see the example). You may want to triangulate a copy of the 
+  mesh; see the \code{copy} method.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

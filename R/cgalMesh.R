@@ -198,7 +198,7 @@ cgalMesh <- R6Class(
       stopifnot(isBoolean(clipVolume))
       clipperXPtr <- getXPtr(clipper)
       private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
-      invisible(self)
+      self
     },
 
     #' @description Decomposition into connected components.
@@ -371,7 +371,7 @@ cgalMesh <- R6Class(
         stop("The indices must be positive integers.")
       }
       private[[".CGALmesh"]]$fair(as.integer(indices) - 1L)
-      invisible(self)
+      self
     },
     
     #' @description Estimated geodesic distances between vertices. The mesh 
@@ -568,8 +568,9 @@ cgalMesh <- R6Class(
     
     #' @description Reorient the connected components of the mesh in order that 
     #' it bounds a volume. The mesh must be triangle.
-    #' @return The modified \code{cgalMesh} object. \strong{WARNING}: even if 
-    #'   you store the result in a new variable, the original mesh is modified. 
+    #' @return The modified \code{cgalMesh} object, invisibly. \strong{WARNING}: 
+    #'   even if you store the result in a new variable, the original mesh is 
+    #'   modified. 
     #' @examples 
     #' # two disjoint tetrahedra ####
     #' vertices <- rbind(
@@ -603,15 +604,16 @@ cgalMesh <- R6Class(
     
     #' @description Remove self-intersections (experimental). The mesh must 
     #'   be triangle.
-    #' @return The modified \code{cgalMesh} object.
+    #' @return The modified \code{cgalMesh} object, invisibly.
     "removeSelfIntersections" = function() {
       private[[".CGALmesh"]]$removeSelfIntersections()
       invisible(self)
     },
     
     #' @description Reverse the orientation of the faces of the mesh.
-    #' @return The modified \code{cgalMesh} object. \strong{WARNING}: even if 
-    #'   you store the result in a new variable, the original mesh is modified. 
+    #' @return The modified \code{cgalMesh} object, invisibly. \strong{WARNING}: 
+    #'   even if you store the result in a new variable, the original mesh is 
+    #'   modified. 
     #' @examples 
     #' library(rgl)
     #' mesh <- cgalMesh$new(tetrahedron3d())
@@ -666,10 +668,10 @@ cgalMesh <- R6Class(
     },
     
     #' @description Triangulate mesh.
-    #' @return The modified \code{cgalMesh} object. \strong{WARNING}: even if 
-    #'   you store the result in a new variable, the original mesh is modified 
-    #'   (see the example). You may want to triangulate a copy of the mesh; 
-    #'   see the \code{copy} method.
+    #' @return The modified \code{cgalMesh} object, invisibly. \strong{WARNING}: 
+    #'   even if you store the result in a new variable, the original mesh is 
+    #'   modified (see the example). You may want to triangulate a copy of the 
+    #'   mesh; see the \code{copy} method.
     #' @examples 
     #' library(rgl)
     #' mesh <- cgalMesh$new(cube3d())
