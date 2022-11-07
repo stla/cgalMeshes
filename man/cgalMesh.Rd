@@ -480,6 +480,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-isClosed}{\code{cgalMesh$isClosed()}}
 \item \href{#method-cgalMesh-isOutwardOriented}{\code{cgalMesh$isOutwardOriented()}}
 \item \href{#method-cgalMesh-isTriangle}{\code{cgalMesh$isTriangle()}}
+\item \href{#method-cgalMesh-isValid}{\code{cgalMesh$isValid()}}
 \item \href{#method-cgalMesh-orientToBoundVolume}{\code{cgalMesh$orientToBoundVolume()}}
 \item \href{#method-cgalMesh-removeSelfIntersections}{\code{cgalMesh$removeSelfIntersections()}}
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
@@ -1211,6 +1212,19 @@ mesh$isTriangle()
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-isValid"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-isValid}{}}}
+\subsection{Method \code{isValid()}}{
+Check whether the mesh is valid.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$isValid()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A Boolean value, whether the mesh is valid.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-orientToBoundVolume"></a>}}

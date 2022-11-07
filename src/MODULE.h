@@ -289,6 +289,10 @@ public:
     return CGAL::is_triangle_mesh(mesh);
   }
 
+  bool isValid() {
+    return CGAL::is_valid_polygon_mesh(mesh);
+  }
+  
   void orientToBoundVolume() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -306,6 +310,7 @@ public:
       Rcpp::stop("The mesh is not triangle.");
     }
     PMP::experimental::remove_self_intersections(mesh);
+    mesh.collect_garbage();
   }
   
   void reverseFaceOrientations() {

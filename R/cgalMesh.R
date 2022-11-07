@@ -559,6 +559,12 @@ cgalMesh <- R6Class(
     "isTriangle" = function() {
       private[[".CGALmesh"]]$isTriangle()
     },
+
+    #' @description Check whether the mesh is valid.
+    #' @return A Boolean value, whether the mesh is valid.
+    "isValid" = function() {
+      private[[".CGALmesh"]]$isValid()
+    },
     
     #' @description Reorient the connected components of the mesh in order that 
     #' it bounds a volume. The mesh must be triangle.
