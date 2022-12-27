@@ -84,7 +84,7 @@ TubularKnotMesh <- function(p, q, a, nu, nv){
   addNormals(out)
 }
 
-m <- TubularKnotMesh(p = 3, q = 11, a = 0.15, 10*60, 60)
+m <- TubularKnotMesh(p = 3, q = 11, a = 0.55, 10*60, 6)
 
 open3d(windowRect = c(50, 50, 562, 562))
 bg3d(rgb(54, 57, 64, maxColorValue = 255))

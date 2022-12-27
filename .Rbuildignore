@@ -6,3 +6,4 @@
 ^data-raw$
 ^inst/screenshots$
 ^inst/trash$
+^CRAN-SUBMISSION$
