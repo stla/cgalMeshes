@@ -490,7 +490,7 @@ cgalMesh <- R6Class(
               x         = t(mesh[["vertices"]]),
               triangles = mesh[["faces"]],
               normals   = mesh[["normals"]],
-              material  = list("color" = mesh[["fcolors"]]),
+              material  = list("color" = mesh[["colors"]]),
               ...
             )
           } else {
@@ -498,7 +498,7 @@ cgalMesh <- R6Class(
               x       = t(mesh[["vertices"]]),
               quads   = mesh[["faces"]],
               normals = mesh[["normals"]],
-              material = list("color" = mesh[["fcolors"]]),
+              material = list("color" = mesh[["colors"]]),
               ...
             )
           }
@@ -510,7 +510,7 @@ cgalMesh <- R6Class(
               normals   = mesh[["normals"]],
               triangles = do.call(cbind, faces[["3"]]),
               quads     = do.call(cbind, faces[["4"]]),
-              material = list("color" = mesh[["fcolors"]]),
+              material = list("color" = mesh[["colors"]]),
               ...
             )
           } else {

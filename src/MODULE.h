@@ -327,15 +327,26 @@ public:
   }
   
   Rcpp::List getRmesh(const bool normals) {
+    Rcpp::List rmesh;
     if(CGAL::is_triangle_mesh(mesh)) {
-      Rcpp::List rmesh = RSurfEKMesh2(mesh, normals, 3);
-      rmesh["fcolors"] = fcolors;
-      return rmesh;
+      rmesh = RSurfEKMesh2(mesh, normals, 3);
+    } else if(CGAL::is_quad_mesh(mesh)) {
+      rmesh = RSurfEKMesh2(mesh, normals, 4);
+    } else {
+      rmesh = RSurfEKMesh(mesh, normals);
     }
-    if(CGAL::is_quad_mesh(mesh)) {
-      return RSurfEKMesh2(mesh, normals, 4);
+    if(vcolors.isNotNull() || fcolors.isNotNull()) {
+      const size_t nf = mesh.number_of_faces();
+      if(vcolors.isNotNull()) {
+        Rcpp::StringVector colors(vcolors);
+        if(colors.size() == nf) {
+          rmesh["colors"] = vcolors;
+        }
+      } else {
+        rmesh["colors"] = fcolors;
+      }
     }
-    return RSurfEKMesh(mesh, normals);
+    return rmesh;
   }
   
   Rcpp::XPtr<MyMesh> intersection(Rcpp::XPtr<EMesh3> mesh2XPtr) {
