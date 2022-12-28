@@ -52,7 +52,7 @@ public:
     return out;
   }
   
-  void clipMesh(Rcpp::XPtr<EMesh3> clipperXPtr, const bool clipVolume) {
+  Rcpp::IntegerVector clipMesh(Rcpp::XPtr<EMesh3> clipperXPtr, const bool clipVolume) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
@@ -72,6 +72,26 @@ public:
       Rcpp::stop("The clipping mesh self-intersects.");
     }
     const bool doNotModify = !clipVolume;
+
+    const size_t nfaces = mesh.number_of_faces();
+    std::vector<Triangle> triangles;
+    triangles.reserve(nfaces);
+    for(EMesh3::Face_index fd : mesh.faces()) {
+      auto it = vertices_around_face(mesh.halfedge(fd), mesh);
+      auto vd = it.begin();
+      triangles.emplace_back(Triangle(mesh.point(*(++vd)), mesh.point(*(++vd)), mesh.point(*(vd))));
+    }
+    
+    // auto facemap = 
+    //   mesh.add_property_map<boost::graph_traits<EMesh3>::face_descriptor, std::size_t>(
+    //       "f:index").first;
+    // size_t i = 0;
+    // for(EMesh3::Face_index f : mesh.faces()) {
+    //   facemap[f] = i + 100000;
+    //   i++;
+    // }
+    
+    
     const bool clipping = PMP::clip(
       mesh, clipper, PMP::parameters::clip_volume(clipVolume),
       PMP::parameters::clip_volume(clipVolume).do_not_modify(doNotModify)
@@ -79,7 +99,39 @@ public:
     if(!clipping) {
       Rcpp::stop("Clipping has failed.");
     }
+
+    // auto pm = mesh.property_map<boost::graph_traits<EMesh3>::face_descriptor, std::size_t>("f:index").first;
+    // size_t nf = mesh.number_of_faces();
+    // Rcpp::List out = getFaces(mesh);
+    // size_t j = 0;
+    // for(EMesh3::Face_index f : mesh.faces()) {
+    //   Rcpp::Rcout << int(f) << "\n";
+    //   j++;
+    //   if(j == 2){
+    //     break;
+    //   }
+    // }
     mesh.collect_garbage();
+
+    const size_t nf = mesh.number_of_faces();
+    Rcpp::IntegerVector out(nf);
+    size_t j = 0;
+    for(EMesh3::Face_index f : mesh.faces()) {
+      auto it = vertices_around_face(mesh.halfedge(f), mesh);
+      auto vd = it.begin();
+      Triangle tr(mesh.point(*(++vd)), mesh.point(*(++vd)), mesh.point(*(vd)));
+      EPoint3 c = CGAL::centroid(tr);
+      size_t k;
+      for(k = 0; k < nfaces; k++) {
+        Triangle trk = triangles[k];
+        if(trk.has_on(c)) {
+          break;
+        }
+      }
+      out(j++) = k + 1;
+    }
+
+    return out;
   }
   
   Rcpp::XPtr<EMesh3> clone() {

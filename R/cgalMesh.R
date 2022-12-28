@@ -197,8 +197,9 @@ cgalMesh <- R6Class(
       stopifnot(isCGALmesh(clipper))
       stopifnot(isBoolean(clipVolume))
       clipperXPtr <- getXPtr(clipper)
-      private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
-      self
+      x = private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
+      x
+      #self
     },
 
     #' @description Decomposition into connected components.
