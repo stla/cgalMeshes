@@ -7,8 +7,8 @@
 RCPP_MODULE(class_CGALmesh) {
   using namespace Rcpp; 
   class_<CGALmesh>("CGALmesh")
-    .constructor<const NumericMatrix, const List, const bool>()
-    .constructor<XPtr<EMesh3>>()
+    .constructor<const NumericMatrix, const List, const bool, const Nullable<NumericMatrix>, const Nullable<StringVector>, const Nullable<StringVector>>()
+    .constructor<XPtr<MyMesh>>()
     .constructor<Rcpp::String, const bool>()
     .field("xptr", &CGALmesh::xptr)
     .method("area", &CGALmesh::area)
