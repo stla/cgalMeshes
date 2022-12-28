@@ -5,9 +5,9 @@
 #include "MODULE.h"
 
 RCPP_MODULE(class_CGALmesh) {
-  using namespace Rcpp; 
+  using namespace Rcpp;
   class_<CGALmesh>("CGALmesh")
-    .constructor<const NumericMatrix, const List, const bool, const Nullable<NumericMatrix>, const Nullable<StringVector>, const Nullable<StringVector>>()
+    .constructor<const NumericMatrix, const List, const bool, Nullable<NumericMatrix>, Nullable<StringVector>, Nullable<StringVector>>()
     .constructor<XPtr<MyMesh>>()
     .constructor<Rcpp::String, const bool>()
     .field("xptr", &CGALmesh::xptr)

@@ -65,6 +65,26 @@ cgalMesh <- R6Class(
       stopifnot(isBoolean(clean))
       if(!missing(mesh)) {
         if(inherits(mesh, "mesh3d")) {
+          normals <- mesh[["normals"]]
+          vcolors <- NULL
+          fcolors <- NULL
+          colors <- mesh[["material"]]$color
+          if(!is.null(colors)){
+            nv <- ncol(mesh[["vb"]])
+            if(length(colors) == nv) {
+              vcolors <- colors
+            }
+            nf <- 0L
+            if(!is.null(it <- mesh[["it"]])) {
+              nf <- nf + ncol(it)
+            }
+            if(!is.null(ib <- mesh[["ib"]])) {
+              nf <- nf + ncol(ib)
+            }
+            if(length(colors) == nf) {
+              fcolors <- colors
+            }
+          }
           mesh <- getVF(mesh)
         }
         if(is.list(mesh)) {
@@ -79,7 +99,9 @@ cgalMesh <- R6Class(
         VF <- checkMesh(vertices, faces, aslist = TRUE)
       }
       private[[".CGALmesh"]] <- 
-        CGALmesh$new(VF[["vertices"]], VF[["faces"]], clean)
+        CGALmesh$new(
+          VF[["vertices"]], VF[["faces"]], clean, normals, vcolors, fcolors
+        )
       invisible(self)
     },
     
@@ -197,9 +219,8 @@ cgalMesh <- R6Class(
       stopifnot(isCGALmesh(clipper))
       stopifnot(isBoolean(clipVolume))
       clipperXPtr <- getXPtr(clipper)
-      x = private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
-      x
-      #self
+      private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
+      self
     },
 
     #' @description Decomposition into connected components.
@@ -469,6 +490,7 @@ cgalMesh <- R6Class(
               x         = t(mesh[["vertices"]]),
               triangles = mesh[["faces"]],
               normals   = mesh[["normals"]],
+              material  = list("color" = mesh[["fcolors"]]),
               ...
             )
           } else {
@@ -476,6 +498,7 @@ cgalMesh <- R6Class(
               x       = t(mesh[["vertices"]]),
               quads   = mesh[["faces"]],
               normals = mesh[["normals"]],
+              material = list("color" = mesh[["fcolors"]]),
               ...
             )
           }
@@ -487,6 +510,7 @@ cgalMesh <- R6Class(
               normals   = mesh[["normals"]],
               triangles = do.call(cbind, faces[["3"]]),
               quads     = do.call(cbind, faces[["4"]]),
+              material = list("color" = mesh[["fcolors"]]),
               ...
             )
           } else {

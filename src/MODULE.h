@@ -7,15 +7,15 @@ public:
   EMesh3 mesh;
   MyMesh mymesh;
   Rcpp::XPtr<EMesh3> xptr;
-  Rcpp::Nullable<Rcpp::NumericMatrix>* ptr_normals; 
-  Rcpp::Nullable<Rcpp::StringVector>* ptr_vcolors;
-  Rcpp::Nullable<Rcpp::StringVector>* ptr_fcolors;
+  Rcpp::Nullable<Rcpp::NumericMatrix> normals;
+  Rcpp::Nullable<Rcpp::StringVector> vcolors;
+  Rcpp::Nullable<Rcpp::StringVector> fcolors;
   CGALmesh(const Rcpp::NumericMatrix vertices,
            const Rcpp::List faces,
            const bool clean,
-           const Rcpp::Nullable<Rcpp::NumericMatrix> normals,
-           const Rcpp::Nullable<Rcpp::StringVector> vcolors,
-           const Rcpp::Nullable<Rcpp::StringVector> fcolors)
+           const Rcpp::Nullable<Rcpp::NumericMatrix> &normals_,
+           const Rcpp::Nullable<Rcpp::StringVector> &vcolors_,
+           const Rcpp::Nullable<Rcpp::StringVector> &fcolors_)
     : mesh(
         csoup2mesh<EMesh3, EPoint3>(
             matrix_to_points3<EPoint3>(vertices), 
@@ -25,27 +25,30 @@ public:
     ),
       mymesh(
         MYMESH((
-          _.mesh = mesh,
-          _.normals = normals,
-          _.vcolors = vcolors,
-          _.fcolors = fcolors
+          xxx.mesh = mesh,
+          xxx.normals = normals_,
+          xxx.vcolors = vcolors_,
+          xxx.fcolors = fcolors_
         ))
     ), 
       xptr(&mesh, false),
-      ptr_normals(&normals),
-      ptr_vcolors(&vcolors),
-      ptr_fcolors(&fcolors) {}
+      normals(normals_),
+      vcolors(vcolors_),
+      fcolors(fcolors_) {}
   CGALmesh(Rcpp::XPtr<MyMesh> xptr_)
     : mymesh(*(xptr_.get())), 
       mesh(mymesh.mesh),
       xptr(Rcpp::XPtr<EMesh3>(&(mymesh.mesh), false)),
-      ptr_normals(&(mymesh.normals)),
-      ptr_vcolors(&(mymesh.vcolors)),
-      ptr_fcolors(&(mymesh.fcolors)) {}
+      normals(mymesh.normals),
+      vcolors(mymesh.vcolors),
+      fcolors(mymesh.fcolors) {}
   CGALmesh(const std::string filename, const bool binary)
     : mesh(readMeshFile(filename)), 
-      mymesh(MYMESH((_.mesh = mesh))),
-      xptr(Rcpp::XPtr<EMesh3>(&mesh, false)) {}
+      mymesh(MYMESH((xxx.mesh = mesh))),
+      xptr(Rcpp::XPtr<EMesh3>(&mesh, false)),
+      normals(R_NilValue),
+      vcolors(R_NilValue),
+      fcolors(R_NilValue) {}
 
   double area() {
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -96,11 +99,11 @@ public:
       Rcpp::stop("The clipping mesh self-intersects.");
     }
     
-    *ptr_normals = R_NilValue;
-    *ptr_vcolors = R_NilValue;
+    normals = R_NilValue;
+    vcolors = R_NilValue;
 
     EMesh3 meshcopy;
-    if((*ptr_fcolors).isNotNull()) {
+    if(fcolors.isNotNull()) {
       CGAL::copy_face_graph(mesh, meshcopy);
     }
     
@@ -116,18 +119,19 @@ public:
 
     mesh.collect_garbage();
     
-    if((*ptr_fcolors).isNotNull()) {
+    if(fcolors.isNotNull()) {
+      Rcpp::StringVector fcolors0(fcolors);
       const size_t nfaces = meshcopy.number_of_faces();
       std::vector<Triangle> triangles;
       triangles.reserve(nfaces);
       for(EMesh3::Face_index fd : meshcopy.faces()) {
-        auto it = vertices_around_face(meshcopy.halfedge(fd), mesh);
+        auto it = vertices_around_face(meshcopy.halfedge(fd), meshcopy);
         auto vd = it.begin();
         triangles.emplace_back(Triangle(meshcopy.point(*(++vd)), meshcopy.point(*(++vd)), meshcopy.point(*(vd))));
       }
       
       const size_t nf = mesh.number_of_faces();
-      Rcpp::StringVector fcolors(nf);
+      Rcpp::StringVector fcolors1(nf);
       size_t j = 0;
       for(EMesh3::Face_index f : mesh.faces()) {
         auto it = vertices_around_face(mesh.halfedge(f), mesh);
@@ -141,9 +145,10 @@ public:
             break;
           }
         }
-        fcolors(j++) = (*ptr_fcolors)(k);
+        fcolors1(j++) = fcolors0(k);
       }
-      *ptr_fcolors = fcolors;
+      Rcpp::Nullable<Rcpp::StringVector> nullable_fcolors(fcolors1);
+      fcolors = nullable_fcolors;
     }
     
   }
@@ -152,10 +157,10 @@ public:
     EMesh3 copy;
     CGAL::copy_face_graph(mesh, copy);
     MyMesh mycopy = MYMESH((
-      _.mesh = copy,
-      _.normals = *ptr_normals,
-      _.vcolors = *ptr_vcolors,
-      _.fcolors = *ptr_fcolors
+      xxx.mesh = copy,
+      xxx.normals = normals,
+      xxx.vcolors = vcolors,
+      xxx.fcolors = fcolors
     ));
     return Rcpp::XPtr<MyMesh>(new MyMesh(mycopy), false);
   }
@@ -184,7 +189,7 @@ public:
         }
       }
       MyMesh mycc = MYMESH((
-        _.mesh = *cc
+        xxx.mesh = *cc
       ));
       xptrs(i) = Rcpp::XPtr<MyMesh>(new MyMesh(mycc), false);
       i++;
@@ -227,7 +232,7 @@ public:
         }
       }
       MyMesh mycmesh = MYMESH((
-        _.mesh = cmesh
+        xxx.mesh = cmesh
       ));
       out(i) = Rcpp::XPtr<MyMesh>(new MyMesh(mycmesh), false);
       i++;
@@ -292,9 +297,9 @@ public:
     if(!success) {
       Rcpp::stop("Failed to fair the mesh.");
     }
-    *ptr_normals = R_NilValue;
-    *ptr_vcolors = R_NilValue;
-    *ptr_fcolors = R_NilValue;
+    normals = R_NilValue;
+    vcolors = R_NilValue;
+    fcolors = R_NilValue;
   }
   
   Rcpp::NumericVector geoDists(const int index) {
@@ -323,7 +328,9 @@ public:
   
   Rcpp::List getRmesh(const bool normals) {
     if(CGAL::is_triangle_mesh(mesh)) {
-      return RSurfEKMesh2(mesh, normals, 3);
+      Rcpp::List rmesh = RSurfEKMesh2(mesh, normals, 3);
+      rmesh["fcolors"] = fcolors;
+      return rmesh;
     }
     if(CGAL::is_quad_mesh(mesh)) {
       return RSurfEKMesh2(mesh, normals, 4);
@@ -353,7 +360,7 @@ public:
       Rcpp::stop("Intersection computation has failed.");
     }
     MyMesh myimesh = MYMESH((
-      _.mesh = imesh
+      xxx.mesh = imesh
     ));
     return Rcpp::XPtr<MyMesh>(new MyMesh(myimesh), false);
   }
@@ -394,9 +401,9 @@ public:
       Rcpp::stop("The mesh is not triangle.");
     }
     PMP::experimental::remove_self_intersections(mesh);
-    *ptr_normals = R_NilValue;
-    *ptr_vcolors = R_NilValue;
-    *ptr_fcolors = R_NilValue;
+    normals = R_NilValue;
+    vcolors = R_NilValue;
+    fcolors = R_NilValue;
     mesh.collect_garbage();
   }
   
@@ -426,7 +433,7 @@ public:
       Rcpp::stop("Difference computation has failed.");
     }
     MyMesh myimesh = MYMESH((
-      _.mesh = imesh
+      xxx.mesh = imesh
     ));
     return Rcpp::XPtr<MyMesh>(new MyMesh(myimesh), false);
   }
@@ -436,8 +443,8 @@ public:
     if(!success) {
       Rcpp::stop("Triangulation has failed.");
     }
-    *ptr_normals = R_NilValue;
-    *ptr_fcolors = R_NilValue;
+    normals = R_NilValue;
+    fcolors = R_NilValue;
   }
 
   Rcpp::XPtr<MyMesh> Union(Rcpp::XPtr<EMesh3> mesh2XPtr) {
@@ -462,7 +469,7 @@ public:
       Rcpp::stop("Union computation has failed.");
     }
     MyMesh myimesh = MYMESH((
-      _.mesh = imesh
+      xxx.mesh = imesh
     ));
     return Rcpp::XPtr<MyMesh>(new MyMesh(myimesh), false);
   }

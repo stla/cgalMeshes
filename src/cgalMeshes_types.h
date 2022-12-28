@@ -11,6 +11,6 @@ struct MyMesh {
   Rcpp::Nullable<Rcpp::StringVector> vcolors = R_NilValue;
   Rcpp::Nullable<Rcpp::StringVector> fcolors = R_NilValue;
 };
-#define MYMESH_OPEN [MyMesh _ = {}] { 
-#define MYMESH_CLOSE ; return _; }()
+#define MYMESH_OPEN [&] {MyMesh xxx = {};  
+#define MYMESH_CLOSE ; return xxx; }()
 #define MYMESH(x) MYMESH_OPEN x MYMESH_CLOSE
