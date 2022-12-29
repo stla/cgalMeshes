@@ -58,7 +58,7 @@ cgalMesh <- R6Class(
     ){
       # one can also initialize from an external pointer, but 
       # this is hidden to the user
-      if(inherits(clean, "externalptr")) {
+      if(inherits(clean, "list")) {
         private[[".CGALmesh"]] <- CGALmesh$new(clean)
         return(invisible(self))
       }
@@ -468,24 +468,27 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$geoDists(as.integer(index) - 1L)
     },
     
+    #' @description Get the normals
+    "getNormals" = function() {
+      private[[".CGALmesh"]]$getNormals()
+    },
+    
     #' @description Get the mesh.
-    #' @param normals Boolean, whether to return the per-vertex normals 
     #' @param rgl Boolean, whether to return a \strong{rgl} mesh if possible, 
     #'   i.e. if the mesh only has triangular or quadrilateral faces
     #' @param ... arguments passed to \code{\link[rgl:mesh3d]{mesh3d}} (if 
     #'   a \strong{rgl} mesh is returned)
     #' @return A \strong{rgl} mesh or a list with two or three fields: 
-    #'   \code{vertices}, \code{faces}, and \code{normals} if the argument 
+    #'   \code{vertices}, \code{faces}, and \code{normals} if XXXXXXXXXXXXXXXXXXXXXXXXX the argument 
     #'   \code{normals} is set to \code{TRUE}
     #' @examples 
     #' library(rgl)
     #' mesh <- cgalMesh$new(cube3d())$triangulate()
-    #' mesh$getMesh(normals = FALSE)
-    "getMesh" = function(normals = TRUE, rgl = TRUE, ...) {
-      stopifnot(isBoolean(normals))
+    #' mesh$getMesh()
+    "getMesh" = function(rgl = TRUE, ...) {
       stopifnot(isBoolean(rgl))
-      mesh <- private[[".CGALmesh"]]$getRmesh(normals)
-      if(normals) {
+      mesh <- private[[".CGALmesh"]]$getRmesh()
+      if(!is.null(mesh[["normals"]])) {
         mesh[["normals"]] <- t(mesh[["normals"]])
       }
       if(rgl) {
@@ -501,9 +504,9 @@ cgalMesh <- R6Class(
             )
           } else {
             mesh <- mesh3d(
-              x       = t(mesh[["vertices"]]),
-              quads   = mesh[["faces"]],
-              normals = mesh[["normals"]],
+              x        = t(mesh[["vertices"]]),
+              quads    = mesh[["faces"]],
+              normals  = mesh[["normals"]],
               material = list("color" = mesh[["colors"]]),
               ...
             )
@@ -516,7 +519,7 @@ cgalMesh <- R6Class(
               normals   = mesh[["normals"]],
               triangles = do.call(cbind, faces[["3"]]),
               quads     = do.call(cbind, faces[["4"]]),
-              material = list("color" = mesh[["colors"]]),
+              material  = list("color" = mesh[["colors"]]),
               ...
             )
           } else {

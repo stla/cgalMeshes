@@ -26,6 +26,7 @@
 #include <CGAL/number_utils.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
 #include <CGAL/boost/graph/Face_filtered_graph.h>
+//#include <CGAL/boost/graph/properties_Surface_mesh.h>
 #include <boost/graph/connected_components.hpp>
 #include <CGAL/Nef_3/SNC_indexed_items.h>
 #include <CGAL/convex_decomposition_3.h>
@@ -69,18 +70,20 @@ typedef CGAL::Polyhedron_3<EK> EPolyhedron;
 typedef CGAL::Triangle_3<EK> Triangle;
 typedef CGAL::Tetrahedron_3<EK> Tetrahedron;
 
-
+//typedef CGAL::SM_index_pmap<EPoint3, boost::graph_traits<EMesh3>::vertex_descriptor> boostmap;
 typedef boost::graph_traits<EMesh3>::vertex_descriptor vertex_descriptor;
 typedef EMesh3::Property_map<vertex_descriptor, double> Vertex_distance_map;
 typedef EMesh3::Property_map<vertex_descriptor, std::size_t> Vertex_index_map;
 typedef boost::graph_traits<EMesh3>::face_descriptor face_descriptor;
 typedef EMesh3::Property_map<face_descriptor, std::size_t> Face_index_map;
-
+typedef boost::graph_traits<Mesh3>::halfedge_descriptor halfedge_descriptor;
+typedef EMesh3::Property_map<halfedge_descriptor, std::size_t> Halfedge_index_map;
 
 typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
 typedef AFS_reconstruction::Triangulation_3 AFS_triangulation3;
 typedef AFS_reconstruction::Triangulation_data_structure_2 AFS_Tds2;
 
+//typedef CGAL::Face_filtered_graph<EMesh3, Face_index_map, Vertex_index_map, Halfedge_index_map> Filtered_graph;
 typedef CGAL::Face_filtered_graph<EMesh3> Filtered_graph;
 
 ///////////////

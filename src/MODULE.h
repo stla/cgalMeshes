@@ -5,7 +5,7 @@
 class CGALmesh {
 public:
   EMesh3 mesh;
-  MyMesh mymesh;
+  Rcpp::List mymesh;
   Rcpp::XPtr<EMesh3> xptr;
   Rcpp::Nullable<Rcpp::NumericMatrix> normals;
   Rcpp::Nullable<Rcpp::StringVector> vcolors;
@@ -24,27 +24,34 @@ public:
         )
     ),
       mymesh(
-        MYMESH((
-          xxx.mesh = mesh,
-          xxx.normals = normals_,
-          xxx.vcolors = vcolors_,
-          xxx.fcolors = fcolors_
-        ))
+        Rcpp::List::create(
+          Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(&mesh, false),
+          Rcpp::Named("normals") = normals_,
+          Rcpp::Named("vcolors") = vcolors_,
+          Rcpp::Named("fcolors") = fcolors_
+        )
     ), 
-      xptr(&mesh, false),
+      xptr(Rcpp::XPtr<EMesh3>(&mesh, false)),
       normals(normals_),
       vcolors(vcolors_),
       fcolors(fcolors_) {}
-  CGALmesh(Rcpp::XPtr<MyMesh> xptr_)
-    : mesh((*(xptr_.get())).mesh),
-      mymesh(*(xptr_.get())), 
-      xptr(Rcpp::XPtr<EMesh3>(&mesh, false)),
-      normals(mymesh.normals),
-      vcolors(mymesh.vcolors),
-      fcolors(mymesh.fcolors) {}
+  CGALmesh(Rcpp::List mymesh_)
+    : mesh(*(Rcpp::as<Rcpp::XPtr<EMesh3>>(mymesh_["xptr"]).get())),
+      mymesh(mymesh_), 
+      xptr(mymesh_["xptr"]),
+      normals(mymesh_["normals"]),
+      vcolors(mymesh_["vcolors"]),
+      fcolors(mymesh_["fcolors"]) {}
   CGALmesh(const std::string filename, const bool binary)
     : mesh(readMeshFile(filename)), 
-      mymesh(MYMESH((xxx.mesh = mesh))),
+      mymesh(
+        Rcpp::List::create(
+          Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(&mesh, false),
+          Rcpp::Named("normals") = R_NilValue,
+          Rcpp::Named("vcolors") = R_NilValue,
+          Rcpp::Named("fcolors") = R_NilValue
+        )
+      ),
       xptr(Rcpp::XPtr<EMesh3>(&mesh, false)),
       normals(R_NilValue),
       vcolors(R_NilValue),
@@ -153,31 +160,76 @@ public:
     
   }
   
-  Rcpp::XPtr<MyMesh> clone() {
+  Rcpp::List clone() {
     EMesh3 copy;
     CGAL::copy_face_graph(mesh, copy);
-    MyMesh mycopy = MYMESH((
-      xxx.mesh = copy,
-      xxx.normals = normals,
-      xxx.vcolors = vcolors,
-      xxx.fcolors = fcolors
-    ));
-    return Rcpp::XPtr<MyMesh>(new MyMesh(mycopy), false);
+    // MyMesh mycopy = MYMESH((
+    //   xxx.mesh = copy,
+    //   xxx.normals = normals,
+    //   xxx.vcolors = vcolors,
+    //   xxx.fcolors = fcolors
+    // ));
+    Rcpp::List mycopy = Rcpp::List::create(
+      Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(&copy, false),
+      Rcpp::Named("normals") = normals,
+      Rcpp::Named("vcolors") = vcolors,
+      Rcpp::Named("fcolors") = fcolors
+    );
+    return mycopy;
   }
   
   Rcpp::List connectedComponents(const bool triangulate) {
     // Face_index_map fccmap = mesh.add_property_map<face_descriptor, std::size_t>("f:CC").first;
     // const std::size_t ncc = PMP::connected_components(mesh, fccmap);
     Vertex_index_map vccmap = mesh.add_property_map<vertex_descriptor, std::size_t>("v:CC").first;
+    Vertex_index_map vindexmap = mesh.add_property_map<vertex_descriptor, std::size_t>("vindex:I").first;
     const std::size_t ncc = connected_components(mesh, vccmap);
+    std::vector<std::vector<EMesh3::Vertex_index>> components(ncc);
+    std::vector<std::size_t> Indices;
+    Indices.reserve(mesh.number_of_vertices());
+    std::vector<int> Sizes(ncc, 0);
+    Rcpp::NumericMatrix vert = getVertices_EK(mesh);
+    int kk = 0;
     for(EMesh3::Vertex_index v : mesh.vertices()) {
-      Rcpp::Rcout << "vertex " << v << " is in component " << vccmap[v] << "\n";
+      std::size_t c = vccmap[v];
+      components[c].push_back(v);
+      Indices.emplace_back(c);
+      Sizes[c]++;
+      int j = int(v);
+      if(j < 4) {
+        Rcpp::Rcout << "oooooooooo  " << j << "  ooooooooo\n";
+        EPoint3 pt = mesh.point(v);
+        Rcpp::Rcout << CGAL::to_double<EK::FT>(pt.x()) << "\n";
+        Rcpp::Rcout << CGAL::to_double<EK::FT>(pt.y()) << "\n";
+        Rcpp::Rcout << CGAL::to_double<EK::FT>(pt.z()) << "\n";
+        Rcpp::Rcout << "------------";
+        Rcpp::Rcout << vert(0, j) << "\n";
+        Rcpp::Rcout << vert(1, j) << "\n";
+        Rcpp::Rcout << vert(2, j) << "\n";
+        Rcpp::Rcout << "------------";
+      }
     }
+    // std::vector<int> counters(ncc, 0);
+    // for(EMesh3::Vertex_index v : mesh.vertices()) {
+    //   std::size_t c = vccmap[v];
+    //   vindexmap[v] = components[c][counters[c]++];
+    // }
     Face_index_map fccmap = mesh.add_property_map<face_descriptor, std::size_t>("f:CC").first;
+    std::vector<std::vector<int>> fcomponents(ncc);
+    std::vector<std::vector<std::vector<int>>> vcomponents(ncc);
+    std::vector<int> fsizes(ncc, 0);
     for(EMesh3::Face_index f : mesh.faces()) {
       auto it = vertices_around_face(mesh.halfedge(f), mesh);
-      EMesh3::Vertex_index v = *(it.begin());
-      fccmap[f] = vccmap[v];
+      auto v = it.begin();
+      std::size_t c = vccmap[*v];
+      fccmap[f] = c;
+      fcomponents[c].push_back(int(f));
+      fsizes[c]++;
+      std::vector<int> theface(3);
+      theface[0] = *(v);
+      theface[1] = *(++v);
+      theface[2] = *(++v);
+      vcomponents[c].push_back(theface);
     }
     if(ncc == 1) {
       Message("Only one component found.\n");
@@ -187,12 +239,159 @@ public:
     }
     const bool really_triangulate = 
       triangulate && !CGAL::is_triangle_mesh(mesh);
-    Rcpp::List xptrs(ncc);
-    for(std::size_t i = 0; i < ncc; i++) {
-      Filtered_graph ffg(mesh, i, fccmap);
-      Rcpp::Rcout << "component " + std::to_string(i) << "\n";
-      EMesh3 cc;
-      CGAL::copy_face_graph(ffg, cc);
+    
+    Rcpp::List mymeshes(ncc);
+    // Face_index_map fmap = mesh.add_property_map<face_descriptor, std::size_t>("f:i").first;
+    // Halfedge_index_map hmap = mesh.add_property_map<halfedge_descriptor, std::size_t>("h:i").first;
+    // for(EMesh3::Face_index f : mesh.faces()) {
+    //   fmap[f] = std::size_t(f);
+    // }
+    // for(EMesh3::Halfedge_index h : mesh.halfedges()) {
+    //   hmap[h] = std::size_t(h);
+    // }
+
+    // EMesh3 DD;
+    // DD.reserve(mesh.number_of_vertices(), mesh.number_of_edges(), mesh.number_of_faces());
+    // for(EMesh3::Vertex_index vi : mesh.vertices()) {
+    //   const EPoint3 vertex = mesh.point(vi);
+    //   DD.add_vertex(vertex);
+    // }
+    // Rcpp::Rcout << "\n DD NUmBER VERTICES: " << DD.number_of_vertices() << "\n";
+    std::vector<EMesh3> ddlist(ncc);
+    std::map<EMesh3::Face_index, int> mapfaces;
+    int iii = 0;
+    for(EMesh3::Face_index f : mesh.faces()) {
+      mapfaces[f] = iii++;
+    }
+    Rcpp::Rcout << "mapfaces done\n";
+    Rcpp::NumericMatrix normals0(normals);
+    std::vector<Rcpp::NumericMatrix> NORMALS(ncc);
+    std::vector<std::vector<std::vector<EMesh3::Vertex_index>>> connec(ncc);
+    for(std::size_t c = 0; c < ncc; c++) {
+      std::vector<EMesh3::Vertex_index> component = components[c];
+      Rcpp::NumericMatrix cnormals(3, component.size());
+      std::map<EMesh3::Vertex_index,int> newinds;
+      for(int j = 0; j < component.size(); j++) {
+        newinds[component[j]] = j;
+      }
+      Rcpp::Rcout << "newinds done\n";
+      std::vector<EMesh3::Face_index> todelete;
+      for(const auto& [faceindex, intindex] : mapfaces) {
+        auto it = vertices_around_face(mesh.halfedge(faceindex), mesh);
+        if(vccmap[*(it.begin())] == c) {
+          std::vector<EMesh3::Vertex_index> facenewinds;
+          for(EMesh3::Vertex_index v : it) {
+            Rcpp::Rcout << "newind: " << newinds[v] << "\n";
+            facenewinds.push_back(CGAL::SM_Vertex_index(newinds[v]));
+          }
+          Rcpp::Rcout << "facenewinds done\n";
+          connec[c].push_back(facenewinds);
+          todelete.push_back(faceindex);
+        }
+      }
+      for(int fi = 0; fi < todelete.size(); fi++) {
+        mapfaces.erase(todelete[fi]);
+        Rcpp::Rcout << "facedindex erased";
+      }
+      EMesh3 dd;
+      for(int j = 0; j < component.size(); j++) {
+        EPoint3 pt = mesh.point(component[j]);
+        dd.add_vertex(pt);
+        cnormals(Rcpp::_, j) = normals0(Rcpp::_, int(component[j]));
+      }
+      Rcpp::Rcout << "vertices added to dd\n";
+      ddlist[c] = dd;
+      NORMALS[c] = cnormals;
+    }
+    for(std::size_t c = 0; c < ncc; c++) {
+      EMesh3 dd = ddlist[c];
+      for(int j = 0; j < connec[c].size(); j++) {
+        dd.add_face(connec[c][j]);
+      }
+      Rcpp::Rcout << "faces added to dd\n";
+      
+      //Rcpp::Rcout << "component " + std::to_string(c) << "\n";
+      // Filtered_graph ffg(mesh, c, fccmap);//, CGAL::parameters::face_index_map(fmap).halfedge_index_map(hmap).vertex_index_map(vindexmap));
+      // assert(ffg.is_selection_valid());
+      // EMesh3 cc;
+      // CGAL::copy_face_graph(ffg, cc);
+      // Rcpp::Rcout << "\nGRAPH COPIED\n";
+      // const size_t nvertices = cc.number_of_vertices();
+      // const size_t nedges    = cc.number_of_edges();
+      // const size_t nfaces    = cc.number_of_faces();
+      // EMesh3 dd;
+      // dd.reserve(mesh.number_of_vertices(), mesh.number_of_edges(), mesh.number_of_faces());
+      // for(EMesh3::Vertex_index vi : mesh.vertices()) {
+      //   const EPoint3 vertex = mesh.point(vi);
+      //   dd.add_vertex(vertex);
+      // }
+      // CGAL::copy_face_graph(DD, dd);
+      // Rcpp::Rcout << "\n dd NUmBER VERTICES: " << dd.number_of_vertices() << "\n";
+      // for(int ii = 0; ii < fsizes[c]; ii++) {
+      //   std::vector<int> ddface = vcomponents[c][ii];
+      //   Rcpp::Rcout << "FFFFFFFFFFFFFFFFF  " << ddface.size() << "  FFFFFFFFFFFFFFFFFFFFFFFF\n";
+      //   for(int uuu = 0; uuu < 3; uuu++) {
+      //     Rcpp::Rcout << "GGGGGGGGGGGG  " << ddface[uuu] << "  GGGGGGGGGGGGGG\n";
+      //   }
+      //   dd.add_face(
+      //     CGAL::SM_Vertex_index(ddface[0]), 
+      //     CGAL::SM_Vertex_index(ddface[1]), 
+      //     CGAL::SM_Vertex_index(ddface[2])
+      //   );
+      // }
+      // std::size_t nrem = PMP::remove_isolated_vertices(dd);
+      // dd.reserve(nvertices, nedges, nfaces);
+      // Rcpp::Rcout << "\ntttttttttttttt  " << nfaces << "  tttttttttttt\n";
+      // for(int ii = 0; ii < nfaces; ii++) {
+      //   Rcpp::Rcout << "FFFFFFFFFFFFFFFFF  " << ii << "  FFFFFFFFFFFFFFFFFFFFFFFF\n";
+      //   std::vector<int> ddface = vcomponents[c][ii];
+      //   Rcpp::Rcout << "FFFFFFFFFFFFFFFFF  " << ddface.size() << "  FFFFFFFFFFFFFFFFFFFFFFFF\n";
+      //   for(int uuu = 0; uuu < 3; uuu++) {
+      //     Rcpp::Rcout << "GGGGGGGGGGGG  " << ddface[uuu] << "  GGGGGGGGGGGGGG\n";
+      //   }
+      //   const EPoint3 vertex1 = mesh.point(CGAL::SM_Vertex_index(ddface[0]));
+      //   const EPoint3 vertex2 = mesh.point(CGAL::SM_Vertex_index(ddface[1]));
+      //   const EPoint3 vertex3 = mesh.point(CGAL::SM_Vertex_index(ddface[2]));
+      //   dd.add_vertex(EPoint3(vertex1.x(), vertex1.y(), vertex1.z()));
+      //   dd.add_vertex(EPoint3(vertex2.x(), vertex2.y(), vertex2.z()));
+      //   dd.add_vertex(EPoint3(vertex3.x(), vertex3.y(), vertex3.z()));
+      // }
+      // ddlist[c] = dd;
+      //////
+      Rcpp::Rcout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n";
+      if(c == 0) {
+        for(EMesh3::Vertex_index v : dd.vertices()) {
+          int j = int(v);
+          if(j < 12) {
+            Rcpp::Rcout << "XXXXXXXXXX  " << j << "  XXXXXXXXXX\n";
+            EPoint3 pt = dd.point(v);
+            Rcpp::Rcout << CGAL::to_double<EK::FT>(pt.x()) << "\n";
+            Rcpp::Rcout << CGAL::to_double<EK::FT>(pt.y()) << "\n";
+            Rcpp::Rcout << CGAL::to_double<EK::FT>(pt.z()) << "\n";
+            Rcpp::Rcout << "------------";
+            Rcpp::Rcout << vert(0, int(components[c][j])) << "\n";
+            Rcpp::Rcout << vert(1, int(components[c][j])) << "\n";
+            Rcpp::Rcout << vert(2, int(components[c][j])) << "\n";
+            Rcpp::Rcout << "------------";
+          }
+        }
+        //////////
+        // for(EMesh3::Vertex_index v : dd.vertices()) {
+        //   int j = int(v);
+        //   if(j < 12) {
+        //     Rcpp::Rcout << "YYYYYYYYYYY  " << j << "  YYYYYYYYYYY\n";
+        //     EPoint3 pt = dd.point(v);
+        //     Rcpp::Rcout << CGAL::to_double<EK::FT>(pt.x()) << "\n";
+        //     Rcpp::Rcout << CGAL::to_double<EK::FT>(pt.y()) << "\n";
+        //     Rcpp::Rcout << CGAL::to_double<EK::FT>(pt.z()) << "\n";
+        //     Rcpp::Rcout << "------------";
+        //     Rcpp::Rcout << vert(0, components[c][j]) << "\n";
+        //     Rcpp::Rcout << vert(1, components[c][j]) << "\n";
+        //     Rcpp::Rcout << vert(2, components[c][j]) << "\n";
+        //     Rcpp::Rcout << "------------";
+        //   }
+        // }
+      }
       // EMesh3 cc;
       // CGAL::copy_face_graph(mesh, cc);
       // std::vector<std::size_t> keep = {i};
@@ -207,25 +406,101 @@ public:
       //   Rcpp::Rcout << vmap[v] << "\n";
       // }
       if(really_triangulate) {
-        const bool success = PMP::triangulate_faces(cc);
+        const bool success = PMP::triangulate_faces(dd);
         if(!success) {
           const std::string msg = "Triangulation has failed (component " +
-            std::to_string(i + 1) + ").";
+            std::to_string(c + 1) + ").";
           Rcpp::stop(msg);
         }
       }
-      Rcpp::NumericMatrix nn(2,2);
-      Rcpp::StringVector vv(2);
-      Rcpp::StringVector ff(2);
-      MyMesh mycc = MYMESH((
-        xxx.mesh = cc,
-        xxx.normals = Rcpp::Nullable<Rcpp::NumericMatrix>(nn),
-        xxx.vcolors = Rcpp::Nullable<Rcpp::StringVector>(vv),
-        xxx.fcolors = Rcpp::Nullable<Rcpp::StringVector>(ff)
-      ));
-      xptrs(i) = Rcpp::XPtr<MyMesh>(new MyMesh(mycc), false);
+//      MyMesh* mycc = new MyMesh; 
+      // Rcpp::NumericMatrix cnormals(3, Sizes[c]);
+      // Rcpp::NumericMatrix dnormals(3, Sizes[c]);
+      // dd.collect_garbage();
+      // Rcpp::Rcout << "Sizes[c]  " << Sizes[c] << "  Sizes[c]\n";
+      // Rcpp::Rcout << "Sizes[c]  " << dd.number_of_vertices() << "  Sizes[c]\n";
+      // Rcpp::Rcout << "Sizes[c]  " << dd.number_of_faces() << "  Sizes[c]\n";
+      // Rcpp::Rcout << "Sizes[c]  " << fsizes[c] << "  Sizes[c]\n";
+      // Rcpp::Rcout << "Sizes[c]  " << fcomponents[c].size() << "  Sizes[c]\n";
+      // if(normals.isNotNull()) {
+      //   Rcpp::NumericMatrix normals0(normals);
+      //   
+      //   for(EMesh3::Face_index fd : dd.faces()) {
+      //     std::vector<int> ccface;
+      //     for(EMesh3::Vertex_index vd : vertices_around_face(dd.halfedge(fd), dd)) {
+      //       ccface.push_back(int(vd));
+      //       Rcpp::Rcout << "VD  " << vd << "  VD\n";
+      //     }
+      //     int ff = fcomponents[c][int(fd)];
+      //     Rcpp::Rcout << "DDDDDDDDDDD  " << ff << "  DDDDDDDDDDDD\n";
+      //     std::vector<int> theface = vcomponents[c][ff];
+      //     Rcpp::Rcout << "EEEE  " << theface[0] << " " << theface[1] << " " << theface[2] << "  DDDDDDDDDDDD\n";
+      //     dnormals(Rcpp::_, ccface[0]) = normals0(Rcpp::_, theface[0]);
+      //     dnormals(Rcpp::_, ccface[1]) = normals0(Rcpp::_, theface[1]);
+      //     dnormals(Rcpp::_, ccface[2]) = normals0(Rcpp::_, theface[2]);
+      //   }
+        
+        // int i = 0;
+        // for(EMesh3::Vertex_index v : mesh.vertices()) {
+        //   if(vccmap[v] == c){
+        //     Rcpp::NumericVector col = normals0(Rcpp::_, int(v));
+        //     cnormals(Rcpp::_, i++) = col;
+        //   };
+        // }
+        // for(EMesh3::Face_index fd : cc.faces()) {
+        //   std::vector<int> ccface;
+        //   for(EMesh3::Vertex_index vd : vertices_around_face(cc.halfedge(fd), cc)) {
+        //     ccface.push_back(int(vd));
+        //   }
+        //   int ff = fcomponents[c][int(fd)];
+        //   Rcpp::Rcout << "DDDDDDDDDDD  " << ff << "  DDDDDDDDDDDD\n";
+        //   std::vector<int> theface = vcomponents[c][ff];
+        //   Rcpp::Rcout << "EEEE  " << theface[0] << " " << theface[1] << " " << theface[2] << "  DDDDDDDDDDDD\n";
+        //   cnormals(Rcpp::_, ccface[0]) = normals0(Rcpp::_, theface[0]);
+        //   cnormals(Rcpp::_, ccface[1]) = normals0(Rcpp::_, theface[1]);
+        //   cnormals(Rcpp::_, ccface[2]) = normals0(Rcpp::_, theface[2]);
+        // }
+        // for(int i = 0; i < Sizes[c]; i++) {
+        //   Rcpp::NumericVector col = normals0(Rcpp::_, components[c][i]);
+        //   cnormals(Rcpp::_, i) = col;
+        // }
+        
+        // for(int i = 0; i < Sizes[c]; i++) {
+        //   Rcpp::NumericVector col = normals0(Rcpp::_, components[c][i]);
+        //   cnormals(Rcpp::_, i) = col;
+        // }
+//        Rcpp::Rcout << Sizes[c];
+//        Rcpp::Rcout << cnormals.ncol();
+//        mycc->normals = Rcpp::Nullable<Rcpp::NumericMatrix>(cnormals); // !!!! achtung si tu triangules !!!
+//      }
+//      Rcpp::Nullable<Rcpp::NumericMatrix> test = mycc->normals;
+      // Rcpp::Rcout << "\n" << test.isNotNull();
+      // Rcpp::RObject robj = Rcpp::wrap(mycc->normals);
+      // int obj_type = robj.sexp_type();
+      // Rcpp::Rcout << "\n---" << obj_type << "\n---";
+      Rcpp::List MM = Rcpp::List::create(
+        Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(dd), false),
+        Rcpp::Named("normals") = Rcpp::Nullable<Rcpp::NumericMatrix>(NORMALS[c]),
+        Rcpp::Named("vcolors") = R_NilValue,
+        Rcpp::Named("fcolors") = R_NilValue
+      );
+      mymeshes(c) = MM;
+      //delete mycc;
     }
-    return xptrs;
+    
+    // for(int yyy = 0; yyy < ncc; yyy++) {
+    //   EMesh3 dd = ddlist[yyy];
+    //   for(int ii = 0; ii < fsizes[yyy]; ii++) {
+    //     std::vector<int> ddface = vcomponents[yyy][ii];
+    //     dd.add_face(
+    //       CGAL::SM_Vertex_index(ddface[0]), 
+    //       CGAL::SM_Vertex_index(ddface[1]), 
+    //       CGAL::SM_Vertex_index(ddface[2])
+    //     );
+    //   }
+    // }
+    
+    return mymeshes;
   }
   
   Rcpp::List convexParts(const bool triangulate) {
@@ -262,10 +537,16 @@ public:
           Rcpp::stop("Triangulation has failed.");
         }
       }
-      MyMesh mycmesh = MYMESH((
-        xxx.mesh = cmesh
-      ));
-      out(i) = Rcpp::XPtr<MyMesh>(new MyMesh(mycmesh), false);
+      // MyMesh mycmesh = MYMESH((
+      //   xxx.mesh = cmesh
+      // ));
+      Rcpp::List mycmesh = Rcpp::List::create(
+        Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(cmesh), false),
+        Rcpp::Named("normals") = R_NilValue,
+        Rcpp::Named("vcolors") = R_NilValue,
+        Rcpp::Named("fcolors") = R_NilValue
+      );
+      out(i) = mycmesh;
       i++;
     }
     return out;
@@ -357,14 +638,29 @@ public:
     return gdistances;    
   }
   
-  Rcpp::List getRmesh(const bool normals) {
+  Rcpp::Nullable<Rcpp::NumericMatrix> getNormals() {
+    if(normals.isNotNull()) {
+      Rcpp::NumericMatrix normals0(normals);
+      Rcpp::Rcout << normals0.ncol() << " " << normals0.nrow();
+      return normals;
+    } else {
+      Rcpp::Rcout << "null";
+      return R_NilValue;
+    }
+  }
+  
+  Rcpp::List getRmesh() {
+    const bool there_is_normals = normals.isNotNull();
     Rcpp::List rmesh;
     if(CGAL::is_triangle_mesh(mesh)) {
-      rmesh = RSurfEKMesh2(mesh, normals, 3);
+      rmesh = RSurfEKMesh2(mesh, !there_is_normals, 3);
     } else if(CGAL::is_quad_mesh(mesh)) {
-      rmesh = RSurfEKMesh2(mesh, normals, 4);
+      rmesh = RSurfEKMesh2(mesh, !there_is_normals, 4);
     } else {
-      rmesh = RSurfEKMesh(mesh, normals);
+      rmesh = RSurfEKMesh(mesh, !there_is_normals);
+    }
+    if(there_is_normals) {
+      rmesh["normals"] = normals;
     }
     if(vcolors.isNotNull() || fcolors.isNotNull()) {
       const size_t nf = mesh.number_of_faces();
@@ -380,7 +676,7 @@ public:
     return rmesh;
   }
   
-  Rcpp::XPtr<MyMesh> intersection(Rcpp::XPtr<EMesh3> mesh2XPtr) {
+  Rcpp::List intersection(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The reference mesh is not triangle.");
     }
@@ -401,10 +697,16 @@ public:
     if(!success) {
       Rcpp::stop("Intersection computation has failed.");
     }
-    MyMesh myimesh = MYMESH((
-      xxx.mesh = imesh
-    ));
-    return Rcpp::XPtr<MyMesh>(new MyMesh(myimesh), false);
+    // MyMesh myimesh = MYMESH((
+    //   xxx.mesh = imesh
+    // ));
+    Rcpp::List myimesh = Rcpp::List::create(
+      Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false),
+      Rcpp::Named("normals") = R_NilValue,
+      Rcpp::Named("vcolors") = R_NilValue,
+      Rcpp::Named("fcolors") = R_NilValue
+    );
+    return myimesh;
   }
 
   bool isClosed() {
@@ -453,7 +755,7 @@ public:
     PMP::reverse_face_orientations(mesh);  
   }
   
-  Rcpp::XPtr<MyMesh> subtract(Rcpp::XPtr<EMesh3> mesh2XPtr) {
+  Rcpp::List subtract(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The reference mesh is not triangle.");
     }
@@ -474,10 +776,16 @@ public:
     if(!success) {
       Rcpp::stop("Difference computation has failed.");
     }
-    MyMesh myimesh = MYMESH((
-      xxx.mesh = imesh
-    ));
-    return Rcpp::XPtr<MyMesh>(new MyMesh(myimesh), false);
+    // MyMesh myimesh = MYMESH((
+    //   xxx.mesh = imesh
+    // ));
+    Rcpp::List myimesh = Rcpp::List::create(
+      Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false),
+      Rcpp::Named("normals") = R_NilValue,
+      Rcpp::Named("vcolors") = R_NilValue,
+      Rcpp::Named("fcolors") = R_NilValue
+    );
+    return myimesh;
   }
   
   void triangulate() {
@@ -489,7 +797,7 @@ public:
     fcolors = R_NilValue;
   }
 
-  Rcpp::XPtr<MyMesh> Union(Rcpp::XPtr<EMesh3> mesh2XPtr) {
+  Rcpp::List Union(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The reference mesh is not triangle.");
     }
@@ -510,10 +818,16 @@ public:
     if(!success) {
       Rcpp::stop("Union computation has failed.");
     }
-    MyMesh myimesh = MYMESH((
-      xxx.mesh = imesh
-    ));
-    return Rcpp::XPtr<MyMesh>(new MyMesh(myimesh), false);
+    // MyMesh myimesh = MYMESH((
+    //   xxx.mesh = imesh
+    // ));
+    Rcpp::List myimesh = Rcpp::List::create(
+      Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false),
+      Rcpp::Named("normals") = R_NilValue,
+      Rcpp::Named("vcolors") = R_NilValue,
+      Rcpp::Named("fcolors") = R_NilValue
+    );
+    return myimesh;
   }
   
   Rcpp::NumericMatrix vertices() {
