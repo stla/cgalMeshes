@@ -267,14 +267,16 @@ public:
     Rcpp::Rcout << "mapfaces done\n";
     //
     std::vector<std::vector<std::vector<EMesh3::Vertex_index>>> connec(ncc);
+    std::vector<std::vector<EMesh3::Face_index>> todelete(ncc);
+    std::vector<std::size_t> nfaces(ncc);
     for(std::size_t c = 0; c < ncc; c++) {
       std::vector<EMesh3::Vertex_index> component = components[c];
-      std::map<EMesh3::Vertex_index,int> newinds;
-      for(int j = 0; j < component.size(); j++) {
+      std::size_t csize = component.size();
+      std::map<EMesh3::Vertex_index, int> newinds;
+      for(int j = 0; j < csize; j++) {
         newinds[component[j]] = j;
       }
       Rcpp::Rcout << "newinds done\n";
-      std::vector<EMesh3::Face_index> todelete;
       for(const auto& [faceindex, intindex] : mapfaces) {
         auto it = vertices_around_face(mesh.halfedge(faceindex), mesh);
         if(vccmap[*(it.begin())] == c) {
@@ -285,15 +287,16 @@ public:
           }
           //Rcpp::Rcout << "facenewinds done\n";
           connec[c].push_back(facenewinds);
-          todelete.push_back(faceindex);
+          todelete[c].push_back(faceindex);
         }
       }
-      for(int fi = 0; fi < todelete.size(); fi++) {
-        mapfaces.erase(todelete[fi]);
+      nfaces[c] = todelete[c].size();
+      for(int fi = 0; fi < nfaces[c]; fi++) {
+        mapfaces.erase(todelete[c][fi]);
         //Rcpp::Rcout << "facedindex erased";
       }
       EMesh3 dd;
-      for(int j = 0; j < component.size(); j++) {
+      for(int j = 0; j < csize; j++) {
         EPoint3 pt = mesh.point(component[j]);
         dd.add_vertex(pt);
       }
@@ -303,7 +306,7 @@ public:
     std::vector<EMesh3> ddlist2(ncc);
     for(std::size_t c = 0; c < ncc; c++) {
       EMesh3 dd = ddlist[c];
-      for(int j = 0; j < connec[c].size(); j++) {
+      for(int j = 0; j < nfaces[c]; j++) {
         dd.add_face(connec[c][j]);
       }
       Rcpp::Rcout << "faces added to dd\n";
@@ -517,11 +520,10 @@ public:
     if(fcolors.isNotNull()) {
       Rcpp::StringVector fcolors0(fcolors);
       for(std::size_t c = 0; c < ncc; c++) {
-        std::vector<EMesh3::Vertex_index> component = components[c];
-        size_t csize = component.size();
+        size_t csize = todelete[c].size();
         Rcpp::StringVector cfcolors(csize);
         for(size_t j = 0; j < csize; j++) {
-          cfcolors(j) = fcolors0(int(component[j]));
+          cfcolors(j) = fcolors0(int(todelete[c][j]));
         }
         FCOLORS[c] = Rcpp::Nullable<Rcpp::StringVector>(cfcolors);
       }
