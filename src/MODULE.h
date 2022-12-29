@@ -257,6 +257,7 @@ public:
     //   DD.add_vertex(vertex);
     // }
     // Rcpp::Rcout << "\n DD NUmBER VERTICES: " << DD.number_of_vertices() << "\n";
+    
     std::vector<EMesh3> ddlist(ncc);
     std::map<EMesh3::Face_index, int> mapfaces;
     int iii = 0;
@@ -264,12 +265,10 @@ public:
       mapfaces[f] = iii++;
     }
     Rcpp::Rcout << "mapfaces done\n";
-    Rcpp::NumericMatrix normals0(normals);
-    std::vector<Rcpp::NumericMatrix> NORMALS(ncc);
+    //
     std::vector<std::vector<std::vector<EMesh3::Vertex_index>>> connec(ncc);
     for(std::size_t c = 0; c < ncc; c++) {
       std::vector<EMesh3::Vertex_index> component = components[c];
-      Rcpp::NumericMatrix cnormals(3, component.size());
       std::map<EMesh3::Vertex_index,int> newinds;
       for(int j = 0; j < component.size(); j++) {
         newinds[component[j]] = j;
@@ -281,35 +280,34 @@ public:
         if(vccmap[*(it.begin())] == c) {
           std::vector<EMesh3::Vertex_index> facenewinds;
           for(EMesh3::Vertex_index v : it) {
-            Rcpp::Rcout << "newind: " << newinds[v] << "\n";
+            //Rcpp::Rcout << "newind: " << newinds[v] << "\n";
             facenewinds.push_back(CGAL::SM_Vertex_index(newinds[v]));
           }
-          Rcpp::Rcout << "facenewinds done\n";
+          //Rcpp::Rcout << "facenewinds done\n";
           connec[c].push_back(facenewinds);
           todelete.push_back(faceindex);
         }
       }
       for(int fi = 0; fi < todelete.size(); fi++) {
         mapfaces.erase(todelete[fi]);
-        Rcpp::Rcout << "facedindex erased";
+        //Rcpp::Rcout << "facedindex erased";
       }
       EMesh3 dd;
       for(int j = 0; j < component.size(); j++) {
         EPoint3 pt = mesh.point(component[j]);
         dd.add_vertex(pt);
-        cnormals(Rcpp::_, j) = normals0(Rcpp::_, int(component[j]));
       }
       Rcpp::Rcout << "vertices added to dd\n";
       ddlist[c] = dd;
-      NORMALS[c] = cnormals;
     }
+    std::vector<EMesh3> ddlist2(ncc);
     for(std::size_t c = 0; c < ncc; c++) {
       EMesh3 dd = ddlist[c];
       for(int j = 0; j < connec[c].size(); j++) {
         dd.add_face(connec[c][j]);
       }
       Rcpp::Rcout << "faces added to dd\n";
-      
+      ddlist2[c] = dd;
       //Rcpp::Rcout << "component " + std::to_string(c) << "\n";
       // Filtered_graph ffg(mesh, c, fccmap);//, CGAL::parameters::face_index_map(fmap).halfedge_index_map(hmap).vertex_index_map(vindexmap));
       // assert(ffg.is_selection_valid());
@@ -413,7 +411,8 @@ public:
           Rcpp::stop(msg);
         }
       }
-//      MyMesh* mycc = new MyMesh; 
+      
+      //      MyMesh* mycc = new MyMesh; 
       // Rcpp::NumericMatrix cnormals(3, Sizes[c]);
       // Rcpp::NumericMatrix dnormals(3, Sizes[c]);
       // dd.collect_garbage();
@@ -478,14 +477,67 @@ public:
       // Rcpp::RObject robj = Rcpp::wrap(mycc->normals);
       // int obj_type = robj.sexp_type();
       // Rcpp::Rcout << "\n---" << obj_type << "\n---";
+      //delete mycc;
+    }
+    std::vector<Rcpp::Nullable<Rcpp::NumericMatrix>> NORMALS(ncc);
+    std::vector<Rcpp::Nullable<Rcpp::StringVector>> VCOLORS(ncc);
+    std::vector<Rcpp::Nullable<Rcpp::StringVector>> FCOLORS(ncc);
+    if(normals.isNotNull()) {
+      Rcpp::NumericMatrix normals0(normals);
+      for(std::size_t c = 0; c < ncc; c++) {
+        std::vector<EMesh3::Vertex_index> component = components[c];
+        size_t csize = component.size();
+        Rcpp::NumericMatrix cnormals(3, csize);
+        for(size_t j = 0; j < csize; j++) {
+          cnormals(Rcpp::_, j) = normals0(Rcpp::_, int(component[j]));
+        }
+        NORMALS[c] = Rcpp::Nullable<Rcpp::NumericMatrix>(cnormals);
+      }
+    } else {
+      for(std::size_t c = 0; c < ncc; c++) {
+        NORMALS[c] = R_NilValue;
+      }
+    }
+    if(vcolors.isNotNull()) {
+      Rcpp::StringVector vcolors0(vcolors);
+      for(std::size_t c = 0; c < ncc; c++) {
+        std::vector<EMesh3::Vertex_index> component = components[c];
+        size_t csize = component.size();
+        Rcpp::StringVector cvcolors(csize);
+        for(size_t j = 0; j < csize; j++) {
+          cvcolors(j) = vcolors0(int(component[j]));
+        }
+        VCOLORS[c] = Rcpp::Nullable<Rcpp::StringVector>(cvcolors);
+      }
+    } else {
+      for(std::size_t c = 0; c < ncc; c++) {
+        VCOLORS[c] = R_NilValue;
+      }
+    }
+    if(fcolors.isNotNull()) {
+      Rcpp::StringVector fcolors0(fcolors);
+      for(std::size_t c = 0; c < ncc; c++) {
+        std::vector<EMesh3::Vertex_index> component = components[c];
+        size_t csize = component.size();
+        Rcpp::StringVector cfcolors(csize);
+        for(size_t j = 0; j < csize; j++) {
+          cfcolors(j) = fcolors0(int(component[j]));
+        }
+        FCOLORS[c] = Rcpp::Nullable<Rcpp::StringVector>(cfcolors);
+      }
+    } else {
+      for(std::size_t c = 0; c < ncc; c++) {
+        FCOLORS[c] = R_NilValue;
+      }
+    }
+    for(std::size_t c = 0; c < ncc; c++) {
       Rcpp::List MM = Rcpp::List::create(
-        Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(dd), false),
-        Rcpp::Named("normals") = Rcpp::Nullable<Rcpp::NumericMatrix>(NORMALS[c]),
-        Rcpp::Named("vcolors") = R_NilValue,
-        Rcpp::Named("fcolors") = R_NilValue
+        Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(ddlist2[c]), false),
+        Rcpp::Named("normals") = NORMALS[c],
+                                        Rcpp::Named("vcolors") = VCOLORS[c],
+                                                                        Rcpp::Named("fcolors") = FCOLORS[c]
       );
       mymeshes(c) = MM;
-      //delete mycc;
     }
     
     // for(int yyy = 0; yyy < ncc; yyy++) {
