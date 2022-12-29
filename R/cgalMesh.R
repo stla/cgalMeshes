@@ -266,7 +266,13 @@ cgalMesh <- R6Class(
     "connectedComponents" = function(triangulate = TRUE) {
       stopifnot(isBoolean(triangulate))
       xptrs <- private[[".CGALmesh"]]$connectedComponents(triangulate)
-      lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
+      out <- vector("list", length(xptrs))
+      for(i in 1:length(xptrs)) {
+        print(i)
+        out[[i]] <- cgalMesh$new(clean = xptrs[[i]])
+      }
+      out
+      #lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
     },
     
     #' @description Decomposition into convex parts. The mesh must be triangle.
