@@ -18,11 +18,11 @@ public:
            const Rcpp::Nullable<Rcpp::StringVector> &fcolors_)
     : mesh(
         csoup2mesh<EMesh3, EPoint3>(
-            matrix_to_points3<EPoint3>(vertices), 
-            list_to_faces(faces), 
-            clean
+          matrix_to_points3<EPoint3>(vertices), 
+          list_to_faces(faces), 
+          clean
         )
-    ),
+      ),
       mymesh(
         Rcpp::List::create(
           Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(&mesh, false),
@@ -30,11 +30,12 @@ public:
           Rcpp::Named("vcolors") = vcolors_,
           Rcpp::Named("fcolors") = fcolors_
         )
-    ), 
+      ), 
       xptr(Rcpp::XPtr<EMesh3>(&mesh, false)),
       normals(normals_),
       vcolors(vcolors_),
       fcolors(fcolors_) {}
+  
   CGALmesh(Rcpp::List mymesh_)
     : mesh(*(Rcpp::as<Rcpp::XPtr<EMesh3>>(mymesh_["xptr"]).get())),
       mymesh(mymesh_), 
@@ -42,6 +43,7 @@ public:
       normals(mymesh_["normals"]),
       vcolors(mymesh_["vcolors"]),
       fcolors(mymesh_["fcolors"]) {}
+  
   CGALmesh(const std::string filename, const bool binary)
     : mesh(readMeshFile(filename)), 
       mymesh(
@@ -106,16 +108,12 @@ public:
       Rcpp::stop("The clipping mesh self-intersects.");
     }
     
-    normals = R_NilValue;
-    vcolors = R_NilValue;
-
-    EMesh3 meshcopy;
+    EMesh3 mcopy;
     if(fcolors.isNotNull()) {
-      CGAL::copy_face_graph(mesh, meshcopy);
+      CGAL::copy_face_graph(mesh, mcopy);
     }
     
     const bool doNotModify = !clipVolume;
-
     const bool clipping = PMP::clip(
       mesh, clipper, PMP::parameters::clip_volume(clipVolume),
       PMP::parameters::clip_volume(clipVolume).do_not_modify(doNotModify)
@@ -123,54 +121,47 @@ public:
     if(!clipping) {
       Rcpp::stop("Clipping has failed.");
     }
-
     mesh.collect_garbage();
+    
+    normals = R_NilValue;
+    vcolors = R_NilValue;
     
     if(fcolors.isNotNull()) {
       Rcpp::StringVector fcolors0(fcolors);
-      const size_t nfaces = meshcopy.number_of_faces();
+      const size_t nfaces = mcopy.number_of_faces();
       std::vector<Triangle> triangles;
       triangles.reserve(nfaces);
-      for(EMesh3::Face_index fd : meshcopy.faces()) {
-        auto it = vertices_around_face(meshcopy.halfedge(fd), meshcopy);
-        auto vd = it.begin();
-        triangles.emplace_back(Triangle(meshcopy.point(*(++vd)), meshcopy.point(*(++vd)), meshcopy.point(*(vd))));
+      for(EMesh3::Face_index fd : mcopy.faces()) {
+        auto vd = vertices_around_face(mcopy.halfedge(fd), mcopy).begin();
+        triangles.emplace_back(Triangle(
+          mcopy.point(*(++vd)), mcopy.point(*(++vd)), mcopy.point(*vd)
+        ));
       }
-      
+
       const size_t nf = mesh.number_of_faces();
       Rcpp::StringVector fcolors1(nf);
       size_t j = 0;
       for(EMesh3::Face_index f : mesh.faces()) {
-        auto it = vertices_around_face(mesh.halfedge(f), mesh);
-        auto vd = it.begin();
-        Triangle tr(mesh.point(*(++vd)), mesh.point(*(++vd)), mesh.point(*(vd)));
+        auto vd = vertices_around_face(mesh.halfedge(f), mesh).begin();
+        Triangle tr(mesh.point(*(++vd)), mesh.point(*(++vd)), mesh.point(*vd));
         EPoint3 c = CGAL::centroid(tr);
         size_t k;
         for(k = 0; k < nfaces; k++) {
-          Triangle trk = triangles[k];
-          if(trk.has_on(c)) {
+          if(triangles[k].has_on(c)) {
             break;
           }
         }
         fcolors1(j++) = fcolors0(k);
       }
-      Rcpp::Nullable<Rcpp::StringVector> nullable_fcolors(fcolors1);
-      fcolors = nullable_fcolors;
+      fcolors = Rcpp::Nullable<Rcpp::StringVector>(fcolors1);
     }
-    
   }
   
   Rcpp::List clone() {
     EMesh3 copy;
     CGAL::copy_face_graph(mesh, copy);
-    // MyMesh mycopy = MYMESH((
-    //   xxx.mesh = copy,
-    //   xxx.normals = normals,
-    //   xxx.vcolors = vcolors,
-    //   xxx.fcolors = fcolors
-    // ));
     Rcpp::List mycopy = Rcpp::List::create(
-      Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(&copy, false),
+      Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(copy), false),
       Rcpp::Named("normals") = normals,
       Rcpp::Named("vcolors") = vcolors,
       Rcpp::Named("fcolors") = fcolors
@@ -182,19 +173,19 @@ public:
     // Face_index_map fccmap = mesh.add_property_map<face_descriptor, std::size_t>("f:CC").first;
     // const std::size_t ncc = PMP::connected_components(mesh, fccmap);
     Vertex_index_map vccmap = mesh.add_property_map<vertex_descriptor, std::size_t>("v:CC").first;
-    Vertex_index_map vindexmap = mesh.add_property_map<vertex_descriptor, std::size_t>("vindex:I").first;
+    // Vertex_index_map vindexmap = mesh.add_property_map<vertex_descriptor, std::size_t>("vindex:I").first;
     const std::size_t ncc = connected_components(mesh, vccmap);
     std::vector<std::vector<EMesh3::Vertex_index>> components(ncc);
-    std::vector<std::size_t> Indices;
-    Indices.reserve(mesh.number_of_vertices());
-    std::vector<int> Sizes(ncc, 0);
+    // std::vector<std::size_t> Indices;
+    // Indices.reserve(mesh.number_of_vertices());
+    // std::vector<int> Sizes(ncc, 0);
     Rcpp::NumericMatrix vert = getVertices_EK(mesh);
-    int kk = 0;
+    // int kk = 0;
     for(EMesh3::Vertex_index v : mesh.vertices()) {
       std::size_t c = vccmap[v];
       components[c].push_back(v);
-      Indices.emplace_back(c);
-      Sizes[c]++;
+      // Indices.emplace_back(c);
+      // Sizes[c]++;
       int j = int(v);
       if(j < 4) {
         Rcpp::Rcout << "oooooooooo  " << j << "  ooooooooo\n";
@@ -214,23 +205,23 @@ public:
     //   std::size_t c = vccmap[v];
     //   vindexmap[v] = components[c][counters[c]++];
     // }
-    Face_index_map fccmap = mesh.add_property_map<face_descriptor, std::size_t>("f:CC").first;
-    std::vector<std::vector<int>> fcomponents(ncc);
-    std::vector<std::vector<std::vector<int>>> vcomponents(ncc);
-    std::vector<int> fsizes(ncc, 0);
-    for(EMesh3::Face_index f : mesh.faces()) {
-      auto it = vertices_around_face(mesh.halfedge(f), mesh);
-      auto v = it.begin();
-      std::size_t c = vccmap[*v];
-      fccmap[f] = c;
-      fcomponents[c].push_back(int(f));
-      fsizes[c]++;
-      std::vector<int> theface(3);
-      theface[0] = *(v);
-      theface[1] = *(++v);
-      theface[2] = *(++v);
-      vcomponents[c].push_back(theface);
-    }
+    // Face_index_map fccmap = mesh.add_property_map<face_descriptor, std::size_t>("f:CC").first;
+    // std::vector<std::vector<int>> fcomponents(ncc);
+    // std::vector<std::vector<std::vector<int>>> vcomponents(ncc);
+    // std::vector<int> fsizes(ncc, 0);
+    // for(EMesh3::Face_index f : mesh.faces()) {
+    //   auto it = vertices_around_face(mesh.halfedge(f), mesh);
+    //   auto v = it.begin();
+    //   std::size_t c = vccmap[*v];
+    //   fccmap[f] = c;
+    //   fcomponents[c].push_back(int(f));
+    //   fsizes[c]++;
+    //   std::vector<int> theface(3);
+    //   theface[0] = *(v);
+    //   theface[1] = *(++v);
+    //   theface[2] = *(++v);
+    //   vcomponents[c].push_back(theface);
+    // }
     if(ncc == 1) {
       Message("Only one component found.\n");
     } else {
@@ -536,8 +527,8 @@ public:
       Rcpp::List MM = Rcpp::List::create(
         Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(ddlist2[c]), false),
         Rcpp::Named("normals") = NORMALS[c],
-                                        Rcpp::Named("vcolors") = VCOLORS[c],
-                                                                        Rcpp::Named("fcolors") = FCOLORS[c]
+        Rcpp::Named("vcolors") = VCOLORS[c],
+        Rcpp::Named("fcolors") = FCOLORS[c]
       );
       mymeshes(c) = MM;
     }
@@ -615,9 +606,10 @@ public:
     for(size_t i = 0; i < npoints; i++){
       Rcpp::NumericVector point_i = points(Rcpp::_, i);
       std::vector<EPoint3> pt = {EPoint3(point_i(0), point_i(1), point_i(2))};
-      distances(i) = PMP::max_distance_to_triangle_mesh<CGAL::Sequential_tag>(
-        pt, mesh
-      );
+      distances(i) = 
+        PMP::max_distance_to_triangle_mesh<CGAL::Sequential_tag>(
+          pt, mesh
+        );
     }
     return distances;
   }  
@@ -664,15 +656,13 @@ public:
       Rcpp::stop("Failed to fair the mesh.");
     }
     normals = R_NilValue;
-    vcolors = R_NilValue;
-    fcolors = R_NilValue;
   }
   
   Rcpp::NumericVector geoDists(const int index) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
-    int nvertices = mesh.number_of_vertices();
+    const int nvertices = mesh.number_of_vertices();
     if(index >= nvertices) {
       Rcpp::stop("Too large index.");
     }
@@ -686,21 +676,13 @@ public:
     Rcpp::NumericVector gdistances(nvertices);
     int i = 0;
     for(vertex_descriptor vd : mesh.vertices()) {
-      gdistances(i) = get(vertex_distance, vd);
-      i++;
+      gdistances(i++) = get(vertex_distance, vd);
     }
     return gdistances;    
   }
   
   Rcpp::Nullable<Rcpp::NumericMatrix> getNormals() {
-    if(normals.isNotNull()) {
-      Rcpp::NumericMatrix normals0(normals);
-      Rcpp::Rcout << normals0.ncol() << " " << normals0.nrow();
-      return normals;
-    } else {
-      Rcpp::Rcout << "null";
-      return R_NilValue;
-    }
+    return normals;
   }
   
   Rcpp::List getRmesh() {
@@ -717,10 +699,10 @@ public:
       rmesh["normals"] = normals;
     }
     if(vcolors.isNotNull() || fcolors.isNotNull()) {
-      const size_t nf = mesh.number_of_faces();
+      const size_t nv = mesh.number_of_vertices();
       if(vcolors.isNotNull()) {
         Rcpp::StringVector colors(vcolors);
-        if(colors.size() == nf) {
+        if(colors.size() == nv) {
           rmesh["colors"] = vcolors;
         }
       } else {
@@ -751,9 +733,6 @@ public:
     if(!success) {
       Rcpp::stop("Intersection computation has failed.");
     }
-    // MyMesh myimesh = MYMESH((
-    //   xxx.mesh = imesh
-    // ));
     Rcpp::List myimesh = Rcpp::List::create(
       Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false),
       Rcpp::Named("normals") = R_NilValue,
@@ -787,6 +766,7 @@ public:
       Rcpp::stop("The mesh is not triangle.");
     }
     PMP::orient_to_bound_a_volume(mesh);
+    // faut-il updater normals?
   }
   
   void print() {
@@ -806,7 +786,8 @@ public:
   }
   
   void reverseFaceOrientations() {
-    PMP::reverse_face_orientations(mesh);  
+    PMP::reverse_face_orientations(mesh);
+    // update normals
   }
   
   Rcpp::List subtract(Rcpp::XPtr<EMesh3> mesh2XPtr) {
@@ -830,9 +811,6 @@ public:
     if(!success) {
       Rcpp::stop("Difference computation has failed.");
     }
-    // MyMesh myimesh = MYMESH((
-    //   xxx.mesh = imesh
-    // ));
     Rcpp::List myimesh = Rcpp::List::create(
       Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false),
       Rcpp::Named("normals") = R_NilValue,
@@ -872,9 +850,6 @@ public:
     if(!success) {
       Rcpp::stop("Union computation has failed.");
     }
-    // MyMesh myimesh = MYMESH((
-    //   xxx.mesh = imesh
-    // ));
     Rcpp::List myimesh = Rcpp::List::create(
       Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false),
       Rcpp::Named("normals") = R_NilValue,
@@ -902,9 +877,8 @@ public:
     return CGAL::to_double<EK::FT>(vol);
   }
   
-  
   void writeFile(
-      Rcpp::String filename, const int precision, const bool binary
+    Rcpp::String filename, const int precision, const bool binary
   ) {
     writeMeshFile(filename, precision, binary, mesh);
   }
