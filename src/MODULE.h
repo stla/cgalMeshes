@@ -88,7 +88,24 @@ public:
     return out;
   }
   
-  void clipMesh(Rcpp::XPtr<EMesh3> clipperXPtr, const bool clipVolume) {
+  Rcpp::IntegerMatrix testsplit(Rcpp::XPtr<EMesh3> clipperXPtr) {
+    EMesh3 splitter = *(clipperXPtr.get());
+    MyVisitor vis;
+    PMP::split(mesh, splitter, CGAL::parameters::visitor(vis));
+    mesh.collect_garbage();
+    Rcpp::IntegerMatrix out((*(vis.vmap)).size(), 2);
+//    Rcpp::IntegerVector out2((*(vis.i)).size());
+    int i = 0;
+    for(const auto& [fsplit, fnew] : *(vis.vmap)) {
+      out(i++, Rcpp::_) = Rcpp::IntegerVector({int(fsplit), int(fnew)});
+    }
+    // for(int j = 0; j < (*(vis.i)).size(); j++) {
+    //   out2(j) = (*(vis.i))[j];
+    // }
+    return out;
+  }
+  
+  Rcpp::List clipMesh(Rcpp::XPtr<EMesh3> clipperXPtr, const bool clipVolume) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
@@ -108,53 +125,102 @@ public:
       Rcpp::stop("The clipping mesh self-intersects.");
     }
     
-    EMesh3 mcopy;
-    if(fcolors.isNotNull()) {
-      CGAL::copy_face_graph(mesh, mcopy);
-    }
-    
+    // EMesh3 mcopy;
+    // if(fcolors.isNotNull()) {
+    //   CGAL::copy_face_graph(mesh, mcopy);
+    // }
+
+    MyVisitor vis;
+    Face_index_map fmap = mesh.add_property_map<face_descriptor, std::size_t>("f:i").first;
     const bool doNotModify = !clipVolume;
     const bool clipping = PMP::clip(
-      mesh, clipper, PMP::parameters::clip_volume(clipVolume),
-      PMP::parameters::clip_volume(clipVolume).do_not_modify(doNotModify)
+      mesh, clipper,
+      PMP::parameters::clip_volume(clipVolume).visitor(vis).face_index_map(fmap),
+      PMP::parameters::clip_volume(clipVolume).do_not_modify(false)
     );
     if(!clipping) {
       Rcpp::stop("Clipping has failed.");
     }
+    
     mesh.collect_garbage();
     
     normals = R_NilValue;
     vcolors = R_NilValue;
-    
-    if(fcolors.isNotNull()) {
-      Rcpp::StringVector fcolors0(fcolors);
-      const size_t nfaces = mcopy.number_of_faces();
-      std::vector<Triangle> triangles;
-      triangles.reserve(nfaces);
-      for(EMesh3::Face_index fd : mcopy.faces()) {
-        auto vd = vertices_around_face(mcopy.halfedge(fd), mcopy).begin();
-        triangles.emplace_back(Triangle(
-          mcopy.point(*(++vd)), mcopy.point(*(++vd)), mcopy.point(*vd)
-        ));
-      }
 
-      const size_t nf = mesh.number_of_faces();
-      Rcpp::StringVector fcolors1(nf);
-      size_t j = 0;
-      for(EMesh3::Face_index f : mesh.faces()) {
-        auto vd = vertices_around_face(mesh.halfedge(f), mesh).begin();
-        Triangle tr(mesh.point(*(++vd)), mesh.point(*(++vd)), mesh.point(*vd));
-        EPoint3 c = CGAL::centroid(tr);
-        size_t k;
-        for(k = 0; k < nfaces; k++) {
-          if(triangles[k].has_on(c)) {
-            break;
-          }
-        }
-        fcolors1(j++) = fcolors0(k);
-      }
-      fcolors = Rcpp::Nullable<Rcpp::StringVector>(fcolors1);
+    Rcpp::IntegerMatrix out((*(vis.vmap)).size(), 2);
+    //Rcpp::IntegerVector out2((*(vis.i)).size());
+    int i = 0;
+    for(const auto& [fsplit, fnew] : *(vis.vmap)) {
+      out(i++, Rcpp::_) = Rcpp::IntegerVector({int(fsplit), int(fnew)});
     }
+    // for(int j = 0; j < (*(vis.i)).size(); j++) {
+    //   out2(j) = (*(vis.i))[j];
+    // }
+    // return Rcpp::List::create(Rcpp::Named("out") = out, Rcpp::Named("out2") = out2);
+    Rcpp::Rcout << clipper.number_of_faces() << "\n";
+    
+    Rcpp::IntegerVector findices(mesh.number_of_faces());
+    int ff = 0;
+    for(EMesh3::Face_index fi : mesh.faces()) {
+      findices(ff++) = fmap[fi];
+    }
+    
+    std::pair<EMesh3::Property_map<face_descriptor, std::size_t>, bool> maybemap = mesh.property_map<face_descriptor, std::size_t>("f:i");
+    Rcpp::IntegerVector findices2(mesh.number_of_faces());
+    if(maybemap.second) {
+      int fff = 0;
+      for(EMesh3::Face_index fi : mesh.faces()) {
+        findices2(fff++) = maybemap.first[fi];
+      }
+    }
+    
+    Rcpp::Rcout << "PROPERTIES" << "\n";
+    std::vector<std::string> props = mesh.properties<face_descriptor>();
+    for(int p = 0; p < props.size(); p++) {
+      Rcpp::Rcout << props[p] << "\n";
+    }
+    
+    Rcpp::LogicalVector keep(clipper.number_of_faces());
+    int f = 0;
+    for(EMesh3::Face_index fi : clipper.faces()) {
+      keep(f++) = !clipper.is_removed(fi);
+    }
+    
+    return Rcpp::List::create(
+      Rcpp::Named("out") = out, 
+      Rcpp::Named("keep") = keep,
+      Rcpp::Named("findices") = findices,
+      Rcpp::Named("findices2") = findices2
+    );
+    // if(fcolors.isNotNull()) {
+    //   Rcpp::StringVector fcolors0(fcolors);
+    //   const size_t nfaces = mcopy.number_of_faces();
+    //   std::vector<Triangle> triangles;
+    //   triangles.reserve(nfaces);
+    //   for(EMesh3::Face_index fd : mcopy.faces()) {
+    //     auto vd = vertices_around_face(mcopy.halfedge(fd), mcopy).begin();
+    //     triangles.emplace_back(Triangle(
+    //       mcopy.point(*(++vd)), mcopy.point(*(++vd)), mcopy.point(*vd)
+    //     ));
+    //   }
+    // 
+    //   const size_t nf = mesh.number_of_faces();
+    //   Rcpp::StringVector fcolors1(nf);
+    //   size_t j = 0;
+    //   for(EMesh3::Face_index f : mesh.faces()) {
+    //     auto vd = vertices_around_face(mesh.halfedge(f), mesh).begin();
+    //     Triangle tr(mesh.point(*(++vd)), mesh.point(*(++vd)), mesh.point(*vd));
+    //     EPoint3 c = CGAL::centroid(tr);
+    //     size_t k;
+    //     for(k = 0; k < nfaces; k++) {
+    //       if(triangles[k].has_on(c)) {
+    //         break;
+    //       }
+    //     }
+    //     fcolors1(j++) = fcolors0(k);
+    //   }
+    //   fcolors = Rcpp::Nullable<Rcpp::StringVector>(fcolors1);
+    // }
   }
   
   Rcpp::List clone() {

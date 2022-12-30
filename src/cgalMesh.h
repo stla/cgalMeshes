@@ -149,3 +149,63 @@ EMesh3 readMeshFile(const std::string);
 void writeMeshFile(const std::string, const int, const bool, EMesh3&);
 
 EMesh3 dualMesh(EMesh3&);
+
+//////////////////////////////////////////
+void new_vertex_added(std::size_t, vertex_descriptor, const EMesh3&);
+
+struct MyVisitor : 
+  public PMP::Corefinement::Default_visitor<EMesh3>
+{
+  // void new_vertex_added(std::size_t i_id, vertex_descriptor v, const EMesh3 & tm) {
+  //   Rcpp::Rcout << v << "\n";
+  // }
+  void before_subface_creations(face_descriptor fsplit, const EMesh3 & tm) {
+    *i = fsplit;
+    // Rcpp::Rcout << j++ << "\n";
+    // Rcpp::Rcout << tm.has_garbage() << "\n";
+    // Rcpp::Rcout << "\n";
+    //Rcpp::Rcout << tm.number_of_faces() << "\n";
+  }
+  void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
+    (*vmap).insert(std::make_pair(fnew, *i));
+    // Rcpp::Rcout << fnew << "\n";
+    // Rcpp::Rcout << tm.number_of_faces() << "\n";
+    // Rcpp::Rcout << tm.has_garbage() << "\n";
+    // Rcpp::Rcout << "\n";
+  }
+  void in_place_operation(PMP::Corefinement::Boolean_operation_type t) {
+    Rcpp::Rcout << t << "\n";
+  }
+  // void after_face_copy(face_descriptor fsrc, const EMesh3 & tmsrc, face_descriptor ftgt, const EMesh3 & tmtgt) {
+  //   (*vmap).insert(std::make_pair(fsrc, ftgt));
+  // }
+  // void after_edge_duplicated(halfedge_descriptor hsrc, halfedge_descriptor hnew, const EMesh3 & tm) {
+  //   (*vmap).insert(std::make_pair(hsrc, hnew));
+  // }
+  // void intersection_edge_copy(halfedge_descriptor hsrc1, const EMesh3 & tmsrc1, halfedge_descriptor hsrc2, const EMesh3 & tmsrc2, halfedge_descriptor htgt, const EMesh3 & tmtgt) {
+  //   (*vmap).insert(std::make_pair(hsrc1, htgt));
+  // }
+  // void intersection_point_detected(std::size_t i_id, int sdim, halfedge_descriptor h_f, halfedge_descriptor h_e, const EMesh3 & tm_f, const EMesh3 & tm_e, bool is_target_coplanar, bool is_source_coplanar) {
+  //   (*vmap).insert(std::make_pair(h_f, sdim));
+  //   (*i).push_back(tm_f.number_of_faces());
+  // }
+  
+  MyVisitor()
+    : vmap(new std::map<face_descriptor, face_descriptor>()),
+      i(new face_descriptor()),
+      j(0)
+  {}
+  
+  std::shared_ptr<std::map<face_descriptor, face_descriptor>> vmap;
+  std::shared_ptr<face_descriptor> i;
+  int j;
+};
+// template <class MeshT>
+//using Visitor = PMP::PMPCorefinementVisitor;
+
+//typedef struct PMPCorefinementVisitor Visitor;
+
+//template <typename>
+//void Visitor::new_vertex_added(std::size_t, vertex_descriptor, const EMesh3&);
+
+//void Visitor<EMesh3>::new_vertex_added(std::size_t, vertex_descriptor, const EMesh3&);

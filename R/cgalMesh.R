@@ -220,9 +220,14 @@ cgalMesh <- R6Class(
       stopifnot(isBoolean(clipVolume))
       clipperXPtr <- getXPtr(clipper)
       private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
-      self
     },
 
+    "split" = function(splitter) {
+      stopifnot(isCGALmesh(splitter))
+      splitterXPtr <- getXPtr(splitter)
+      private[[".CGALmesh"]]$testsplit(splitterXPtr)
+    },
+    
     #' @description Decomposition into connected components.
     #' @param triangulate Boolean, whether to triangulate the connected 
     #'   components.

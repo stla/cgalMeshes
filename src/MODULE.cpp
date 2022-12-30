@@ -5,7 +5,7 @@
 #include "MODULE.h"
 
 RCPP_MODULE(class_CGALmesh) {
-  using namespace Rcpp;
+  using namespace Rcpp; 
   class_<CGALmesh>("CGALmesh")
     .constructor<
       const NumericMatrix, const List, const bool, 
@@ -43,5 +43,6 @@ RCPP_MODULE(class_CGALmesh) {
     .method("Union", &CGALmesh::Union)
     .method("vertices", &CGALmesh::vertices)
     .method("volume", &CGALmesh::volume)
-    .method("writeFile", &CGALmesh::writeFile);
+    .method("writeFile", &CGALmesh::writeFile)
+    .method("testsplit", &CGALmesh::testsplit);
 }
