@@ -53,7 +53,7 @@ EMesh3 vf2mesh(const Rcpp::NumericMatrix vertices,
 EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
                 const Rcpp::List faces,
                 bool soup,
-                const Rcpp::Nullable<Rcpp::NumericMatrix> &normals_,
+                Rcpp::Nullable<Rcpp::NumericMatrix> normals_,
                 const Rcpp::Nullable<Rcpp::StringVector> &vcolors_,
                 const Rcpp::Nullable<Rcpp::StringVector> &fcolors_) {
   Rcpp::Rcout << "soup: " << soup << "\n";
@@ -75,7 +75,8 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
     Normals_map normalsmap = 
       mesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal", def).first;
     for(int j = 0; j < normals.ncol(); j++) {
-      normalsmap[CGAL::SM_Vertex_index(j)] = normals(Rcpp::_, j);
+      Rcpp::NumericVector normal = normals(Rcpp::_, j);
+      normalsmap[CGAL::SM_Vertex_index(j)] = normal;
     }
   }
   if(vcolors_.isNotNull()) {
@@ -104,38 +105,110 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
   return mesh;
 }
 
-EMesh3 cloneMesh(EMesh3& mesh) {
+EMesh3 cloneMesh(EMesh3& mesh, const bool vnormals, const bool vcolors, const bool fcolors) {
   EMesh3 out;
   CGAL::copy_face_graph(mesh, out);
-  std::pair<Fcolors_map, bool> fcolors_ = 
-    mesh.property_map<face_descriptor, std::string>("f:color");
-  if(fcolors_.second) {
-    Fcolors_map fcolorsmap = 
-      out.add_property_map<face_descriptor, std::string>("f:color", "").first;
-    for(EMesh3::Face_index fi : out.faces()) {
-      fcolorsmap[fi] = fcolors_.first[fi];
+  if(fcolors) {
+    std::pair<Fcolors_map, bool> fcolors_ = 
+      mesh.property_map<face_descriptor, std::string>("f:color");
+    if(fcolors_.second) {
+      Fcolors_map fcolorsmap = 
+        out.add_property_map<face_descriptor, std::string>("f:color", "").first;
+      for(EMesh3::Face_index fi : out.faces()) {
+        fcolorsmap[fi] = fcolors_.first[fi];
+      }
     }
   }
-  std::pair<Vcolors_map, bool> vcolors_ = 
-    mesh.property_map<vertex_descriptor, std::string>("v:color");
-  if(vcolors_.second) {
-    Vcolors_map vcolorsmap = 
-      out.add_property_map<vertex_descriptor, std::string>("v:color", "").first;
-    for(EMesh3::Vertex_index vi : out.vertices()) {
-      vcolorsmap[vi] = vcolors_.first[vi];
+  if(vcolors) {
+    std::pair<Vcolors_map, bool> vcolors_ = 
+      mesh.property_map<vertex_descriptor, std::string>("v:color");
+    if(vcolors_.second) {
+      Vcolors_map vcolorsmap = 
+        out.add_property_map<vertex_descriptor, std::string>("v:color", "").first;
+      for(EMesh3::Vertex_index vi : out.vertices()) {
+        vcolorsmap[vi] = vcolors_.first[vi];
+      }
     }
   }
-  std::pair<Normals_map, bool> vnormals_ = 
-    mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
-  if(vnormals_.second) {
-    Rcpp::NumericVector def = {Rcpp::NumericVector::get_na(), Rcpp::NumericVector::get_na(), Rcpp::NumericVector::get_na()};
-    Normals_map vnormalsmap = 
-      out.add_property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal", def).first;
-    for(EMesh3::Vertex_index vi : out.vertices()) {
-      vnormalsmap[vi] = vnormals_.first[vi];
+  if(vnormals) {
+    std::pair<Normals_map, bool> vnormals_ = 
+      mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+    if(vnormals_.second) {
+      Rcpp::NumericVector def = {Rcpp::NumericVector::get_na(), Rcpp::NumericVector::get_na(), Rcpp::NumericVector::get_na()};
+      Normals_map vnormalsmap = 
+        out.add_property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal", def).first;
+      for(EMesh3::Vertex_index vi : out.vertices()) {
+        vnormalsmap[vi] = vnormals_.first[vi];
+      }
     }
   }
   return out;
+}
+
+void removeProperties(EMesh3& mesh, const bool vnormals, const bool vcolors, const bool fcolors) {
+  if(fcolors) {
+    std::pair<Fcolors_map, bool> fcolors_ = 
+      mesh.property_map<face_descriptor, std::string>("f:color");
+    if(fcolors_.second) {
+      mesh.remove_property_map(fcolors_.first);
+    }
+  }
+  if(vcolors) {
+    std::pair<Vcolors_map, bool> vcolors_ = 
+      mesh.property_map<vertex_descriptor, std::string>("v:color");
+    if(vcolors_.second) {
+      mesh.remove_property_map(vcolors_.first);
+    }
+  }
+  if(vnormals) {
+    std::pair<Normals_map, bool> vnormals_ = 
+      mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+    if(vnormals_.second) {
+      mesh.remove_property_map(vnormals_.first);
+    }
+  }
+}
+
+std::pair<std::map<face_descriptor, std::string>, bool> copy_fcolor(EMesh3& mesh) {
+  std::pair<Fcolors_map, bool> fcolors_ = 
+    mesh.property_map<face_descriptor, std::string>("f:color");
+  bool has_fcolor = fcolors_.second;
+  std::map<face_descriptor, std::string> fcolorsmap;
+  if(has_fcolor) {
+    for(EMesh3::Face_index fi: mesh.faces()) {
+      fcolorsmap[fi] = fcolors_.first[fi];
+    }
+    //mesh.remove_property_map(fcolors_.first);
+  }
+  return std::make_pair(fcolorsmap, has_fcolor);
+}
+
+std::pair<std::map<vertex_descriptor, std::string>, bool> copy_vcolor(EMesh3& mesh) {
+  std::pair<Vcolors_map, bool> vcolors_ = 
+    mesh.property_map<vertex_descriptor, std::string>("v:color");
+  bool has_vcolor = vcolors_.second;
+  std::map<vertex_descriptor, std::string> vcolorsmap;
+  if(has_vcolor) {
+    for(EMesh3::Vertex_index vi: mesh.vertices()) {
+      vcolorsmap[vi] = vcolors_.first[vi];
+    }
+    //mesh.remove_property_map(fcolors_.first);
+  }
+  return std::make_pair(vcolorsmap, has_vcolor);
+}
+
+std::pair<std::map<vertex_descriptor, Rcpp::NumericVector>, bool> copy_vnormal(EMesh3& mesh) {
+  std::pair<Normals_map, bool> vnormals_ = 
+    mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+  bool has_vnormal = vnormals_.second;
+  std::map<vertex_descriptor, Rcpp::NumericVector> vnormalsmap;
+  if(has_vnormal) {
+    for(EMesh3::Vertex_index vi: mesh.vertices()) {
+      vnormalsmap[vi] = vnormals_.first[vi];
+    }
+    //mesh.remove_property_map(fcolors_.first);
+  }
+  return std::make_pair(vnormalsmap, has_vnormal);
 }
 
 void clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {

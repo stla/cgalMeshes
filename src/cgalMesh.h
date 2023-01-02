@@ -161,6 +161,12 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix,
                 const Rcpp::Nullable<Rcpp::StringVector>&,
                 const Rcpp::Nullable<Rcpp::StringVector>&);
 
+EMesh3 cloneMesh(EMesh3&, const bool, const bool, const bool);
+void removeProperties(EMesh3&, const bool, const bool, const bool);
+std::pair<std::map<vertex_descriptor, Rcpp::NumericVector>, bool> copy_vnormal(EMesh3&);
+std::pair<std::map<vertex_descriptor, std::string>, bool> copy_vcolor(EMesh3&);
+std::pair<std::map<face_descriptor, std::string>, bool> copy_fcolor(EMesh3&);
+
 void clipping(EMesh3&, EMesh3&, const bool);
 //////////////////////////////////////////
 void new_vertex_added(std::size_t, vertex_descriptor, const EMesh3&);
@@ -223,6 +229,25 @@ struct UnionVisitor :
   }
   
   UnionVisitor()
+    : fmap(new std::map<face_descriptor, face_descriptor>()),
+      ofaceindex(new face_descriptor())
+  {}
+  
+  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap;
+  std::shared_ptr<face_descriptor> ofaceindex;
+};
+
+struct TriangulateVisitor : 
+  public PMP::Triangulate_faces::Default_visitor<EMesh3>
+{
+  void before_subface_creations(face_descriptor fsplit) {
+    *ofaceindex = fsplit;
+  }
+  void after_subface_created(face_descriptor fnew) {
+    (*fmap).insert(std::make_pair(fnew, *ofaceindex));
+  }
+  
+  TriangulateVisitor()
     : fmap(new std::map<face_descriptor, face_descriptor>()),
       ofaceindex(new face_descriptor())
   {}

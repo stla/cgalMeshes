@@ -507,6 +507,7 @@ cgalMesh <- R6Class(
       mesh <- private[[".CGALmesh"]]$getRmesh()
       if(!is.null(mesh[["normals"]])) {
         mesh[["normals"]] <- t(mesh[["normals"]])
+        print(head(mesh$normals))
       }
       if(rgl) {
         if(is.matrix(mesh[["faces"]])) {
