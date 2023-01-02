@@ -161,6 +161,7 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix,
                 const Rcpp::Nullable<Rcpp::StringVector>&,
                 const Rcpp::Nullable<Rcpp::StringVector>&);
 
+void clipping(EMesh3&, EMesh3&, const bool);
 //////////////////////////////////////////
 void new_vertex_added(std::size_t, vertex_descriptor, const EMesh3&);
 
@@ -213,6 +214,10 @@ struct MyVisitor :
 struct UnionVisitor : 
   public PMP::Corefinement::Default_visitor<EMesh3>
 {
+  void before_face_copy(face_descriptor fsrc, const EMesh3 & tmsrc, const EMesh3 & tmtgt) {
+    Rcpp::Rcout << fsrc;
+  }
+
   void after_face_copy(face_descriptor fsrc, const EMesh3 & tmsrc, face_descriptor ftgt, const EMesh3 & tmtgt) {
     (*fmap).insert(std::make_pair(fsrc, ftgt));
   }

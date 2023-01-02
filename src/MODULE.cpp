@@ -17,6 +17,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("area", &CGALmesh::area)
     .method("centroid", &CGALmesh::centroid)
     .method("clipMesh", &CGALmesh::clipMesh)
+    .method("doubleclip", &CGALmesh::doubleclip)
     .method("clone", &CGALmesh::clone)
     .method("connectedComponents", &CGALmesh::connectedComponents)
     .method("convexParts", &CGALmesh::convexParts)

@@ -222,6 +222,13 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
     },
 
+    "doubleclip" = function(clipper) {
+      stopifnot(isCGALmesh(clipper))
+      clipperXPtr <- getXPtr(clipper)
+      xptr <- private[[".CGALmesh"]]$doubleclip(clipperXPtr)
+      cgalMesh$new(clean = xptr)
+    },
+    
     "split" = function(splitter) {
       stopifnot(isCGALmesh(splitter))
       splitterXPtr <- getXPtr(splitter)
