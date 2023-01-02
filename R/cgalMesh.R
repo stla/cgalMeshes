@@ -54,18 +54,18 @@ cgalMesh <- R6Class(
     #'   mesh$vertices(), mesh$edges(), color = "darkred"
     #' )}
     "initialize" = function(
-      mesh, vertices, faces, clean = TRUE
+      mesh, vertices, faces, clean = FALSE
     ){
       # one can also initialize from an external pointer, but 
       # this is hidden to the user
-      if(inherits(clean, "list")) {
+      if(inherits(clean, "externalptr")) {
         private[[".CGALmesh"]] <- CGALmesh$new(clean)
         return(invisible(self))
       }
       stopifnot(isBoolean(clean))
       if(!missing(mesh)) {
         if(inherits(mesh, "mesh3d")) {
-          normals <- mesh[["normals"]]
+          normals <- mesh[["normals"]][1L:3L, ]
           vcolors <- NULL
           fcolors <- NULL
           colors <- mesh[["material"]]$color
@@ -472,6 +472,11 @@ cgalMesh <- R6Class(
       stopifnot(isStrictPositiveInteger(index))
       private[[".CGALmesh"]]$geoDists(as.integer(index) - 1L)
     },
+
+    #' @description Get the normals
+    "getFcolors" = function() {
+      private[[".CGALmesh"]]$getFcolors()
+    },
     
     #' @description Get the normals
     "getNormals" = function() {
@@ -750,6 +755,7 @@ cgalMesh <- R6Class(
       stopifnot(isCGALmesh(mesh2))
       xptr2 <- getXPtr(mesh2)
       uxptr <- private[[".CGALmesh"]]$Union(xptr2)
+      return(uxptr)
       cgalMesh$new(clean = uxptr)
     },
     

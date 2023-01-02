@@ -23,6 +23,7 @@
 #include <CGAL/Polygon_mesh_processing/repair.h>
 #include <CGAL/Polygon_mesh_processing/self_intersections.h>
 #include <CGAL/Polygon_mesh_processing/fair.h>
+#include <CGAL/Polygon_mesh_processing/merge_border_vertices.h>
 #include <CGAL/number_utils.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
 #include <CGAL/boost/graph/Face_filtered_graph.h>
@@ -78,6 +79,9 @@ typedef boost::graph_traits<EMesh3>::face_descriptor face_descriptor;
 typedef EMesh3::Property_map<face_descriptor, std::size_t> Face_index_map;
 typedef boost::graph_traits<Mesh3>::halfedge_descriptor halfedge_descriptor;
 typedef EMesh3::Property_map<halfedge_descriptor, std::size_t> Halfedge_index_map;
+typedef EMesh3::Property_map<vertex_descriptor, Rcpp::NumericVector> Normals_map;
+typedef EMesh3::Property_map<vertex_descriptor, std::string> Vcolors_map;
+typedef EMesh3::Property_map<face_descriptor, std::string> Fcolors_map;
 
 typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
 typedef AFS_reconstruction::Triangulation_3 AFS_triangulation3;
@@ -150,6 +154,13 @@ void writeMeshFile(const std::string, const int, const bool, EMesh3&);
 
 EMesh3 dualMesh(EMesh3&);
 
+EMesh3 makeMesh(const Rcpp::NumericMatrix,
+                const Rcpp::List,
+                const bool,
+                const Rcpp::Nullable<Rcpp::NumericMatrix>&,
+                const Rcpp::Nullable<Rcpp::StringVector>&,
+                const Rcpp::Nullable<Rcpp::StringVector>&);
+
 //////////////////////////////////////////
 void new_vertex_added(std::size_t, vertex_descriptor, const EMesh3&);
 
@@ -160,22 +171,22 @@ struct MyVisitor :
   //   Rcpp::Rcout << v << "\n";
   // }
   void before_subface_creations(face_descriptor fsplit, const EMesh3 & tm) {
-    *i = fsplit;
+    *ofaceindex = fsplit;
     // Rcpp::Rcout << j++ << "\n";
     // Rcpp::Rcout << tm.has_garbage() << "\n";
     // Rcpp::Rcout << "\n";
     //Rcpp::Rcout << tm.number_of_faces() << "\n";
   }
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
-    (*vmap).insert(std::make_pair(fnew, *i));
+    (*fmap).insert(std::make_pair(fnew, *ofaceindex));
     // Rcpp::Rcout << fnew << "\n";
     // Rcpp::Rcout << tm.number_of_faces() << "\n";
     // Rcpp::Rcout << tm.has_garbage() << "\n";
     // Rcpp::Rcout << "\n";
   }
-  void in_place_operation(PMP::Corefinement::Boolean_operation_type t) {
-    Rcpp::Rcout << t << "\n";
-  }
+  // void in_place_operation(PMP::Corefinement::Boolean_operation_type t) {
+  //   Rcpp::Rcout << t << "\n";
+  // }
   // void after_face_copy(face_descriptor fsrc, const EMesh3 & tmsrc, face_descriptor ftgt, const EMesh3 & tmtgt) {
   //   (*vmap).insert(std::make_pair(fsrc, ftgt));
   // }
@@ -191,15 +202,30 @@ struct MyVisitor :
   // }
   
   MyVisitor()
-    : vmap(new std::map<face_descriptor, face_descriptor>()),
-      i(new face_descriptor()),
-      j(0)
+    : fmap(new std::map<face_descriptor, face_descriptor>()),
+      ofaceindex(new face_descriptor())
   {}
   
-  std::shared_ptr<std::map<face_descriptor, face_descriptor>> vmap;
-  std::shared_ptr<face_descriptor> i;
-  int j;
+  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap;
+  std::shared_ptr<face_descriptor> ofaceindex;
 };
+
+struct UnionVisitor : 
+  public PMP::Corefinement::Default_visitor<EMesh3>
+{
+  void after_face_copy(face_descriptor fsrc, const EMesh3 & tmsrc, face_descriptor ftgt, const EMesh3 & tmtgt) {
+    (*fmap).insert(std::make_pair(fsrc, ftgt));
+  }
+  
+  UnionVisitor()
+    : fmap(new std::map<face_descriptor, face_descriptor>()),
+      ofaceindex(new face_descriptor())
+  {}
+  
+  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap;
+  std::shared_ptr<face_descriptor> ofaceindex;
+};
+
 // template <class MeshT>
 //using Visitor = PMP::PMPCorefinementVisitor;
 

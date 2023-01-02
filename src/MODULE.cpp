@@ -8,10 +8,10 @@ RCPP_MODULE(class_CGALmesh) {
   using namespace Rcpp; 
   class_<CGALmesh>("CGALmesh")
     .constructor<
-      const NumericMatrix, const List, const bool, 
+      const NumericMatrix, const List, bool, 
       Nullable<NumericMatrix>, Nullable<StringVector>, Nullable<StringVector>
     >()
-    .constructor<List>()
+    .constructor<XPtr<EMesh3>>()
     .constructor<Rcpp::String, const bool>()
     .field("xptr", &CGALmesh::xptr)
     .method("area", &CGALmesh::area)
@@ -27,6 +27,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("edges", &CGALmesh::edges)
     .method("fair", &CGALmesh::fair)
     .method("geoDists", &CGALmesh::geoDists)
+    .method("getFcolors", &CGALmesh::getFcolors)
     .method("getNormals", &CGALmesh::getNormals)
     .method("getRmesh", &CGALmesh::getRmesh)
     .method("intersection", &CGALmesh::intersection)
