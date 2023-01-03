@@ -265,40 +265,30 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   Rcpp::Rcout << "nfaces clipper: " << clipper.number_of_faces() << "\n";
   Rcpp::Rcout << "clipper has garbage: " << clipper.has_garbage() << "\n";
 
-/*   if(fcolorstdmap_.second && !clipVolume) {
-    std::map<face_descriptor, std::string> fcolorstdmap = fcolorstdmap_.first;
-    std::map<face_descriptor, face_descriptor> fmap = *(vis.fmap);
-    Rcpp::Rcout << "Test fcolorstdmap \n";
-    Rcpp::Rcout << fcolorstdmap[CGAL::SM_Face_index(1)] << "\n";
-    //mesh.remove_property_map(fcolorsmap_.first);
-    // Rcpp::Rcout << "Test f:color map \n";
-    // std::pair<Fcolors_map, bool> fcolormap_ = mesh.property_map<face_descriptor, std::string>("f:color");
-    // Rcpp::Rcout << fcolormap_.second;
-    Rcpp::Rcout << "\n";
-    Face_index_map fimapnew = tm.property_map<face_descriptor, std::size_t>("f:i").first;
-    Fcolors_map newfcolorsmap = 
-      tm.add_property_map<face_descriptor, std::string>("f:color").first;
-//    Rcpp::Rcout << "new fcolor map:\n";
-//    Rcpp::Rcout << newfcolorsmap[CGAL::SM_Face_index(1)] << "\n";
-    for(EMesh3::Face_index fi : tm.faces()) {
-      face_descriptor fd = CGAL::SM_Face_index(fimapnew[fi]);
-      if(size_t(fd) < nfaces) {
-        newfcolorsmap[fi] = fcolorstdmap[fd];
-      } else {
-        face_descriptor ffd = fmap[fd];
-        //   Rcpp::Rcout << ffd << "\n";
-        newfcolorsmap[fi] = fcolorstdmap[ffd];
+  if(!clipVolume){
+    if(fcolorMap_.second) {
+      std::map<face_descriptor, std::string> fcolorMap = fcolorMap_.first;
+      MapBetweenFaces fmap = *(vis.fmap_tm);
+      Fcolors_map newfcolor = 
+        tm.add_property_map<face_descriptor, std::string>("f:color", "").first;
+      for(EMesh3::Face_index fi : tm.faces()) {
+        face_descriptor fd = CGAL::SM_Face_index(fimap[fi]);
+        if(size_t(fd) < nfaces) {
+          newfcolor[fi] = fcolorMap[fd];
+        } else {
+          newfcolor[fi] = fcolorMap[fmap[fd]];
+        }
       }
     }
     return Rcpp::List::create(Rcpp::Named("o") = 1);
   }
- */  
+
   if(fcolorMap_.second) {
     std::map<face_descriptor, std::string> fcolorMap = fcolorMap_.first;
     std::map<face_descriptor, std::string> fcolorMap2 = fcolorMap2_.first;
-    std::map<face_descriptor, face_descriptor> fmap_tm = *(vis.fmap_tm);
-    std::map<face_descriptor, face_descriptor> fmap_clipper = *(vis.fmap_clipper);
-    std::map<face_descriptor, face_descriptor> ftargets = *(vis.ftargets);
+    MapBetweenFaces fmap_tm = *(vis.fmap_tm);
+    MapBetweenFaces fmap_clipper = *(vis.fmap_clipper);
+    MapBetweenFaces ftargets = *(vis.ftargets);
     std::map<face_descriptor, std::string> fcolormap_clipper;
     int fdi = 0;
     for(auto it = ftargets.rbegin(); it != ftargets.rend(); ++it) {

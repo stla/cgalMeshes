@@ -84,6 +84,7 @@ typedef EMesh3::Property_map<vertex_descriptor, Rcpp::NumericVector> Normals_map
 typedef EMesh3::Property_map<vertex_descriptor, std::string> Vcolors_map;
 typedef EMesh3::Property_map<face_descriptor, std::string> Fcolors_map;
 typedef std::pair<std::map<face_descriptor, std::string>, bool> MaybeFcolorMap;
+typedef std::map<face_descriptor, face_descriptor> MapBetweenFaces;
 
 typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
 typedef AFS_reconstruction::Triangulation_3 AFS_triangulation3;
@@ -223,19 +224,19 @@ struct ClipVisitor :
   // }
   
   ClipVisitor()
-    : fmap_tm(new std::map<face_descriptor, face_descriptor>()),
-      fmap_clipper(new std::map<face_descriptor, face_descriptor>()),
+    : fmap_tm(new MapBetweenFaces()),
+      fmap_clipper(new MapBetweenFaces()),
       ofaceindex(new face_descriptor()),
       nfaces(new std::vector<size_t>()),
       nfaces2(new std::vector<size_t>()),
-      ftargets(new std::map<face_descriptor, face_descriptor>()),
+      ftargets(new MapBetweenFaces()),
       is_tm(new bool(true)),
       action(new std::vector<std::string>())
   {}
   
-  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap_tm;
-  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap_clipper;
-  std::shared_ptr<std::map<face_descriptor, face_descriptor>> ftargets;
+  std::shared_ptr<MapBetweenFaces> fmap_tm;
+  std::shared_ptr<MapBetweenFaces> fmap_clipper;
+  std::shared_ptr<MapBetweenFaces> ftargets;
   std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<std::vector<size_t>> nfaces;
   std::shared_ptr<std::vector<size_t>> nfaces2;
