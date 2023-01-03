@@ -212,7 +212,7 @@ struct ClipVisitor :
   //   Rcpp::Rcout << t << "\n";
   // }
   void after_face_copy(face_descriptor fsrc, const EMesh3 & tmsrc, face_descriptor ftgt, const EMesh3 & tmtgt) {
-    (*xxx).insert(std::make_pair(fsrc, ftgt));
+    (*ftargets).insert(std::make_pair(ftgt, fsrc));
     (*action).push_back("after_face_copy");
   }
   // void after_edge_duplicated(halfedge_descriptor hsrc, halfedge_descriptor hnew, const EMesh3 & tm) {
@@ -233,14 +233,14 @@ struct ClipVisitor :
       nfaces(new std::vector<size_t>()),
       nfaces2(new std::vector<size_t>()),
       istm(new std::map<face_descriptor, bool>()),
-      xxx(new std::map<face_descriptor, face_descriptor>()),
+      ftargets(new std::map<face_descriptor, face_descriptor>()),
       b(new bool()),
       action(new std::vector<std::string>())
   {}
   
   std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap1;
   std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap2;
-  std::shared_ptr<std::map<face_descriptor, face_descriptor>> xxx;
+  std::shared_ptr<std::map<face_descriptor, face_descriptor>> ftargets;
   std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<std::vector<size_t>> nfaces;
   std::shared_ptr<std::vector<size_t>> nfaces2;

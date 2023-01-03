@@ -66,7 +66,7 @@ for(fi in 1:ncol(rmesh1$it)) {
     colors[fi] = "black"
   } else if((fi-1) %in% x$fmap2[,1]) {
     colors[fi] = cols1[fi]#cols2[1+x$fmap2[which(x$fmap2[,1] == fd), 2]]
-  } else if(fi <= 3000) {
+  } else {
     fff <- c(fff, fd)
     ggg <- c(ggg, fi)
     # w = which(x$xxx[,2] == fd)
@@ -88,8 +88,6 @@ for(fi in 1:ncol(rmesh1$it)) {
     }
     #fd = x$zz[fi]
     colors[fi] = ifelse(fd %in% x$xxx[,2], rcols2[1+x$xxx[which(x$xxx[,2]==fd), 1]], ifelse(fd < 6000, cols1[fd+1], cols1[1+x$fmap1[which(x$fmap1[,1] == fd), 2]]))
-  } else {
-    colors[fi] = cols1[fi]
   }
 }
 rmesh1$material$color <- colors
