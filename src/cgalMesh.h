@@ -23,6 +23,7 @@
 #include <CGAL/Polygon_mesh_processing/repair.h>
 #include <CGAL/Polygon_mesh_processing/self_intersections.h>
 #include <CGAL/Polygon_mesh_processing/fair.h>
+#include <CGAL/Polygon_mesh_processing/triangulate_hole.h>
 #include <CGAL/Polygon_mesh_processing/merge_border_vertices.h>
 #include <CGAL/number_utils.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
@@ -167,11 +168,11 @@ std::pair<std::map<vertex_descriptor, Rcpp::NumericVector>, bool> copy_vnormal(E
 std::pair<std::map<vertex_descriptor, std::string>, bool> copy_vcolor(EMesh3&);
 std::pair<std::map<face_descriptor, std::string>, bool> copy_fcolor(EMesh3&);
 
-void clipping(EMesh3&, EMesh3&, const bool);
+Rcpp::List clipping(EMesh3&, EMesh3&, const bool);
 //////////////////////////////////////////
 void new_vertex_added(std::size_t, vertex_descriptor, const EMesh3&);
 
-struct MyVisitor : 
+struct ClipVisitor : 
   public PMP::Corefinement::Default_visitor<EMesh3>
 {
   // void new_vertex_added(std::size_t i_id, vertex_descriptor v, const EMesh3 & tm) {
@@ -179,13 +180,29 @@ struct MyVisitor :
   // }
   void before_subface_creations(face_descriptor fsplit, const EMesh3 & tm) {
     *ofaceindex = fsplit;
+    size_t nf = tm.number_of_faces();
+    //(*nfaces).push_back();
+    if((*nfaces).size() >= 1 && nf < (*nfaces).back()) {
+      *b = false;
+    } else {
+      *b = true;
+      (*nfaces).push_back(nf);
+    }
+    (*action).push_back("before_subface_creations");
     // Rcpp::Rcout << j++ << "\n";
     // Rcpp::Rcout << tm.has_garbage() << "\n";
     // Rcpp::Rcout << "\n";
     //Rcpp::Rcout << tm.number_of_faces() << "\n";
   }
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
-    (*fmap).insert(std::make_pair(fnew, *ofaceindex));
+    if(*b) {
+      (*fmap1).insert(std::make_pair(fnew, *ofaceindex));
+    } else {
+      (*fmap2).insert(std::make_pair(fnew, *ofaceindex));
+    }
+    (*istm).insert(std::make_pair(fnew, *b));
+    (*nfaces2).push_back(tm.number_of_faces());
+    (*action).push_back("after_subface_created");
     // Rcpp::Rcout << fnew << "\n";
     // Rcpp::Rcout << tm.number_of_faces() << "\n";
     // Rcpp::Rcout << tm.has_garbage() << "\n";
@@ -194,9 +211,10 @@ struct MyVisitor :
   // void in_place_operation(PMP::Corefinement::Boolean_operation_type t) {
   //   Rcpp::Rcout << t << "\n";
   // }
-  // void after_face_copy(face_descriptor fsrc, const EMesh3 & tmsrc, face_descriptor ftgt, const EMesh3 & tmtgt) {
-  //   (*vmap).insert(std::make_pair(fsrc, ftgt));
-  // }
+  void after_face_copy(face_descriptor fsrc, const EMesh3 & tmsrc, face_descriptor ftgt, const EMesh3 & tmtgt) {
+    (*xxx).insert(std::make_pair(fsrc, ftgt));
+    (*action).push_back("after_face_copy");
+  }
   // void after_edge_duplicated(halfedge_descriptor hsrc, halfedge_descriptor hnew, const EMesh3 & tm) {
   //   (*vmap).insert(std::make_pair(hsrc, hnew));
   // }
@@ -208,13 +226,27 @@ struct MyVisitor :
   //   (*i).push_back(tm_f.number_of_faces());
   // }
   
-  MyVisitor()
-    : fmap(new std::map<face_descriptor, face_descriptor>()),
-      ofaceindex(new face_descriptor())
+  ClipVisitor()
+    : fmap1(new std::map<face_descriptor, face_descriptor>()),
+      fmap2(new std::map<face_descriptor, face_descriptor>()),
+      ofaceindex(new face_descriptor()),
+      nfaces(new std::vector<size_t>()),
+      nfaces2(new std::vector<size_t>()),
+      istm(new std::map<face_descriptor, bool>()),
+      xxx(new std::map<face_descriptor, face_descriptor>()),
+      b(new bool()),
+      action(new std::vector<std::string>())
   {}
   
-  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap;
+  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap1;
+  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap2;
+  std::shared_ptr<std::map<face_descriptor, face_descriptor>> xxx;
   std::shared_ptr<face_descriptor> ofaceindex;
+  std::shared_ptr<std::vector<size_t>> nfaces;
+  std::shared_ptr<std::vector<size_t>> nfaces2;
+  std::shared_ptr<std::map<face_descriptor, bool>> istm;
+  std::shared_ptr<bool> b;
+  std::shared_ptr<std::vector<std::string>> action;
 };
 
 struct UnionVisitor : 

@@ -7,3 +7,4 @@
 ^inst/screenshots$
 ^inst/trash$
 ^CRAN-SUBMISSION$
+^inst/keep$
