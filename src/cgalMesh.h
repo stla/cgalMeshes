@@ -83,6 +83,7 @@ typedef EMesh3::Property_map<halfedge_descriptor, std::size_t> Halfedge_index_ma
 typedef EMesh3::Property_map<vertex_descriptor, Rcpp::NumericVector> Normals_map;
 typedef EMesh3::Property_map<vertex_descriptor, std::string> Vcolors_map;
 typedef EMesh3::Property_map<face_descriptor, std::string> Fcolors_map;
+typedef std::pair<std::map<face_descriptor, std::string>, bool> MaybeFcolorMap;
 
 typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
 typedef AFS_reconstruction::Triangulation_3 AFS_triangulation3;
@@ -180,27 +181,22 @@ struct ClipVisitor :
   // }
   void before_subface_creations(face_descriptor fsplit, const EMesh3 & tm) {
     *ofaceindex = fsplit;
-    size_t nf = tm.number_of_faces();
-    //(*nfaces).push_back();
-    if((*nfaces).size() >= 1 && nf < (*nfaces).back()) {
-      *b = false;
-    } else {
-      *b = true;
-      (*nfaces).push_back(nf);
+    if(*is_tm) {
+      size_t nf = tm.number_of_faces();
+      if((*nfaces).size() >= 1 && nf < (*nfaces).back()) {
+        *is_tm = false;
+      } else {
+        (*nfaces).push_back(nf);
+      }
     }
     (*action).push_back("before_subface_creations");
-    // Rcpp::Rcout << j++ << "\n";
-    // Rcpp::Rcout << tm.has_garbage() << "\n";
-    // Rcpp::Rcout << "\n";
-    //Rcpp::Rcout << tm.number_of_faces() << "\n";
   }
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
-    if(*b) {
-      (*fmap1).insert(std::make_pair(fnew, *ofaceindex));
+    if(*is_tm) {
+      (*fmap_tm).insert(std::make_pair(fnew, *ofaceindex));
     } else {
-      (*fmap2).insert(std::make_pair(fnew, *ofaceindex));
+      (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
     }
-    (*istm).insert(std::make_pair(fnew, *b));
     (*nfaces2).push_back(tm.number_of_faces());
     (*action).push_back("after_subface_created");
     // Rcpp::Rcout << fnew << "\n";
@@ -227,25 +223,23 @@ struct ClipVisitor :
   // }
   
   ClipVisitor()
-    : fmap1(new std::map<face_descriptor, face_descriptor>()),
-      fmap2(new std::map<face_descriptor, face_descriptor>()),
+    : fmap_tm(new std::map<face_descriptor, face_descriptor>()),
+      fmap_clipper(new std::map<face_descriptor, face_descriptor>()),
       ofaceindex(new face_descriptor()),
       nfaces(new std::vector<size_t>()),
       nfaces2(new std::vector<size_t>()),
-      istm(new std::map<face_descriptor, bool>()),
       ftargets(new std::map<face_descriptor, face_descriptor>()),
-      b(new bool()),
+      is_tm(new bool(true)),
       action(new std::vector<std::string>())
   {}
   
-  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap1;
-  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap2;
+  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap_tm;
+  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap_clipper;
   std::shared_ptr<std::map<face_descriptor, face_descriptor>> ftargets;
   std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<std::vector<size_t>> nfaces;
   std::shared_ptr<std::vector<size_t>> nfaces2;
-  std::shared_ptr<std::map<face_descriptor, bool>> istm;
-  std::shared_ptr<bool> b;
+  std::shared_ptr<bool> is_tm;
   std::shared_ptr<std::vector<std::string>> action;
 };
 

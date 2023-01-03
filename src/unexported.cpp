@@ -229,35 +229,15 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   if(PMP::does_self_intersect(clipper)) {
     Rcpp::stop("The clipping mesh self-intersects.");
   }
-  
-  // EMesh3 mcopy;
-  // if(fcolors.isNotNull()) {
-  //   CGAL::copy_face_graph(mesh, mcopy);
-  // }
-  
-  std::pair<std::map<face_descriptor, std::string>, bool> fcolorstdmap_ = copy_fcolor(tm);
-  std::pair<std::map<face_descriptor, std::string>, bool> fcolorstdmap2_ = copy_fcolor(clipper);
-  // std::pair<Fcolors_map, bool> fcolorsmap_ = 
-  //   tm.property_map<face_descriptor, std::string>("f:color");
-  // const bool has_fcolor = fcolorsmap_.second;
-  // std::map<face_descriptor, std::string> fcolorstdmap;
-  // if(has_fcolor) {
-  //   for(EMesh3::Face_index fi : tm.faces()) {
-  //     fcolorstdmap[fi] = fcolorsmap_.first[fi];
-  //   }
-  //   tm.remove_property_map(fcolorsmap_.first);
-  // }    
+    
+  MaybeFcolorMap fcolorMap_ = copy_fcolor(tm);
+  MaybeFcolorMap fcolorMap2_ = copy_fcolor(clipper);
   std::size_t nfaces = tm.number_of_faces();
   std::size_t nfaces_clipper = clipper.number_of_faces();
   
   ClipVisitor vis;
   Face_index_map fimap = 
     tm.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
-  // Face_index_map fimap2 = 
-  //   clipper.add_property_map<face_descriptor, std::size_t>("f:i").first;
-  // for(EMesh3::Face_index fi : clipper.faces()) {
-  //   fimap2[fi] = 10000;
-  // }
   const bool doNotModify = !clipVolume;
   const bool clipping = PMP::clip(
     tm, clipper,
@@ -270,12 +250,6 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
 
   Rcpp::Rcout << "Clipping ok\n";
 
-  // Face_index_map fimapprime = tm.property_map<face_descriptor, std::size_t>("f:i").first;
-  // Rcpp::IntegerVector ZZ(tm.number_of_faces());
-  // int zz = 0;
-  // for(EMesh3::Face_index fi : tm.faces()) {
-  //   ZZ(zz++) = fimapprime[fi];
-  // }  
   tm.collect_garbage();
 
   Rcpp::LogicalVector fremoved(tm.number_of_faces());
@@ -287,10 +261,6 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
       fremoved(fr++) = maybemap.first[fi];
     }
   }
-
-  
-  // normals = R_NilValue;
-  // vcolors = R_NilValue;
 
   Rcpp::Rcout << "nfaces clipper: " << clipper.number_of_faces() << "\n";
   Rcpp::Rcout << "clipper has garbage: " << clipper.has_garbage() << "\n";
@@ -323,46 +293,42 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     return Rcpp::List::create(Rcpp::Named("o") = 1);
   }
  */  
-  if(fcolorstdmap_.second) {
-    std::map<face_descriptor, std::string> fcolorstdmap = fcolorstdmap_.first;
-    std::map<face_descriptor, std::string> fcolorstdmap2 = fcolorstdmap2_.first;
-    std::map<face_descriptor, face_descriptor> fmap1 = *(vis.fmap1);
-    std::map<face_descriptor, face_descriptor> fmap2 = *(vis.fmap2);
-    std::map<face_descriptor, bool> istm = *(vis.istm);
+  if(fcolorMap_.second) {
+    std::map<face_descriptor, std::string> fcolorMap = fcolorMap_.first;
+    std::map<face_descriptor, std::string> fcolorMap2 = fcolorMap2_.first;
+    std::map<face_descriptor, face_descriptor> fmap_tm = *(vis.fmap_tm);
+    std::map<face_descriptor, face_descriptor> fmap_clipper = *(vis.fmap_clipper);
     std::map<face_descriptor, face_descriptor> ftargets = *(vis.ftargets);
     std::map<face_descriptor, std::string> fcolormap_clipper;
     int fdi = 0;
     for(auto it = ftargets.rbegin(); it != ftargets.rend(); ++it) {
       face_descriptor fd = it->second;
       if(std::size_t(fd) >= nfaces_clipper) {
-        fd = fmap2[fd];
+        fd = fmap_clipper[fd];
       }
-      fcolormap_clipper[it->first] = fcolorstdmap2[fd];
+      fcolormap_clipper[it->first] = fcolorMap2[fd];
       while(fimap[CGAL::SM_Face_index(fdi)] != 0) {
         fdi++;
       }
       fimap[CGAL::SM_Face_index(fdi++)] = std::size_t(it->first);
     }
-    Rcpp::Rcout << "Test fcolorstdmap \n";
-    Rcpp::Rcout << fcolorstdmap[CGAL::SM_Face_index(1)] << "\n";
-    Rcpp::Rcout << fcolorstdmap2[CGAL::SM_Face_index(1)] << "\n";
-    Fcolors_map newfcolormap = 
+    Fcolors_map newfcolor = 
       tm.add_property_map<face_descriptor, std::string>("f:color", "").first;
     for(EMesh3::Face_index fi : tm.faces()) {
       std::size_t ifi = fimap[fi];
       face_descriptor fd = CGAL::SM_Face_index(ifi);
-      if(auto search = fmap2.find(fd); search != fmap2.end()) {
+      if(auto search = fmap_clipper.find(fd); search != fmap_clipper.end()) {
         Rcpp::Rcout << "1\n";
-        newfcolormap[fi] = fcolorstdmap[fd];
+        newfcolor[fi] = fcolorMap[fd];
       } else if(auto search = ftargets.find(fd); search != ftargets.end()) {
         Rcpp::Rcout << "2\n";
-        newfcolormap[fi] = fcolormap_clipper[fd];
+        newfcolor[fi] = fcolormap_clipper[fd];
       } else if(ifi < nfaces) {
         Rcpp::Rcout << "3\n";
-        newfcolormap[fi] = fcolorstdmap[fd];
+        newfcolor[fi] = fcolorMap[fd];
       } else {
         Rcpp::Rcout << "4\n";
-        newfcolormap[fi] = fcolorstdmap[fmap1[fd]];
+        newfcolor[fi] = fcolorMap[fmap_tm[fd]];
       }
     }
   }
@@ -372,19 +338,14 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   for(int i = 0; i < (*(vis.action)).size(); i++) {
     Action(i) = (*(vis.action))[i];
   }
-  Rcpp::IntegerMatrix out((*(vis.istm)).size(), 2);
-  int i = 0;
-  for(const auto& [fsplit, bb] : *(vis.istm)) {
-    out(i++, Rcpp::_) = Rcpp::IntegerVector({int(fsplit), int(bb)});
-  }
-  Rcpp::IntegerMatrix Fmap1((*(vis.fmap1)).size(), 2);
+  Rcpp::IntegerMatrix Fmap1((*(vis.fmap_tm)).size(), 2);
   int iii = 0;
-  for(const auto& [fnew, fsplit] : *(vis.fmap1)) {
+  for(const auto& [fnew, fsplit] : *(vis.fmap_tm)) {
     Fmap1(iii++, Rcpp::_) = Rcpp::IntegerVector({int(fnew), int(fsplit)});
   }
-  Rcpp::IntegerMatrix Fmap2((*(vis.fmap2)).size(), 2);
+  Rcpp::IntegerMatrix Fmap2((*(vis.fmap_clipper)).size(), 2);
   int iii2 = 0;
-  for(const auto& [fnew, fsplit] : *(vis.fmap2)) {
+  for(const auto& [fnew, fsplit] : *(vis.fmap_clipper)) {
     Fmap2(iii2++, Rcpp::_) = Rcpp::IntegerVector({int(fnew), int(fsplit)});
   }
   Rcpp::IntegerMatrix xxx((*(vis.ftargets)).size(), 2);
@@ -398,12 +359,6 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   for(EMesh3::Face_index fi : tm.faces()) {
     Fimap(fff++) = fimapnew[fi];
   }
-  // Face_index_map fimap2new = clipper.property_map<face_descriptor, std::size_t>("f:i").first;
-  // Rcpp::IntegerVector Fimap2(clipper.number_of_faces());
-  // int ff2 = 0;
-  // for(EMesh3::Face_index fi : clipper.faces()) {
-  //   Fimap2(ff2++) = fimap2new[fi];
-  // }
   Rcpp::IntegerVector Nfaces((*(vis.nfaces)).size());
   for(int i = 0; i < (*(vis.nfaces)).size(); i++) {
     Nfaces(i) = (*(vis.nfaces))[i];
@@ -413,7 +368,6 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     Nfaces2(i) = (*(vis.nfaces2))[i];
   }
   return Rcpp::List::create(
-    Rcpp::Named("out") = out, 
     Rcpp::Named("xxx") = xxx, 
     Rcpp::Named("fimap") = Fimap,
 //    Rcpp::Named("fimap2") = Fimap2,
