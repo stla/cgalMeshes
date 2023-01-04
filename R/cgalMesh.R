@@ -223,8 +223,8 @@ cgalMesh <- R6Class(
         xptrs <- private[[".CGALmesh"]]$clipMesh(clipperXPtr, TRUE)
         meshes <- lapply(xptrs[1:2], function(xptr) cgalMesh$new(clean = xptr))
         components <- xptrs[[3]]
-        nmv <- xptrs[[4]]
-        list(meshes = meshes, components = components, nmv = nmv)
+#        nmv <- xptrs[[4]]
+        list(meshes = meshes, components = components)#, nmv = nmv)
       } else {
         . <- private[[".CGALmesh"]]$clipMesh(clipperXPtr, FALSE)
         invisible(self)
@@ -630,7 +630,13 @@ cgalMesh <- R6Class(
     "isValid" = function() {
       private[[".CGALmesh"]]$isValid()
     },
-    
+
+    #' @description Check whether the mesh is valid.
+    #' @return A Boolean value, whether the mesh is valid.
+    "isValid2" = function() {
+      private[[".CGALmesh"]]$isValid2()
+    },
+
     #' @description Reorient the connected components of the mesh in order that 
     #' it bounds a volume. The mesh must be triangle.
     #' @return The modified \code{cgalMesh} object, invisibly. \strong{WARNING}: 

@@ -37,6 +37,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("isOutwardOriented", &CGALmesh::isOutwardOriented)
     .method("isTriangle", &CGALmesh::isTriangle)
     .method("isValid", &CGALmesh::isValid)
+    .method("isValid2", &CGALmesh::isValid2)
     .method("orientToBoundVolume", &CGALmesh::orientToBoundVolume)
     .method("print", &CGALmesh::print)
     .method("removeSelfIntersections", &CGALmesh::removeSelfIntersections)

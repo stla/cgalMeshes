@@ -41,6 +41,7 @@
 #include <CGAL/Heat_method_3/Surface_mesh_geodesic_distances_3.h>
 #include <CGAL/Polygon_mesh_processing/connected_components.h>
 #include <CGAL/Polygon_mesh_processing/manifoldness.h>
+#include <CGAL/Polygon_mesh_processing/stitch_borders.h>
 #include <CGAL/Advancing_front_surface_reconstruction.h>
 #include <CGAL/Triangle_3.h>
 #include <CGAL/Tetrahedron_3.h>

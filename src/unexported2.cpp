@@ -3,6 +3,7 @@
 #endif
 
 Rcpp::NumericMatrix getVertices_EK(EMesh3& mesh) {
+  Rcpp::Rcout << "getvertices\n";
   const size_t nvertices = mesh.number_of_vertices();
   Rcpp::NumericMatrix Vertices(3, nvertices);
   {
@@ -81,6 +82,7 @@ Rcpp::List getFaces(MeshT& mesh) {
 
 template <typename MeshT>
 Rcpp::IntegerMatrix getFaces2(MeshT& mesh, const int nsides) {
+  Rcpp::Rcout << "getfaces\n";
   const size_t nfaces = mesh.number_of_faces();
   Rcpp::IntegerMatrix Faces(nsides, nfaces);
   {
@@ -100,15 +102,18 @@ Rcpp::IntegerMatrix getFaces2(MeshT& mesh, const int nsides) {
 }
 
 Rcpp::NumericMatrix getEKNormals(EMesh3& mesh) {
+  Rcpp::Rcout << "getnormals\n";
   const size_t nvertices = mesh.number_of_vertices();
   Rcpp::NumericMatrix Normals(3, nvertices);
   auto vnormals = mesh.add_property_map<EMesh3::Vertex_index, EVector3>(
                           "v:normals", CGAL::NULL_VECTOR)
                       .first;
-  auto fnormals = mesh.add_property_map<EMesh3::Face_index, EVector3>(
-                          "f:normals", CGAL::NULL_VECTOR)
-                      .first;
-  PMP::compute_normals(mesh, vnormals, fnormals);
+  Rcpp::Rcout << "vnormals map is ready\n";
+  // auto fnormals = mesh.add_property_map<EMesh3::Face_index, EVector3>(
+  //                         "f:normals", CGAL::NULL_VECTOR)
+  //                     .first;
+  PMP::compute_vertex_normals(mesh, vnormals);
+  Rcpp::Rcout << "normals computed\n";
   {
     size_t i = 0;
     for(EMesh3::Vertex_index vd : vertices(mesh)) {

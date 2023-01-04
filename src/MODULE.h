@@ -574,9 +574,13 @@ public:
   }
 
   bool isValid() {
-    return CGAL::is_valid_polygon_mesh(mesh);
+    return CGAL::is_valid_polygon_mesh(mesh, true);
   }
-  
+
+  bool isValid2() {
+    return mesh.is_valid();
+  }
+
   void orientToBoundVolume() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
