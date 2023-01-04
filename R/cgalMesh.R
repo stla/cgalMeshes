@@ -219,7 +219,13 @@ cgalMesh <- R6Class(
       stopifnot(isCGALmesh(clipper))
       stopifnot(isBoolean(clipVolume))
       clipperXPtr <- getXPtr(clipper)
-      private[[".CGALmesh"]]$clipMesh(clipperXPtr, clipVolume)
+      if(clipVolume) {
+        xptrs <- private[[".CGALmesh"]]$clipMesh(clipperXPtr, TRUE)
+        lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
+      } else {
+        . <- private[[".CGALmesh"]]$clipMesh(clipperXPtr, FALSE)
+        invisible(self)
+      }
     },
 
     "doubleclip" = function(clipper) {

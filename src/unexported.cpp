@@ -302,6 +302,8 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
       }
       fimap[CGAL::SM_Face_index(fdi++)] = std::size_t(it->first);
     }
+    Face_index_map whichPart = 
+      tm.add_property_map<face_descriptor, std::size_t>("f:which").first;
     Fcolors_map newfcolor = 
       tm.add_property_map<face_descriptor, std::string>("f:color", "").first;
     for(EMesh3::Face_index fi : tm.faces()) {
@@ -310,19 +312,36 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
       if(auto search = fmap_clipper.find(fd); search != fmap_clipper.end()) {
         Rcpp::Rcout << "1\n";
         newfcolor[fi] = fcolorMap[fd];
+        whichPart[fi] = 0;
       } else if(auto search = ftargets.find(fd); search != ftargets.end()) {
         Rcpp::Rcout << "2\n";
         newfcolor[fi] = fcolormap_clipper[fd];
+        whichPart[fi] = 1;
       } else if(ifi < nfaces) {
         Rcpp::Rcout << "3\n";
         newfcolor[fi] = fcolorMap[fd];
+        whichPart[fi] = 0;
       } else {
         Rcpp::Rcout << "4\n";
         newfcolor[fi] = fcolorMap[fmap_tm[fd]];
+        whichPart[fi] = 0;
       }
     }
+    Rcpp::Rcout << "DONE\n";
+    Filtered_graph ffg_tmesh(tm, 0, whichPart);
+    Filtered_graph ffg_clipper(tm, 1, whichPart);
+    EMesh3 tmesh;
+    CGAL::copy_face_graph(ffg_tmesh, tmesh);
+    EMesh3 tmesh2;
+    CGAL::copy_face_graph(ffg_clipper, tmesh2);
+
+    return Rcpp::List::create(
+      Rcpp::Named("mesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh), false),
+      Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh2), false)
+    );
   }
-  Rcpp::Rcout << "DONE\n";
+
+
 
   Rcpp::StringVector Action((*(vis.action)).size());
   for(int i = 0; i < (*(vis.action)).size(); i++) {
