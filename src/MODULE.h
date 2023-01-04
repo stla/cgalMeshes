@@ -451,6 +451,24 @@ public:
     return R_NilValue;
   }
 
+  Rcpp::IntegerMatrix getFacesMatrix() {
+    if(CGAL::is_triangle_mesh(mesh)) {
+      const size_t nfaces = mesh.number_of_faces();
+      Rcpp::IntegerMatrix Faces(3, nfaces);
+      {
+        int i = 0;
+        for(EMesh3::Face_index fi : mesh.faces()) {
+          auto vs = vertices_around_face(mesh.halfedge(fi), mesh).begin();
+          Rcpp::IntegerVector col_i = {int(*(++vs)) + 1, int(*(++vs)) + 1, int(*vs) + 1};
+          Faces(Rcpp::_, i++) = col_i;
+        }
+      }
+      return Faces;
+    } else {
+      Rcpp::stop("xxx");
+    }
+  }
+
   Rcpp::Nullable<Rcpp::StringVector> getFcolors() {
     std::pair<Fcolors_map, bool> fcolorsmap_ = 
       mesh.property_map<face_descriptor, std::string>("f:color");

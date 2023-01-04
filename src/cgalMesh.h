@@ -40,6 +40,7 @@
 #include <CGAL/IO/io.h>
 #include <CGAL/Heat_method_3/Surface_mesh_geodesic_distances_3.h>
 #include <CGAL/Polygon_mesh_processing/connected_components.h>
+#include <CGAL/Polygon_mesh_processing/manifoldness.h>
 #include <CGAL/Advancing_front_surface_reconstruction.h>
 #include <CGAL/Triangle_3.h>
 #include <CGAL/Tetrahedron_3.h>
@@ -90,7 +91,7 @@ typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
 typedef AFS_reconstruction::Triangulation_3 AFS_triangulation3;
 typedef AFS_reconstruction::Triangulation_data_structure_2 AFS_Tds2;
 
-//typedef CGAL::Face_filtered_graph<EMesh3, Face_index_map, Vertex_index_map, Halfedge_index_map> Filtered_graph;
+typedef CGAL::Face_filtered_graph<EMesh3, Face_index_map, Vertex_index_map, Halfedge_index_map> Filtered_mesh;
 typedef CGAL::Face_filtered_graph<EMesh3> Filtered_graph;
 
 ///////////////

@@ -328,16 +328,60 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
       }
     }
     Rcpp::Rcout << "DONE\n";
-    Filtered_graph ffg_tmesh(tm, 0, whichPart);
-    Filtered_graph ffg_clipper(tm, 1, whichPart);
-    EMesh3 tmesh;
-    CGAL::copy_face_graph(ffg_tmesh, tmesh);
-    EMesh3 tmesh2;
-    CGAL::copy_face_graph(ffg_clipper, tmesh2);
+    // Face_index_map fm =
+    //   tm.add_property_map<face_descriptor, std::size_t>("f:index").first;
+    // Vertex_index_map vm =
+    //   tm.add_property_map<vertex_descriptor, std::size_t>("v:index").first;
+    // Halfedge_index_map hm =
+    //   tm.add_property_map<halfedge_descriptor, std::size_t>("h:index").first;
+    //Filtered_mesh ffg_tmesh(tm, 0, whichPart, PMP::parameters::face_index_map(fm).vertex_index_map(vm).halfedge_index_map(hm));
+    //Filtered_graph ffg_clipper(tm, 1, whichPart);
+    EMesh3 tmesh = cloneMesh(tm, false, false, true);
+    for(EMesh3::Face_index fi : tmesh.faces()) {
+      if(whichPart[fi] == 1) {
+        tmesh.remove_face(fi);
+      }
+    }
+    tmesh.collect_garbage();
+    EMesh3 tmesh2 = cloneMesh(tm, false, false, true);
+    for(EMesh3::Face_index fi : tmesh2.faces()) {
+      if(whichPart[fi] == 0) {
+        tmesh2.remove_face(fi);
+      }
+    }
+    tmesh2.collect_garbage();
+
+    Rcpp::LogicalVector Components(tm.number_of_faces());
+    int fint = 0;
+    for(EMesh3::Face_index fi : tm.faces()) {
+      Components(fint++) = whichPart[fi] == 0;
+    }
+
+    std::size_t nvisolated = PMP::remove_isolated_vertices(tmesh);
+    Rcpp::Rcout << "removed " << nvisolated << " isolated vertices\n";
+    std::size_t nvisolated2 = PMP::remove_isolated_vertices(tmesh2);
+    Rcpp::Rcout << "removed " << nvisolated2 << " isolated vertices\n";
+
+    std::vector<halfedge_descriptor> hds;
+    PMP::non_manifold_vertices(tmesh, std::back_insert_iterator<std::vector<halfedge_descriptor>>(hds));
+    Rcpp::IntegerVector NMV(hds.size());
+    for(int i = 0; i < hds.size(); i++) {
+      NMV(i) = int(tmesh.target(hds[i]));
+    }
+    std::vector<halfedge_descriptor> hds2;
+    PMP::non_manifold_vertices(tmesh2, std::back_insert_iterator<std::vector<halfedge_descriptor>>(hds2));
+    Rcpp::IntegerVector NMV2(hds2.size());
+    for(int i = 0; i < hds2.size(); i++) {
+      NMV2(i) = int(tmesh2.target(hds2[i]));
+    }
+
 
     return Rcpp::List::create(
       Rcpp::Named("mesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh), false),
-      Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh2), false)
+      Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh2), false),
+      Rcpp::Named("components") = Components,
+      Rcpp::Named("nmv") = NMV,
+      Rcpp::Named("nmv2") = NMV2
     );
   }
 

@@ -221,7 +221,10 @@ cgalMesh <- R6Class(
       clipperXPtr <- getXPtr(clipper)
       if(clipVolume) {
         xptrs <- private[[".CGALmesh"]]$clipMesh(clipperXPtr, TRUE)
-        lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
+        meshes <- lapply(xptrs[1:2], function(xptr) cgalMesh$new(clean = xptr))
+        components <- xptrs[[3]]
+        nmv <- xptrs[[4]]
+        list(meshes = meshes, components = components, nmv = nmv)
       } else {
         . <- private[[".CGALmesh"]]$clipMesh(clipperXPtr, FALSE)
         invisible(self)
@@ -486,7 +489,12 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$geoDists(as.integer(index) - 1L)
     },
 
-    #' @description Get the normals
+    #' @description Get the faces
+    "getFacesMatrix" = function() {
+      private[[".CGALmesh"]]$getFacesMatrix()
+    },
+    
+    #' @description Get the face colors
     "getFcolors" = function() {
       private[[".CGALmesh"]]$getFcolors()
     },

@@ -5,7 +5,7 @@
 #include "MODULE.h"
 
 RCPP_MODULE(class_CGALmesh) {
-  using namespace Rcpp;  
+  using namespace Rcpp; 
   class_<CGALmesh>("CGALmesh")
     .constructor<
       const NumericMatrix, const List, bool, 
@@ -28,6 +28,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("edges", &CGALmesh::edges)
     .method("fair", &CGALmesh::fair)
     .method("geoDists", &CGALmesh::geoDists)
+    .method("getFacesMatrix", &CGALmesh::getFacesMatrix)
     .method("getFcolors", &CGALmesh::getFcolors)
     .method("getNormals", &CGALmesh::getNormals)
     .method("getRmesh", &CGALmesh::getRmesh)
