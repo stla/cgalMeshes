@@ -337,14 +337,53 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     //Filtered_mesh ffg_tmesh(tm, 0, whichPart, PMP::parameters::face_index_map(fm).vertex_index_map(vm).halfedge_index_map(hm));
     //Filtered_graph ffg_clipper(tm, 1, whichPart);
     EMesh3 tmesh = cloneMesh(tm, false, false, true);
-    for(EMesh3::Face_index fi : tmesh.faces()) {
+    // for(int i = 0; i < tm.number_of_faces(); i++) {
+    //   face_descriptor fd = CGAL::SM_Face_index(i);
+    //   if(whichPart[fd] == 1) {
+    //     tmesh.remove_face(fd);
+    //   }
+    // }
+    for(EMesh3::Halfedge_index hi : tmesh.halfedges()) {
+      EMesh3::Face_index fi = tmesh.face(hi);
       if(whichPart[fi] == 1) {
         tmesh.remove_face(fi);
+        EMesh3::Vertex_index vi = tmesh.vertex(tmesh.edge(hi), 0);
+        tmesh.remove_vertex(vi);
       }
     }
+    // Rcpp::Rcout << "number of removed faces: " << tmesh.number_of_removed_faces() << "\n";
+    // Rcpp::LogicalVector fremoved(tmesh.number_of_faces());
+    // std::pair<EMesh3::Property_map<face_descriptor, bool>, bool> maybe_fremoved = 
+    //   tmesh.property_map<face_descriptor, bool>("f:removed");
+    // Rcpp::Rcout << "fremoved present: " << maybe_fremoved.second << "\n";
+    // if(maybe_fremoved.second) {
+    //   int fr = 0;
+    //   for(EMesh3::Face_index fi : tmesh.faces()) {
+    //     fremoved(fr++) = maybe_fremoved.first[fi];
+    //   }
+    // }
+    // if(Rcpp::is_false(Rcpp::any(fremoved))) {
+    //   Rcpp::Rcout << "nothing removed\n";
+    //   for(EMesh3::Face_index fi : tmesh.faces()) {
+    //     if(whichPart[fi] == 1) {
+    //       maybe_fremoved.first[fi] = true;
+    //     }
+    //   }
+    // }
+    // int fr = 0;
+    // for(EMesh3::Face_index fi : tmesh.faces()) {
+    //   fremoved(fr++) = tmesh.is_removed(fi);
+    // }
+    // if(Rcpp::is_false(Rcpp::any(fremoved))) {
+    //   Rcpp::Rcout << "still nothing removed\n";
+    // }
+    Rcpp::Rcout << "collect garbage\n";
     tmesh.collect_garbage();
+    //Rcpp::Rcout << "number of removed faces: " << tmesh.number_of_removed_faces() << "\n";
+
+
     EMesh3 tmesh2 = cloneMesh(tm, false, false, true);
-    for(EMesh3::Face_index fi : tmesh2.faces()) {
+    for(EMesh3::Face_index fi : tm.faces()) {
       if(whichPart[fi] == 0) {
         tmesh2.remove_face(fi);
       }

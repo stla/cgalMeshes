@@ -459,11 +459,11 @@ public:
         int i = 0;
         for(EMesh3::Face_index fi : mesh.faces()) {
           auto vs = vertices_around_face(mesh.halfedge(fi), mesh).begin();
-          Rcpp::IntegerVector col_i = {int(*(++vs)) + 1, int(*(++vs)) + 1, int(*vs) + 1};
+          Rcpp::IntegerVector col_i = {int(*(vs++)) + 1, int(*(vs++)) + 1, int(*vs) + 1};
           Faces(Rcpp::_, i++) = col_i;
         }
       }
-      return Faces;
+      return Rcpp::transpose(Faces);
     } else {
       Rcpp::stop("xxx");
     }
