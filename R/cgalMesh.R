@@ -497,6 +497,11 @@ cgalMesh <- R6Class(
     "getFcolors" = function() {
       private[[".CGALmesh"]]$getFcolors()
     },
+
+    #' @description Get the vertex colors
+    "getVcolors" = function() {
+      private[[".CGALmesh"]]$getVcolors()
+    },
     
     #' @description Get the normals
     "getNormals" = function() {

@@ -117,7 +117,7 @@ public:
     return clipping(mesh, clipper, clipVolume);
   }
 
-  Rcpp::XPtr<EMesh3> doubleclip(Rcpp::XPtr<EMesh3> clipperXPtr) {
+  Rcpp::XPtr<EMesh3> doubleclip(Rcpp::XPtr<EMesh3> clipperXPtr) { // to remove
     EMesh3 meshcopy = cloneMesh(mesh, false, false, true);
     EMesh3 clipper = *(clipperXPtr.get());
     EMesh3 clippercopy = cloneMesh(clipper, false, false, true);
@@ -499,8 +499,8 @@ public:
   }
 
   Rcpp::IntegerMatrix getFacesMatrix() {
+    const size_t nfaces = mesh.number_of_faces();
     if(CGAL::is_triangle_mesh(mesh)) {
-      const size_t nfaces = mesh.number_of_faces();
       Rcpp::IntegerMatrix Faces(3, nfaces);
       {
         int i = 0;
@@ -511,8 +511,20 @@ public:
         }
       }
       return Rcpp::transpose(Faces);
+    } else if(CGAL::is_quad_mesh(mesh)) {
+      Rcpp::IntegerMatrix Faces(4, nfaces);
+      {
+        int i = 0;
+        for(EMesh3::Face_index fi : mesh.faces()) {
+          auto vs = vertices_around_face(mesh.halfedge(fi), mesh).begin();
+          Rcpp::IntegerVector col_i = 
+            {int(*(vs++)) + 1, int(*(vs++)) + 1, int(*(vs++)) + 1, int(*vs) + 1};
+          Faces(Rcpp::_, i++) = col_i;
+        }
+      }
+      return Rcpp::transpose(Faces);
     } else {
-      Rcpp::stop("xxx");
+      Rcpp::stop("This function can be used with triangle or quad meshes only.");
     }
   }
 
@@ -528,6 +540,20 @@ public:
       Fcolors(i++) = fcolorsmap_.first[fi];
     }
     return Rcpp::Nullable<Rcpp::StringVector>(Fcolors);
+  }
+
+  Rcpp::Nullable<Rcpp::StringVector> getVcolors() {
+    std::pair<Vcolors_map, bool> vcolorsmap_ = 
+      mesh.property_map<vertex_descriptor, std::string>("v:color");
+    if(!vcolorsmap_.second) {
+      return R_NilValue;
+    }
+    Rcpp::StringVector Vcolors(mesh.number_of_vertices());
+    int i = 0;
+    for(EMesh3::Vertex_index vi : mesh.vertices()) {
+      Vcolors(i++) = vcolorsmap_.first[vi];
+    }
+    return Rcpp::Nullable<Rcpp::StringVector>(Vcolors);
   }
 
   Rcpp::List getRmesh() {

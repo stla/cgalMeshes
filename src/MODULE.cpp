@@ -30,6 +30,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("geoDists", &CGALmesh::geoDists)
     .method("getFacesMatrix", &CGALmesh::getFacesMatrix)
     .method("getFcolors", &CGALmesh::getFcolors)
+    .method("getVcolors", &CGALmesh::getVcolors)
     .method("getNormals", &CGALmesh::getNormals)
     .method("getRmesh", &CGALmesh::getRmesh)
     .method("intersection", &CGALmesh::intersection)
