@@ -529,8 +529,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     Rcpp::Rcout << "Non-manifold vertices in second mesh: " << hds.size() << "\n";
   }
 
-
-  Rcpp::List meshes Rcpp::List::create(
+  Rcpp::List meshes = Rcpp::List::create(
     Rcpp::Named("mesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh), false),
     Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh2), false)
   );

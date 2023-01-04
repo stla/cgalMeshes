@@ -191,6 +191,65 @@ public:
   }
   
   Rcpp::List connectedComponents(const bool triangulate) {
+
+    std::pair<Normals_map, bool> vnormals_ = mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+    std::pair<Vcolors_map, bool> vcolors_ = mesh.property_map<vertex_descriptor, std::string>("v:color");
+    std::pair<Fcolors_map, bool> fcolors_ = mesh.property_map<face_descriptor, std::string>("f:color");
+    const bool hasNormals = vnormals_.second;
+    const bool hasVcolors = vcolors_.second;
+    const bool hasFcolors = fcolors_.second;
+
+    const bool really_triangulate = 
+      triangulate && !CGAL::is_triangle_mesh(mesh);
+
+    if(!hasNormals && !hasVcolors) {
+      Face_index_map fccmap = mesh.add_property_map<face_descriptor, std::size_t>("f:CC").first;
+      const std::size_t ncc = PMP::connected_components(mesh, fccmap);
+      if(ncc == 1) {
+        Message("Only one component found.\n");
+      } else {
+        const std::string msg = "Found " + std::to_string(ncc) + " components.\n";
+        Message(msg);
+      }
+      std::vector<MapBetweenFaces> fcomponents(ncc);
+      std::vector<int> counters(ncc, 0);
+      std::vector<int> fsizes(ncc, 0);
+      Fcolors_map fcolors;
+      if(hasFcolors) {
+        fcolors = fcolors_.first;
+        for(EMesh3::Face_index fi : mesh.faces()) {
+          std::size_t c = fccmap[fi];
+          face_descriptor cf = CGAL::SM_Face_index(counters[c]++);
+          fcomponents[c].insert(std::make_pair(cf, fi));
+          fsizes[c]++;
+        }
+      }
+      Rcpp::List xptrs(ncc);
+      for(std::size_t c = 0; c < ncc; c++) {
+        Filtered_graph ffg(mesh, c, fccmap);
+        EMesh3 cmesh;
+        CGAL::copy_face_graph(ffg, cmesh);
+        if(hasFcolors) {
+          Fcolors_map cfcolor = 
+            cmesh.add_property_map<face_descriptor, std::string>("f:color", "").first;
+          for(EMesh3::Face_index cf : cmesh.faces()) {
+            face_descriptor fd = fcomponents[c][cf];
+            cfcolor[cf] = fcolors[fd];
+          }          
+        }
+        if(really_triangulate) {
+          const bool success = PMP::triangulate_faces(cmesh);
+          if(!success) {
+            const std::string msg = "Triangulation has failed (component " +
+              std::to_string(i + 1) + ").";
+            Rcpp::stop(msg);
+          }
+        }
+        xptrs(c) = Rcpp::XPtr<EMesh3>(new EMesh3(cmesh), false);
+      }
+      return xptrs;
+    }
+
     
     Vertex_index_map vccmap = mesh.add_property_map<vertex_descriptor, std::size_t>("v:CC").first;
     const std::size_t ncc = connected_components(mesh, vccmap);
@@ -205,8 +264,6 @@ public:
       const std::string msg = "Found " + std::to_string(ncc) + " components.\n";
       Message(msg);
     }
-    const bool really_triangulate = 
-      triangulate && !CGAL::is_triangle_mesh(mesh);
     
     Rcpp::List mymeshes(ncc);
     
@@ -275,8 +332,7 @@ public:
       }
     }
 
-    std::pair<Normals_map, bool> vnormals_ = mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
-    if(vnormals_.second) {
+    if(hasNormals) {
       for(std::size_t c = 0; c < ncc; c++) {
         std::vector<EMesh3::Vertex_index> component = components[c];
         Normals_map vnormals = ccmeshes[c].add_property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal").first;
@@ -285,8 +341,7 @@ public:
         }
       }
     }
-    std::pair<Vcolors_map, bool> vcolors_ = mesh.property_map<vertex_descriptor, std::string>("v:color");
-    if(vcolors_.second) {
+    if(hasVcolors) {
       for(std::size_t c = 0; c < ncc; c++) {
         std::vector<EMesh3::Vertex_index> component = components[c];
         Vcolors_map vcolors = ccmeshes[c].add_property_map<vertex_descriptor, std::string>("v:color").first;
@@ -295,9 +350,7 @@ public:
         }
       }
     }
-    std::pair<Fcolors_map, bool> fcolors_ = mesh.property_map<face_descriptor, std::string>("f:color");
-    Rcpp::Rcout << "has fcolor: " << fcolors_.second << "\n";
-    if(fcolors_.second) {
+    if(hasFcolors) {
       for(std::size_t c = 0; c < ncc; c++) {
         std::vector<EMesh3::Face_index> fcomponent = todelete[c];
         Fcolors_map fcolors = ccmeshes[c].add_property_map<face_descriptor, std::string>("f:color").first;
