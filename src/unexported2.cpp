@@ -3,7 +3,6 @@
 #endif
 
 Rcpp::NumericMatrix getVertices_EK(EMesh3& mesh) {
-  Rcpp::Rcout << "getvertices\n";
   const size_t nvertices = mesh.number_of_vertices();
   Rcpp::NumericMatrix Vertices(3, nvertices);
   {
@@ -14,8 +13,7 @@ Rcpp::NumericMatrix getVertices_EK(EMesh3& mesh) {
       col_i(0) = CGAL::to_double<EK::FT>(vertex.x());
       col_i(1) = CGAL::to_double<EK::FT>(vertex.y());
       col_i(2) = CGAL::to_double<EK::FT>(vertex.z());
-      Vertices(Rcpp::_, i) = col_i;
-      i++;
+      Vertices(Rcpp::_, i++) = col_i;
     }
   }
   return Vertices;
@@ -83,7 +81,6 @@ template Rcpp::List getFaces<EMesh3>(EMesh3&);
 
 template <typename MeshT>
 Rcpp::IntegerMatrix getFaces2(MeshT& mesh, const int nsides) {
-  Rcpp::Rcout << "getfaces\n";
   const size_t nfaces = mesh.number_of_faces();
   Rcpp::IntegerMatrix Faces(nsides, nfaces);
   {
@@ -95,15 +92,13 @@ Rcpp::IntegerMatrix getFaces2(MeshT& mesh, const int nsides) {
           vertices_around_face(mesh.halfedge(fd), mesh)) {
         col_i.push_back(vd + 1);
       }
-      Faces(Rcpp::_, i) = col_i;
-      i++;
+      Faces(Rcpp::_, i++) = col_i;
     }
   }
   return Faces;
 }
 
 Rcpp::NumericMatrix getEKNormals(EMesh3& mesh) {
-  Rcpp::Rcout << "getnormals\n";
   const size_t nvertices = mesh.number_of_vertices();
   Rcpp::NumericMatrix Normals(3, nvertices);
   std::pair<CGALnormals_map, bool> vnormals_ = 
@@ -115,12 +110,10 @@ Rcpp::NumericMatrix getEKNormals(EMesh3& mesh) {
     mesh.add_property_map<EMesh3::Vertex_index, EVector3>(
                           "v:normals", CGAL::NULL_VECTOR
                         ).first;
-  Rcpp::Rcout << "vnormals map is ready\n";
   // auto fnormals = mesh.add_property_map<EMesh3::Face_index, EVector3>(
   //                         "f:normals", CGAL::NULL_VECTOR)
   //                     .first;
   PMP::compute_vertex_normals(mesh, vnormals);
-  Rcpp::Rcout << "normals computed\n";
   {
     size_t i = 0;
     for(EMesh3::Vertex_index vd : vertices(mesh)) {
@@ -129,8 +122,7 @@ Rcpp::NumericMatrix getEKNormals(EMesh3& mesh) {
       col_i(0) = CGAL::to_double<EK::FT>(normal.x());
       col_i(1) = CGAL::to_double<EK::FT>(normal.y());
       col_i(2) = CGAL::to_double<EK::FT>(normal.z());
-      Normals(Rcpp::_, i) = col_i;
-      i++;
+      Normals(Rcpp::_, i++) = col_i;
     }
   }
   return Normals;

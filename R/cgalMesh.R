@@ -311,16 +311,10 @@ cgalMesh <- R6Class(
     #'   rglMesh <- components[[i]]$getMesh()
     #'   shade3d(rglMesh, color = colors[i])
     #' }}
-    "connectedComponents" = function(triangulate = TRUE) {
+    "connectedComponents" = function(triangulate = FALSE) {
       stopifnot(isBoolean(triangulate))
       xptrs <- private[[".CGALmesh"]]$connectedComponents(triangulate)
-      out <- vector("list", length(xptrs))
-      for(i in 1:length(xptrs)) {
-        print(i)
-        out[[i]] <- cgalMesh$new(clean = xptrs[[i]])
-      }
-      out
-      #lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
+      lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
     },
     
     #' @description Decomposition into convex parts. The mesh must be triangle.
@@ -517,6 +511,8 @@ cgalMesh <- R6Class(
     },
     
     #' @description Get the faces of the mesh.
+    #' @return The faces in a matrix if the mesh is triangle or quad, 
+    #'   otherwise in a list.
     "getFaces" = function() {
       if(
         private[[".CGALmesh"]]$isTriangle() ||
@@ -529,16 +525,24 @@ cgalMesh <- R6Class(
     },
     
     #' @description Get the face colors (if there are).
-    "getFcolors" = function() {
+    #' @return The vector of colors (or any character vector) attached to 
+    #'   the faces of the mesh, or \code{NULL} if nothing is assigned to 
+    #'   the faces.
+    "getFaceColors" = function() {
       private[[".CGALmesh"]]$getFcolors()
     },
 
     #' @description Get the vertex colors (if there are).
-    "getVcolors" = function() {
+    #' @return The vector of colors (or any character vector) attached to 
+    #'   the vertices of the mesh, or \code{NULL} if nothing is assigned to 
+    #'   the vertices.
+    "getVertexColors" = function() {
       private[[".CGALmesh"]]$getVcolors()
     },
     
     #' @description Get the per-vertex normals (if there are).
+    #' @return The matrix of per-vertex normals if they have been given or 
+    #'   computed (see \code{computeNormals}, or \code{NULL} otherwise.
     "getNormals" = function() {
       private[[".CGALmesh"]]$getNormals()
     },
@@ -606,7 +610,7 @@ cgalMesh <- R6Class(
     #' @description Get the vertices of the mesh.
     #' @return The vertices in a matrix.
     "getVertices" = function() {
-      t(private[[".CGALmesh"]]$vertices())
+      t(private[[".CGALmesh"]]$getVertices())
     },
     
     #' @description Intersection with another mesh.

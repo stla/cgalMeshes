@@ -51,7 +51,11 @@ EMesh3 vf2mesh(const Rcpp::NumericMatrix vertices,
 
 Rcpp::NumericVector defaultNormal() {
   Rcpp::NumericVector def = 
-    {Rcpp::NumericVector::get_na(), Rcpp::NumericVector::get_na(), Rcpp::NumericVector::get_na()};
+    {
+      Rcpp::NumericVector::get_na(), 
+      Rcpp::NumericVector::get_na(), 
+      Rcpp::NumericVector::get_na()
+    };
   return def;
 }
 
@@ -61,7 +65,6 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
                 const Rcpp::Nullable<Rcpp::NumericMatrix> &normals_,
                 const Rcpp::Nullable<Rcpp::StringVector> &vcolors_,
                 const Rcpp::Nullable<Rcpp::StringVector> &fcolors_) {
-  Rcpp::Rcout << "soup: " << soup << "\n";
   if(soup) {
     return csoup2mesh<EMesh3, EPoint3>(
       matrix_to_points3<EPoint3>(vertices), 
@@ -69,16 +72,19 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
       true
     );
   }
-  Rcpp::Rcout << "soup is false\n";
   EMesh3 mesh = vf2mesh(vertices, faces);
   if(normals_.isNotNull()) {
     Rcpp::NumericMatrix normals(normals_);
     if(mesh.number_of_vertices() != normals.ncol()) {
-      Rcpp::stop("pb normals");
+      Rcpp::stop(
+        "The number of normals does not match the number of vertices."
+      );
     }
     Rcpp::NumericVector def = defaultNormal();
     Normals_map normalsmap = 
-      mesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal", def).first;
+      mesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
+        "v:normal", def
+      ).first;
     for(int j = 0; j < normals.ncol(); j++) {
       Rcpp::NumericVector normal = normals(Rcpp::_, j);
       normalsmap[CGAL::SM_Vertex_index(j)] = normal;
@@ -87,7 +93,9 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
   if(vcolors_.isNotNull()) {
     Rcpp::StringVector vcolors(vcolors_);
     if(mesh.number_of_vertices() != vcolors.size()) {
-      Rcpp::stop("pb vcolors");
+      Rcpp::stop(
+        "The number of vertex colors does not match the number of vertices."
+      );
     }
     Vcolors_map vcolorsmap = 
       mesh.add_property_map<vertex_descriptor, std::string>("v:color", "").first;
@@ -96,10 +104,11 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
     }
   }
   if(fcolors_.isNotNull()) {
-    Rcpp::Rcout << "fcolors is not null\n";
     Rcpp::StringVector fcolors(fcolors_);
     if(mesh.number_of_faces() != fcolors.size()) {
-      Rcpp::stop("pb fcolors");
+      Rcpp::stop(
+        "The number of face colors does not match the number of vertices."
+      );
     }
     Fcolors_map fcolorsmap = 
       mesh.add_property_map<face_descriptor, std::string>("f:color", "").first;
@@ -110,7 +119,9 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
   return mesh;
 }
 
-EMesh3 cloneMesh(EMesh3& mesh, const bool vnormals, const bool vcolors, const bool fcolors) {
+EMesh3 cloneMesh(
+  EMesh3& mesh, const bool vnormals, const bool vcolors, const bool fcolors
+) {
   EMesh3 out;
   CGAL::copy_face_graph(mesh, out);
   if(fcolors) {
@@ -118,7 +129,9 @@ EMesh3 cloneMesh(EMesh3& mesh, const bool vnormals, const bool vcolors, const bo
       mesh.property_map<face_descriptor, std::string>("f:color");
     if(fcolors_.second) {
       Fcolors_map fcolorsmap = 
-        out.add_property_map<face_descriptor, std::string>("f:color", "").first;
+        out.add_property_map<face_descriptor, std::string>(
+          "f:color", ""
+        ).first;
       for(EMesh3::Face_index fi : out.faces()) {
         fcolorsmap[fi] = fcolors_.first[fi];
       }
@@ -129,7 +142,9 @@ EMesh3 cloneMesh(EMesh3& mesh, const bool vnormals, const bool vcolors, const bo
       mesh.property_map<vertex_descriptor, std::string>("v:color");
     if(vcolors_.second) {
       Vcolors_map vcolorsmap = 
-        out.add_property_map<vertex_descriptor, std::string>("v:color", "").first;
+        out.add_property_map<vertex_descriptor, std::string>(
+          "v:color", ""
+        ).first;
       for(EMesh3::Vertex_index vi : out.vertices()) {
         vcolorsmap[vi] = vcolors_.first[vi];
       }
@@ -141,7 +156,9 @@ EMesh3 cloneMesh(EMesh3& mesh, const bool vnormals, const bool vcolors, const bo
     if(vnormals_.second) {
       Rcpp::NumericVector def = defaultNormal();
       Normals_map vnormalsmap = 
-        out.add_property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal", def).first;
+        out.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
+          "v:normal", def
+        ).first;
       for(EMesh3::Vertex_index vi : out.vertices()) {
         vnormalsmap[vi] = vnormals_.first[vi];
       }
@@ -150,7 +167,9 @@ EMesh3 cloneMesh(EMesh3& mesh, const bool vnormals, const bool vcolors, const bo
   return out;
 }
 
-void removeProperties(EMesh3& mesh, const bool vnormals, const bool vcolors, const bool fcolors) {
+void removeProperties(
+  EMesh3& mesh, const bool vnormals, const bool vcolors, const bool fcolors
+) {
   if(fcolors) {
     std::pair<Fcolors_map, bool> fcolors_ = 
       mesh.property_map<face_descriptor, std::string>("f:color");
