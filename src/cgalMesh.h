@@ -285,6 +285,24 @@ struct TriangulateVisitor :
   std::shared_ptr<face_descriptor> ofaceindex;
 };
 
+struct SoupVisitor : 
+  public PMP::Default_orientation_visitor
+{
+  void non_manifold_vertex(std::size_t vid, std::size_t nb_link_ccs) {
+    Rcpp::Rcout << "NON MANIFOLD VERTEX: " << vid << "\n";
+  }
+
+  void non_manifold_edge(std::size_t id1, std::size_t id2, std::size_t nb_polygons) {
+    Rcpp::Rcout << "NON MANIFOLD EDGE: " << id1 << " - " << id2 << "\n";
+  }
+
+  void polygon_orientation_reversed(std::size_t id) {
+    Rcpp::Rcout << "ORIENTATION REVERSED: " << id << "\n";
+  }
+
+  SoupVisitor() {} 
+};
+
 // template <class MeshT>
 //using Visitor = PMP::PMPCorefinementVisitor;
 

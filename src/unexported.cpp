@@ -306,21 +306,29 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
       tm.add_property_map<face_descriptor, std::size_t>("f:which").first;
     Fcolors_map newfcolor = 
       tm.add_property_map<face_descriptor, std::string>("f:color", "").first;
+    int nfaces_tmesh = 0;
+    std::vector<std::string> fcolor_tmesh_vec;
     for(EMesh3::Face_index fi : tm.faces()) {
       std::size_t ifi = fimap[fi];
       face_descriptor fd = CGAL::SM_Face_index(ifi);
       if(auto search = fmap_clipper.find(fd); search != fmap_clipper.end()) {
         newfcolor[fi] = fcolorMap[fd];
         whichPart[fi] = 0;
+        fcolor_tmesh_vec.push_back(fcolorMap[fd]);
+        nfaces_tmesh++;
       } else if(auto search = ftargets.find(fd); search != ftargets.end()) {
         newfcolor[fi] = fcolormap_clipper[fd];
         whichPart[fi] = 1;
       } else if(ifi < nfaces) {
         newfcolor[fi] = fcolorMap[fd];
         whichPart[fi] = 0;
+        fcolor_tmesh_vec.push_back(fcolorMap[fd]);
+        nfaces_tmesh++;
       } else {
         newfcolor[fi] = fcolorMap[fmap_tm[fd]];
         whichPart[fi] = 0;
+        fcolor_tmesh_vec.push_back(fcolorMap[fmap_tm[fd]]);
+        nfaces_tmesh++;
       }
     }
     Rcpp::Rcout << "DONE\n";
@@ -329,22 +337,34 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     Rcpp::Rcout << "stitched borders: " << sb << "\n";
 
     std::vector<std::vector<std::size_t>> polygons;
-    polygons.reserve(tm.number_of_faces());
+    polygons.reserve(nfaces_tmesh);
     for(EMesh3::Face_index fi : tm.faces()) {
-      std::vector<std::size_t> face;
-      for(EMesh3::Vertex_index vi :
-          vertices_around_face(tm.halfedge(fi), tm)) {
-        face.push_back(std::size_t(vi));
+      if(whichPart[fi] == 0) {
+        std::vector<std::size_t> face;
+        for(EMesh3::Vertex_index vi :
+            vertices_around_face(tm.halfedge(fi), tm)) {
+          face.push_back(std::size_t(vi));
+        }
+        polygons.emplace_back(face);
       }
-      polygons.emplace_back(face);
     }
     std::vector<EPoint3> points;
     points.reserve(tm.number_of_vertices());
     for(EMesh3::Vertex_index vi : tm.vertices()) {
       points.emplace_back(tm.point(vi));
     }
-    bool success = PMP::orient_polygon_soup(points, polygons);
+
+    SoupVisitor soupvis;
+    bool success = PMP::orient_polygon_soup(points, polygons, CGAL::parameters::visitor(soupvis));
     Rcpp::Rcout << "orientation successful: " << success << "\n";
+
+    EMesh3 tmesh;
+    PMP::polygon_soup_to_polygon_mesh(points, polygons, tmesh);
+    Fcolors_map fcolor_tmesh = 
+      tmesh.add_property_map<face_descriptor, std::string>("f:color", "").first;
+    for(EMesh3::Face_index fi : tmesh.faces()) {
+      fcolor_tmesh[fi] = fcolor_tmesh_vec[int(fi)];
+    }
 
     // Face_index_map fm =
     //   tm.add_property_map<face_descriptor, std::size_t>("f:index").first;
@@ -354,13 +374,13 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     //   tm.add_property_map<halfedge_descriptor, std::size_t>("h:index").first;
     //Filtered_mesh ffg_tmesh(tm, 0, whichPart, PMP::parameters::face_index_map(fm).vertex_index_map(vm).halfedge_index_map(hm));
     //Filtered_graph ffg_clipper(tm, 1, whichPart);
-    EMesh3 tmesh = cloneMesh(tm, false, false, true);
-    for(int i = 0; i < tm.number_of_faces(); i++) {
-      face_descriptor fd = CGAL::SM_Face_index(i);
-      if(whichPart[fd] == 1) {
-        tmesh.remove_face(fd);
-      }
-    }
+    // EMesh3 tmesh = cloneMesh(tmbis, false, false, false);
+    // for(int i = 0; i < tm.number_of_faces(); i++) {
+    //   face_descriptor fd = CGAL::SM_Face_index(i);
+    //   if(whichPart[fd] == 1) {
+    //     tmesh.remove_face(fd);
+    //   }
+    // }
     // std::vector<EMesh3::Face_index> faces_to_remove;
     // std::vector<EMesh3::Vertex_index> vertices_to_remove;
     // for(EMesh3::Vertex_index vi : tmesh.vertices()) {
@@ -407,8 +427,8 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     // if(Rcpp::is_false(Rcpp::any(fremoved))) {
     //   Rcpp::Rcout << "still nothing removed\n";
     // }
-    Rcpp::Rcout << "collect garbage\n";
-    tmesh.collect_garbage();
+    // Rcpp::Rcout << "collect garbage\n";
+    // tmesh.collect_garbage();
     //Rcpp::Rcout << "number of removed faces: " << tmesh.number_of_removed_faces() << "\n";
 
 
@@ -428,6 +448,9 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
 
     std::size_t nvisolated = PMP::remove_isolated_vertices(tmesh);
     Rcpp::Rcout << "removed " << nvisolated << " isolated vertices\n";
+    if(nvisolated > 0) {
+      tmesh.collect_garbage();
+    }
     std::size_t nvisolated2 = PMP::remove_isolated_vertices(tmesh2);
     Rcpp::Rcout << "removed " << nvisolated2 << " isolated vertices\n";
 

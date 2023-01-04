@@ -577,6 +577,14 @@ public:
     return CGAL::is_valid_polygon_mesh(mesh, true);
   }
 
+  bool isValidFaceGraph() {
+    return CGAL::is_valid_face_graph(mesh, true);
+  }
+
+  bool isValidHalfedgeGraph() {
+    return CGAL::is_valid_halfedge_graph(mesh, true);
+  }
+
   bool isValid2() {
     return mesh.is_valid();
   }

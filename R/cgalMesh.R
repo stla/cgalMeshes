@@ -633,6 +633,18 @@ cgalMesh <- R6Class(
 
     #' @description Check whether the mesh is valid.
     #' @return A Boolean value, whether the mesh is valid.
+    "isValidFaceGraph" = function() {
+      private[[".CGALmesh"]]$isValidFaceGraph()
+    },
+    
+    #' @description Check whether the mesh is valid.
+    #' @return A Boolean value, whether the mesh is valid.
+    "isValidHalfedgeGraph" = function() {
+      private[[".CGALmesh"]]$isValidHalfedgeGraph()
+    },
+
+    #' @description Check whether the mesh is valid.
+    #' @return A Boolean value, whether the mesh is valid.
     "isValid2" = function() {
       private[[".CGALmesh"]]$isValid2()
     },
