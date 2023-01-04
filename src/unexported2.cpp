@@ -105,9 +105,15 @@ Rcpp::NumericMatrix getEKNormals(EMesh3& mesh) {
   Rcpp::Rcout << "getnormals\n";
   const size_t nvertices = mesh.number_of_vertices();
   Rcpp::NumericMatrix Normals(3, nvertices);
-  auto vnormals = mesh.add_property_map<EMesh3::Vertex_index, EVector3>(
-                          "v:normals", CGAL::NULL_VECTOR)
-                      .first;
+  std::pair<CGALnormals_map, bool> vnormals_ = 
+    mesh.property_map<vertex_descriptor, EVector3>("v:normals");
+  if(vnormals_.second) {
+    mesh.remove_property_map(vnormals_.first);
+  }
+  CGALnormals_map vnormals = 
+    mesh.add_property_map<EMesh3::Vertex_index, EVector3>(
+                          "v:normals", CGAL::NULL_VECTOR
+                        ).first;
   Rcpp::Rcout << "vnormals map is ready\n";
   // auto fnormals = mesh.add_property_map<EMesh3::Face_index, EVector3>(
   //                         "f:normals", CGAL::NULL_VECTOR)

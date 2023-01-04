@@ -74,7 +74,33 @@ public:
     const EK::FT ar = PMP::area(mesh);
     return CGAL::to_double<EK::FT>(ar);
   }
-  
+
+  void assignFaceColors(Rcpp::StringVector colors) {
+    if(colors.size() != mesh.number_of_faces()) {
+      Rcpp::stop("The number of colors does not match the number of faces.");
+    }
+    removeProperties(mesh, false, false, true);
+    Fcolors_map fcolor = 
+      mesh.add_property_map<face_descriptor, std::string>("f:color", "").first;
+    int i = 0;
+    for(EMesh3::Face_index fi : mesh.faces()) {
+      fcolor[fi] = colors(i++);
+    }
+  }
+
+  void assignVertexColors(Rcpp::StringVector colors) {
+    if(colors.size() != mesh.number_of_vertices()) {
+      Rcpp::stop("The number of colors does not match the number of vertices.");
+    }
+    removeProperties(mesh, false, true, false);
+    Vcolors_map vcolor = 
+      mesh.add_property_map<vertex_descriptor, std::string>("v:color", "").first;
+    int i = 0;
+    for(EMesh3::Vertex_index vi : mesh.vertices()) {
+      vcolor[vi] = colors(i++);
+    }
+  }
+
   Rcpp::NumericVector centroid() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -188,6 +214,32 @@ public:
   Rcpp::XPtr<EMesh3> clone() {
     EMesh3 copy = cloneMesh(mesh, true, true, true);
     return Rcpp::XPtr<EMesh3>(new EMesh3(copy), false);
+  }
+
+  void computeNormals() {
+    std::pair<CGALnormals_map, bool> vnormals_ = 
+      mesh.property_map<vertex_descriptor, EVector3>("v:normals");
+    if(vnormals_.second) {
+      mesh.remove_property_map(vnormals_.first);
+    }
+    CGALnormals_map vnormals = 
+      mesh.add_property_map<vertex_descriptor, EVector3>(
+                          "v:normals", CGAL::NULL_VECTOR
+                        ).first;
+    PMP::compute_vertex_normals(mesh, vnormals);
+    removeProperties(mesh, true, false, false);
+    Normals_map vnormal_map = 
+      mesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
+                          "v:normal", defaultNormal()
+                        ).first;
+    for(EMesh3::Vertex_index vi : mesh.vertices()) {
+      Rcpp::NumericVector rcppnormal(3);
+      const EVector3 normal = vnormals[vi];
+      rcppnormal(0) = CGAL::to_double<EK::FT>(normal.x());
+      rcppnormal(1) = CGAL::to_double<EK::FT>(normal.y());
+      rcppnormal(2) = CGAL::to_double<EK::FT>(normal.z());
+      vnormal_map[vi] = rcppnormal;
+    }
   }
   
   Rcpp::List connectedComponents(const bool triangulate) {

@@ -49,6 +49,11 @@ EMesh3 vf2mesh(const Rcpp::NumericMatrix vertices,
   return mesh;
 }
 
+Rcpp::NumericVector defaultNormal() {
+  Rcpp::NumericVector def = 
+    {Rcpp::NumericVector::get_na(), Rcpp::NumericVector::get_na(), Rcpp::NumericVector::get_na()};
+  return def;
+}
 
 EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
                 const Rcpp::List faces,
@@ -71,7 +76,7 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
     if(mesh.number_of_vertices() != normals.ncol()) {
       Rcpp::stop("pb normals");
     }
-    Rcpp::NumericVector def = {Rcpp::NumericVector::get_na(), Rcpp::NumericVector::get_na(), Rcpp::NumericVector::get_na()};
+    Rcpp::NumericVector def = defaultNormal();
     Normals_map normalsmap = 
       mesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal", def).first;
     for(int j = 0; j < normals.ncol(); j++) {
@@ -134,7 +139,7 @@ EMesh3 cloneMesh(EMesh3& mesh, const bool vnormals, const bool vcolors, const bo
     std::pair<Normals_map, bool> vnormals_ = 
       mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
     if(vnormals_.second) {
-      Rcpp::NumericVector def = {Rcpp::NumericVector::get_na(), Rcpp::NumericVector::get_na(), Rcpp::NumericVector::get_na()};
+      Rcpp::NumericVector def = defaultNormal();
       Normals_map vnormalsmap = 
         out.add_property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal", def).first;
       for(EMesh3::Vertex_index vi : out.vertices()) {

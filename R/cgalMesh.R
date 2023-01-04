@@ -122,6 +122,26 @@ cgalMesh <- R6Class(
     "area" = function() {
       private[[".CGALmesh"]]$area()
     },
+
+    #' @description Assign colors (or any character strings) to the faces of 
+    #'   the mesh.
+    #' @param colors a character vector whose length equals the number of faces
+    #' @return The current \code{cgalMesh} object, invisibly.
+    "assignFaceColors" = function(colors) {
+      stopifnot(isStringVector(colors))
+      . <- private[[".CGALmesh"]]$assignFaceColors(colors)
+      invisible(self)
+    },
+
+    #' @description Assign colors (or any character strings) to the vertices of 
+    #'   the mesh.
+    #' @param colors a character vector whose length equals the number of vertices
+    #' @return The current \code{cgalMesh} object, invisibly.
+    "assignVertexColors" = function(colors) {
+      stopifnot(isStringVector(colors))
+      . <- private[[".CGALmesh"]]$assignVertexColors(colors)
+      invisible(self)
+    },
     
     #' @description Check whether the mesh bounds a volume. The mesh must be 
     #'   triangle.
@@ -241,6 +261,14 @@ cgalMesh <- R6Class(
       stopifnot(isCGALmesh(splitter))
       splitterXPtr <- getXPtr(splitter)
       private[[".CGALmesh"]]$testsplit(splitterXPtr)
+    },
+
+    #' @description Compute per-vertex normals of the mesh. 
+    #' @return The current \code{cgalMesh} object, invisibly. 
+    #'  To get the normals, use the \code{getNormals} method.
+    "computeNormals" = function() {
+      . <- private[[".CGALmesh"]]$computeNormals()
+      invisible(self)
     },
     
     #' @description Decomposition into connected components.
@@ -503,7 +531,7 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$getVcolors()
     },
     
-    #' @description Get the normals
+    #' @description Get the normals (if there are)
     "getNormals" = function() {
       private[[".CGALmesh"]]$getNormals()
     },

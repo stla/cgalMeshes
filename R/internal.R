@@ -10,6 +10,10 @@ isString <- function(x) {
   is.character(x) && length(x) == 1L && !is.na(x)
 }
 
+isStringVector <- function(x) {
+  is.character(x) && !anyNA(x)
+}
+
 isFilename <- function(x) {
   isString(x) && file.exists(x)
 }
