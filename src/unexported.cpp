@@ -169,7 +169,7 @@ void removeProperties(EMesh3& mesh, const bool vnormals, const bool vcolors, con
   }
 }
 
-std::pair<std::map<face_descriptor, std::string>, bool> copy_fcolor(EMesh3& mesh) {
+MaybeFcolorMap copy_fcolor(EMesh3& mesh) {
   std::pair<Fcolors_map, bool> fcolors_ = 
     mesh.property_map<face_descriptor, std::string>("f:color");
   bool has_fcolor = fcolors_.second;
@@ -183,7 +183,7 @@ std::pair<std::map<face_descriptor, std::string>, bool> copy_fcolor(EMesh3& mesh
   return std::make_pair(fcolorsmap, has_fcolor);
 }
 
-std::pair<std::map<vertex_descriptor, std::string>, bool> copy_vcolor(EMesh3& mesh) {
+MaybeVcolorMap copy_vcolor(EMesh3& mesh) {
   std::pair<Vcolors_map, bool> vcolors_ = 
     mesh.property_map<vertex_descriptor, std::string>("v:color");
   bool has_vcolor = vcolors_.second;
@@ -197,7 +197,7 @@ std::pair<std::map<vertex_descriptor, std::string>, bool> copy_vcolor(EMesh3& me
   return std::make_pair(vcolorsmap, has_vcolor);
 }
 
-std::pair<std::map<vertex_descriptor, Rcpp::NumericVector>, bool> copy_vnormal(EMesh3& mesh) {
+MaybeNormalMap copy_vnormal(EMesh3& mesh) {
   std::pair<Normals_map, bool> vnormals_ = 
     mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
   bool has_vnormal = vnormals_.second;
@@ -209,6 +209,26 @@ std::pair<std::map<vertex_descriptor, Rcpp::NumericVector>, bool> copy_vnormal(E
     mesh.remove_property_map(vnormals_.first);
   }
   return std::make_pair(vnormalsmap, has_vnormal);
+}
+
+void triangulateMesh(EMesh3& mesh) {
+  MaybeFcolorMap fcolormap_ = copy_fcolor(mesh);
+  const bool hasFcolors = fcolormap_.second;
+  removeProperties(mesh, true, false, false);
+  TriangulateVisitor vis;
+  const bool success = 
+    PMP::triangulate_faces(mesh, CGAL::parameters::visitor(vis));
+  if(!success) {
+    Rcpp::stop("Triangulation has failed.");
+  }
+  if(hasFcolors) {
+    MapBetweenFaces fmap = *(vis.fmap);
+    Fcolors_map fcolors = 
+      mesh.add_property_map<face_descriptor, std::string>("f:color", "").first;
+    for(EMesh3::Face_index fi: mesh.faces()) {
+      fcolors[fi] = fcolormap_.first[fmap[fi]];
+    }
+  }
 }
 
 Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {

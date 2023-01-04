@@ -83,7 +83,9 @@ typedef EMesh3::Property_map<face_descriptor, std::size_t> Face_index_map;
 typedef boost::graph_traits<Mesh3>::halfedge_descriptor halfedge_descriptor;
 typedef EMesh3::Property_map<halfedge_descriptor, std::size_t> Halfedge_index_map;
 typedef EMesh3::Property_map<vertex_descriptor, Rcpp::NumericVector> Normals_map;
+typedef std::pair<std::map<vertex_descriptor, Rcpp::NumericVector>, bool> MaybeNormalMap;
 typedef EMesh3::Property_map<vertex_descriptor, std::string> Vcolors_map;
+typedef std::pair<std::map<vertex_descriptor, std::string>, bool> MaybeVcolorMap;
 typedef EMesh3::Property_map<face_descriptor, std::string> Fcolors_map;
 typedef std::pair<std::map<face_descriptor, std::string>, bool> MaybeFcolorMap;
 typedef std::map<face_descriptor, face_descriptor> MapBetweenFaces;
@@ -168,13 +170,14 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix,
 
 EMesh3 cloneMesh(EMesh3&, const bool, const bool, const bool);
 void removeProperties(EMesh3&, const bool, const bool, const bool);
-std::pair<std::map<vertex_descriptor, Rcpp::NumericVector>, bool> copy_vnormal(EMesh3&);
-std::pair<std::map<vertex_descriptor, std::string>, bool> copy_vcolor(EMesh3&);
-std::pair<std::map<face_descriptor, std::string>, bool> copy_fcolor(EMesh3&);
+MaybeNormalMap copy_vnormal(EMesh3&);
+MaybeVcolorMap copy_vcolor(EMesh3&);
+MaybeFcolorMap copy_fcolor(EMesh3&);
+void triangulateMesh(EMesh3&);
 
 Rcpp::List clipping(EMesh3&, EMesh3&, const bool);
+
 //////////////////////////////////////////
-void new_vertex_added(std::size_t, vertex_descriptor, const EMesh3&);
 
 struct ClipVisitor : 
   public PMP::Corefinement::Default_visitor<EMesh3>
@@ -277,11 +280,11 @@ struct TriangulateVisitor :
   }
   
   TriangulateVisitor()
-    : fmap(new std::map<face_descriptor, face_descriptor>()),
+    : fmap(new MapBetweenFaces()),
       ofaceindex(new face_descriptor())
   {}
   
-  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap;
+  std::shared_ptr<MapBetweenFaces> fmap;
   std::shared_ptr<face_descriptor> ofaceindex;
 };
 

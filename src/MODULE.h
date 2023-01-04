@@ -195,16 +195,22 @@ public:
     std::pair<Normals_map, bool> vnormals_ = mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
     std::pair<Vcolors_map, bool> vcolors_ = mesh.property_map<vertex_descriptor, std::string>("v:color");
     std::pair<Fcolors_map, bool> fcolors_ = mesh.property_map<face_descriptor, std::string>("f:color");
-    const bool hasNormals = vnormals_.second;
+    bool hasNormals = vnormals_.second;
     const bool hasVcolors = vcolors_.second;
     const bool hasFcolors = fcolors_.second;
 
     const bool really_triangulate = 
       triangulate && !CGAL::is_triangle_mesh(mesh);
+    EMesh3 tmesh = cloneMesh(mesh, true, true, true);
+    if(really_triangulate) {
+      triangulateMesh(tmesh);
+      hasNormals = false;
+    }
 
     if(!hasNormals && !hasVcolors) {
-      Face_index_map fccmap = mesh.add_property_map<face_descriptor, std::size_t>("f:CC").first;
-      const std::size_t ncc = PMP::connected_components(mesh, fccmap);
+      Face_index_map fccmap = 
+        tmesh.add_property_map<face_descriptor, std::size_t>("f:CC").first;
+      const std::size_t ncc = PMP::connected_components(tmesh, fccmap);
       if(ncc == 1) {
         Message("Only one component found.\n");
       } else {
@@ -217,7 +223,7 @@ public:
       Fcolors_map fcolors;
       if(hasFcolors) {
         fcolors = fcolors_.first;
-        for(EMesh3::Face_index fi : mesh.faces()) {
+        for(EMesh3::Face_index fi : tmesh.faces()) {
           std::size_t c = fccmap[fi];
           face_descriptor cf = CGAL::SM_Face_index(counters[c]++);
           fcomponents[c].insert(std::make_pair(cf, fi));
@@ -226,7 +232,7 @@ public:
       }
       Rcpp::List xptrs(ncc);
       for(std::size_t c = 0; c < ncc; c++) {
-        Filtered_graph ffg(mesh, c, fccmap);
+        Filtered_graph ffg(tmesh, c, fccmap);
         EMesh3 cmesh;
         CGAL::copy_face_graph(ffg, cmesh);
         if(hasFcolors) {
@@ -237,24 +243,17 @@ public:
             cfcolor[cf] = fcolors[fd];
           }          
         }
-        if(really_triangulate) {
-          const bool success = PMP::triangulate_faces(cmesh);
-          if(!success) {
-            const std::string msg = "Triangulation has failed (component " +
-              std::to_string(i + 1) + ").";
-            Rcpp::stop(msg);
-          }
-        }
         xptrs(c) = Rcpp::XPtr<EMesh3>(new EMesh3(cmesh), false);
       }
       return xptrs;
     }
 
     
-    Vertex_index_map vccmap = mesh.add_property_map<vertex_descriptor, std::size_t>("v:CC").first;
-    const std::size_t ncc = connected_components(mesh, vccmap);
+    Vertex_index_map vccmap = 
+      tmesh.add_property_map<vertex_descriptor, std::size_t>("v:CC").first;
+    const std::size_t ncc = connected_components(tmesh, vccmap);
     std::vector<std::vector<EMesh3::Vertex_index>> components(ncc);
-    for(EMesh3::Vertex_index v : mesh.vertices()) {
+    for(EMesh3::Vertex_index v : tmesh.vertices()) {
       std::size_t c = vccmap[v];
       components[c].push_back(v);
     }
@@ -270,7 +269,7 @@ public:
     std::vector<EMesh3> ccmeshes0(ncc);
     std::map<EMesh3::Face_index, int> mapfaces;
     int iii = 0;
-    for(EMesh3::Face_index f : mesh.faces()) {
+    for(EMesh3::Face_index f : tmesh.faces()) {
       mapfaces[f] = iii++;
     }
     Rcpp::Rcout << "mapfaces done\n";
@@ -287,7 +286,7 @@ public:
       }
       Rcpp::Rcout << "newinds done\n";
       for(const auto& [faceindex, intindex] : mapfaces) {
-        auto it = vertices_around_face(mesh.halfedge(faceindex), mesh);
+        auto it = vertices_around_face(tmesh.halfedge(faceindex), tmesh);
         if(vccmap[*(it.begin())] == c) {
           std::vector<EMesh3::Vertex_index> facenewinds;
           for(EMesh3::Vertex_index v : it) {
@@ -306,7 +305,7 @@ public:
       }
       EMesh3 dd;
       for(int j = 0; j < csize; j++) {
-        EPoint3 pt = mesh.point(component[j]);
+        EPoint3 pt = tmesh.point(component[j]);
         dd.add_vertex(pt);
       }
       Rcpp::Rcout << "vertices added to dd\n";
@@ -322,20 +321,13 @@ public:
       ccmeshes[c] = dd;
 
       Rcpp::Rcout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n";
-      if(really_triangulate) {
-        const bool success = PMP::triangulate_faces(dd);
-        if(!success) {
-          const std::string msg = "Triangulation has failed (component " +
-            std::to_string(c + 1) + ").";
-          Rcpp::stop(msg);
-        }
-      }
     }
 
     if(hasNormals) {
       for(std::size_t c = 0; c < ncc; c++) {
         std::vector<EMesh3::Vertex_index> component = components[c];
-        Normals_map vnormals = ccmeshes[c].add_property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal").first;
+        Normals_map vnormals = 
+          ccmeshes[c].add_property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal").first;
         for(EMesh3::Vertex_index vi : ccmeshes[c].vertices()) {
           vnormals[vi] = vnormals_.first[CGAL::SM_Vertex_index(component[int(vi)])];
         }
@@ -344,7 +336,8 @@ public:
     if(hasVcolors) {
       for(std::size_t c = 0; c < ncc; c++) {
         std::vector<EMesh3::Vertex_index> component = components[c];
-        Vcolors_map vcolors = ccmeshes[c].add_property_map<vertex_descriptor, std::string>("v:color").first;
+        Vcolors_map vcolors = 
+          ccmeshes[c].add_property_map<vertex_descriptor, std::string>("v:color").first;
         for(EMesh3::Vertex_index vi : ccmeshes[c].vertices()) {
           vcolors[vi] = vcolors_.first[CGAL::SM_Vertex_index(component[int(vi)])];
         }
@@ -353,7 +346,8 @@ public:
     if(hasFcolors) {
       for(std::size_t c = 0; c < ncc; c++) {
         std::vector<EMesh3::Face_index> fcomponent = todelete[c];
-        Fcolors_map fcolors = ccmeshes[c].add_property_map<face_descriptor, std::string>("f:color").first;
+        Fcolors_map fcolors = 
+          ccmeshes[c].add_property_map<face_descriptor, std::string>("f:color").first;
         for(EMesh3::Face_index fi : ccmeshes[c].faces()) {
           fcolors[fi] = fcolors_.first[CGAL::SM_Face_index(fcomponent[int(fi)])];
         }
@@ -699,33 +693,7 @@ public:
   }
   
   void triangulate() {
-    std::pair<std::map<face_descriptor, std::string>, bool> fcolormap_ = copy_fcolor(mesh);
-    // std::pair<Fcolors_map, bool> fcolors_ = 
-    //   mesh.property_map<face_descriptor, std::string>("f:color");
-    // const bool has_fcolor = fcolors_.second;
-    // std::map<face_descriptor, std::string> fcolorsmap;
-    // if(has_fcolor) {
-    //   for(EMesh3::Face_index fi: mesh.faces()) {
-    //     fcolorsmap[fi] = fcolors_.first[fi];
-    //   }
-    //   mesh.remove_property_map(fcolors_.first);
-    // }
-    removeProperties(mesh, true, true, true);
-    TriangulateVisitor vis;
-    const bool success = PMP::triangulate_faces(mesh, CGAL::parameters::visitor(vis));
-    if(!success) {
-      Rcpp::stop("Triangulation has failed.");
-    }
-    if(fcolormap_.second) {
-      Fcolors_map fcolors = 
-        mesh.add_property_map<face_descriptor, std::string>("f:color").first;
-      for(EMesh3::Face_index fi: mesh.faces()) {
-        fcolors[fi] = fcolormap_.first[(*(vis.fmap))[fi]];
-      }
-    }
-    // for(const auto& [fnew, fsplit] : *(vis.fmap)) {
-    //   Rcpp::Rcout << fnew << " - " << fsplit << "\n";
-    // }
+    triangulateMesh(mesh);
   }
 
   Rcpp::List Union(Rcpp::XPtr<EMesh3> mesh2XPtr) {
