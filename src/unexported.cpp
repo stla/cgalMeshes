@@ -232,6 +232,8 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     
   MaybeFcolorMap fcolorMap_ = copy_fcolor(tm);
   MaybeFcolorMap fcolorMap2_ = copy_fcolor(clipper);
+  const bool hasColors = fcolorMap_.second && fcolorMap2_.second;
+
   std::size_t nfaces = tm.number_of_faces();
   std::size_t nfaces_clipper = clipper.number_of_faces();
   
@@ -252,21 +254,24 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
 
   tm.collect_garbage();
 
-  Rcpp::LogicalVector fremoved(tm.number_of_faces());
-  std::pair<EMesh3::Property_map<face_descriptor, bool>, bool> maybemap = tm.property_map<face_descriptor, bool>("f:removed");
-  Rcpp::Rcout << "fremoved: " << maybemap.second << "\n";
-  if(maybemap.second) {
-    int fr = 0;
-    for(EMesh3::Face_index fi : tm.faces()) {
-      fremoved(fr++) = maybemap.first[fi];
-    }
-  }
+  std::size_t sb = PMP::stitch_borders(tm);
+  Rcpp::Rcout << "stitched borders: " << sb << "\n";
+
+  // Rcpp::LogicalVector fremoved(tm.number_of_faces());
+  // std::pair<EMesh3::Property_map<face_descriptor, bool>, bool> maybemap = tm.property_map<face_descriptor, bool>("f:removed");
+  // Rcpp::Rcout << "fremoved: " << maybemap.second << "\n";
+  // if(maybemap.second) {
+  //   int fr = 0;
+  //   for(EMesh3::Face_index fi : tm.faces()) {
+  //     fremoved(fr++) = maybemap.first[fi];
+  //   }
+  // }
 
   Rcpp::Rcout << "nfaces clipper: " << clipper.number_of_faces() << "\n";
   Rcpp::Rcout << "clipper has garbage: " << clipper.has_garbage() << "\n";
 
   if(!clipVolume){
-    if(fcolorMap_.second) {
+    if(hasColors) {
       std::map<face_descriptor, std::string> fcolorMap = fcolorMap_.first;
       MapBetweenFaces fmap = *(vis.fmap_tm);
       Fcolors_map newfcolor = 
@@ -280,205 +285,258 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
         }
       }
     }
-    return Rcpp::List::create(Rcpp::Named("o") = 1);
+    return Rcpp::List::create();
   }
 
-  if(fcolorMap_.second) {
-    std::map<face_descriptor, std::string> fcolorMap = fcolorMap_.first;
-    std::map<face_descriptor, std::string> fcolorMap2 = fcolorMap2_.first;
-    MapBetweenFaces fmap_tm = *(vis.fmap_tm);
-    MapBetweenFaces fmap_clipper = *(vis.fmap_clipper);
-    MapBetweenFaces ftargets = *(vis.ftargets);
-    std::map<face_descriptor, std::string> fcolormap_clipper;
-    int fdi = 0;
-    for(auto it = ftargets.rbegin(); it != ftargets.rend(); ++it) {
-      face_descriptor fd = it->second;
-      if(std::size_t(fd) >= nfaces_clipper) {
-        fd = fmap_clipper[fd];
-      }
+  MapBetweenFaces fmap_tm = *(vis.fmap_tm);
+  MapBetweenFaces fmap_clipper = *(vis.fmap_clipper);
+  MapBetweenFaces ftargets = *(vis.ftargets);
+  std::map<face_descriptor, std::string> fcolorMap;
+  std::map<face_descriptor, std::string> fcolorMap2;
+  std::map<face_descriptor, std::string> fcolormap_clipper;
+  if(hasColors) {
+    fcolorMap = fcolorMap_.first;
+    fcolorMap2 = fcolorMap2_.first;
+  }
+  int fdi = 0;
+  for(auto it = ftargets.rbegin(); it != ftargets.rend(); ++it) {
+    face_descriptor fd = it->second;
+    if(std::size_t(fd) >= nfaces_clipper) {
+      fd = fmap_clipper[fd];
+    }
+    if(hasColors) {
       fcolormap_clipper[it->first] = fcolorMap2[fd];
-      while(fimap[CGAL::SM_Face_index(fdi)] != 0) {
-        fdi++;
-      }
-      fimap[CGAL::SM_Face_index(fdi++)] = std::size_t(it->first);
     }
-    Face_index_map whichPart = 
-      tm.add_property_map<face_descriptor, std::size_t>("f:which").first;
-    Fcolors_map newfcolor = 
-      tm.add_property_map<face_descriptor, std::string>("f:color", "").first;
-    int nfaces_tmesh = 0;
-    std::vector<std::string> fcolor_tmesh_vec;
-    for(EMesh3::Face_index fi : tm.faces()) {
-      std::size_t ifi = fimap[fi];
-      face_descriptor fd = CGAL::SM_Face_index(ifi);
-      if(auto search = fmap_clipper.find(fd); search != fmap_clipper.end()) {
-        newfcolor[fi] = fcolorMap[fd];
-        whichPart[fi] = 0;
-        fcolor_tmesh_vec.push_back(fcolorMap[fd]);
-        nfaces_tmesh++;
-      } else if(auto search = ftargets.find(fd); search != ftargets.end()) {
-        newfcolor[fi] = fcolormap_clipper[fd];
-        whichPart[fi] = 1;
-      } else if(ifi < nfaces) {
-        newfcolor[fi] = fcolorMap[fd];
-        whichPart[fi] = 0;
-        fcolor_tmesh_vec.push_back(fcolorMap[fd]);
-        nfaces_tmesh++;
-      } else {
-        newfcolor[fi] = fcolorMap[fmap_tm[fd]];
-        whichPart[fi] = 0;
-        fcolor_tmesh_vec.push_back(fcolorMap[fmap_tm[fd]]);
-        nfaces_tmesh++;
-      }
+    while(fimap[CGAL::SM_Face_index(fdi)] != 0) {
+      fdi++;
     }
-    Rcpp::Rcout << "DONE\n";
+    fimap[CGAL::SM_Face_index(fdi++)] = std::size_t(it->first);
+  }
+  Face_index_map whichPart = 
+    tm.add_property_map<face_descriptor, std::size_t>("f:which").first;
+  Fcolors_map newfcolor = 
+    tm.add_property_map<face_descriptor, std::string>("f:color", "").first;
+  int nfaces_tmesh = 0;
+  int nfaces_tmesh2 = 0;
+  std::vector<std::string> fcolor_tmesh_vec;
+  std::vector<std::string> fcolor_tmesh2_vec;
+  for(EMesh3::Face_index fi : tm.faces()) {
+    std::size_t ifi = fimap[fi];
+    face_descriptor fd = CGAL::SM_Face_index(ifi);
+    if(auto search = fmap_clipper.find(fd); search != fmap_clipper.end()) {
+      whichPart[fi] = 0;
+      if(hasColors) {
+        std::string color = fcolorMap[fd]; 
+        newfcolor[fi] = color;
+        fcolor_tmesh_vec.push_back(color);
+      }
+      nfaces_tmesh++;
+    } else if(auto search = ftargets.find(fd); search != ftargets.end()) {
+      whichPart[fi] = 1;
+      if(hasColors) {
+        std::string color = fcolormap_clipper[fd]; 
+        newfcolor[fi] = color;
+        fcolor_tmesh2_vec.push_back(color);
+      }
+      nfaces_tmesh2++;
+    } else if(ifi < nfaces) {
+      whichPart[fi] = 0;
+      if(hasColors) {
+        std::string color = fcolorMap[fd]; 
+        newfcolor[fi] = color;
+        fcolor_tmesh_vec.push_back(color);
+      }
+      nfaces_tmesh++;
+    } else {
+      whichPart[fi] = 0;
+      if(hasColors) {
+        std::string color = fcolorMap[fmap_tm[fd]]; 
+        newfcolor[fi] = color;
+        fcolor_tmesh_vec.push_back(color);
+      }
+      nfaces_tmesh++;
+    }
+  }
+  Rcpp::Rcout << "DONE\n";
 
-    std::size_t sb = PMP::stitch_borders(tm);
-    Rcpp::Rcout << "stitched borders: " << sb << "\n";
+  std::vector<EPoint3> points;
+  points.reserve(tm.number_of_vertices());
+  for(EMesh3::Vertex_index vi : tm.vertices()) {
+    points.emplace_back(tm.point(vi));
+  }
 
+  EMesh3 tmesh;
+  {
     std::vector<std::vector<std::size_t>> polygons;
     polygons.reserve(nfaces_tmesh);
     for(EMesh3::Face_index fi : tm.faces()) {
       if(whichPart[fi] == 0) {
         std::vector<std::size_t> face;
+        face.reserve(3);
         for(EMesh3::Vertex_index vi :
             vertices_around_face(tm.halfedge(fi), tm)) {
-          face.push_back(std::size_t(vi));
+          face.emplace_back(std::size_t(vi));
         }
         polygons.emplace_back(face);
       }
     }
-    std::vector<EPoint3> points;
-    points.reserve(tm.number_of_vertices());
-    for(EMesh3::Vertex_index vi : tm.vertices()) {
-      points.emplace_back(tm.point(vi));
-    }
-
     SoupVisitor soupvis;
     bool success = PMP::orient_polygon_soup(points, polygons, CGAL::parameters::visitor(soupvis));
     Rcpp::Rcout << "orientation successful: " << success << "\n";
-
-    EMesh3 tmesh;
     PMP::polygon_soup_to_polygon_mesh(points, polygons, tmesh);
-    Fcolors_map fcolor_tmesh = 
-      tmesh.add_property_map<face_descriptor, std::string>("f:color", "").first;
-    for(EMesh3::Face_index fi : tmesh.faces()) {
-      fcolor_tmesh[fi] = fcolor_tmesh_vec[int(fi)];
-    }
-
-    // Face_index_map fm =
-    //   tm.add_property_map<face_descriptor, std::size_t>("f:index").first;
-    // Vertex_index_map vm =
-    //   tm.add_property_map<vertex_descriptor, std::size_t>("v:index").first;
-    // Halfedge_index_map hm =
-    //   tm.add_property_map<halfedge_descriptor, std::size_t>("h:index").first;
-    //Filtered_mesh ffg_tmesh(tm, 0, whichPart, PMP::parameters::face_index_map(fm).vertex_index_map(vm).halfedge_index_map(hm));
-    //Filtered_graph ffg_clipper(tm, 1, whichPart);
-    // EMesh3 tmesh = cloneMesh(tmbis, false, false, false);
-    // for(int i = 0; i < tm.number_of_faces(); i++) {
-    //   face_descriptor fd = CGAL::SM_Face_index(i);
-    //   if(whichPart[fd] == 1) {
-    //     tmesh.remove_face(fd);
-    //   }
-    // }
-    // std::vector<EMesh3::Face_index> faces_to_remove;
-    // std::vector<EMesh3::Vertex_index> vertices_to_remove;
-    // for(EMesh3::Vertex_index vi : tmesh.vertices()) {
-    //   EMesh3::Face_index fi = tmesh.face(tmesh.halfedge(vi));
-    //   if(whichPart[fi] == 1) {
-    //     if(!tmesh.is_removed(fi)) {
-    //       faces_to_remove.push_back(fi);
-    //     }
-    //     //EMesh3::Vertex_index vi = tmesh.vertex(tmesh.edge(hi), 0);
-    //     vertices_to_remove.push_back(vi);
-    //   }
-    // }
-    // for(std::vector<EMesh3::Vertex_index>::iterator it = vertices_to_remove.begin(); it != vertices_to_remove.end(); ++it) {
-    //   tmesh.remove_vertex(*it);
-    // }
-    // for(std::vector<EMesh3::Face_index>::iterator it = faces_to_remove.begin(); it != faces_to_remove.end(); ++it) {
-    //   tmesh.remove_face(*it);
-    // }
-    Rcpp::Rcout << "number of faces: " << tmesh.number_of_faces() << "\n";
-    Rcpp::Rcout << "number of vertices: " << tmesh.number_of_vertices() << "\n";
-    Rcpp::Rcout << "number of removed faces: " << tmesh.number_of_removed_faces() << "\n";
-    // Rcpp::LogicalVector fremoved(tmesh.number_of_faces());
-    // std::pair<EMesh3::Property_map<face_descriptor, bool>, bool> maybe_fremoved = 
-    //   tmesh.property_map<face_descriptor, bool>("f:removed");
-    // Rcpp::Rcout << "fremoved present: " << maybe_fremoved.second << "\n";
-    // if(maybe_fremoved.second) {
-    //   int fr = 0;
-    //   for(EMesh3::Face_index fi : tmesh.faces()) {
-    //     fremoved(fr++) = maybe_fremoved.first[fi];
-    //   }
-    // }
-    // if(Rcpp::is_false(Rcpp::any(fremoved))) {
-    //   Rcpp::Rcout << "nothing removed\n";
-    //   for(EMesh3::Face_index fi : tmesh.faces()) {
-    //     if(whichPart[fi] == 1) {
-    //       maybe_fremoved.first[fi] = true;
-    //     }
-    //   }
-    // }
-    // int fr = 0;
-    // for(EMesh3::Face_index fi : tmesh.faces()) {
-    //   fremoved(fr++) = tmesh.is_removed(fi);
-    // }
-    // if(Rcpp::is_false(Rcpp::any(fremoved))) {
-    //   Rcpp::Rcout << "still nothing removed\n";
-    // }
-    // Rcpp::Rcout << "collect garbage\n";
-    // tmesh.collect_garbage();
-    //Rcpp::Rcout << "number of removed faces: " << tmesh.number_of_removed_faces() << "\n";
-
-
-    EMesh3 tmesh2 = cloneMesh(tm, false, false, true);
-    for(EMesh3::Face_index fi : tm.faces()) {
-      if(whichPart[fi] == 0) {
-        tmesh2.remove_face(fi);
+    if(hasColors) {
+      Fcolors_map fcolor_tmesh = 
+        tmesh.add_property_map<face_descriptor, std::string>("f:color", "").first;
+      for(EMesh3::Face_index fi : tmesh.faces()) {
+        fcolor_tmesh[fi] = fcolor_tmesh_vec[int(fi)];
       }
     }
-    tmesh2.collect_garbage();
+  }
 
-    Rcpp::LogicalVector Components(tm.number_of_faces());
-    int fint = 0;
+  // Face_index_map fm =
+  //   tm.add_property_map<face_descriptor, std::size_t>("f:index").first;
+  // Vertex_index_map vm =
+  //   tm.add_property_map<vertex_descriptor, std::size_t>("v:index").first;
+  // Halfedge_index_map hm =
+  //   tm.add_property_map<halfedge_descriptor, std::size_t>("h:index").first;
+  //Filtered_mesh ffg_tmesh(tm, 0, whichPart, PMP::parameters::face_index_map(fm).vertex_index_map(vm).halfedge_index_map(hm));
+  //Filtered_graph ffg_clipper(tm, 1, whichPart);
+  // EMesh3 tmesh = cloneMesh(tmbis, false, false, false);
+  // for(int i = 0; i < tm.number_of_faces(); i++) {
+  //   face_descriptor fd = CGAL::SM_Face_index(i);
+  //   if(whichPart[fd] == 1) {
+  //     tmesh.remove_face(fd);
+  //   }
+  // }
+  // std::vector<EMesh3::Face_index> faces_to_remove;
+  // std::vector<EMesh3::Vertex_index> vertices_to_remove;
+  // for(EMesh3::Vertex_index vi : tmesh.vertices()) {
+  //   EMesh3::Face_index fi = tmesh.face(tmesh.halfedge(vi));
+  //   if(whichPart[fi] == 1) {
+  //     if(!tmesh.is_removed(fi)) {
+  //       faces_to_remove.push_back(fi);
+  //     }
+  //     //EMesh3::Vertex_index vi = tmesh.vertex(tmesh.edge(hi), 0);
+  //     vertices_to_remove.push_back(vi);
+  //   }
+  // }
+  // for(std::vector<EMesh3::Vertex_index>::iterator it = vertices_to_remove.begin(); it != vertices_to_remove.end(); ++it) {
+  //   tmesh.remove_vertex(*it);
+  // }
+  // for(std::vector<EMesh3::Face_index>::iterator it = faces_to_remove.begin(); it != faces_to_remove.end(); ++it) {
+  //   tmesh.remove_face(*it);
+  // }
+  // Rcpp::Rcout << "number of faces: " << tmesh.number_of_faces() << "\n";
+  // Rcpp::Rcout << "number of vertices: " << tmesh.number_of_vertices() << "\n";
+  // Rcpp::Rcout << "number of removed faces: " << tmesh.number_of_removed_faces() << "\n";
+  // Rcpp::LogicalVector fremoved(tmesh.number_of_faces());
+  // std::pair<EMesh3::Property_map<face_descriptor, bool>, bool> maybe_fremoved = 
+  //   tmesh.property_map<face_descriptor, bool>("f:removed");
+  // Rcpp::Rcout << "fremoved present: " << maybe_fremoved.second << "\n";
+  // if(maybe_fremoved.second) {
+  //   int fr = 0;
+  //   for(EMesh3::Face_index fi : tmesh.faces()) {
+  //     fremoved(fr++) = maybe_fremoved.first[fi];
+  //   }
+  // }
+  // if(Rcpp::is_false(Rcpp::any(fremoved))) {
+  //   Rcpp::Rcout << "nothing removed\n";
+  //   for(EMesh3::Face_index fi : tmesh.faces()) {
+  //     if(whichPart[fi] == 1) {
+  //       maybe_fremoved.first[fi] = true;
+  //     }
+  //   }
+  // }
+  // int fr = 0;
+  // for(EMesh3::Face_index fi : tmesh.faces()) {
+  //   fremoved(fr++) = tmesh.is_removed(fi);
+  // }
+  // if(Rcpp::is_false(Rcpp::any(fremoved))) {
+  //   Rcpp::Rcout << "still nothing removed\n";
+  // }
+  // Rcpp::Rcout << "collect garbage\n";
+  // tmesh.collect_garbage();
+  //Rcpp::Rcout << "number of removed faces: " << tmesh.number_of_removed_faces() << "\n";
+
+
+  // EMesh3 tmesh2 = cloneMesh(tm, false, false, true);
+  // for(EMesh3::Face_index fi : tm.faces()) {
+  //   if(whichPart[fi] == 0) {
+  //     tmesh2.remove_face(fi);
+  //   }
+  // }
+  // tmesh2.collect_garbage();
+
+  EMesh3 tmesh2;
+  {
+    std::vector<std::vector<std::size_t>> polygons;
+    polygons.reserve(nfaces_tmesh2);
     for(EMesh3::Face_index fi : tm.faces()) {
-      Components(fint++) = whichPart[fi] == 0;
+      if(whichPart[fi] == 1) {
+        std::vector<std::size_t> face;
+        face.reserve(3);
+        for(EMesh3::Vertex_index vi :
+            vertices_around_face(tm.halfedge(fi), tm)) {
+          face.emplace_back(std::size_t(vi));
+        }
+        polygons.emplace_back(face);
+      }
     }
+    SoupVisitor soupvis;
+    bool success = PMP::orient_polygon_soup(points, polygons, CGAL::parameters::visitor(soupvis));
+    Rcpp::Rcout << "orientation successful: " << success << "\n";
+    PMP::polygon_soup_to_polygon_mesh(points, polygons, tmesh2);
+    if(hasColors) {
+      Fcolors_map fcolor_tmesh2 = 
+        tmesh2.add_property_map<face_descriptor, std::string>("f:color", "").first;
+      for(EMesh3::Face_index fi : tmesh2.faces()) {
+        fcolor_tmesh2[fi] = fcolor_tmesh2_vec[int(fi)];
+      }
+    }
+  }
 
+  Rcpp::LogicalVector Components(tm.number_of_faces());
+  int fint = 0;
+  for(EMesh3::Face_index fi : tm.faces()) {
+    Components(fint++) = whichPart[fi] == 0;
+  }
+
+  {
     std::size_t nvisolated = PMP::remove_isolated_vertices(tmesh);
     Rcpp::Rcout << "removed " << nvisolated << " isolated vertices\n";
     if(nvisolated > 0) {
       tmesh.collect_garbage();
     }
-    std::size_t nvisolated2 = PMP::remove_isolated_vertices(tmesh2);
-    Rcpp::Rcout << "removed " << nvisolated2 << " isolated vertices\n";
+  }
+  {
+    std::size_t nvisolated = PMP::remove_isolated_vertices(tmesh2);
+    Rcpp::Rcout << "removed " << nvisolated << " isolated vertices\n";
+    if(nvisolated > 0) {
+      tmesh2.collect_garbage();
+    }
+  }
 
+  {
     std::vector<halfedge_descriptor> hds;
     std::back_insert_iterator<std::vector<halfedge_descriptor>> bii = std::back_inserter(hds);
     PMP::non_manifold_vertices(tmesh, bii);
-    Rcpp::Rcout << "NMV: " << hds.size() << "\n";
-    Rcpp::IntegerVector NMV(hds.size());
-    for(int i = 0; i < hds.size(); i++) {
-      NMV(i) = int(tmesh.target(hds[i]));
-    }
-    std::vector<halfedge_descriptor> hds2;
-    PMP::non_manifold_vertices(tmesh2, std::back_insert_iterator<std::vector<halfedge_descriptor>>(hds2));
-    Rcpp::Rcout << "NMV2: " << hds2.size() << "\n";
-    Rcpp::IntegerVector NMV2(hds2.size());
-    for(int i = 0; i < hds2.size(); i++) {
-      NMV2(i) = int(tmesh2.target(hds2[i]));
-    }
-
-
-    return Rcpp::List::create(
-      Rcpp::Named("mesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh), false),
-      Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh2), false),
-      Rcpp::Named("components") = Components,
-      Rcpp::Named("nmv") = NMV,
-      Rcpp::Named("nmv2") = NMV2
-    );
+    Rcpp::Rcout << "Non-manifold vertices in first mesh: " << hds.size() << "\n";
   }
+  {
+    std::vector<halfedge_descriptor> hds;
+    std::back_insert_iterator<std::vector<halfedge_descriptor>> bii = std::back_inserter(hds);
+    PMP::non_manifold_vertices(tmesh2, bii);
+    Rcpp::Rcout << "Non-manifold vertices in second mesh: " << hds.size() << "\n";
+  }
+
+
+  Rcpp::List meshes Rcpp::List::create(
+    Rcpp::Named("mesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh), false),
+    Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh2), false)
+  );
+  meshes.attr("components") = Components;
+
+  return meshes;
 
 
 
@@ -525,7 +583,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     Rcpp::Named("nfaces2") = Nfaces2,
 //    Rcpp::Named("zz") = ZZ,
     Rcpp::Named("action") = Action,
-    Rcpp::Named("fremoved") = fremoved,
+    // Rcpp::Named("fremoved") = fremoved,
     Rcpp::Named("clipper") = Rcpp::XPtr<EMesh3>(new EMesh3(clipper), false)
   );
 

@@ -221,10 +221,9 @@ cgalMesh <- R6Class(
       clipperXPtr <- getXPtr(clipper)
       if(clipVolume) {
         xptrs <- private[[".CGALmesh"]]$clipMesh(clipperXPtr, TRUE)
-        meshes <- lapply(xptrs[1:2], function(xptr) cgalMesh$new(clean = xptr))
-        components <- xptrs[[3]]
-#        nmv <- xptrs[[4]]
-        list(meshes = meshes, components = components)#, nmv = nmv)
+        meshes <- lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
+        attr(meshes, "components") <- attr(xptrs, "components")
+        meshes
       } else {
         . <- private[[".CGALmesh"]]$clipMesh(clipperXPtr, FALSE)
         invisible(self)
