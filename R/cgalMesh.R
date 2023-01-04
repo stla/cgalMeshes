@@ -516,22 +516,29 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$edges()
     },
     
-    #' @description Get the faces
-    "getFacesMatrix" = function() {
-      private[[".CGALmesh"]]$getFacesMatrix()
+    #' @description Get the faces of the mesh.
+    "getFaces" = function() {
+      if(
+        private[[".CGALmesh"]]$isTriangle() ||
+        private[[".CGALmesh"]]$isQuad()
+      ){
+        private[[".CGALmesh"]]$getFacesMatrix()  
+      } else {
+        private[[".CGALmesh"]]$getFacesList()
+      }
     },
     
-    #' @description Get the face colors
+    #' @description Get the face colors (if there are).
     "getFcolors" = function() {
       private[[".CGALmesh"]]$getFcolors()
     },
 
-    #' @description Get the vertex colors
+    #' @description Get the vertex colors (if there are).
     "getVcolors" = function() {
       private[[".CGALmesh"]]$getVcolors()
     },
     
-    #' @description Get the normals (if there are)
+    #' @description Get the per-vertex normals (if there are).
     "getNormals" = function() {
       private[[".CGALmesh"]]$getNormals()
     },
@@ -683,10 +690,10 @@ cgalMesh <- R6Class(
 
     #' @description Check whether the mesh is valid.
     #' @return A Boolean value, whether the mesh is valid.
-    "isValid2" = function() {
-      private[[".CGALmesh"]]$isValid2()
+    "isValidPolygonMesh" = function() {
+      private[[".CGALmesh"]]$isValidPolygonMesh()
     },
-
+    
     #' @description Reorient the connected components of the mesh in order that 
     #' it bounds a volume. The mesh must be triangle.
     #' @return The modified \code{cgalMesh} object, invisibly. \strong{WARNING}: 

@@ -73,12 +73,13 @@ Rcpp::List getFaces(MeshT& mesh) {
           vertices_around_face(mesh.halfedge(fd), mesh)) {
         col_i.push_back(vd + 1);
       }
-      Faces(i) = col_i;
-      i++;
+      Faces(i++) = col_i;
     }
   }
   return Faces;
 }
+
+template Rcpp::List getFaces<EMesh3>(EMesh3&);
 
 template <typename MeshT>
 Rcpp::IntegerMatrix getFaces2(MeshT& mesh, const int nsides) {

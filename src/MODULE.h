@@ -64,6 +64,7 @@ public:
       vcolors(R_NilValue),
       fcolors(R_NilValue) {}
 
+
   double area() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -74,6 +75,7 @@ public:
     const EK::FT ar = PMP::area(mesh);
     return CGAL::to_double<EK::FT>(ar);
   }
+
 
   void assignFaceColors(Rcpp::StringVector colors) {
     if(colors.size() != mesh.number_of_faces()) {
@@ -88,6 +90,7 @@ public:
     }
   }
 
+
   void assignVertexColors(Rcpp::StringVector colors) {
     if(colors.size() != mesh.number_of_vertices()) {
       Rcpp::stop("The number of colors does not match the number of vertices.");
@@ -100,6 +103,7 @@ public:
       vcolor[vi] = colors(i++);
     }
   }
+
 
   Rcpp::NumericVector centroid() {
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -118,7 +122,8 @@ public:
     // out(2) = CGAL::to_double<EK::FT>(centroid.z());
     return out;
   }
-  
+
+
   void testsplit(Rcpp::XPtr<EMesh3> clipperXPtr) {
     EMesh3 splitter = *(clipperXPtr.get());
     PMP::split(mesh, splitter);
@@ -137,11 +142,13 @@ public:
 //     // }
 //     return out;
   }
-  
+
+
   Rcpp::List clipMesh(Rcpp::XPtr<EMesh3> clipperXPtr, const bool clipVolume) {
     EMesh3 clipper = *(clipperXPtr.get());
     return clipping(mesh, clipper, clipVolume);
   }
+
 
   Rcpp::XPtr<EMesh3> doubleclip(Rcpp::XPtr<EMesh3> clipperXPtr) { // to remove
     EMesh3 meshcopy = cloneMesh(mesh, false, false, true);
@@ -203,9 +210,7 @@ public:
     PMP::triangulate_hole(out, h, std::back_insert_iterator<std::vector<face_descriptor>>(fs));
     for(int i = 0; i < fs.size(); i++) {
       Rcpp::Rcout << fs[i] << "\n";
-    }
-
-    
+    }    
 
     return Rcpp::XPtr<EMesh3>(new EMesh3(out), false);
   }
@@ -215,6 +220,7 @@ public:
     EMesh3 copy = cloneMesh(mesh, true, true, true);
     return Rcpp::XPtr<EMesh3>(new EMesh3(copy), false);
   }
+
 
   void computeNormals() {
     std::pair<CGALnormals_map, bool> vnormals_ = 
@@ -241,7 +247,8 @@ public:
       vnormal_map[vi] = rcppnormal;
     }
   }
-  
+
+
   Rcpp::List connectedComponents(const bool triangulate) {
 
     std::pair<Normals_map, bool> vnormals_ = mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
@@ -412,7 +419,8 @@ public:
     
     return mymeshes;
   }
-  
+
+
   Rcpp::List convexParts(const bool triangulate) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -468,14 +476,16 @@ public:
     }
     return distances;
   }  
-  
+
+
   bool doesBoundVolume() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
     return PMP::does_bound_a_volume(mesh);
   }
-  
+
+
   bool doesSelfIntersect() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -483,15 +493,18 @@ public:
     return PMP::does_self_intersect(mesh);
   }
 
+
   Rcpp::XPtr<EMesh3> dual() {
     EMesh3 dualmesh = dualMesh(mesh);
     return Rcpp::XPtr<EMesh3>(new EMesh3(dualmesh), false);
   }
-  
+
+
   Rcpp::DataFrame edges() {
     return getEdges<EK, EMesh3, EPoint3>(mesh);
   }
-  
+
+
   void fair(Rcpp::IntegerVector indices) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -512,7 +525,8 @@ public:
       Rcpp::stop("Failed to fair the mesh.");
     }
   }
-  
+
+
   Rcpp::NumericVector geoDists(const int index) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -535,20 +549,7 @@ public:
     }
     return gdistances;    
   }
-  
-  Rcpp::Nullable<Rcpp::NumericMatrix> getNormals() {
-    std::pair<Normals_map, bool> normalsmap_ = 
-      mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
-    if(normalsmap_.second) {
-      Normals_map normalsmap = normalsmap_.first;
-      Rcpp::NumericMatrix Normals(3, mesh.number_of_vertices());
-      for(int i = 0; i < mesh.number_of_vertices(); i++) {
-        Normals(Rcpp::_, i) = normalsmap[CGAL::SM_Vertex_index(i)];
-      }
-      return Rcpp::Nullable<Rcpp::NumericMatrix>(Rcpp::transpose(Normals));
-    }
-    return R_NilValue;
-  }
+
 
   Rcpp::IntegerMatrix getFacesMatrix() {
     const size_t nfaces = mesh.number_of_faces();
@@ -580,6 +581,12 @@ public:
     }
   }
 
+
+  Rcpp::List getFacesList() {
+    return getFaces<EMesh3>(mesh);
+  }
+
+
   Rcpp::Nullable<Rcpp::StringVector> getFcolors() {
     std::pair<Fcolors_map, bool> fcolorsmap_ = 
       mesh.property_map<face_descriptor, std::string>("f:color");
@@ -593,6 +600,22 @@ public:
     }
     return Rcpp::Nullable<Rcpp::StringVector>(Fcolors);
   }
+
+
+  Rcpp::Nullable<Rcpp::NumericMatrix> getNormals() {
+    std::pair<Normals_map, bool> normalsmap_ = 
+      mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+    if(normalsmap_.second) {
+      Normals_map normalsmap = normalsmap_.first;
+      Rcpp::NumericMatrix Normals(3, mesh.number_of_vertices());
+      for(int i = 0; i < mesh.number_of_vertices(); i++) {
+        Normals(Rcpp::_, i) = normalsmap[CGAL::SM_Vertex_index(i)];
+      }
+      return Rcpp::Nullable<Rcpp::NumericMatrix>(Rcpp::transpose(Normals));
+    }
+    return R_NilValue;
+  }
+
 
   Rcpp::Nullable<Rcpp::StringVector> getVcolors() {
     std::pair<Vcolors_map, bool> vcolorsmap_ = 
@@ -608,18 +631,23 @@ public:
     return Rcpp::Nullable<Rcpp::StringVector>(Vcolors);
   }
 
+
+  Rcpp::NumericMatrix getVertices() {
+    return getVertices_EK(mesh);
+  }  
+
+
   Rcpp::List getRmesh() {
     std::pair<Normals_map, bool> normalsmap_ = 
       mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
     const bool there_is_normals = normalsmap_.second;
-    Rcpp::Rcout << "there is normals: " << there_is_normals << "\n";
     Rcpp::List rmesh;
     if(CGAL::is_triangle_mesh(mesh)) {
-      rmesh = RSurfEKMesh2(mesh, !there_is_normals, 3);
+      rmesh = RSurfEKMesh2(mesh, false, 3);
     } else if(CGAL::is_quad_mesh(mesh)) {
-      rmesh = RSurfEKMesh2(mesh, !there_is_normals, 4);
+      rmesh = RSurfEKMesh2(mesh, false, 4);
     } else {
-      rmesh = RSurfEKMesh(mesh, !there_is_normals);
+      rmesh = RSurfEKMesh(mesh, false);
     }
     if(there_is_normals) {
       Normals_map normalsmap = normalsmap_.first;
@@ -652,8 +680,9 @@ public:
     }
     return rmesh;
   }
-  
-  Rcpp::List intersection(Rcpp::XPtr<EMesh3> mesh2XPtr) {
+
+
+  Rcpp::XPtr<EMesh3> intersection(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The reference mesh is not triangle.");
     }
@@ -674,18 +703,14 @@ public:
     if(!success) {
       Rcpp::stop("Intersection computation has failed.");
     }
-    Rcpp::List myimesh = Rcpp::List::create(
-      Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false),
-      Rcpp::Named("normals") = R_NilValue,
-      Rcpp::Named("vcolors") = R_NilValue,
-      Rcpp::Named("fcolors") = R_NilValue
-    );
-    return myimesh;
+    return Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false);
   }
+
 
   bool isClosed() {
     return CGAL::is_closed(mesh);
   }
+
 
   bool isOutwardOriented() {
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -693,26 +718,37 @@ public:
     }
     return PMP::is_outward_oriented(mesh);
   }
-  
+
+
+  bool isQuad() {
+    return CGAL::is_quad_mesh(mesh);
+  }
+
+
   bool isTriangle() {
     return CGAL::is_triangle_mesh(mesh);
   }
 
+
   bool isValid() {
-    return CGAL::is_valid_polygon_mesh(mesh, true);
+    return mesh.is_valid();
   }
+
 
   bool isValidFaceGraph() {
     return CGAL::is_valid_face_graph(mesh, true);
   }
 
+
   bool isValidHalfedgeGraph() {
     return CGAL::is_valid_halfedge_graph(mesh, true);
   }
 
-  bool isValid2() {
-    return mesh.is_valid();
+
+  bool isValidPolygonMesh() {
+    return CGAL::is_valid_polygon_mesh(mesh, true);
   }
+
 
   void orientToBoundVolume() {
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -721,12 +757,14 @@ public:
     PMP::orient_to_bound_a_volume(mesh);
     // faut-il updater normals?
   }
-  
+
+
   void print() {
     Rcpp::Rcout << "Mesh with " << mesh.number_of_vertices() 
                 << " vertices and " << mesh.number_of_faces() << " faces.\n";
   }
-  
+
+
   void removeSelfIntersections() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -734,13 +772,15 @@ public:
     PMP::experimental::remove_self_intersections(mesh);
     mesh.collect_garbage();
   }
-  
+
+
   void reverseFaceOrientations() {
     PMP::reverse_face_orientations(mesh);
     // update normals
   }
-  
-  Rcpp::List subtract(Rcpp::XPtr<EMesh3> mesh2XPtr) {
+
+
+  Rcpp::XPtr<EMesh3> subtract(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The reference mesh is not triangle.");
     }
@@ -761,18 +801,14 @@ public:
     if(!success) {
       Rcpp::stop("Difference computation has failed.");
     }
-    Rcpp::List myimesh = Rcpp::List::create(
-      Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false),
-      Rcpp::Named("normals") = R_NilValue,
-      Rcpp::Named("vcolors") = R_NilValue,
-      Rcpp::Named("fcolors") = R_NilValue
-    );
-    return myimesh;
+    return Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false);
   }
-  
+
+
   void triangulate() {
     triangulateMesh(mesh);
   }
+
 
   Rcpp::List Union(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -908,11 +944,8 @@ public:
     );
     return myimesh;
   }
-  
-  Rcpp::NumericMatrix vertices() {
-    return getVertices_EK(mesh);
-  }
-  
+
+
   double volume() {
     if(!CGAL::is_closed(mesh)) {
       Rcpp::stop("The mesh is not closed.");
@@ -926,6 +959,7 @@ public:
     const EK::FT vol = PMP::volume(mesh);
     return CGAL::to_double<EK::FT>(vol);
   }
+ 
   
   void writeFile(
     Rcpp::String filename, const int precision, const bool binary
