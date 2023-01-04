@@ -51,7 +51,7 @@ cgalMesh <- R6Class(
     #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
     #' shade3d(rglmesh, color = "tomato")
     #' plotEdges(
-    #'   mesh$vertices(), mesh$edges(), color = "darkred"
+    #'   mesh$getVertices(), mesh$getEdges(), color = "darkred"
     #' )}
     "initialize" = function(
       mesh, vertices, faces, clean = FALSE
@@ -399,19 +399,6 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$distance(t(points))
     },
 
-    #' @description Get the edges of the mesh.
-    #' @return A dataframe with four columns; the first two ones give the 
-    #'   vertex indices of each edge (one edge per row), the third one gives 
-    #'   the lengths of each edge, and the fourth one gives the dihedral angles 
-    #'   in degrees between the two faces adjacent to each edge 
-    #' @examples 
-    #' library(rgl)
-    #' mesh <- cgalMesh$new(dodecahedron3d())
-    #' head(mesh$edges())
-    "edges" = function() {
-      private[[".CGALmesh"]]$edges()
-    },
-
     #' @description Fair a region of the mesh, i.e. make it smooth. The mesh 
     #'   must be triangle. This modifies the reference mesh.
     #' @param indices the indices of the vertices in the region to be faired
@@ -421,7 +408,7 @@ cgalMesh <- R6Class(
     #' rglHopf <- HopfTorusMesh(nu = 100, nv = 100)
     #' hopf <- cgalMesh$new(rglHopf)
     #' # squared norms of the vertices
-    #' normsq <- apply(hopf$vertices(), 1L, crossprod)
+    #' normsq <- apply(hopf$getVertices(), 1L, crossprod)
     #' # fair the region where the squared norm is > 19
     #' indices <- which(normsq > 19)
     #' hopf$fair(indices)
@@ -516,6 +503,19 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$geoDists(as.integer(index) - 1L)
     },
 
+    #' @description Get the edges of the mesh.
+    #' @return A dataframe with four columns; the first two ones give the 
+    #'   vertex indices of each edge (one edge per row), the third one gives 
+    #'   the lengths of each edge, and the fourth one gives the dihedral angles 
+    #'   in degrees between the two faces adjacent to each edge 
+    #' @examples 
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(dodecahedron3d())
+    #' head(mesh$getEdges())
+    "getEdges" = function() {
+      private[[".CGALmesh"]]$edges()
+    },
+    
     #' @description Get the faces
     "getFacesMatrix" = function() {
       private[[".CGALmesh"]]$getFacesMatrix()
@@ -596,6 +596,12 @@ cgalMesh <- R6Class(
       mesh
     },
     
+    #' @description Get the vertices of the mesh.
+    #' @return The vertices in a matrix.
+    "getVertices" = function() {
+      t(private[[".CGALmesh"]]$vertices())
+    },
+    
     #' @description Intersection with another mesh.
     #' @param mesh2 a \code{cgalMesh} object
     #' @return A \code{cgalMesh} object.
@@ -614,11 +620,11 @@ cgalMesh <- R6Class(
     #' imesh <- mesh1$intersection(mesh2)
     #' rglimesh <- imesh$getMesh(normals = FALSE)
     #' # extract edges for plotting
-    #' extEdges <- exteriorEdges(imesh$edges())
+    #' extEdges <- exteriorEdges(imesh$getEdges())
     #' # plot
     #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
     #' shade3d(rglimesh, color = "red")
-    #' plotEdges(imesh$vertices(), extEdges)
+    #' plotEdges(imesh$getVertices(), extEdges)
     #' shade3d(rglmesh1, color = "yellow", alpha = 0.2)
     #' shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
     "intersection" = function(mesh2) {
@@ -769,11 +775,11 @@ cgalMesh <- R6Class(
     #' mesh <- mesh1$subtract(mesh2)
     #' rglmesh <- mesh$getMesh(normals = FALSE)
     #' # extract edges for plotting
-    #' extEdges <- exteriorEdges(mesh$edges())
+    #' extEdges <- exteriorEdges(mesh$getEdges())
     #' # plot
     #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
     #' shade3d(rglmesh, color = "red")
-    #' plotEdges(mesh$vertices(), extEdges)
+    #' plotEdges(mesh$getVertices(), extEdges)
     #' shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
     "subtract" = function(mesh2) {
       stopifnot(isCGALmesh(mesh2))
@@ -817,11 +823,11 @@ cgalMesh <- R6Class(
     #' umesh <- mesh1$union(mesh2)
     #' rglumesh <- umesh$getMesh(normals = FALSE)
     #' # extract edges for plotting
-    #' extEdges <- exteriorEdges(umesh$edges())
+    #' extEdges <- exteriorEdges(umesh$getEdges())
     #' # plot
     #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
     #' shade3d(rglumesh, color = "red")
-    #' plotEdges(umesh$vertices(), extEdges)}
+    #' plotEdges(umesh$getVertices(), extEdges)}
     "union" = function(mesh2) {
       stopifnot(isCGALmesh(mesh2))
       xptr2 <- getXPtr(mesh2)
@@ -830,12 +836,6 @@ cgalMesh <- R6Class(
       cgalMesh$new(clean = uxptr)
     },
     
-    #' @description Get the vertices of the mesh.
-    #' @return The vertices in a matrix.
-    "vertices" = function() {
-      t(private[[".CGALmesh"]]$vertices())
-    },
-
     #' @description Compute the volume of the mesh. The mesh must be closed,
     #'   triangle, and must not self-intersect.
     #' @return A number, the mesh volume.
