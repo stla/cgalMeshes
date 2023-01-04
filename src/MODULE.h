@@ -251,9 +251,12 @@ public:
 
   Rcpp::List connectedComponents(const bool triangulate) {
 
-    std::pair<Normals_map, bool> vnormals_ = mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
-    std::pair<Vcolors_map, bool> vcolors_ = mesh.property_map<vertex_descriptor, std::string>("v:color");
-    std::pair<Fcolors_map, bool> fcolors_ = mesh.property_map<face_descriptor, std::string>("f:color");
+    std::pair<Normals_map, bool> vnormals_ = 
+      mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+    std::pair<Vcolors_map, bool> vcolors_ = 
+      mesh.property_map<vertex_descriptor, std::string>("v:color");
+    std::pair<Fcolors_map, bool> fcolors_ = 
+      mesh.property_map<face_descriptor, std::string>("f:color");
     bool hasNormals = vnormals_.second;
     const bool hasVcolors = vcolors_.second;
     const bool hasFcolors = fcolors_.second;
@@ -266,6 +269,10 @@ public:
       hasNormals = false;
     }
 
+    /*
+    If there's no normals and no vertex colors, we use connected components 
+    decomposition made with components of face indices.
+    */
     if(!hasNormals && !hasVcolors) {
       Face_index_map fccmap = 
         tmesh.add_property_map<face_descriptor, std::size_t>("f:CC").first;
@@ -278,7 +285,6 @@ public:
       }
       std::vector<MapBetweenFaces> fcomponents(ncc);
       std::vector<int> counters(ncc, 0);
-      std::vector<int> fsizes(ncc, 0);
       Fcolors_map fcolors;
       if(hasFcolors) {
         fcolors = fcolors_.first;
@@ -286,7 +292,6 @@ public:
           std::size_t c = fccmap[fi];
           face_descriptor cf = CGAL::SM_Face_index(counters[c]++);
           fcomponents[c].insert(std::make_pair(cf, fi));
-          fsizes[c]++;
         }
       }
       Rcpp::List xptrs(ncc);
@@ -307,7 +312,11 @@ public:
       return xptrs;
     }
 
-    
+
+    /*
+    Otherwise we use the connected components decomposition made with 
+    components of vertex indices.
+    */
     Vertex_index_map vccmap = 
       tmesh.add_property_map<vertex_descriptor, std::size_t>("v:CC").first;
     const std::size_t ncc = connected_components(tmesh, vccmap);
@@ -385,30 +394,38 @@ public:
     if(hasNormals) {
       for(std::size_t c = 0; c < ncc; c++) {
         std::vector<EMesh3::Vertex_index> component = components[c];
-        Normals_map vnormals = 
-          ccmeshes[c].add_property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal").first;
+        Normals_map vnormals = ccmeshes[c]
+          .add_property_map<vertex_descriptor, Rcpp::NumericVector>(
+            "v:normal"
+          ).first;
         for(EMesh3::Vertex_index vi : ccmeshes[c].vertices()) {
-          vnormals[vi] = vnormals_.first[CGAL::SM_Vertex_index(component[int(vi)])];
+          vertex_descriptor vmaster = 
+            CGAL::SM_Vertex_index(component[int(vi)]);
+          vnormals[vi] = vnormals_.first[vmaster];
         }
       }
     }
     if(hasVcolors) {
       for(std::size_t c = 0; c < ncc; c++) {
         std::vector<EMesh3::Vertex_index> component = components[c];
-        Vcolors_map vcolors = 
-          ccmeshes[c].add_property_map<vertex_descriptor, std::string>("v:color").first;
+        Vcolors_map vcolors = ccmeshes[c]
+          .add_property_map<vertex_descriptor, std::string>("v:color").first;
         for(EMesh3::Vertex_index vi : ccmeshes[c].vertices()) {
-          vcolors[vi] = vcolors_.first[CGAL::SM_Vertex_index(component[int(vi)])];
+          vertex_descriptor vmaster = 
+            CGAL::SM_Vertex_index(component[int(vi)]);
+          vcolors[vi] = vcolors_.first[vmaster];
         }
       }
     }
     if(hasFcolors) {
       for(std::size_t c = 0; c < ncc; c++) {
         std::vector<EMesh3::Face_index> fcomponent = todelete[c];
-        Fcolors_map fcolors = 
-          ccmeshes[c].add_property_map<face_descriptor, std::string>("f:color").first;
+        Fcolors_map fcolors = ccmeshes[c]
+          .add_property_map<face_descriptor, std::string>("f:color").first;
         for(EMesh3::Face_index fi : ccmeshes[c].faces()) {
-          fcolors[fi] = fcolors_.first[CGAL::SM_Face_index(fcomponent[int(fi)])];
+          face_descriptor fmaster = 
+            CGAL::SM_Face_index(fcomponent[int(fi)]);
+          fcolors[fi] = fcolors_.first[fmaster];
         }
       }
     }
@@ -547,6 +564,7 @@ public:
     for(vertex_descriptor vd : mesh.vertices()) {
       gdistances(i++) = get(vertex_distance, vd);
     }
+    mesh.remove_property_map(vertex_distance);
     return gdistances;    
   }
 
@@ -559,7 +577,8 @@ public:
         int i = 0;
         for(EMesh3::Face_index fi : mesh.faces()) {
           auto vs = vertices_around_face(mesh.halfedge(fi), mesh).begin();
-          Rcpp::IntegerVector col_i = {int(*(vs++)) + 1, int(*(vs++)) + 1, int(*vs) + 1};
+          Rcpp::IntegerVector col_i = 
+            {int(*(vs++)) + 1, int(*(vs++)) + 1, int(*vs) + 1};
           Faces(Rcpp::_, i++) = col_i;
         }
       }
@@ -959,8 +978,8 @@ public:
     const EK::FT vol = PMP::volume(mesh);
     return CGAL::to_double<EK::FT>(vol);
   }
- 
-  
+
+
   void writeFile(
     Rcpp::String filename, const int precision, const bool binary
   ) {

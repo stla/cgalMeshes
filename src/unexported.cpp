@@ -402,6 +402,8 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     }
   }
 
+  tm.remove_property_map(fimap);
+
   std::vector<EPoint3> points;
   points.reserve(tm.number_of_vertices());
   for(EMesh3::Vertex_index vi : tm.vertices()) {
@@ -508,8 +510,6 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
       tmesh2.collect_garbage();
     }
   }
-
-  tm.remove_property_map(fimap);
 
   {
     std::vector<halfedge_descriptor> hds;

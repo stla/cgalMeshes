@@ -95,7 +95,7 @@ typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
 typedef AFS_reconstruction::Triangulation_3 AFS_triangulation3;
 typedef AFS_reconstruction::Triangulation_data_structure_2 AFS_Tds2;
 
-typedef CGAL::Face_filtered_graph<EMesh3, Face_index_map, Vertex_index_map, Halfedge_index_map> Filtered_mesh;
+//typedef CGAL::Face_filtered_graph<EMesh3, Face_index_map, Vertex_index_map, Halfedge_index_map> Filtered_mesh;
 typedef CGAL::Face_filtered_graph<EMesh3> Filtered_graph;
 
 ///////////////
@@ -215,7 +215,10 @@ struct ClipVisitor :
   // void in_place_operation(PMP::Corefinement::Boolean_operation_type t) {
   //   Rcpp::Rcout << t << "\n";
   // }
-  void after_face_copy(face_descriptor fsrc, const EMesh3 & tmsrc, face_descriptor ftgt, const EMesh3 & tmtgt) {
+  void after_face_copy(
+    face_descriptor fsrc, const EMesh3 & tmsrc, 
+    face_descriptor ftgt, const EMesh3 & tmtgt
+  ) {
     (*ftargets).insert(std::make_pair(ftgt, fsrc));
     (*action).push_back("after_face_copy");
   }
@@ -254,11 +257,16 @@ struct ClipVisitor :
 struct UnionVisitor : 
   public PMP::Corefinement::Default_visitor<EMesh3>
 {
-  void before_face_copy(face_descriptor fsrc, const EMesh3 & tmsrc, const EMesh3 & tmtgt) {
+  void before_face_copy(
+    face_descriptor fsrc, const EMesh3 & tmsrc, const EMesh3 & tmtgt
+  ) {
     Rcpp::Rcout << fsrc;
   }
 
-  void after_face_copy(face_descriptor fsrc, const EMesh3 & tmsrc, face_descriptor ftgt, const EMesh3 & tmtgt) {
+  void after_face_copy(
+    face_descriptor fsrc, const EMesh3 & tmsrc, 
+    face_descriptor ftgt, const EMesh3 & tmtgt
+  ) {
     (*fmap).insert(std::make_pair(fsrc, ftgt));
   }
   
@@ -294,16 +302,16 @@ struct SoupVisitor :
   public PMP::Default_orientation_visitor
 {
   void non_manifold_vertex(std::size_t vid, std::size_t nb_link_ccs) {
-    Rcpp::Rcout << "NON MANIFOLD VERTEX: " << vid << "\n";
+    Message("Detected and duplicated a non-manifold vertex.");
   }
 
   void non_manifold_edge(std::size_t id1, std::size_t id2, std::size_t nb_polygons) {
-    Rcpp::Rcout << "NON MANIFOLD EDGE: " << id1 << " - " << id2 << "\n";
+    Message("Detected a non-manifold edge.");
   }
 
-  void polygon_orientation_reversed(std::size_t id) {
-    Rcpp::Rcout << "ORIENTATION REVERSED: " << id << "\n";
-  }
+  // void polygon_orientation_reversed(std::size_t id) {
+  //   Rcpp::Rcout << "ORIENTATION REVERSED: " << id << "\n";
+  // }
 
   SoupVisitor() {} 
 };
