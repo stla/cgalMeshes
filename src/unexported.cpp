@@ -208,7 +208,7 @@ EMesh3 cloneMesh(
       if(pmap_.second) {
         Vscalars_map pmap = 
           out.add_property_map<vertex_descriptor, double>(
-            prop, 0
+            prop, nan("")
           ).first;
         for(EMesh3::Vertex_index vi : mesh.vertices()) {
           pmap[v2vmap[vi]] = pmap_.first[vi];
@@ -220,7 +220,7 @@ EMesh3 cloneMesh(
       if(pmap_.second) {
         Fscalars_map pmap = 
           out.add_property_map<face_descriptor, double>(
-            prop, 0
+            prop, nan("")
           ).first;
         for(EMesh3::Face_index fi : mesh.faces()) {
           pmap[f2fmap[fi]] = pmap_.first[fi];
@@ -324,7 +324,8 @@ std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
   std::map<Keytype, Valuetype> pmap;
   if(has_prop) {
     std::string descriptor = propname.substr(0, 1);
-    std::size_t n = descriptor == "v" ? mesh.number_of_vertices() : mesh.number_of_faces();
+    std::size_t n = 
+      descriptor == "v" ? mesh.number_of_vertices() : mesh.number_of_faces();
     for(std::size_t idx = 0; idx < n; idx++) {
       pmap[Keytype(idx)] = pmap_.first[Keytype(idx)];
     }
@@ -357,7 +358,9 @@ void triangulateMesh(EMesh3& mesh) {
   if(hasFcolors) {
     MapBetweenFaces fmap = *(vis.fmap);
     Fcolors_map fcolors = 
-      mesh.add_property_map<face_descriptor, std::string>("f:color", "").first;
+      mesh.add_property_map<face_descriptor, std::string>(
+        "f:color", ""
+      ).first;
     for(EMesh3::Face_index fi: mesh.faces()) {
       fcolors[fi] = fcolormap_.first[fmap[fi]];
     }
@@ -365,7 +368,9 @@ void triangulateMesh(EMesh3& mesh) {
   if(hasFscalars) {
     MapBetweenFaces fmap = *(vis.fmap);
     Fscalars_map fscalars = 
-      mesh.add_property_map<face_descriptor, double>("f:scalar", 0).first;
+      mesh.add_property_map<face_descriptor, double>(
+        "f:scalar", nan("")
+      ).first;
     for(EMesh3::Face_index fi: mesh.faces()) {
       fscalars[fi] = fscalarmap_.first[fmap[fi]];
     }
@@ -454,7 +459,9 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
       if(hasScalars) {
         fscalarMap = fscalarMap_.first;
         newfscalar = 
-          tm.add_property_map<face_descriptor, double>("f:scalar", 0).first;
+          tm.add_property_map<face_descriptor, double>(
+            "f:scalar", nan("")
+          ).first;
       }
       MapBetweenFaces fmap = *(vis.fmap_tm);
       for(EMesh3::Face_index fi : tm.faces()) {
@@ -725,7 +732,8 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
       if(hds.size() == 1) {
         msg = "Found one non-manifold vertex.";
       } else {
-        msg = "Found " + std::to_string(hds.size()) + " non-manifold vertices.";
+        msg = "Found " + std::to_string(hds.size()) + 
+          " non-manifold vertices.";
       }
       Message(msg);
     }
@@ -740,7 +748,8 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
       if(hds.size() == 1) {
         msg = "Found one non-manifold vertex.";
       } else {
-        msg = "Found " + std::to_string(hds.size()) + " non-manifold vertices.";
+        msg = "Found " + std::to_string(hds.size()) + 
+          " non-manifold vertices.";
       }
       Message(msg);
     }

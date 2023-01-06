@@ -79,12 +79,15 @@ public:
 
   void assignFaceColors(Rcpp::StringVector colors) {
     if(colors.size() != mesh.number_of_faces()) {
-      Rcpp::stop("The number of colors does not match the number of faces.");
+      Rcpp::stop(
+        "The number of colors does not match the number of faces."
+      );
     }
-    std::vector<std::string> props = {"f:color"};
-    removeProperties(mesh, props);
+    removeProperties(mesh, {"f:color"});
     Fcolors_map fcolor = 
-      mesh.add_property_map<face_descriptor, std::string>("f:color", "").first;
+      mesh.add_property_map<face_descriptor, std::string>(
+        "f:color", ""
+      ).first;
     int i = 0;
     for(EMesh3::Face_index fi : mesh.faces()) {
       fcolor[fi] = colors(i++);
@@ -94,11 +97,15 @@ public:
 
   void assignFaceScalars(Rcpp::NumericVector scalars) {
     if(scalars.size() != mesh.number_of_faces()) {
-      Rcpp::stop("The number of scalars does not match the number of faces.");
+      Rcpp::stop(
+        "The number of scalars does not match the number of faces."
+      );
     }
     removeProperties(mesh, {"f:scalar"});
     Fscalars_map fscalar = 
-      mesh.add_property_map<face_descriptor, double>("f:scalar", 0).first;
+      mesh.add_property_map<face_descriptor, double>(
+        "f:scalar", nan("")
+      ).first;
     int i = 0;
     for(EMesh3::Face_index fi : mesh.faces()) {
       fscalar[fi] = scalars(i++);
@@ -108,12 +115,15 @@ public:
 
   void assignVertexColors(Rcpp::StringVector colors) {
     if(colors.size() != mesh.number_of_vertices()) {
-      Rcpp::stop("The number of colors does not match the number of vertices.");
+      Rcpp::stop(
+        "The number of colors does not match the number of vertices."
+      );
     }
-    std::vector<std::string> props = {"v:color"};
-    removeProperties(mesh, props);
+    removeProperties(mesh, {"v:color"});
     Vcolors_map vcolor = 
-      mesh.add_property_map<vertex_descriptor, std::string>("v:color", "").first;
+      mesh.add_property_map<vertex_descriptor, std::string>(
+        "v:color", ""
+      ).first;
     int i = 0;
     for(EMesh3::Vertex_index vi : mesh.vertices()) {
       vcolor[vi] = colors(i++);
@@ -123,11 +133,15 @@ public:
 
   void assignVertexScalars(Rcpp::NumericVector scalars) {
     if(scalars.size() != mesh.number_of_vertices()) {
-      Rcpp::stop("The number of scalars does not match the number of vertices.");
+      Rcpp::stop(
+        "The number of scalars does not match the number of vertices."
+      );
     }
     removeProperties(mesh, {"v:scalar"});
     Vscalars_map vscalar = 
-      mesh.add_property_map<vertex_descriptor, double>("v:scalar", 0).first;
+      mesh.add_property_map<vertex_descriptor, double>(
+        "v:scalar", nan("")
+      ).first;
     int i = 0;
     for(EMesh3::Vertex_index vi : mesh.vertices()) {
       vscalar[vi] = scalars(i++);
@@ -263,8 +277,7 @@ public:
                           "v:normals", CGAL::NULL_VECTOR
                         ).first;
     PMP::compute_vertex_normals(mesh, vnormals);
-    std::vector<std::string> props = {"v:normal"};
-    removeProperties(mesh, props);
+    removeProperties(mesh, {"v:normal"});
     Normals_map vnormal_map = 
       mesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
                           "v:normal", defaultNormal()
@@ -284,8 +297,9 @@ public:
 
     const bool really_triangulate = 
       triangulate && !CGAL::is_triangle_mesh(mesh);
-    EMesh3 tmesh = 
-      cloneMesh(mesh, {"f:color", "v:color", "f:scalar", "v:scalar", "v:normal"});
+    EMesh3 tmesh = cloneMesh(
+      mesh, {"f:color", "v:color", "f:scalar", "v:scalar", "v:normal"}
+    );
     if(really_triangulate) {
       triangulateMesh(tmesh);
     }
@@ -305,7 +319,8 @@ public:
     const bool hasFcolors = fcolors_.second;
     const bool hasVscalars = vscalars_.second;
     const bool hasFscalars = fscalars_.second;
-    const bool hasProps = hasNormals || hasVcolors || hasFcolors || hasVscalars || hasFscalars;
+    const bool hasProps = 
+      hasNormals || hasVcolors || hasFcolors || hasVscalars || hasFscalars;
     // EMesh3::Property_map<face_descriptor, std::vector<vertex_descriptor>> faceVertices = 
     //   tmesh.property_map<face_descriptor, std::vector<vertex_descriptor>>(
     //     "f:vertices"
@@ -364,12 +379,17 @@ public:
 
       Rcpp::List xptrs(ncc);
 
+      typedef boost::graph_traits<Filtered_graph>::vertex_descriptor 
+        ffg_vertex_descriptor;
+      typedef std::map<ffg_vertex_descriptor, vertex_descriptor> 
+        MapBetweenVertices;
+
       for(std::size_t c = 0; c < ncc; c++) {
 //        EMesh3 cmesh = cc_meshes[c];
         Filtered_graph ffg(tmesh, c, fccmap);
-        std::map<boost::graph_traits<Filtered_graph>::vertex_descriptor, vertex_descriptor> v2vmap_;
+        MapBetweenVertices v2vmap_;
         //std::map<boost::graph_traits<Filtered_graph>::face_descriptor, face_descriptor> f2fmap_;
-        boost::associative_property_map<std::map<boost::graph_traits<Filtered_graph>::vertex_descriptor, vertex_descriptor>> v2vmap(v2vmap_);
+        boost::associative_property_map<MapBetweenVertices> v2vmap(v2vmap_);
         //boost::associative_property_map<std::map<boost::graph_traits<Filtered_graph>::face_descriptor, face_descriptor>> f2fmap(f2fmap_);
         // EMesh3::Property_map<boost::graph_traits<Filtered_graph>::vertex_descriptor, vertex_descriptor> v2vmap = 
         //   tmesh.add_property_map<boost::graph_traits<Filtered_graph>::vertex_descriptor, vertex_descriptor>("v:v").first;
@@ -377,18 +397,25 @@ public:
         //   tmesh.add_property_map<boost::graph_traits<Filtered_graph>::face_descriptor, face_descriptor>("f:f").first;
 
         EMesh3 cmesh;
-        CGAL::copy_face_graph(ffg, cmesh, CGAL::parameters::vertex_to_vertex_map(v2vmap));
+        CGAL::copy_face_graph(
+          ffg, cmesh, CGAL::parameters::vertex_to_vertex_map(v2vmap)
+        );
 
+        // reverse the map between vertices
         std::map<vertex_descriptor, vertex_descriptor> rv2vmap;
         for(const auto& [vertex_ffg, vertex_cmesh] : v2vmap_) {
-          rv2vmap.insert(std::make_pair(vertex_cmesh, CGAL::SM_Vertex_index(int(vertex_ffg))));
+          rv2vmap.insert(std::make_pair(
+            vertex_cmesh, CGAL::SM_Vertex_index(int(vertex_ffg))
+          ));
         }
 
         MapBetweenFaces fcomponent = fcomponents[c];
 
         if(hasFcolors) {
           Fcolors_map cfcolor = 
-            cmesh.add_property_map<face_descriptor, std::string>("f:color", "").first;
+            cmesh.add_property_map<face_descriptor, std::string>(
+              "f:color", ""
+            ).first;
           for(EMesh3::Face_index cf : cmesh.faces()) {
             face_descriptor fd = fcomponent[cf];
             cfcolor[cf] = fcolors[fd];
@@ -396,7 +423,9 @@ public:
         }
         if(hasFscalars) {
           Fscalars_map cfscalar = 
-            cmesh.add_property_map<face_descriptor, double>("f:scalar", 0).first;
+            cmesh.add_property_map<face_descriptor, double>(
+              "f:scalar", nan("")
+            ).first;
           for(EMesh3::Face_index cf : cmesh.faces()) {
             face_descriptor fd = fcomponent[cf];
             cfscalar[cf] = fscalars[fd];
@@ -421,7 +450,7 @@ public:
         if(hasVscalars) {
           cvscalar = 
             cmesh.add_property_map<vertex_descriptor, double>(
-              "v:scalar", 0
+              "v:scalar", nan("")
             ).first;
         }
 
@@ -771,8 +800,7 @@ public:
       }
       selectedVertices.push_back(*(mesh.vertices().begin() + idx));
     }
-    std::vector<std::string> props = {"v:normal"};
-    removeProperties(mesh, props);
+    removeProperties(mesh, {"v:normal"});
     const bool success = PMP::fair(mesh, selectedVertices);
     if(!success) {
       Rcpp::stop("Failed to fair the mesh.");
@@ -1250,7 +1278,7 @@ public:
       }
       if(hasScalars) {
         fscalar = umesh.add_property_map<face_descriptor, double>(
-          "f:scalar", 0
+          "f:scalar", nan("")
         ).first;
       }
       bool is_mesh1 = true;
@@ -1284,6 +1312,7 @@ public:
         }
       }
     }
+
 
 
     // Rcpp::IntegerVector Fimap1(mesh.number_of_faces());
