@@ -146,7 +146,8 @@ cgalMesh <- R6Class(
 
     #' @description Assign colors (or any character strings) to the faces of 
     #'   the mesh.
-    #' @param colors a character vector whose length equals the number of faces
+    #' @param colors a character vector whose length equals the number 
+    #'  of faces, or a single character string to be assigned to each face 
     #' @return The current \code{cgalMesh} object, invisibly.
     "assignFaceColors" = function(colors) {
       stopifnot(isStringVector(colors))
