@@ -217,18 +217,24 @@ cgalMesh <- R6Class(
     #'   volume bounded by the reference mesh rather than on its surface (i.e. 
     #'   the reference mesh will be kept closed if it is closed); if 
     #'   \code{TRUE}, the mesh to be clipped must not self-intersect
-    #' @return The modified \code{cgalObject}.
+    #' @return The reference mesh is always replaced by the result of the 
+    #'   clipping. If \code{clipVolume=TRUE}, this function returns two 
+    #'   \code{cgalMesh} objects: the two parts of the clipped mesh contained 
+    #'   in the reference mesh and the clipping mesh respectively. Otherwise, 
+    #'   this function returns the modified reference mesh.
     #' @examples 
     #' # cube clipped to sphere ####
     #' library(cgalMeshes)
     #' library(rgl)
     #' mesh    <- cgalMesh$new(cube3d())$triangulate()
     #' clipper <- cgalMesh$new(sphereMesh(r= sqrt(2)))
-    #' mesh$clip(clipper, clipVolume = TRUE)
+    #' mesh$assignFaceColors("blue")
+    #' clipper$assignFaceColors("red")
+    #' meshes <- mesh$clip(clipper, clipVolume = TRUE)
     #' rglmesh <- mesh$getMesh()
     #' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
     #' view3d(45, 45, zoom = 0.9)
-    #' shade3d(rglmesh, col = "darkorange")}
+    #' shade3d(rglmesh, meshColor = "faces")}
     #' 
     #' # Togliatti surface clipped to a ball ####
     #' \donttest{library(rmarchingcubes)
@@ -888,6 +894,9 @@ cgalMesh <- R6Class(
     #' # the two meshes must be triangle
     #' mesh1$triangulate()
     #' mesh2$triangulate()
+    #' # assign a color to the faces; they will be retrieved in the union
+    #' mesh1$assignFaceColors("yellow")
+    #' mesh2$assignFaceColors("navy")
     #' # union
     #' umesh <- mesh1$union(mesh2)
     #' rglumesh <- umesh$getMesh()
@@ -895,7 +904,7 @@ cgalMesh <- R6Class(
     #' extEdges <- exteriorEdges(umesh$getEdges())
     #' # plot
     #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
-    #' shade3d(rglumesh, color = "red")
+    #' shade3d(rglumesh, meshColor = "faces")
     #' plotEdges(umesh$getVertices(), extEdges)}
     "union" = function(mesh2) {
       stopifnot(isCGALmesh(mesh2))

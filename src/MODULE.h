@@ -78,7 +78,7 @@ public:
 
 
   void assignFaceColors(Rcpp::StringVector colors) {
-    if(colors.size() != mesh.number_of_faces()) {
+    if(colors.size() != 1 && colors.size() != mesh.number_of_faces()) {
       Rcpp::stop(
         "The number of colors does not match the number of faces."
       );
@@ -88,9 +88,15 @@ public:
       mesh.add_property_map<face_descriptor, std::string>(
         "f:color", ""
       ).first;
-    int i = 0;
-    for(EMesh3::Face_index fi : mesh.faces()) {
-      fcolor[fi] = colors(i++);
+    if(colors.size() == 1) {
+      for(EMesh3::Face_index fi : mesh.faces()) {
+        fcolor[fi] = colors(0);
+      }
+    } else {
+      int i = 0;
+      for(EMesh3::Face_index fi : mesh.faces()) {
+        fcolor[fi] = colors(i++);
+      }
     }
   }
 
