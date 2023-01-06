@@ -341,9 +341,9 @@ template MaybeNormalMap copy_prop<vertex_descriptor, Rcpp::NumericVector>(EMesh3
 
 
 void triangulateMesh(EMesh3& mesh) {
-  MaybeFcolorMap fcolormap_ = copy_prop<face_descriptor, std::string>(mesh);
+  MaybeFcolorMap fcolormap_ = copy_prop<face_descriptor, std::string>(mesh, "f:color");
   const bool hasFcolors = fcolormap_.second;
-  MaybeFscalarMap fscalarmap_ = copy_prop<face_descriptor, double>(mesh);
+  MaybeFscalarMap fscalarmap_ = copy_prop<face_descriptor, double>(mesh, "f:scalar");
   const bool hasFscalars = fscalarmap_.second;
   removeProperties(mesh, {"v:normal"});
   TriangulateVisitor vis;

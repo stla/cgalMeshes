@@ -296,9 +296,16 @@ public:
       tmesh.property_map<vertex_descriptor, std::string>("v:color");
     std::pair<Fcolors_map, bool> fcolors_ = 
       tmesh.property_map<face_descriptor, std::string>("f:color");
+    std::pair<Vscalars_map, bool> vscalars_ = 
+      tmesh.property_map<vertex_descriptor, double>("v:scalar");
+    std::pair<Fscalars_map, bool> fscalars_ = 
+      tmesh.property_map<face_descriptor, double>("f:scalar");
     const bool hasNormals = vnormals_.second && !really_triangulate;
     const bool hasVcolors = vcolors_.second;
     const bool hasFcolors = fcolors_.second;
+    const bool hasVscalars = vscalars_.second;
+    const bool hasFscalars = fscalars_.second;
+    const bool hasProps = hasNormals || hasVcolors || hasFcolors || hasVscalars || hasFscalars;
     // EMesh3::Property_map<face_descriptor, std::vector<vertex_descriptor>> faceVertices = 
     //   tmesh.property_map<face_descriptor, std::vector<vertex_descriptor>>(
     //     "f:vertices"
@@ -323,15 +330,17 @@ public:
         const std::string msg = "Found " + std::to_string(ncc) + " components.\n";
         Message(msg);
       }
+
       std::vector<MapBetweenFaces> fcomponents(ncc);
       std::vector<int> counters(ncc, 0);
-      if(hasFcolors || hasNormals) {
+      if(hasProps) {
         for(EMesh3::Face_index fi : tmesh.faces()) {
           std::size_t c = fccmap[fi];
           face_descriptor cf = CGAL::SM_Face_index(counters[c]++);
           fcomponents[c].insert(std::make_pair(cf, fi));
         }
       }
+
       Fcolors_map fcolors;
       if(hasFcolors) {
         fcolors = fcolors_.first;
@@ -340,11 +349,21 @@ public:
       if(hasVcolors) {
         vcolors = vcolors_.first;
       }
+      Fscalars_map fscalars;
+      if(hasFscalars) {
+        fscalars = fscalars_.first;
+      }
+      Vscalars_map vscalars;
+      if(hasVscalars) {
+        vscalars = vscalars_.first;
+      }
       Normals_map vnormals;
       if(hasNormals) {
         vnormals = vnormals_.first;
       }
+
       Rcpp::List xptrs(ncc);
+
       for(std::size_t c = 0; c < ncc; c++) {
 //        EMesh3 cmesh = cc_meshes[c];
         Filtered_graph ffg(tmesh, c, fccmap);
@@ -375,8 +394,18 @@ public:
             cfcolor[cf] = fcolors[fd];
           }          
         }
+        if(hasFscalars) {
+          Fscalars_map cfscalar = 
+            cmesh.add_property_map<face_descriptor, double>("f:scalar", 0).first;
+          for(EMesh3::Face_index cf : cmesh.faces()) {
+            face_descriptor fd = fcomponent[cf];
+            cfscalar[cf] = fscalars[fd];
+          }          
+        }
+
         Normals_map cvnormal;
         Vcolors_map cvcolor;
+        Vscalars_map cvscalar;
         if(hasNormals) {
           cvnormal = 
             cmesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
@@ -389,7 +418,14 @@ public:
               "v:color", ""
             ).first;
         }
-        if(hasNormals || hasVcolors) {
+        if(hasVscalars) {
+          cvscalar = 
+            cmesh.add_property_map<vertex_descriptor, double>(
+              "v:scalar", 0
+            ).first;
+        }
+
+        if(hasNormals || hasVcolors || hasVscalars) {
           for(EMesh3::Vertex_index cv : cmesh.vertices()) {
             face_descriptor cf = cmesh.face(cmesh.halfedge(cv));
             face_descriptor pf = fcomponent[cf]; // face index of cv in the parent mesh
@@ -452,6 +488,9 @@ public:
             }
             if(hasVcolors) {
               cvcolor[cv] = vcolors[pv];
+            }
+            if(hasVscalars) {
+              cvscalar[cv] = vscalars[pv];
             }
             // for(const auto& [key, value] : v2vmap_) {
             //   if(value == cv) {
