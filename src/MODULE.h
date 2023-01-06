@@ -284,7 +284,8 @@ public:
 
     const bool really_triangulate = 
       triangulate && !CGAL::is_triangle_mesh(mesh);
-    EMesh3 tmesh = cloneMesh(mesh, {"f:color", "v:color", "v:normal"});
+    EMesh3 tmesh = 
+      cloneMesh(mesh, {"f:color", "v:color", "f:scalar", "v:scalar", "v:normal"});
     if(really_triangulate) {
       triangulateMesh(tmesh);
     }

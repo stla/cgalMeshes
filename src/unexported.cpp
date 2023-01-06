@@ -314,11 +314,38 @@ MaybeNormalMap copy_vnormal(EMesh3& mesh) {
   return std::make_pair(vnormalsmap, has_vnormal);
 }
 
+template <typename Keytype, typename Valuetype>
+std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
+  EMesh3& mesh, std::string propname
+) {
+  std::pair<EMesh3::Property_map<Keytype, Valuetype>, bool> pmap_ = 
+    mesh.property_map<Keytype, Valuetype>(propname);
+  bool has_prop = pmap_.second;
+  std::map<Keytype, Valuetype> pmap;
+  if(has_prop) {
+    std::string descriptor = propname.substr(0, 1);
+    std::size_t n = descriptor == "v" ? mesh.number_of_vertices() : mesh.number_of_faces();
+    for(std::size_t idx = 0; idx < n; idx++) {
+      pmap[Keytype(idx)] = pmap_.first[Keytype(idx)];
+    }
+    mesh.remove_property_map(pmap_.first);
+  }
+  return std::make_pair(pmap, has_prop);
+}
+
+template MaybeFcolorMap copy_prop<face_descriptor, std::string>(EMesh3&, std::string);
+template MaybeFscalarMap copy_prop<face_descriptor, double>(EMesh3&, std::string);
+template MaybeVcolorMap copy_prop<vertex_descriptor, std::string>(EMesh3&, std::string);
+template MaybeVscalarMap copy_prop<vertex_descriptor, double>(EMesh3&, std::string);
+template MaybeNormalMap copy_prop<vertex_descriptor, Rcpp::NumericVector>(EMesh3&, std::string);
+
+
 void triangulateMesh(EMesh3& mesh) {
-  MaybeFcolorMap fcolormap_ = copy_fcolor(mesh);
+  MaybeFcolorMap fcolormap_ = copy_prop<face_descriptor, std::string>(mesh);
   const bool hasFcolors = fcolormap_.second;
-  std::vector<std::string> props = {"v:normal"};
-  removeProperties(mesh, props);
+  MaybeFscalarMap fscalarmap_ = copy_prop<face_descriptor, double>(mesh);
+  const bool hasFscalars = fscalarmap_.second;
+  removeProperties(mesh, {"v:normal"});
   TriangulateVisitor vis;
   const bool success = 
     PMP::triangulate_faces(mesh, CGAL::parameters::visitor(vis));
@@ -331,6 +358,14 @@ void triangulateMesh(EMesh3& mesh) {
       mesh.add_property_map<face_descriptor, std::string>("f:color", "").first;
     for(EMesh3::Face_index fi: mesh.faces()) {
       fcolors[fi] = fcolormap_.first[fmap[fi]];
+    }
+  }
+  if(hasFscalars) {
+    MapBetweenFaces fmap = *(vis.fmap);
+    Fscalars_map fscalars = 
+      mesh.add_property_map<face_descriptor, double>("f:scalar", 0).first;
+    for(EMesh3::Face_index fi: mesh.faces()) {
+      fscalars[fi] = fscalarmap_.first[fmap[fi]];
     }
   }
 }

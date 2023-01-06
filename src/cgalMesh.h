@@ -92,7 +92,9 @@ typedef std::pair<std::map<vertex_descriptor, std::string>, bool> MaybeVcolorMap
 typedef EMesh3::Property_map<face_descriptor, std::string> Fcolors_map;
 typedef std::pair<std::map<face_descriptor, std::string>, bool> MaybeFcolorMap;
 typedef EMesh3::Property_map<vertex_descriptor, double> Vscalars_map;
+typedef std::pair<std::map<vertex_descriptor, double>, bool> MaybeVscalarMap;
 typedef EMesh3::Property_map<face_descriptor, double> Fscalars_map;
+typedef std::pair<std::map<face_descriptor, double>, bool> MaybeFscalarMap;
 typedef std::map<face_descriptor, face_descriptor> MapBetweenFaces;
 
 typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
@@ -180,6 +182,11 @@ MaybeVcolorMap copy_vcolor(EMesh3&);
 MaybeFcolorMap copy_fcolor(EMesh3&);
 void triangulateMesh(EMesh3&);
 Rcpp::NumericVector defaultNormal();
+
+template <typename Keytype, typename Valuetype>
+std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
+  EMesh3&, std::string
+);
 
 Rcpp::List clipping(EMesh3&, EMesh3&, const bool);
 
