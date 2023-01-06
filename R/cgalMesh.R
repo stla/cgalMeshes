@@ -29,12 +29,17 @@ cgalMesh <- R6Class(
     #'   or it can be a \strong{rgl} mesh (i.e. a \code{mesh3d} object), or it 
     #'   can be a list containing (at least) the fields \code{vertices} 
     #'   (numeric matrix with three columns) and \code{faces} (matrix of 
-    #'   integers or list of vectors of integers)
+    #'   integers or list of vectors of integers), and optionally a field 
+    #'   \code{normals} (numeric matrix with three columns); if 
+    #'   this argument is a \strong{rgl} mesh containing some colors, these 
+    #'   colors will be assigned to the created \code{cgalMesh} object
     #' @param vertices if \code{mesh} is missing, must be a numeric matrix with 
     #'   three columns
     #' @param faces if \code{mesh} is missing, must be either a matrix of 
     #'   integers (each row gives the vertex indices of a face) or a list of 
     #'   vectors of integers (each one gives the vertex indices of a face)
+    #' @param normals if \code{mesh} is missing, must be \code{NULL} or a 
+    #'   numeric matrix with three columns and as many rows as vertices
     #' @param clean Boolean, no effect if the mesh is given by a file, 
     #'   otherwise it indicates whether to clean the mesh (merge duplicated 
     #'   vertices and duplicated faces, remove isolated vertices); set to 
@@ -46,7 +51,7 @@ cgalMesh <- R6Class(
     #'   "extdata", "bigPolyhedron.off", package = "cgalMeshes"
     #' )
     #' mesh <- cgalMesh$new(meshFile)
-    #' rglmesh <- mesh$getMesh(normals = FALSE)
+    #' rglmesh <- mesh$getMesh()
     #' \donttest{library(rgl)
     #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
     #' shade3d(rglmesh, color = "tomato")
@@ -54,7 +59,7 @@ cgalMesh <- R6Class(
     #'   mesh$getVertices(), mesh$getEdges(), color = "darkred"
     #' )}
     "initialize" = function(
-      mesh, vertices, faces, clean = FALSE
+      mesh, vertices, faces, normals = NULL, clean = FALSE
     ){
       # one can also initialize from an external pointer, but 
       # this is hidden to the user
@@ -63,11 +68,11 @@ cgalMesh <- R6Class(
         return(invisible(self))
       }
       stopifnot(isBoolean(clean))
+      vcolors <- NULL
+      fcolors <- NULL
       if(!missing(mesh)) {
         if(inherits(mesh, "mesh3d")) {
           normals <- mesh[["normals"]][1L:3L, ]
-          vcolors <- NULL
-          fcolors <- NULL
           colors <- mesh[["material"]]$color
           if(!is.null(colors)){
             nv <- ncol(mesh[["vb"]])
@@ -86,6 +91,11 @@ cgalMesh <- R6Class(
             }
           }
           mesh <- getVF(mesh)
+        } else if(is.list(mesh)) {
+          normals <- mesh[["normals"]]
+          if(!is.null(normals)) {
+            normals <- t(normals)
+          }
         }
         if(is.list(mesh)) {
           VF <- checkMesh(mesh[["vertices"]], mesh[["faces"]], aslist = TRUE)
@@ -97,6 +107,17 @@ cgalMesh <- R6Class(
         }
       } else {
         VF <- checkMesh(vertices, faces, aslist = TRUE)
+        if(!is.null(normals)) {
+          normals <- t(normals)
+        }
+      }
+      if(!is.null(normals)) {
+        if(nrow(normals) != 3L) {
+          stop("The normals must be three-dimensional")
+        }
+        if(ncol(normals) != ncol(VF[["vertices"]])) {
+          stop("The number of normals does not match the number of vertices.")
+        }
       }
       private[[".CGALmesh"]] <- 
         CGALmesh$new(
@@ -204,7 +225,7 @@ cgalMesh <- R6Class(
     #' mesh    <- cgalMesh$new(cube3d())$triangulate()
     #' clipper <- cgalMesh$new(sphereMesh(r= sqrt(2)))
     #' mesh$clip(clipper, clipVolume = TRUE)
-    #' rglmesh <- mesh$getMesh(normals = FALSE)
+    #' rglmesh <- mesh$getMesh()
     #' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
     #' view3d(45, 45, zoom = 0.9)
     #' shade3d(rglmesh, col = "darkorange")}
@@ -269,18 +290,18 @@ cgalMesh <- R6Class(
       }
     },
 
-    "doubleclip" = function(clipper) {
-      stopifnot(isCGALmesh(clipper))
-      clipperXPtr <- getXPtr(clipper)
-      xptr <- private[[".CGALmesh"]]$doubleclip(clipperXPtr)
-      cgalMesh$new(clean = xptr)
-    },
-    
-    "split" = function(splitter) {
-      stopifnot(isCGALmesh(splitter))
-      splitterXPtr <- getXPtr(splitter)
-      private[[".CGALmesh"]]$testsplit(splitterXPtr)
-    },
+    # "doubleclip" = function(clipper) {
+    #   stopifnot(isCGALmesh(clipper))
+    #   clipperXPtr <- getXPtr(clipper)
+    #   xptr <- private[[".CGALmesh"]]$doubleclip(clipperXPtr)
+    #   cgalMesh$new(clean = xptr)
+    # },
+    # 
+    # "split" = function(splitter) {
+    #   stopifnot(isCGALmesh(splitter))
+    #   splitterXPtr <- getXPtr(splitter)
+    #   private[[".CGALmesh"]]$testsplit(splitterXPtr)
+    # },
 
     #' @description Compute per-vertex normals of the mesh. 
     #' @return The current \code{cgalMesh} object, invisibly. 
@@ -316,7 +337,9 @@ cgalMesh <- R6Class(
     #' isosurface <- contour3d(voxel, level = 0.25, x = x, y = y, z = z)
     #' # make CGAL mesh
     #' mesh <- cgalMesh$new(
-    #'   vertices = isosurface[["vertices"]], faces = isosurface[["triangles"]]
+    #'   vertices = isosurface[["vertices"]], 
+    #'   faces = isosurface[["triangles"]],
+    #'   normals = isosurface[["normals"]]
     #' )
     #' # connected components
     #' components <- mesh$connectedComponents()
@@ -349,7 +372,7 @@ cgalMesh <- R6Class(
     #' open3d(windowRect = 50 + c(0, 0, 512, 512))
     #' view3d(20, -20, zoom = 0.8)
     #' for(i in 1L:ncxparts) {
-    #'   cxmesh <- cxparts[[i]]$getMesh(normals = FALSE)
+    #'   cxmesh <- cxparts[[i]]$getMesh()
     #'   shade3d(cxmesh, color = colors[i])
     #' }}
     "convexParts" = function(triangulate = TRUE) {
@@ -358,7 +381,7 @@ cgalMesh <- R6Class(
       lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
     },
 
-    #' @description Copy the mesh.
+    #' @description Copy the mesh. This can change the order of the vertices.
     #' @return A new \code{cgalMesh} object.
     #' @examples 
     #' library(rgl)
@@ -551,12 +574,28 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$getFcolors()
     },
 
+    #' @description Get the face scalars (if there are).
+    #' @return The vector of scalars attached to 
+    #'   the faces of the mesh, or \code{NULL} if nothing is assigned to 
+    #'   the faces.
+    "getFaceScalars" = function() {
+      private[[".CGALmesh"]]$getFscalars()
+    },
+    
     #' @description Get the vertex colors (if there are).
     #' @return The vector of colors (or any character vector) attached to 
     #'   the vertices of the mesh, or \code{NULL} if nothing is assigned to 
     #'   the vertices.
     "getVertexColors" = function() {
       private[[".CGALmesh"]]$getVcolors()
+    },
+
+    #' @description Get the vertex scalars (if there are).
+    #' @return The vector of scalars attached to 
+    #'   the vertices of the mesh, or \code{NULL} if nothing is assigned to 
+    #'   the vertices.
+    "getVertexScalars" = function() {
+      private[[".CGALmesh"]]$getVscalars()
     },
     
     #' @description Get the per-vertex normals (if there are).
@@ -648,7 +687,7 @@ cgalMesh <- R6Class(
     #' mesh2$triangulate()
     #' # intersection
     #' imesh <- mesh1$intersection(mesh2)
-    #' rglimesh <- imesh$getMesh(normals = FALSE)
+    #' rglimesh <- imesh$getMesh()
     #' # extract edges for plotting
     #' extEdges <- exteriorEdges(imesh$getEdges())
     #' # plot
@@ -803,7 +842,7 @@ cgalMesh <- R6Class(
     #' mesh2$triangulate()
     #' # difference
     #' mesh <- mesh1$subtract(mesh2)
-    #' rglmesh <- mesh$getMesh(normals = FALSE)
+    #' rglmesh <- mesh$getMesh()
     #' # extract edges for plotting
     #' extEdges <- exteriorEdges(mesh$getEdges())
     #' # plot
@@ -851,7 +890,7 @@ cgalMesh <- R6Class(
     #' mesh2$triangulate()
     #' # union
     #' umesh <- mesh1$union(mesh2)
-    #' rglumesh <- umesh$getMesh(normals = FALSE)
+    #' rglumesh <- umesh$getMesh()
     #' # extract edges for plotting
     #' extEdges <- exteriorEdges(umesh$getEdges())
     #' # plot

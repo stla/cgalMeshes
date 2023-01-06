@@ -35,5 +35,5 @@ LinkingTo:
     RcppEigen
 Encoding: UTF-8
 LazyData: TRUE
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 SystemRequirements: C++ 17, gmp, mpfr

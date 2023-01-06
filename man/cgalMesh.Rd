@@ -17,12 +17,12 @@ meshFile <- system.file(
   "extdata", "bigPolyhedron.off", package = "cgalMeshes"
 )
 mesh <- cgalMesh$new(meshFile)
-rglmesh <- mesh$getMesh(normals = FALSE)
+rglmesh <- mesh$getMesh()
 \donttest{library(rgl)
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglmesh, color = "tomato")
 plotEdges(
-  mesh$vertices(), mesh$edges(), color = "darkred"
+  mesh$getVertices(), mesh$getEdges(), color = "darkred"
 )}
 
 ## ------------------------------------------------
@@ -62,7 +62,7 @@ library(rgl)
 mesh    <- cgalMesh$new(cube3d())$triangulate()
 clipper <- cgalMesh$new(sphereMesh(r= sqrt(2)))
 mesh$clip(clipper, clipVolume = TRUE)
-rglmesh <- mesh$getMesh(normals = FALSE)
+rglmesh <- mesh$getMesh()
 \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(45, 45, zoom = 0.9)
 shade3d(rglmesh, col = "darkorange")}
@@ -137,7 +137,9 @@ voxel <- array(with(Grid, f(X, Y, Z, a = pi/2)), dim = c(n, n, n))
 isosurface <- contour3d(voxel, level = 0.25, x = x, y = y, z = z)
 # make CGAL mesh
 mesh <- cgalMesh$new(
-  vertices = isosurface[["vertices"]], faces = isosurface[["triangles"]]
+  vertices = isosurface[["vertices"]], 
+  faces = isosurface[["triangles"]],
+  normals = isosurface[["normals"]]
 )
 # connected components
 components <- mesh$connectedComponents()
@@ -165,7 +167,7 @@ colors <- hcl.colors(ncxparts, palette = "plasma")
 open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(20, -20, zoom = 0.8)
 for(i in 1L:ncxparts) {
-  cxmesh <- cxparts[[i]]$getMesh(normals = FALSE)
+  cxmesh <- cxparts[[i]]$getMesh()
   shade3d(cxmesh, color = colors[i])
 }}
 
@@ -201,14 +203,6 @@ O2 <- c(c, 0, 0)
 mesh$distance(O2)}    
 
 ## ------------------------------------------------
-## Method `cgalMesh$edges`
-## ------------------------------------------------
-
-library(rgl)
-mesh <- cgalMesh$new(dodecahedron3d())
-head(mesh$edges())
-
-## ------------------------------------------------
 ## Method `cgalMesh$fair`
 ## ------------------------------------------------
 
@@ -216,7 +210,7 @@ library(cgalMeshes)
 rglHopf <- HopfTorusMesh(nu = 100, nv = 100)
 hopf <- cgalMesh$new(rglHopf)
 # squared norms of the vertices
-normsq <- apply(hopf$vertices(), 1L, crossprod)
+normsq <- apply(hopf$getVertices(), 1L, crossprod)
 # fair the region where the squared norm is > 19
 indices <- which(normsq > 19)
 hopf$fair(indices)
@@ -292,12 +286,20 @@ if(!rgl.useNULL()) {
 }}
 
 ## ------------------------------------------------
+## Method `cgalMesh$getEdges`
+## ------------------------------------------------
+
+library(rgl)
+mesh <- cgalMesh$new(dodecahedron3d())
+head(mesh$getEdges())
+
+## ------------------------------------------------
 ## Method `cgalMesh$getMesh`
 ## ------------------------------------------------
 
 library(rgl)
 mesh <- cgalMesh$new(cube3d())$triangulate()
-mesh$getMesh(normals = FALSE)
+mesh$getMesh()
 
 ## ------------------------------------------------
 ## Method `cgalMesh$intersection`
@@ -315,13 +317,13 @@ mesh1$triangulate()
 mesh2$triangulate()
 # intersection
 imesh <- mesh1$intersection(mesh2)
-rglimesh <- imesh$getMesh(normals = FALSE)
+rglimesh <- imesh$getMesh()
 # extract edges for plotting
-extEdges <- exteriorEdges(imesh$edges())
+extEdges <- exteriorEdges(imesh$getEdges())
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglimesh, color = "red")
-plotEdges(imesh$vertices(), extEdges)
+plotEdges(imesh$getVertices(), extEdges)
 shade3d(rglmesh1, color = "yellow", alpha = 0.2)
 shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
 
@@ -407,13 +409,13 @@ mesh1$triangulate()
 mesh2$triangulate()
 # difference
 mesh <- mesh1$subtract(mesh2)
-rglmesh <- mesh$getMesh(normals = FALSE)
+rglmesh <- mesh$getMesh()
 # extract edges for plotting
-extEdges <- exteriorEdges(mesh$edges())
+extEdges <- exteriorEdges(mesh$getEdges())
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglmesh, color = "red")
-plotEdges(mesh$vertices(), extEdges)
+plotEdges(mesh$getVertices(), extEdges)
 shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
 
 ## ------------------------------------------------
@@ -443,13 +445,13 @@ mesh1$triangulate()
 mesh2$triangulate()
 # union
 umesh <- mesh1$union(mesh2)
-rglumesh <- umesh$getMesh(normals = FALSE)
+rglumesh <- umesh$getMesh()
 # extract edges for plotting
-extEdges <- exteriorEdges(umesh$edges())
+extEdges <- exteriorEdges(umesh$getEdges())
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglumesh, color = "red")
-plotEdges(umesh$vertices(), extEdges)}
+plotEdges(umesh$getVertices(), extEdges)}
 
 ## ------------------------------------------------
 ## Method `cgalMesh$volume`
@@ -465,22 +467,37 @@ mesh$volume()
 \item \href{#method-cgalMesh-new}{\code{cgalMesh$new()}}
 \item \href{#method-cgalMesh-print}{\code{cgalMesh$print()}}
 \item \href{#method-cgalMesh-area}{\code{cgalMesh$area()}}
+\item \href{#method-cgalMesh-assignFaceColors}{\code{cgalMesh$assignFaceColors()}}
+\item \href{#method-cgalMesh-assignFaceScalars}{\code{cgalMesh$assignFaceScalars()}}
+\item \href{#method-cgalMesh-assignVertexColors}{\code{cgalMesh$assignVertexColors()}}
+\item \href{#method-cgalMesh-assignVertexScalars}{\code{cgalMesh$assignVertexScalars()}}
 \item \href{#method-cgalMesh-boundsVolume}{\code{cgalMesh$boundsVolume()}}
 \item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
 \item \href{#method-cgalMesh-clip}{\code{cgalMesh$clip()}}
+\item \href{#method-cgalMesh-computeNormals}{\code{cgalMesh$computeNormals()}}
 \item \href{#method-cgalMesh-connectedComponents}{\code{cgalMesh$connectedComponents()}}
 \item \href{#method-cgalMesh-convexParts}{\code{cgalMesh$convexParts()}}
 \item \href{#method-cgalMesh-copy}{\code{cgalMesh$copy()}}
 \item \href{#method-cgalMesh-distance}{\code{cgalMesh$distance()}}
-\item \href{#method-cgalMesh-edges}{\code{cgalMesh$edges()}}
 \item \href{#method-cgalMesh-fair}{\code{cgalMesh$fair()}}
 \item \href{#method-cgalMesh-geoDists}{\code{cgalMesh$geoDists()}}
+\item \href{#method-cgalMesh-getEdges}{\code{cgalMesh$getEdges()}}
+\item \href{#method-cgalMesh-getFaces}{\code{cgalMesh$getFaces()}}
+\item \href{#method-cgalMesh-getFaceColors}{\code{cgalMesh$getFaceColors()}}
+\item \href{#method-cgalMesh-getFaceScalars}{\code{cgalMesh$getFaceScalars()}}
+\item \href{#method-cgalMesh-getVertexColors}{\code{cgalMesh$getVertexColors()}}
+\item \href{#method-cgalMesh-getVertexScalars}{\code{cgalMesh$getVertexScalars()}}
+\item \href{#method-cgalMesh-getNormals}{\code{cgalMesh$getNormals()}}
 \item \href{#method-cgalMesh-getMesh}{\code{cgalMesh$getMesh()}}
+\item \href{#method-cgalMesh-getVertices}{\code{cgalMesh$getVertices()}}
 \item \href{#method-cgalMesh-intersection}{\code{cgalMesh$intersection()}}
 \item \href{#method-cgalMesh-isClosed}{\code{cgalMesh$isClosed()}}
 \item \href{#method-cgalMesh-isOutwardOriented}{\code{cgalMesh$isOutwardOriented()}}
 \item \href{#method-cgalMesh-isTriangle}{\code{cgalMesh$isTriangle()}}
 \item \href{#method-cgalMesh-isValid}{\code{cgalMesh$isValid()}}
+\item \href{#method-cgalMesh-isValidFaceGraph}{\code{cgalMesh$isValidFaceGraph()}}
+\item \href{#method-cgalMesh-isValidHalfedgeGraph}{\code{cgalMesh$isValidHalfedgeGraph()}}
+\item \href{#method-cgalMesh-isValidPolygonMesh}{\code{cgalMesh$isValidPolygonMesh()}}
 \item \href{#method-cgalMesh-orientToBoundVolume}{\code{cgalMesh$orientToBoundVolume()}}
 \item \href{#method-cgalMesh-removeSelfIntersections}{\code{cgalMesh$removeSelfIntersections()}}
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
@@ -488,7 +505,6 @@ mesh$volume()
 \item \href{#method-cgalMesh-subtract}{\code{cgalMesh$subtract()}}
 \item \href{#method-cgalMesh-triangulate}{\code{cgalMesh$triangulate()}}
 \item \href{#method-cgalMesh-union}{\code{cgalMesh$union()}}
-\item \href{#method-cgalMesh-vertices}{\code{cgalMesh$vertices()}}
 \item \href{#method-cgalMesh-volume}{\code{cgalMesh$volume()}}
 \item \href{#method-cgalMesh-writeMeshFile}{\code{cgalMesh$writeMeshFile()}}
 }
@@ -499,7 +515,7 @@ mesh$volume()
 \subsection{Method \code{new()}}{
 Creates a new \code{cgalMesh} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$new(mesh, vertices, faces, clean = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$new(mesh, vertices, faces, normals = NULL, clean = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -512,7 +528,10 @@ must be given, or it can be the path to a mesh file (accepted formats:
 or it can be a \strong{rgl} mesh (i.e. a \code{mesh3d} object), or it 
 can be a list containing (at least) the fields \code{vertices} 
 (numeric matrix with three columns) and \code{faces} (matrix of 
-integers or list of vectors of integers)}
+integers or list of vectors of integers), and optionally a field 
+\code{normals} (numeric matrix with three columns); if 
+this argument is a \strong{rgl} mesh containing some colors, these 
+colors will be assigned to the created \code{cgalMesh} object}
 
 \item{\code{vertices}}{if \code{mesh} is missing, must be a numeric matrix with 
 three columns}
@@ -520,6 +539,9 @@ three columns}
 \item{\code{faces}}{if \code{mesh} is missing, must be either a matrix of 
 integers (each row gives the vertex indices of a face) or a list of 
 vectors of integers (each one gives the vertex indices of a face)}
+
+\item{\code{normals}}{if \code{mesh} is missing, must be \code{NULL} or a 
+numeric matrix with three columns and as many rows as vertices}
 
 \item{\code{clean}}{Boolean, no effect if the mesh is given by a file, 
 otherwise it indicates whether to clean the mesh (merge duplicated 
@@ -538,13 +560,13 @@ meshFile <- system.file(
   "extdata", "bigPolyhedron.off", package = "cgalMeshes"
 )
 mesh <- cgalMesh$new(meshFile)
-rglmesh <- mesh$getMesh(normals = FALSE)
-library(rgl)
+rglmesh <- mesh$getMesh()
+\donttest{library(rgl)
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglmesh, color = "tomato")
 plotEdges(
-  mesh$vertices(), mesh$edges(), color = "darkred"
-)
+  mesh$getVertices(), mesh$getEdges(), color = "darkred"
+)}
 }
 \if{html}{\out{</div>}}
 
@@ -596,6 +618,89 @@ mesh$area()
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-assignFaceColors"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-assignFaceColors}{}}}
+\subsection{Method \code{assignFaceColors()}}{
+Assign colors (or any character strings) to the faces of 
+  the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$assignFaceColors(colors)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{colors}}{a character vector whose length equals the number of faces}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The current \code{cgalMesh} object, invisibly.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-assignFaceScalars"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-assignFaceScalars}{}}}
+\subsection{Method \code{assignFaceScalars()}}{
+Assign scalars to the faces of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$assignFaceScalars(scalars)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{scalars}}{a numeric vector whose length equals the number of faces}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The current \code{cgalMesh} object, invisibly.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-assignVertexColors"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-assignVertexColors}{}}}
+\subsection{Method \code{assignVertexColors()}}{
+Assign colors (or any character strings) to the vertices of 
+  the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$assignVertexColors(colors)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{colors}}{a character vector whose length equals the number of vertices}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The current \code{cgalMesh} object, invisibly.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-assignVertexScalars"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-assignVertexScalars}{}}}
+\subsection{Method \code{assignVertexScalars()}}{
+Assign scalars to the vertices of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$assignVertexScalars(scalars)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{scalars}}{a numeric vector whose length equals the number 
+of vertices}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The current \code{cgalMesh} object, invisibly.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-boundsVolume"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-boundsVolume}{}}}
 \subsection{Method \code{boundsVolume()}}{
@@ -635,10 +740,10 @@ The Cartesian coordinates of the centroid of the mesh.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{library(cgalMeshes)
+\preformatted{\donttest{library(cgalMeshes)
 library(rgl)
 mesh <- cgalMesh$new(icosahedron3d())
-mesh$centroid()
+mesh$centroid()}
 }
 \if{html}{\out{</div>}}
 
@@ -680,13 +785,13 @@ library(rgl)
 mesh    <- cgalMesh$new(cube3d())$triangulate()
 clipper <- cgalMesh$new(sphereMesh(r= sqrt(2)))
 mesh$clip(clipper, clipVolume = TRUE)
-rglmesh <- mesh$getMesh(normals = FALSE)
-open3d(windowRect = 50 + c(0, 0, 512, 512))
+rglmesh <- mesh$getMesh()
+\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(45, 45, zoom = 0.9)
-shade3d(rglmesh, col = "darkorange")
+shade3d(rglmesh, col = "darkorange")}
 
 # Togliatti surface clipped to a ball ####
-library(rmarchingcubes)
+\donttest{library(rmarchingcubes)
 library(rgl)
 library(cgalMeshes)
 # Togliatti surface equation: f(x,y,z) = 0
@@ -729,7 +834,7 @@ shade3d(rglMesh, color = "firebrick")
 next3d()
 view3d(0, -70, zoom = 0.8)
 shade3d(rglClippedMesh, color = "firebrick")
-shade3d(sphere, color = "yellow", alpha = 0.15)
+shade3d(sphere, color = "yellow", alpha = 0.15)}
 }
 \if{html}{\out{</div>}}
 
@@ -737,12 +842,26 @@ shade3d(sphere, color = "yellow", alpha = 0.15)
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-computeNormals"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-computeNormals}{}}}
+\subsection{Method \code{computeNormals()}}{
+Compute per-vertex normals of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$computeNormals()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The current \code{cgalMesh} object, invisibly. 
+ To get the normals, use the \code{getNormals} method.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-connectedComponents"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-connectedComponents}{}}}
 \subsection{Method \code{connectedComponents()}}{
 Decomposition into connected components.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$connectedComponents(triangulate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$connectedComponents(triangulate = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -759,7 +878,7 @@ A list of \code{cgalMesh} objects, one for each connected
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{library(cgalMeshes)
+\preformatted{\donttest{library(cgalMeshes)
 library(rmarchingcubes)
 # isosurface function (slice of a seven-dimensional toratope)
 f <- function(x, y, z, a) {
@@ -779,7 +898,9 @@ voxel <- array(with(Grid, f(X, Y, Z, a = pi/2)), dim = c(n, n, n))
 isosurface <- contour3d(voxel, level = 0.25, x = x, y = y, z = z)
 # make CGAL mesh
 mesh <- cgalMesh$new(
-  vertices = isosurface[["vertices"]], faces = isosurface[["triangles"]]
+  vertices = isosurface[["vertices"]], 
+  faces = isosurface[["triangles"]],
+  normals = isosurface[["normals"]]
 )
 # connected components
 components <- mesh$connectedComponents()
@@ -792,7 +913,7 @@ view3d(30, 50)
 for(i in 1L:ncc) {
   rglMesh <- components[[i]]$getMesh()
   shade3d(rglMesh, color = colors[i])
-}
+}}
 }
 \if{html}{\out{</div>}}
 
@@ -820,7 +941,7 @@ A list of \code{cgalMesh} objects, one for each convex part.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{library(cgalMeshes)
+\preformatted{\donttest{library(cgalMeshes)
 library(rgl)
 mesh <- cgalMesh$new(pentagrammicPrism)$triangulate()
 cxparts <- mesh$convexParts()
@@ -829,9 +950,9 @@ colors <- hcl.colors(ncxparts, palette = "plasma")
 open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(20, -20, zoom = 0.8)
 for(i in 1L:ncxparts) {
-  cxmesh <- cxparts[[i]]$getMesh(normals = FALSE)
+  cxmesh <- cxparts[[i]]$getMesh()
   shade3d(cxmesh, color = colors[i])
-}
+}}
 }
 \if{html}{\out{</div>}}
 
@@ -842,7 +963,7 @@ for(i in 1L:ncxparts) {
 \if{html}{\out{<a id="method-cgalMesh-copy"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-copy}{}}}
 \subsection{Method \code{copy()}}{
-Copy the mesh.
+Copy the mesh. This can change the order of the vertices.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$copy()}\if{html}{\out{</div>}}
 }
@@ -897,38 +1018,12 @@ points <- rbind(
 mesh$distance(points) # should be 1 and 0
 
 # cyclide example ####
-library(cgalMeshes)
+\donttest{library(cgalMeshes)
 a <- 100; c <- 30; mu <- 80
 mesh <- cgalMesh$new(cyclideMesh(a, c, mu, nu = 100L, nv = 100L))
 O2 <- c(c, 0, 0)
 # should be a - mu = 20 (see ?cyclideMesh):
-mesh$distance(O2)    
-}
-\if{html}{\out{</div>}}
-
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cgalMesh-edges"></a>}}
-\if{latex}{\out{\hypertarget{method-cgalMesh-edges}{}}}
-\subsection{Method \code{edges()}}{
-Get the edges of the mesh.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$edges()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-A dataframe with four columns; the first two ones give the 
-  vertex indices of each edge (one edge per row), the third one gives 
-  the lengths of each edge, and the fourth one gives the dihedral angles 
-  in degrees between the two faces adjacent to each edge
-}
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{library(rgl)
-mesh <- cgalMesh$new(dodecahedron3d())
-head(mesh$edges())
+mesh$distance(O2)}    
 }
 \if{html}{\out{</div>}}
 
@@ -961,20 +1056,20 @@ The modified \code{cgalMesh} object.
 rglHopf <- HopfTorusMesh(nu = 100, nv = 100)
 hopf <- cgalMesh$new(rglHopf)
 # squared norms of the vertices
-normsq <- apply(hopf$vertices(), 1L, crossprod)
+normsq <- apply(hopf$getVertices(), 1L, crossprod)
 # fair the region where the squared norm is > 19
 indices <- which(normsq > 19)
 hopf$fair(indices)
 rglHopf_faired <- hopf$getMesh()
 # plot
-library(rgl)
+\donttest{library(rgl)
 open3d(windowRect = 50 + c(0, 0, 900, 450))
 mfrow3d(1L, 2L)
 view3d(0, 0, zoom = 0.8)
 shade3d(rglHopf, color = "orangered")
 next3d()
 view3d(0, 0, zoom = 0.8)
-shade3d(rglHopf_faired, color = "orangered")
+shade3d(rglHopf_faired, color = "orangered")}
 }
 \if{html}{\out{</div>}}
 
@@ -1004,7 +1099,7 @@ The estimated geodesic distances from the source vertex to each
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{# torus ####
+\preformatted{\donttest{# torus ####
 library(cgalMeshes)
 library(rgl)
 rglmesh <- torusMesh(R = 3, r = 2, nu = 90, nv = 60)
@@ -1024,10 +1119,10 @@ shade3d(rglmesh)
 wire3d(rglmesh, color = "black")
 if(!rgl.useNULL()) {
   play3d(spin3d(axis = c(1, 1, 1), rpm = 5), duration = 20)  
-}
+}}
 
 # a trefoil knot (taken from `?rgl::cylinder3d`) ####
-library(cgalMeshes)
+\donttest{library(cgalMeshes)
 library(rgl)
 theta <- seq(0, 2*pi, length.out = 50L)
 knot <- cylinder3d(
@@ -1058,7 +1153,7 @@ open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
 shade3d(rglmesh)
 if(!rgl.useNULL()) {
   play3d(spin3d(axis = c(1, 1, 0), rpm = 5), duration = 20)  
-}
+}}
 }
 \if{html}{\out{</div>}}
 
@@ -1066,19 +1161,131 @@ if(!rgl.useNULL()) {
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-getEdges"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-getEdges}{}}}
+\subsection{Method \code{getEdges()}}{
+Get the edges of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getEdges()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A dataframe with four columns; the first two ones give the 
+  vertex indices of each edge (one edge per row), the third one gives 
+  the lengths of each edge, and the fourth one gives the dihedral angles 
+  in degrees between the two faces adjacent to each edge
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(rgl)
+mesh <- cgalMesh$new(dodecahedron3d())
+head(mesh$getEdges())
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-getFaces"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-getFaces}{}}}
+\subsection{Method \code{getFaces()}}{
+Get the faces of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getFaces()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The faces in a matrix if the mesh is triangle or quad, 
+  otherwise in a list.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-getFaceColors"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-getFaceColors}{}}}
+\subsection{Method \code{getFaceColors()}}{
+Get the face colors (if there are).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getFaceColors()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The vector of colors (or any character vector) attached to 
+  the faces of the mesh, or \code{NULL} if nothing is assigned to 
+  the faces.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-getFaceScalars"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-getFaceScalars}{}}}
+\subsection{Method \code{getFaceScalars()}}{
+Get the face scalars (if there are).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getFaceScalars()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The vector of scalars attached to 
+  the faces of the mesh, or \code{NULL} if nothing is assigned to 
+  the faces.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-getVertexColors"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-getVertexColors}{}}}
+\subsection{Method \code{getVertexColors()}}{
+Get the vertex colors (if there are).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getVertexColors()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The vector of colors (or any character vector) attached to 
+  the vertices of the mesh, or \code{NULL} if nothing is assigned to 
+  the vertices.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-getVertexScalars"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-getVertexScalars}{}}}
+\subsection{Method \code{getVertexScalars()}}{
+Get the vertex scalars (if there are).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getVertexScalars()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The vector of scalars attached to 
+  the vertices of the mesh, or \code{NULL} if nothing is assigned to 
+  the vertices.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-getNormals"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-getNormals}{}}}
+\subsection{Method \code{getNormals()}}{
+Get the per-vertex normals (if there are).
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getNormals()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The matrix of per-vertex normals if they have been given or 
+  computed (see \code{computeNormals}, or \code{NULL} otherwise.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-getMesh"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-getMesh}{}}}
 \subsection{Method \code{getMesh()}}{
 Get the mesh.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getMesh(normals = TRUE, rgl = TRUE, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getMesh(rgl = TRUE, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{normals}}{Boolean, whether to return the per-vertex normals}
-
 \item{\code{rgl}}{Boolean, whether to return a \strong{rgl} mesh if possible, 
 i.e. if the mesh only has triangular or quadrilateral faces}
 
@@ -1089,19 +1296,32 @@ a \strong{rgl} mesh is returned)}
 }
 \subsection{Returns}{
 A \strong{rgl} mesh or a list with two or three fields: 
-  \code{vertices}, \code{faces}, and \code{normals} if the argument 
+  \code{vertices}, \code{faces}, and \code{normals} if XXXXXXXXXXXXXXXXXXXXXXXXX the argument 
   \code{normals} is set to \code{TRUE}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{library(rgl)
 mesh <- cgalMesh$new(cube3d())$triangulate()
-mesh$getMesh(normals = FALSE)
+mesh$getMesh()
 }
 \if{html}{\out{</div>}}
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-getVertices"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-getVertices}{}}}
+\subsection{Method \code{getVertices()}}{
+Get the vertices of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getVertices()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The vertices in a matrix.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-intersection"></a>}}
@@ -1124,7 +1344,7 @@ A \code{cgalMesh} object.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{library(cgalMeshes)
+\preformatted{\donttest{library(cgalMeshes)
 library(rgl)
 # take two cubes
 rglmesh1 <- cube3d()
@@ -1136,15 +1356,15 @@ mesh1$triangulate()
 mesh2$triangulate()
 # intersection
 imesh <- mesh1$intersection(mesh2)
-rglimesh <- imesh$getMesh(normals = FALSE)
+rglimesh <- imesh$getMesh()
 # extract edges for plotting
-extEdges <- exteriorEdges(imesh$edges())
+extEdges <- exteriorEdges(imesh$getEdges())
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglimesh, color = "red")
-plotEdges(imesh$vertices(), extEdges)
+plotEdges(imesh$getVertices(), extEdges)
 shade3d(rglmesh1, color = "yellow", alpha = 0.2)
-shade3d(rglmesh2, color = "cyan", alpha = 0.2)
+shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
 }
 \if{html}{\out{</div>}}
 
@@ -1220,6 +1440,45 @@ mesh$isTriangle()
 Check whether the mesh is valid.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$isValid()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A Boolean value, whether the mesh is valid.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-isValidFaceGraph"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-isValidFaceGraph}{}}}
+\subsection{Method \code{isValidFaceGraph()}}{
+Check whether the mesh is valid.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$isValidFaceGraph()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A Boolean value, whether the mesh is valid.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-isValidHalfedgeGraph"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-isValidHalfedgeGraph}{}}}
+\subsection{Method \code{isValidHalfedgeGraph()}}{
+Check whether the mesh is valid.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$isValidHalfedgeGraph()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A Boolean value, whether the mesh is valid.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-isValidPolygonMesh"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-isValidPolygonMesh}{}}}
+\subsection{Method \code{isValidPolygonMesh()}}{
+Check whether the mesh is valid.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$isValidPolygonMesh()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
@@ -1360,7 +1619,7 @@ A \code{cgalMesh} object.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{library(cgalMeshes)
+\preformatted{\donttest{library(cgalMeshes)
 library(rgl)
 # take two cubes
 rglmesh1 <- cube3d()
@@ -1372,14 +1631,14 @@ mesh1$triangulate()
 mesh2$triangulate()
 # difference
 mesh <- mesh1$subtract(mesh2)
-rglmesh <- mesh$getMesh(normals = FALSE)
+rglmesh <- mesh$getMesh()
 # extract edges for plotting
-extEdges <- exteriorEdges(mesh$edges())
+extEdges <- exteriorEdges(mesh$getEdges())
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglmesh, color = "red")
-plotEdges(mesh$vertices(), extEdges)
-shade3d(rglmesh2, color = "cyan", alpha = 0.2)
+plotEdges(mesh$getVertices(), extEdges)
+shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
 }
 \if{html}{\out{</div>}}
 
@@ -1436,7 +1695,7 @@ A \code{cgalMesh} object.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{library(cgalMeshes)
+\preformatted{\donttest{library(cgalMeshes)
 library(rgl)
 # take two cubes
 rglmesh1 <- cube3d()
@@ -1448,31 +1707,18 @@ mesh1$triangulate()
 mesh2$triangulate()
 # union
 umesh <- mesh1$union(mesh2)
-rglumesh <- umesh$getMesh(normals = FALSE)
+rglumesh <- umesh$getMesh()
 # extract edges for plotting
-extEdges <- exteriorEdges(umesh$edges())
+extEdges <- exteriorEdges(umesh$getEdges())
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglumesh, color = "red")
-plotEdges(umesh$vertices(), extEdges)
+plotEdges(umesh$getVertices(), extEdges)}
 }
 \if{html}{\out{</div>}}
 
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cgalMesh-vertices"></a>}}
-\if{latex}{\out{\hypertarget{method-cgalMesh-vertices}{}}}
-\subsection{Method \code{vertices()}}{
-Get the vertices of the mesh.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$vertices()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-The vertices in a matrix.
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-volume"></a>}}
