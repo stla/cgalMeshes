@@ -5,10 +5,10 @@
 #include "MODULE.h"
 
 RCPP_MODULE(class_CGALmesh) {
-  using namespace Rcpp; 
+  using namespace Rcpp;
   class_<CGALmesh>("CGALmesh")
     .constructor<
-      const NumericMatrix, const List, bool, 
+      const NumericMatrix, const List, bool,
       Nullable<NumericMatrix>, Nullable<StringVector>, Nullable<StringVector>
     >()
     .constructor<XPtr<EMesh3>>()
@@ -17,6 +17,8 @@ RCPP_MODULE(class_CGALmesh) {
     .method("area", &CGALmesh::area)
     .method("assignFaceColors", &CGALmesh::assignFaceColors)
     .method("assignVertexColors", &CGALmesh::assignVertexColors)
+    .method("assignFaceScalars", &CGALmesh::assignFaceScalars)
+    .method("assignVertexScalars", &CGALmesh::assignVertexScalars)
     .method("centroid", &CGALmesh::centroid)
     .method("clipMesh", &CGALmesh::clipMesh)
     .method("doubleclip", &CGALmesh::doubleclip)
@@ -35,6 +37,8 @@ RCPP_MODULE(class_CGALmesh) {
     .method("getFacesMatrix", &CGALmesh::getFacesMatrix)
     .method("getFcolors", &CGALmesh::getFcolors)
     .method("getVcolors", &CGALmesh::getVcolors)
+    .method("getFscalars", &CGALmesh::getFscalars)
+    .method("getVscalars", &CGALmesh::getVscalars)
     .method("getVertices", &CGALmesh::getVertices)
     .method("getNormals", &CGALmesh::getNormals)
     .method("getRmesh", &CGALmesh::getRmesh)

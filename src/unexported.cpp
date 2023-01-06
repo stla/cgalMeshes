@@ -120,75 +120,154 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
 }
 
 EMesh3 cloneMesh(
-  EMesh3& mesh, const bool vnormals, const bool vcolors, const bool fcolors
+  EMesh3& mesh, std::vector<std::string> props
 ) {
+  EMesh3::Property_map<vertex_descriptor, vertex_descriptor> v2vmap = 
+    mesh.add_property_map<vertex_descriptor, vertex_descriptor>("v:v").first;
+  EMesh3::Property_map<face_descriptor, face_descriptor> f2fmap = 
+    mesh.add_property_map<face_descriptor, face_descriptor>("f:f").first;
   EMesh3 out;
-  CGAL::copy_face_graph(mesh, out);
-  if(fcolors) {
-    std::pair<Fcolors_map, bool> fcolors_ = 
-      mesh.property_map<face_descriptor, std::string>("f:color");
-    if(fcolors_.second) {
-      Fcolors_map fcolorsmap = 
-        out.add_property_map<face_descriptor, std::string>(
-          "f:color", ""
-        ).first;
-      for(EMesh3::Face_index fi : out.faces()) {
-        fcolorsmap[fi] = fcolors_.first[fi];
+  CGAL::copy_face_graph(
+    mesh, out, 
+    CGAL::parameters::vertex_to_vertex_map(v2vmap).face_to_face_map(f2fmap)
+  );
+  // EMesh3::Property_map<face_descriptor, std::vector<vertex_descriptor>> f2vmap = 
+  //   out.add_property_map<face_descriptor, std::vector<vertex_descriptor>>("f:vertices").first;
+  // std::map<vertex_descriptor, vertex_descriptor> rv2vmap;
+  // for(EMesh3::Vertex_index vi : mesh.vertices()) {
+  //   rv2vmap.insert(std::make_pair(v2vmap[vi], vi)); 
+  // }
+  // for(EMesh3::Face_index fi : mesh.faces()) {
+  //   std::vector<vertex_descriptor> face;
+  //   for(EMesh3::Vertex_index vi : vertices_around_face(mesh.halfedge(fi), mesh)) {
+  //     face.push_back(v2vmap[vi]);
+  //   }
+  //   f2vmap[f2fmap[fi]] = face;
+  // }
+  // for(EMesh3::Face_index fi : mesh.faces()) {
+  //   std::vector<vertex_descriptor> face;
+  //   for(EMesh3::Vertex_index vi : vertices_around_face(mesh.halfedge(fi), mesh)) {
+  //     face.push_back(vi);
+  //   }
+  //   f2vmap[f2fmap[fi]] = face;
+  // }
+  // for(EMesh3::Face_index fi : mesh.faces()) {
+  //   std::map<vertex_descriptor, vertex_descriptor> v2v;
+  //   std::vector<vertex_descriptor> face0;
+  //   // int i = 0;
+  //   // for(EMesh3::Vertex_index vi : vertices_around_face(mesh.halfedge(fi), mesh)) {
+  //   //   face0[i++] = v2vmap[vi];
+  //   // }
+  //   std::vector<vertex_descriptor> face;
+  //   for(EMesh3::Vertex_index vi : vertices_around_face(out.halfedge(f2fmap[fi]), out)) {
+  //     face.push_back(rv2vmap[vi]);
+  //   }
+  //   f2vmap[f2fmap[fi]] = face;
+  // }
+  for(int i = 0; i < props.size(); i++) {
+    std::string prop = props[i];
+    if(prop == "f:color") {
+      std::pair<Fcolors_map, bool> pmap_ = 
+        mesh.property_map<face_descriptor, std::string>(prop);
+      if(pmap_.second) {
+        Fcolors_map pmap = 
+          out.add_property_map<face_descriptor, std::string>(
+            prop, ""
+          ).first;
+        for(EMesh3::Face_index fi : mesh.faces()) {
+          pmap[f2fmap[fi]] = pmap_.first[fi];
+        }
+      }
+    } else if(prop == "v:color") {
+      std::pair<Vcolors_map, bool> pmap_ = 
+        mesh.property_map<vertex_descriptor, std::string>(prop);
+      if(pmap_.second) {
+        Vcolors_map pmap = 
+          out.add_property_map<vertex_descriptor, std::string>(
+            prop, ""
+          ).first;
+        for(EMesh3::Vertex_index vi : mesh.vertices()) {
+          pmap[v2vmap[vi]] = pmap_.first[vi];
+        }
+      }
+    } else if(prop == "v:normal") {
+      std::pair<Normals_map, bool> pmap_ = 
+        mesh.property_map<vertex_descriptor, Rcpp::NumericVector>(prop);
+      if(pmap_.second) {
+        Normals_map pmap = 
+          out.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
+            prop, defaultNormal()
+          ).first;
+        for(EMesh3::Vertex_index vi : mesh.vertices()) {
+          pmap[v2vmap[vi]] = pmap_.first[vi];
+        }
+      }
+    } else if(prop == "v:scalar") {
+      std::pair<Vscalars_map, bool> pmap_ = 
+        mesh.property_map<vertex_descriptor, double>(prop);
+      if(pmap_.second) {
+        Vscalars_map pmap = 
+          out.add_property_map<vertex_descriptor, double>(
+            prop, 0
+          ).first;
+        for(EMesh3::Vertex_index vi : mesh.vertices()) {
+          pmap[v2vmap[vi]] = pmap_.first[vi];
+        }
+      }
+    } else if(prop == "f:scalar") {
+      std::pair<Fscalars_map, bool> pmap_ = 
+        mesh.property_map<face_descriptor, double>(prop);
+      if(pmap_.second) {
+        Fscalars_map pmap = 
+          out.add_property_map<face_descriptor, double>(
+            prop, 0
+          ).first;
+        for(EMesh3::Face_index fi : mesh.faces()) {
+          pmap[f2fmap[fi]] = pmap_.first[fi];
+        }
       }
     }
   }
-  if(vcolors) {
-    std::pair<Vcolors_map, bool> vcolors_ = 
-      mesh.property_map<vertex_descriptor, std::string>("v:color");
-    if(vcolors_.second) {
-      Vcolors_map vcolorsmap = 
-        out.add_property_map<vertex_descriptor, std::string>(
-          "v:color", ""
-        ).first;
-      for(EMesh3::Vertex_index vi : out.vertices()) {
-        vcolorsmap[vi] = vcolors_.first[vi];
-      }
-    }
-  }
-  if(vnormals) {
-    std::pair<Normals_map, bool> vnormals_ = 
-      mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
-    if(vnormals_.second) {
-      Rcpp::NumericVector def = defaultNormal();
-      Normals_map vnormalsmap = 
-        out.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
-          "v:normal", def
-        ).first;
-      for(EMesh3::Vertex_index vi : out.vertices()) {
-        vnormalsmap[vi] = vnormals_.first[vi];
-      }
-    }
-  }
+  mesh.remove_property_map(v2vmap);
+  mesh.remove_property_map(f2fmap);
   return out;
 }
 
 void removeProperties(
-  EMesh3& mesh, const bool vnormals, const bool vcolors, const bool fcolors
+  EMesh3& mesh, std::vector<std::string> props// const bool vnormals, const bool vcolors, const bool fcolors
 ) {
-  if(fcolors) {
-    std::pair<Fcolors_map, bool> fcolors_ = 
-      mesh.property_map<face_descriptor, std::string>("f:color");
-    if(fcolors_.second) {
-      mesh.remove_property_map(fcolors_.first);
-    }
-  }
-  if(vcolors) {
-    std::pair<Vcolors_map, bool> vcolors_ = 
-      mesh.property_map<vertex_descriptor, std::string>("v:color");
-    if(vcolors_.second) {
-      mesh.remove_property_map(vcolors_.first);
-    }
-  }
-  if(vnormals) {
-    std::pair<Normals_map, bool> vnormals_ = 
-      mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
-    if(vnormals_.second) {
-      mesh.remove_property_map(vnormals_.first);
+  for(int i = 0; i < props.size(); i++) {
+    std::string prop = props[i];
+    if(prop == "f:color") {
+      std::pair<Fcolors_map, bool> pmap_ = 
+        mesh.property_map<face_descriptor, std::string>("f:color");
+      if(pmap_.second) {
+        mesh.remove_property_map(pmap_.first);
+      }
+    } else if(prop == "v:color") {
+      std::pair<Vcolors_map, bool> pmap_ = 
+        mesh.property_map<vertex_descriptor, std::string>("v:color");
+      if(pmap_.second) {
+        mesh.remove_property_map(pmap_.first);
+      }
+    } else if(prop == "v:normal") {
+      std::pair<Normals_map, bool> pmap_ = 
+        mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+      if(pmap_.second) {
+        mesh.remove_property_map(pmap_.first);
+      }
+    } else if(prop == "v:scalar") {
+      std::pair<Vscalars_map, bool> pmap_ = 
+        mesh.property_map<vertex_descriptor, double>("v:scalar");
+      if(pmap_.second) {
+        mesh.remove_property_map(pmap_.first);
+      }
+    } else if(prop == "f:scalar") {
+      std::pair<Fscalars_map, bool> pmap_ = 
+        mesh.property_map<face_descriptor, double>("f:scalar");
+      if(pmap_.second) {
+        mesh.remove_property_map(pmap_.first);
+      }
     }
   }
 }
@@ -238,7 +317,8 @@ MaybeNormalMap copy_vnormal(EMesh3& mesh) {
 void triangulateMesh(EMesh3& mesh) {
   MaybeFcolorMap fcolormap_ = copy_fcolor(mesh);
   const bool hasFcolors = fcolormap_.second;
-  removeProperties(mesh, true, false, false);
+  std::vector<std::string> props = {"v:normal"};
+  removeProperties(mesh, props);
   TriangulateVisitor vis;
   const bool success = 
     PMP::triangulate_faces(mesh, CGAL::parameters::visitor(vis));

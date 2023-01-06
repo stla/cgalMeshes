@@ -133,6 +133,15 @@ cgalMesh <- R6Class(
       invisible(self)
     },
 
+    #' @description Assign scalars to the faces of the mesh.
+    #' @param scalars a numeric vector whose length equals the number of faces
+    #' @return The current \code{cgalMesh} object, invisibly.
+    "assignFaceScalars" = function(scalars) {
+      stopifnot(is.numeric(scalars))
+      . <- private[[".CGALmesh"]]$assignFaceScalars(scalars)
+      invisible(self)
+    },
+    
     #' @description Assign colors (or any character strings) to the vertices of 
     #'   the mesh.
     #' @param colors a character vector whose length equals the number of vertices
@@ -140,6 +149,16 @@ cgalMesh <- R6Class(
     "assignVertexColors" = function(colors) {
       stopifnot(isStringVector(colors))
       . <- private[[".CGALmesh"]]$assignVertexColors(colors)
+      invisible(self)
+    },
+
+    #' @description Assign scalars to the vertices of the mesh.
+    #' @param scalars a numeric vector whose length equals the number 
+    #' of vertices
+    #' @return The current \code{cgalMesh} object, invisibly.
+    "assignVertexScalars" = function(scalars) {
+      stopifnot(is.numeric(scalars))
+      . <- private[[".CGALmesh"]]$assignVertexScalars(scalars)
       invisible(self)
     },
     

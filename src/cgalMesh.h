@@ -28,8 +28,10 @@
 #include <CGAL/number_utils.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
 #include <CGAL/boost/graph/Face_filtered_graph.h>
+#include <CGAL/boost/graph/helpers.h>
 //#include <CGAL/boost/graph/properties_Surface_mesh.h>
 #include <boost/graph/connected_components.hpp>
+#include <boost/property_map/property_map.hpp>
 #include <CGAL/Nef_3/SNC_indexed_items.h>
 #include <CGAL/convex_decomposition_3.h>
 #include <CGAL/Polyhedron_3.h>
@@ -89,6 +91,8 @@ typedef EMesh3::Property_map<vertex_descriptor, std::string> Vcolors_map;
 typedef std::pair<std::map<vertex_descriptor, std::string>, bool> MaybeVcolorMap;
 typedef EMesh3::Property_map<face_descriptor, std::string> Fcolors_map;
 typedef std::pair<std::map<face_descriptor, std::string>, bool> MaybeFcolorMap;
+typedef EMesh3::Property_map<vertex_descriptor, double> Vscalars_map;
+typedef EMesh3::Property_map<face_descriptor, double> Fscalars_map;
 typedef std::map<face_descriptor, face_descriptor> MapBetweenFaces;
 
 typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
@@ -169,8 +173,8 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix,
                 const Rcpp::Nullable<Rcpp::StringVector>&,
                 const Rcpp::Nullable<Rcpp::StringVector>&);
 
-EMesh3 cloneMesh(EMesh3&, const bool, const bool, const bool);
-void removeProperties(EMesh3&, const bool, const bool, const bool);
+EMesh3 cloneMesh(EMesh3&, std::vector<std::string>);
+void removeProperties(EMesh3&, std::vector<std::string>);
 MaybeNormalMap copy_vnormal(EMesh3&);
 MaybeVcolorMap copy_vcolor(EMesh3&);
 MaybeFcolorMap copy_fcolor(EMesh3&);
@@ -257,26 +261,54 @@ struct ClipVisitor :
 struct UnionVisitor : 
   public PMP::Corefinement::Default_visitor<EMesh3>
 {
-  void before_face_copy(
-    face_descriptor fsrc, const EMesh3 & tmsrc, const EMesh3 & tmtgt
-  ) {
-    Rcpp::Rcout << fsrc;
+  void before_subface_creations(face_descriptor fsplit, const EMesh3 & tm) {
+    *ofaceindex = fsplit;
+    (*action).push_back("before_subface_creations");
   }
-
+  void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
+    if(*is_tm) {
+      if((*finvolved).size() >= 1 && int(fnew) > (*finvolved).back() + 1) {
+        *is_tm = false;
+        (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
+      } else {
+        (*finvolved).push_back(int(fnew));
+        (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
+      }
+    } else {
+      (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
+    }
+    (*nfaces2).push_back(tm.number_of_faces());
+    (*action).push_back("after_subface_created");
+  }
   void after_face_copy(
     face_descriptor fsrc, const EMesh3 & tmsrc, 
     face_descriptor ftgt, const EMesh3 & tmtgt
   ) {
-    (*fmap).insert(std::make_pair(fsrc, ftgt));
+    (*fmap_union).insert(std::make_pair(ftgt, fsrc));
+    (*action).push_back("after_face_copy");
   }
   
   UnionVisitor()
-    : fmap(new std::map<face_descriptor, face_descriptor>()),
-      ofaceindex(new face_descriptor())
+    : fmap_mesh1(new MapBetweenFaces()),
+      fmap_mesh2(new MapBetweenFaces()),
+      finvolved(new std::vector<int>()),
+      ofaceindex(new face_descriptor()),
+      nfaces(new std::vector<size_t>()),
+      nfaces2(new std::vector<size_t>()),
+      fmap_union(new MapBetweenFaces()),
+      is_tm(new bool(true)),
+      action(new std::vector<std::string>())
   {}
   
-  std::shared_ptr<std::map<face_descriptor, face_descriptor>> fmap;
+  std::shared_ptr<MapBetweenFaces> fmap_mesh1;
+  std::shared_ptr<MapBetweenFaces> fmap_mesh2;
+  std::shared_ptr<std::vector<int>> finvolved;
+  std::shared_ptr<MapBetweenFaces> fmap_union;
   std::shared_ptr<face_descriptor> ofaceindex;
+  std::shared_ptr<std::vector<size_t>> nfaces;
+  std::shared_ptr<std::vector<size_t>> nfaces2;
+  std::shared_ptr<bool> is_tm;
+  std::shared_ptr<std::vector<std::string>> action;
 };
 
 struct TriangulateVisitor : 
