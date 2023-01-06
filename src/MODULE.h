@@ -1129,7 +1129,7 @@ public:
   }
 
 
-  Rcpp::XPtr<EMesh3> Union(Rcpp::XPtr<EMesh3> mesh2XPtr) {
+  Rcpp::List Union(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The reference mesh is not triangle.");
     }
@@ -1257,6 +1257,8 @@ public:
 
     Rcpp::Rcout << "nfaces: " << umesh.number_of_faces() << "\n";
 
+    Rcpp::Rcout << "fprev: " << *(vis.fprev) << "\n";
+
     Rcpp::Rcout << "PROPERTIES" << "\n";
     std::vector<std::string> props = umesh.properties<face_descriptor>();
     for(int p = 0; p < props.size(); p++) {
@@ -1271,53 +1273,105 @@ public:
     // }
 
 
-    if(hasColors || hasScalars) {
-      MapBetweenFaces fmap_mesh1 = *(vis.fmap_mesh1);
-      MapBetweenFaces fmap_mesh2 = *(vis.fmap_mesh2);
-      MapBetweenFaces fmap_union = *(vis.fmap_union);
-      Fcolors_map fcolor;
-      Fscalars_map fscalar;
-      if(hasColors) {
-        fcolor = umesh.add_property_map<face_descriptor, std::string>(
-          "f:color", ""
-        ).first;
-      }
-      if(hasScalars) {
-        fscalar = umesh.add_property_map<face_descriptor, double>(
-          "f:scalar", nan("")
-        ).first;
-      }
-      bool is_mesh1 = true;
-      for(EMesh3::Face_index fi : umesh.faces()) {
-        face_descriptor fd = fmap_union[fi];
-        if(is_mesh1) {
-          is_mesh1 = int(fi) <= int(fd);
-          face_descriptor fd1 = int(fd) < nfaces1 ? fd : fmap_mesh1[fd];
-          if(hasColors) {
-            fcolor[fi] = is_mesh1 ? fcolor1[fd1] : fcolor2[fd];
+    std::vector<bool> remove_on_mesh1(mesh.number_of_faces(), true);
+    std::vector<bool> remove_on_mesh2(mesh2.number_of_faces(), true);
+    std::vector<std::string> fcolor_mesh1;
+    std::vector<std::string> fcolor_mesh2;
+    MapBetweenFaces fmap_mesh1 = *(vis.fmap_mesh1);
+    MapBetweenFaces fmap_mesh2 = *(vis.fmap_mesh2);
+    MapBetweenFaces fmap_union = *(vis.fmap_union);
+    Fcolors_map fcolor;
+    Fscalars_map fscalar;
+    if(hasColors) {
+      fcolor = umesh.add_property_map<face_descriptor, std::string>(
+        "f:color", ""
+      ).first;
+    }
+    if(hasScalars) {
+      fscalar = umesh.add_property_map<face_descriptor, double>(
+        "f:scalar", nan("")
+      ).first;
+    }
+
+    bool is_mesh1 = true;
+    std::string color;
+    for(EMesh3::Face_index fi : umesh.faces()) {
+      face_descriptor fd = fmap_union[fi];
+      if(is_mesh1) {
+        is_mesh1 = int(fi) <= int(fd);
+        face_descriptor fd1 = int(fd) < nfaces1 ? fd : fmap_mesh1[fd];
+        if(hasColors) {
+          if(is_mesh1) {
+            color = fcolor1[fd1];
+            fcolor_mesh1.push_back(color);
+          } else {
+            color = fcolor2[fd];
+            fcolor_mesh2.push_back(color);
           }
-          if(hasScalars) {
-            fscalar[fi] = is_mesh1 ? fscalar1[fd1] : fscalar2[fd];
-          }
-          // fcolor[fi] = int(fd) < nfaces1 ? 
-          //   fcolor1[fi] : 
-          //   is_mesh1 ? fcolor1[fmap_mesh1[fd]] : fcolor2[fd];
-          // if(int(fd) < nfaces1) {
-          //   fcolor[fi] = fcolor1[fi];
-          // } else {
-          //   fcolor[fi] = is_mesh1 ? fcolor1[fmap_mesh1[fd]] : fcolor2[fd];  
-          // }
-        } else {
-          face_descriptor fd2 = int(fd) < nfaces2 ? fd : fmap_mesh2[fd];
-          if(hasColors) {
-            fcolor[fi] = fcolor2[fd2]; 
-          }
-          if(hasScalars) {
-            fscalar[fi] = fscalar2[fd2];
-          }
+          fcolor[fi] = color;
         }
+        if(hasScalars) {
+          fscalar[fi] = is_mesh1 ? fscalar1[fd1] : fscalar2[fd];
+        }
+        if(is_mesh1) {
+          remove_on_mesh1[int(fd)] = false;
+        } else {
+          remove_on_mesh2[int(fd)] = false;
+        }
+        // fcolor[fi] = int(fd) < nfaces1 ? 
+        //   fcolor1[fi] : 
+        //   is_mesh1 ? fcolor1[fmap_mesh1[fd]] : fcolor2[fd];
+        // if(int(fd) < nfaces1) {
+        //   fcolor[fi] = fcolor1[fi];
+        // } else {
+        //   fcolor[fi] = is_mesh1 ? fcolor1[fmap_mesh1[fd]] : fcolor2[fd];  
+        // }
+      } else {
+        face_descriptor fd2 = int(fd) < nfaces2 ? fd : fmap_mesh2[fd];
+        if(hasColors) {
+          color = fcolor2[fd2];
+          fcolor[fi] = color; 
+          fcolor_mesh2.push_back(color);
+        }
+        if(hasScalars) {
+          fscalar[fi] = fscalar2[fd2];
+        }
+        remove_on_mesh2[int(fd)] = false;
       }
     }
+
+    for(int i = 0; i < mesh.number_of_faces(); i++) {
+      if(remove_on_mesh1[i]) {
+        mesh.remove_face(CGAL::SM_Face_index(i));
+      }
+    }
+    for(int i = 0; i < mesh2.number_of_faces(); i++) {
+      if(remove_on_mesh2[i]) {
+        mesh2.remove_face(CGAL::SM_Face_index(i));
+      }
+    }
+    mesh.collect_garbage();
+    mesh2.collect_garbage();
+
+    if(hasColors) {
+      mesh.remove_property_map(fcolor1);
+      mesh2.remove_property_map(fcolor2);
+      Fcolors_map fcolorMap_mesh1 = 
+        mesh.add_property_map<face_descriptor, std::string>(
+          "f:color", ""
+        ).first;
+      Fcolors_map fcolorMap_mesh2 = 
+        mesh2.add_property_map<face_descriptor, std::string>(
+          "f:color", ""
+        ).first;
+      for(face_descriptor fd : mesh.faces()) {
+        fcolorMap_mesh1[fd] = fcolor_mesh1[int(fd)];
+      }
+      for(face_descriptor fd : mesh2.faces()) {
+        fcolorMap_mesh2[fd] = fcolor_mesh2[int(fd)];
+      }
+    }
+
 
 
 
@@ -1379,7 +1433,10 @@ public:
 //       Rcpp::Named("fvis2") = Fvis2,
 //       Rcpp::Named("fvis3") = Fvis3
 //     );
-    return Rcpp::XPtr<EMesh3>(new EMesh3(umesh), false);
+    return Rcpp::List::create(
+      Rcpp::Named("umesh") = Rcpp::XPtr<EMesh3>(new EMesh3(umesh), false),
+      Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(mesh2), false)
+    );
   }
 
 

@@ -910,8 +910,10 @@ cgalMesh <- R6Class(
     "union" = function(mesh2) {
       stopifnot(isCGALmesh(mesh2))
       xptr2 <- getXPtr(mesh2)
-      uxptr <- private[[".CGALmesh"]]$Union(xptr2)
-      cgalMesh$new(clean = uxptr)
+      xptrs <- private[[".CGALmesh"]]$Union(xptr2)
+      mesh2[[".__enclos_env__"]][["private"]][[".CGALmesh"]] <- 
+        CGALmesh$new(xptrs[["mesh2"]])
+      cgalMesh$new(clean = xptrs[["umesh"]])
     },
     
     #' @description Compute the volume of the mesh. The mesh must be closed,
