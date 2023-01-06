@@ -1199,6 +1199,8 @@ public:
 
     Rcpp::Rcout << "nfaces mesh2: " << mesh2.number_of_faces() << "\n";
 
+    Rcpp::Rcout << "nfaces mesh: " << mesh.number_of_faces() << "\n";
+    Rcpp::Rcout << "mesh has garbage: " << mesh.has_garbage() << "\n";
 
     // if(true) {
     //   //Rcpp::StringVector fcolors0(fcolors);
@@ -1340,16 +1342,21 @@ public:
       }
     }
 
-    for(int i = 0; i < mesh.number_of_faces(); i++) {
+    nfaces1 = mesh.number_of_faces();
+    nfaces2 = mesh2.number_of_faces();
+    for(int i = 0; i < nfaces1; i++) {
       if(remove_on_mesh1[i]) {
         mesh.remove_face(CGAL::SM_Face_index(i));
       }
     }
-    for(int i = 0; i < mesh2.number_of_faces(); i++) {
+    for(int i = 0; i < nfaces2; i++) {
       if(remove_on_mesh2[i]) {
         mesh2.remove_face(CGAL::SM_Face_index(i));
       }
     }
+
+    Rcpp::Rcout << "n removed faces: " << mesh.number_of_removed_faces() << "\n";
+
     mesh.collect_garbage();
     mesh2.collect_garbage();
 
@@ -1365,10 +1372,37 @@ public:
           "f:color", ""
         ).first;
       for(face_descriptor fd : mesh.faces()) {
-        fcolorMap_mesh1[fd] = fcolor_mesh1[int(fd)];
+        fcolorMap_mesh1[fd] = int(fd) < fcolor_mesh1.size() ? fcolor_mesh1[int(fd)] : "";
       }
       for(face_descriptor fd : mesh2.faces()) {
-        fcolorMap_mesh2[fd] = fcolor_mesh2[int(fd)];
+        fcolorMap_mesh2[fd] = int(fd) < fcolor_mesh2.size() ? fcolor_mesh2[int(fd)] : "";
+      }
+    }
+
+    {
+      std::size_t nvisolated = PMP::remove_isolated_vertices(mesh);
+      if(nvisolated > 0) {
+        std::string msg;
+        if(nvisolated == 1) {
+          msg = "Removed one isolated vertex.";
+        } else {
+          msg = "Removed " + std::to_string(nvisolated) + " isolated vertices.";
+        }
+        Message(msg);
+        mesh.collect_garbage();
+      }
+    }
+    {
+      std::size_t nvisolated = PMP::remove_isolated_vertices(mesh2);
+      if(nvisolated > 0) {
+        std::string msg;
+        if(nvisolated == 1) {
+          msg = "Removed one isolated vertex.";
+        } else {
+          msg = "Removed " + std::to_string(nvisolated) + " isolated vertices.";
+        }
+        Message(msg);
+        mesh2.collect_garbage();
       }
     }
 
