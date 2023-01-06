@@ -267,11 +267,11 @@ struct UnionVisitor :
   }
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
     if(*is_tm) {
-      if((*finvolved).size() >= 1 && int(fnew) > (*finvolved).back() + 1) {
+      if(int(fnew) - 1 > *fprev) {
         *is_tm = false;
         (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
       } else {
-        (*finvolved).push_back(int(fnew));
+        *fprev = int(fnew);
         (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
       }
     } else {
@@ -291,7 +291,7 @@ struct UnionVisitor :
   UnionVisitor()
     : fmap_mesh1(new MapBetweenFaces()),
       fmap_mesh2(new MapBetweenFaces()),
-      finvolved(new std::vector<int>()),
+      fprev(new int(INT_MAX)),
       ofaceindex(new face_descriptor()),
       nfaces(new std::vector<size_t>()),
       nfaces2(new std::vector<size_t>()),
@@ -302,7 +302,7 @@ struct UnionVisitor :
   
   std::shared_ptr<MapBetweenFaces> fmap_mesh1;
   std::shared_ptr<MapBetweenFaces> fmap_mesh2;
-  std::shared_ptr<std::vector<int>> finvolved;
+  std::shared_ptr<int> fprev;
   std::shared_ptr<MapBetweenFaces> fmap_union;
   std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<std::vector<size_t>> nfaces;

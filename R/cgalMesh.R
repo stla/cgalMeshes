@@ -862,7 +862,6 @@ cgalMesh <- R6Class(
       stopifnot(isCGALmesh(mesh2))
       xptr2 <- getXPtr(mesh2)
       uxptr <- private[[".CGALmesh"]]$Union(xptr2)
-      return(uxptr)
       cgalMesh$new(clean = uxptr)
     },
     

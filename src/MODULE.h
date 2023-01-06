@@ -1055,7 +1055,7 @@ public:
   }
 
 
-  Rcpp::List Union(Rcpp::XPtr<EMesh3> mesh2XPtr) {
+  Rcpp::XPtr<EMesh3> Union(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The reference mesh is not triangle.");
     }
@@ -1075,8 +1075,30 @@ public:
 
     int nfaces1 = mesh.number_of_faces();
     int nfaces2 = mesh2.number_of_faces();
-    Fcolors_map fcolor1 = mesh.property_map<face_descriptor, std::string>("f:color").first;
-    Fcolors_map fcolor2 = mesh2.property_map<face_descriptor, std::string>("f:color").first;
+
+    std::pair<Fcolors_map, bool> fcolor1_ = 
+      mesh.property_map<face_descriptor, std::string>("f:color");
+    std::pair<Fcolors_map, bool> fcolor2_ = 
+      mesh2.property_map<face_descriptor, std::string>("f:color");
+    Fcolors_map fcolor1; 
+    Fcolors_map fcolor2;
+    const bool hasColors = fcolor1_.second && fcolor2_.second;
+    if(hasColors) {
+      fcolor1 = fcolor1_.first;
+      fcolor2 = fcolor2_.first;
+    }
+
+    std::pair<Fscalars_map, bool> fscalar1_ = 
+      mesh.property_map<face_descriptor, double>("f:scalar");
+    std::pair<Fscalars_map, bool> fscalar2_ = 
+      mesh2.property_map<face_descriptor, double>("f:scalar");
+    Fscalars_map fscalar1; 
+    Fscalars_map fscalar2;
+    const bool hasScalars = fscalar1_.second && fscalar2_.second;
+    if(hasScalars) {
+      fscalar1 = fscalar1_.first;
+      fscalar2 = fscalar2_.first;
+    }
 
     // MaybeFcolorMap fcolor2_ = copy_fcolor(mesh2);
     // std::map<face_descriptor, std::string> fcolor2 = fcolor2_.first;
@@ -1175,53 +1197,52 @@ public:
     // }
 
 
-    MapBetweenFaces fmap_mesh1 = *(vis.fmap_mesh1);
-    MapBetweenFaces fmap_mesh2 = *(vis.fmap_mesh2);
-    MapBetweenFaces fmap_union = *(vis.fmap_union);
-    std::vector<int> finvolved = *(vis.finvolved);
-    std::vector<size_t> nfaces = *(vis.nfaces);
-    //std::vector<size_t> nfaces2 = *(vis.nfaces2);
-    // size_t end_mesh1 = *min_element(fclipper.begin(), fclipper.end());
-    // size_t eee = size_t(ftargets[CGAL::SM_Face_index(end_mesh1)]);
-    //int end_mesh1 = finvolved.size();
-    // for(int i = 1; i < finvolved.size(); i++) {
-    //   if(finvolved[i] < finvolved[i-1]) {
-    //     end_mesh1 = i;
-    //     break;
-    //   }
-    // }
-
-    Fcolors_map fcolor = umesh.add_property_map<face_descriptor, std::string>("f:color").first;
-    // for(EMesh3::Face_index fi : imesh.faces()) {
-    //   face_descriptor f3 = ftargets[fi];
-    //   if(int(f3) < nfaces1) {
-    //     fcolor[fi] = fcolor1[f3];
-    //   } else if(int(f3) < mesh.number_of_faces()) {
-    //     fcolor[fi] = fcolor1[fmap_tm[f3]]; 
-    //   } else if(int(f3) >= mesh2.number_of_faces() ) {
-    //     fcolor[fi] = fcolor2[fmap_clipper[f3]]; 
-    //   } else {
-    //     fcolor[fi] = fcolor2[f3]; 
-    //   } 
-    // }
-    bool is_mesh1 = true;
-    for(EMesh3::Face_index fi : umesh.faces()) {
-      face_descriptor fd = fmap_union[fi];
-      //std::vector<face_descriptor>::iterator it = std::find(finvolved.begin(), finvolved.end(), fi);
-      if(is_mesh1) {
-        if(int(fd) < nfaces1) {
-          fcolor[fi] = fcolor1[fi];
+    if(hasColors || hasScalars) {
+      MapBetweenFaces fmap_mesh1 = *(vis.fmap_mesh1);
+      MapBetweenFaces fmap_mesh2 = *(vis.fmap_mesh2);
+      MapBetweenFaces fmap_union = *(vis.fmap_union);
+      Fcolors_map fcolor;
+      Fscalars_map fscalar;
+      if(hasColors) {
+        fcolor = umesh.add_property_map<face_descriptor, std::string>(
+          "f:color", ""
+        ).first;
+      }
+      if(hasScalars) {
+        fscalar = umesh.add_property_map<face_descriptor, double>(
+          "f:scalar", 0
+        ).first;
+      }
+      bool is_mesh1 = true;
+      for(EMesh3::Face_index fi : umesh.faces()) {
+        face_descriptor fd = fmap_union[fi];
+        if(is_mesh1) {
+          is_mesh1 = int(fi) <= int(fd);
+          face_descriptor fd1 = int(fd) < nfaces1 ? fd : fmap_mesh1[fd];
+          if(hasColors) {
+            fcolor[fi] = is_mesh1 ? fcolor1[fd1] : fcolor2[fd];
+          }
+          if(hasScalars) {
+            fscalar[fi] = is_mesh1 ? fscalar1[fd1] : fscalar2[fd];
+          }
+          // fcolor[fi] = int(fd) < nfaces1 ? 
+          //   fcolor1[fi] : 
+          //   is_mesh1 ? fcolor1[fmap_mesh1[fd]] : fcolor2[fd];
+          // if(int(fd) < nfaces1) {
+          //   fcolor[fi] = fcolor1[fi];
+          // } else {
+          //   fcolor[fi] = is_mesh1 ? fcolor1[fmap_mesh1[fd]] : fcolor2[fd];  
+          // }
         } else {
-          fcolor[fi] = fcolor1[fmap_mesh1[fd]];  
+          face_descriptor fd2 = int(fd) < nfaces2 ? fd : fmap_mesh2[fd];
+          if(hasColors) {
+            fcolor[fi] = fcolor2[fd2]; 
+          }
+          if(hasScalars) {
+            fscalar[fi] = fscalar2[fd2];
+          }
         }
-        is_mesh1 = int(fi) <= int(fd);
-      //} else if(auto search = fmap_tm.find(f3); search != fmap_tm.end()) {
-      //  fcolor[fi] = fcolor1[fmap_tm[f3]]; 
-      } else if(int(fd) < nfaces2 ) {
-        fcolor[fi] = fcolor2[fd]; 
-      } else {
-        fcolor[fi] = fcolor2[fmap_mesh2[fd]]; 
-      } 
+      }
     }
 
 
@@ -1235,33 +1256,33 @@ public:
     // for(EMesh3::Face_index fi : mesh2.faces()) {
     //   Fimap2(i2++) = fimap2[fi];
     // }
-    Rcpp::IntegerMatrix Fvis1(fmap_mesh1.size(), 2);
-    {
-      int ii1 = 0;
-      for(const auto& [fnew, fsplit] : fmap_mesh1) {
-        Fvis1(ii1++, Rcpp::_) = Rcpp::IntegerVector({int(fsplit), int(fnew)});
-      }
-    }
-    Rcpp::IntegerMatrix Fvis2(fmap_mesh2.size(), 2);
-    {
-      int ii1 = 0;
-      for(const auto& [fnew, fsplit] : fmap_mesh2) {
-        Fvis2(ii1++, Rcpp::_) = Rcpp::IntegerVector({int(fsplit), int(fnew)});
-      }
-    }
-    Rcpp::IntegerMatrix Fvis3(fmap_union.size(), 2);
-    {
-      int ii1 = 0;
-      for(const auto& [fnew, fsplit] : fmap_union) {
-        Fvis3(ii1++, Rcpp::_) = Rcpp::IntegerVector({int(fsplit), int(fnew)});
-      }
-    }
-    Rcpp::IntegerVector Nfaces(nfaces.size());
-    {
-      for(int i = 0; i < nfaces.size(); i++) {
-        Nfaces(i) = nfaces[i];
-      }
-    }
+    // Rcpp::IntegerMatrix Fvis1(fmap_mesh1.size(), 2);
+    // {
+    //   int ii1 = 0;
+    //   for(const auto& [fnew, fsplit] : fmap_mesh1) {
+    //     Fvis1(ii1++, Rcpp::_) = Rcpp::IntegerVector({int(fsplit), int(fnew)});
+    //   }
+    // }
+    // Rcpp::IntegerMatrix Fvis2(fmap_mesh2.size(), 2);
+    // {
+    //   int ii1 = 0;
+    //   for(const auto& [fnew, fsplit] : fmap_mesh2) {
+    //     Fvis2(ii1++, Rcpp::_) = Rcpp::IntegerVector({int(fsplit), int(fnew)});
+    //   }
+    // }
+    // Rcpp::IntegerMatrix Fvis3(fmap_union.size(), 2);
+    // {
+    //   int ii1 = 0;
+    //   for(const auto& [fnew, fsplit] : fmap_union) {
+    //     Fvis3(ii1++, Rcpp::_) = Rcpp::IntegerVector({int(fsplit), int(fnew)});
+    //   }
+    // }
+    // Rcpp::IntegerVector Nfaces(nfaces.size());
+    // {
+    //   for(int i = 0; i < nfaces.size(); i++) {
+    //     Nfaces(i) = nfaces[i];
+    //   }
+    // }
     // Rcpp::IntegerVector Nfaces2(nfaces2.size());
     // {
     //   for(int i = 0; i < nfaces2.size(); i++) {
@@ -1269,21 +1290,21 @@ public:
     //   }
     // }
 
-    Rcpp::List myimesh = Rcpp::List::create(
-      Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(umesh), false),
-      Rcpp::Named("normals") = R_NilValue,
-      Rcpp::Named("vcolors") = R_NilValue,
-      Rcpp::Named("fcolors") = R_NilValue,
-      //Rcpp::Named("fimap") = Fimap,
-      // Rcpp::Named("fimap1") = Fimap1,
-      // Rcpp::Named("fimap2") = Fimap2,
-      Rcpp::Named("nfaces") = Nfaces,
-//      Rcpp::Named("nfaces2") = Nfaces2,
-      Rcpp::Named("fvis1") = Fvis1,
-      Rcpp::Named("fvis2") = Fvis2,
-      Rcpp::Named("fvis3") = Fvis3
-    );
-    return myimesh;
+//     Rcpp::List myimesh = Rcpp::List::create(
+//       Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(new EMesh3(umesh), false),
+//       Rcpp::Named("normals") = R_NilValue,
+//       Rcpp::Named("vcolors") = R_NilValue,
+//       Rcpp::Named("fcolors") = R_NilValue,
+//       //Rcpp::Named("fimap") = Fimap,
+//       // Rcpp::Named("fimap1") = Fimap1,
+//       // Rcpp::Named("fimap2") = Fimap2,
+// //      Rcpp::Named("nfaces") = Nfaces,
+// //      Rcpp::Named("nfaces2") = Nfaces2,
+//       Rcpp::Named("fvis1") = Fvis1,
+//       Rcpp::Named("fvis2") = Fvis2,
+//       Rcpp::Named("fvis3") = Fvis3
+//     );
+    return Rcpp::XPtr<EMesh3>(new EMesh3(umesh), false);
   }
 
 
