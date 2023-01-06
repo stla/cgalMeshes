@@ -341,9 +341,11 @@ template MaybeNormalMap copy_prop<vertex_descriptor, Rcpp::NumericVector>(EMesh3
 
 
 void triangulateMesh(EMesh3& mesh) {
-  MaybeFcolorMap fcolormap_ = copy_prop<face_descriptor, std::string>(mesh, "f:color");
+  MaybeFcolorMap fcolormap_ = 
+    copy_prop<face_descriptor, std::string>(mesh, "f:color");
   const bool hasFcolors = fcolormap_.second;
-  MaybeFscalarMap fscalarmap_ = copy_prop<face_descriptor, double>(mesh, "f:scalar");
+  MaybeFscalarMap fscalarmap_ = 
+    copy_prop<face_descriptor, double>(mesh, "f:scalar");
   const bool hasFscalars = fscalarmap_.second;
   removeProperties(mesh, {"v:normal"});
   TriangulateVisitor vis;
@@ -389,9 +391,17 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     Rcpp::stop("The clipping mesh self-intersects.");
   }
     
-  MaybeFcolorMap fcolorMap_ = copy_fcolor(tm);
-  MaybeFcolorMap fcolorMap2_ = copy_fcolor(clipper);
+  MaybeFcolorMap fcolorMap_ = 
+    copy_prop<face_descriptor, std::string>(tm, "f:color");
+  MaybeFcolorMap fcolorMap2_ = 
+    copy_prop<face_descriptor, std::string>(clipper, "f:color");
   const bool hasColors = fcolorMap_.second && fcolorMap2_.second;
+  MaybeFscalarMap fscalarMap_ = 
+    copy_prop<face_descriptor, double>(tm, "f:scalar");
+  MaybeFscalarMap fscalarMap2_ = 
+    copy_prop<face_descriptor, double>(clipper, "f:scalar");
+  const bool hasScalars = fscalarMap_.second && fscalarMap2_.second;
+
 
   std::size_t nfaces = tm.number_of_faces();
   std::size_t nfaces_clipper = clipper.number_of_faces();
@@ -429,17 +439,32 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   Rcpp::Rcout << "clipper has garbage: " << clipper.has_garbage() << "\n";
 
   if(!clipVolume){
-    if(hasColors) {
-      std::map<face_descriptor, std::string> fcolorMap = fcolorMap_.first;
+    if(hasColors || hasScalars) {
+      std::map<face_descriptor, std::string> fcolorMap;
+      Fcolors_map newfcolor;
+      std::map<face_descriptor, double> fscalarMap;
+      Fscalars_map newfscalar;
+      if(hasColors) {
+        fcolorMap = fcolorMap_.first;
+        newfcolor = 
+          tm.add_property_map<face_descriptor, std::string>(
+            "f:color", ""
+          ).first;
+      }
+      if(hasScalars) {
+        fscalarMap = fscalarMap_.first;
+        newfscalar = 
+          tm.add_property_map<face_descriptor, double>("f:scalar", 0).first;
+      }
       MapBetweenFaces fmap = *(vis.fmap_tm);
-      Fcolors_map newfcolor = 
-        tm.add_property_map<face_descriptor, std::string>("f:color", "").first;
       for(EMesh3::Face_index fi : tm.faces()) {
         face_descriptor fd = CGAL::SM_Face_index(fimap[fi]);
-        if(size_t(fd) < nfaces) {
-          newfcolor[fi] = fcolorMap[fd];
-        } else {
-          newfcolor[fi] = fcolorMap[fmap[fd]];
+        face_descriptor fdnew = size_t(fd) < nfaces ? fd : fmap[fd];
+        if(hasColors) {
+          newfcolor[fi] = fcolorMap[fdnew];
+        }
+        if(hasScalars) {
+          newfscalar[fi] = fscalarMap[fdnew];
         }
       }
     }
@@ -452,33 +477,57 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   MapBetweenFaces ftargets = *(vis.ftargets);
   std::map<face_descriptor, std::string> fcolorMap;
   std::map<face_descriptor, std::string> fcolorMap2;
-  std::map<face_descriptor, std::string> fcolormap_clipper;
+  std::map<face_descriptor, std::string> fcolorMap_clipper;
+  std::map<face_descriptor, double> fscalarMap;
+  std::map<face_descriptor, double> fscalarMap2;
+  std::map<face_descriptor, double> fscalarMap_clipper;
   if(hasColors) {
     fcolorMap = fcolorMap_.first;
     fcolorMap2 = fcolorMap2_.first;
   }
-  int fdi = 0;
-  for(auto it = ftargets.rbegin(); it != ftargets.rend(); ++it) {
-    face_descriptor fd = it->second;
-    if(std::size_t(fd) >= nfaces_clipper) {
-      fd = fmap_clipper[fd];
-    }
-    if(hasColors) {
-      fcolormap_clipper[it->first] = fcolorMap2[fd];
-    }
-    while(fimap[CGAL::SM_Face_index(fdi)] != 0) {
-      fdi++;
-    }
-    fimap[CGAL::SM_Face_index(fdi++)] = std::size_t(it->first);
+  if(hasScalars) {
+    fscalarMap = fscalarMap_.first;
+    fscalarMap2 = fscalarMap2_.first;
   }
+  {
+    int fdi = 0;
+    for(auto it = ftargets.rbegin(); it != ftargets.rend(); ++it) {
+      face_descriptor fd = it->second;
+      if(std::size_t(fd) >= nfaces_clipper) {
+        fd = fmap_clipper[fd];
+      }
+      if(hasColors) {
+        fcolorMap_clipper[it->first] = fcolorMap2[fd];
+      }
+      if(hasScalars) {
+        fscalarMap_clipper[it->first] = fscalarMap2[fd];
+      }
+      while(fimap[CGAL::SM_Face_index(fdi)] != 0) {
+        fdi++;
+      }
+      fimap[CGAL::SM_Face_index(fdi++)] = std::size_t(it->first);
+    }
+  }
+
   Face_index_map whichPart = 
     tm.add_property_map<face_descriptor, std::size_t>("f:which").first;
-  Fcolors_map newfcolor = 
-    tm.add_property_map<face_descriptor, std::string>("f:color", "").first;
+  Fcolors_map newfcolor;
+  Fscalars_map newfscalar;
+  if(hasColors) {
+    newfcolor = 
+      tm.add_property_map<face_descriptor, std::string>("f:color", "").first;
+  }
+  if(hasScalars) {
+    newfscalar = 
+      tm.add_property_map<face_descriptor, double>("f:scalar", nan("")).first;
+  }
+
   int nfaces_tmesh = 0;
   int nfaces_tmesh2 = 0;
   std::vector<std::string> fcolor_tmesh_vec;
   std::vector<std::string> fcolor_tmesh2_vec;
+  std::vector<double> fscalar_tmesh_vec;
+  std::vector<double> fscalar_tmesh2_vec;
   for(EMesh3::Face_index fi : tm.faces()) {
     std::size_t ifi = fimap[fi];
     face_descriptor fd = CGAL::SM_Face_index(ifi);
@@ -489,13 +538,23 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
         newfcolor[fi] = color;
         fcolor_tmesh_vec.push_back(color);
       }
+      if(hasScalars) {
+        double scalar = fscalarMap[fd]; 
+        newfscalar[fi] = scalar;
+        fscalar_tmesh_vec.push_back(scalar);
+      }
       nfaces_tmesh++;
     } else if(auto search = ftargets.find(fd); search != ftargets.end()) {
       whichPart[fi] = 1;
       if(hasColors) {
-        std::string color = fcolormap_clipper[fd]; 
+        std::string color = fcolorMap_clipper[fd]; 
         newfcolor[fi] = color;
         fcolor_tmesh2_vec.push_back(color);
+      }
+      if(hasScalars) {
+        double scalar = fscalarMap_clipper[fd]; 
+        newfscalar[fi] = scalar;
+        fscalar_tmesh2_vec.push_back(scalar);
       }
       nfaces_tmesh2++;
     } else if(ifi < nfaces) {
@@ -505,6 +564,11 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
         newfcolor[fi] = color;
         fcolor_tmesh_vec.push_back(color);
       }
+      if(hasScalars) {
+        double scalar = fscalarMap[fd]; 
+        newfscalar[fi] = scalar;
+        fscalar_tmesh_vec.push_back(scalar);
+      }
       nfaces_tmesh++;
     } else {
       whichPart[fi] = 0;
@@ -512,6 +576,11 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
         std::string color = fcolorMap[fmap_tm[fd]]; 
         newfcolor[fi] = color;
         fcolor_tmesh_vec.push_back(color);
+      }
+      if(hasScalars) {
+        double scalar = fscalarMap[fmap_tm[fd]]; 
+        newfscalar[fi] = scalar;
+        fscalar_tmesh_vec.push_back(scalar);
       }
       nfaces_tmesh++;
     }
@@ -557,6 +626,15 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
         fcolor_tmesh[fi] = fcolor_tmesh_vec[int(fi)];
       }
     }
+    if(hasScalars) {
+      Fscalars_map fscalar_tmesh = 
+        tmesh.add_property_map<face_descriptor, double>(
+          "f:scalar", nan("")
+        ).first;
+      for(EMesh3::Face_index fi : tmesh.faces()) {
+        fscalar_tmesh[fi] = fscalar_tmesh_vec[int(fi)];
+      }
+    }
   }
 
   EMesh3 tmesh2;
@@ -591,12 +669,23 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
         fcolor_tmesh2[fi] = fcolor_tmesh2_vec[int(fi)];
       }
     }
+    if(hasScalars) {
+      Fscalars_map fscalar_tmesh2 = 
+        tmesh2.add_property_map<face_descriptor, double>(
+          "f:scalar", nan("")
+        ).first;
+      for(EMesh3::Face_index fi : tmesh2.faces()) {
+        fscalar_tmesh2[fi] = fscalar_tmesh2_vec[int(fi)];
+      }
+    }
   }
 
   Rcpp::LogicalVector Components(tm.number_of_faces());
-  int fint = 0;
-  for(EMesh3::Face_index fi : tm.faces()) {
-    Components(fint++) = whichPart[fi] == 0;
+  {
+    int fint = 0;
+    for(EMesh3::Face_index fi : tm.faces()) {
+      Components(fint++) = whichPart[fi] == 0;
+    }
   }
 
   {
@@ -628,7 +717,8 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
 
   {
     std::vector<halfedge_descriptor> hds;
-    std::back_insert_iterator<std::vector<halfedge_descriptor>> bii = std::back_inserter(hds);
+    std::back_insert_iterator<std::vector<halfedge_descriptor>> bii = 
+      std::back_inserter(hds);
     PMP::non_manifold_vertices(tmesh, bii);
     if(hds.size() > 0) {
       std::string msg;
@@ -642,7 +732,8 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   }
   {
     std::vector<halfedge_descriptor> hds;
-    std::back_insert_iterator<std::vector<halfedge_descriptor>> bii = std::back_inserter(hds);
+    std::back_insert_iterator<std::vector<halfedge_descriptor>> bii = 
+      std::back_inserter(hds);
     PMP::non_manifold_vertices(tmesh2, bii);
     if(hds.size() > 0) {
       std::string msg;
