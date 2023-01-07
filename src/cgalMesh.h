@@ -29,10 +29,13 @@
 #include <CGAL/boost/graph/copy_face_graph.h>
 #include <CGAL/boost/graph/Face_filtered_graph.h>
 #include <CGAL/boost/graph/helpers.h>
-#include <CGAL/boost/graph/Euler_operations.h>
+//#include <CGAL/boost/graph/Euler_operations.h>
+// #include <CGAL/boost/graph/iterator.h>
+// #include <CGAL/Iterator_range.h>
 //#include <CGAL/boost/graph/properties_Surface_mesh.h>
 #include <boost/graph/connected_components.hpp>
 #include <boost/property_map/property_map.hpp>
+#include <boost/graph/copy.hpp>
 #include <CGAL/Nef_3/SNC_indexed_items.h>
 #include <CGAL/convex_decomposition_3.h>
 #include <CGAL/Polyhedron_3.h>
@@ -316,6 +319,12 @@ struct UnionVisitor :
     }
     (*action).push_back("after_face_copy");
   }
+  void after_vertex_copy(
+    vertex_descriptor vsrc, const EMesh3 & tmsrc, 
+    vertex_descriptor vtgt, const EMesh3 & tmtgt
+  ) {
+    (*vmap_union).insert(std::make_pair(vtgt, vsrc));
+  }
   
   UnionVisitor()
     : fmap_mesh1(new MapBetweenFaces()),
@@ -326,6 +335,7 @@ struct UnionVisitor :
       nfaces(new std::vector<size_t>()),
       nfaces2(new std::vector<size_t>()),
       fmap_union(new MapBetweenFaces()),
+      vmap_union(new std::map<vertex_descriptor, vertex_descriptor>()),
       is_tm(new bool(true)),
       action(new std::vector<std::string>())
   {}
@@ -335,6 +345,7 @@ struct UnionVisitor :
   std::shared_ptr<int> fprev;
   std::shared_ptr<int> nfaces_umesh1;
   std::shared_ptr<MapBetweenFaces> fmap_union;
+  std::shared_ptr<std::map<vertex_descriptor, vertex_descriptor>> vmap_union;
   std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<std::vector<size_t>> nfaces;
   std::shared_ptr<std::vector<size_t>> nfaces2;

@@ -798,8 +798,10 @@ public:
     vertex_descriptor vd = CGAL::SM_Vertex_index(v);
     // Rcpp::Rcout << "degree: " << mesh.degree(vd) << "\n";
     // Rcpp::Rcout << "halfedge: " << mesh.halfedge(vd) << "\n";
+    Rcpp::Rcout << "mesh.halfedge(vd): " << mesh.halfedge(vd) << "halfedge(vd, mesh): " << halfedge(vd, mesh) << "\n";
     Rcpp::IntegerVector faces;
     for(face_descriptor fd : CGAL::faces_around_target(mesh.halfedge(vd), mesh)) {
+      //Rcpp::Rcout << "face is removed: " << mesh.is_removed(fd) << "\n";
       if(fd != EMesh3::null_face()) {
         faces.push_back(int(fd) + 1);
       }
@@ -839,10 +841,69 @@ public:
   }
 
 
-  void filterGraph() {
+  Rcpp::IntegerVector filterGraph() {
     trivial_edge_predicate filter_edge;
     positive_vertex_scalar filter_vertex(mesh.property_map<vertex_descriptor, double>("v:scalar").first);
     boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar> fg(mesh, filter_edge, filter_vertex);
+    // EMesh3 submesh;
+    // CGAL::copy_face_graph(fg, submesh);
+    // return Rcpp::XPtr<EMesh3>(new EMesh3(submesh), false);
+    boost::property_map<boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>, CGAL::vertex_index_t>::type pmap = 
+      get(CGAL::vertex_index, fg);
+    std::pair<boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>::vertex_iterator, boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>::vertex_iterator> vv = boost::vertices(fg);
+//    std::vector<bool> keep_vertex(mesh.number_of_vertices(), false);
+    for(auto vd : boost::make_iterator_range(vv)) {
+      Rcpp::Rcout << vd << " - " << pmap[vd] << "\n";
+//      keep_vertex[int(pmap[vd])] = true;
+      //remove_vertex(vd, mesh);
+      //Rcpp::Rcout << "face of removed vertex: " << fd << "\n";
+    }
+    boost::property_map<boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>, CGAL::edge_index_t>::type epmap = 
+      get(CGAL::edge_index, fg);
+    std::pair<boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>::edge_iterator, boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>::edge_iterator> ee = boost::edges(fg);
+    Rcpp::IntegerVector Edges;
+    int nedges = 0;
+    for(auto ed : boost::make_iterator_range(ee)) {
+      Rcpp::Rcout << ed << " - " << epmap[ed] << "\n";
+      Rcpp::Rcout << "source: " << boost::source(ed, fg) << " - target: " << boost::target(ed, fg) << "\n";
+      Edges.push_back(int(boost::source(ed, fg))); Edges.push_back(int(boost::target(ed, fg)));
+      nedges++;
+    }
+    Edges.attr("dim") = Rcpp::Dimension(2, nedges);
+    return Edges;
+    // Rcpp::Rcout << "mesh has garbage: " << mesh.has_garbage() << "\n";
+    // mesh.collect_garbage();
+    // int nvertices = mesh.number_of_vertices();
+    // Face_index_map fimap = 
+    //   mesh.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
+    // EMesh3::Face_range faces = mesh.faces();
+    // for(face_descriptor fd : faces) {
+    //   bool include = true;
+    //   for(vertex_descriptor vd : vertices_around_face(mesh.halfedge(fd), mesh)) {
+    //     if(!keep_vertex[int(vd)]) {
+    //       include = false;
+    //       fimap[fd] = 1;
+    //       break;
+    //     }
+    //     // if(int(vd) >= nvertices) {
+    //     //   //remove_face(fd, mesh);
+    //     //   //Rcpp::Rcout << "face of removed face: " << f << "\n";
+    //     //   break;
+    //     // }
+    //   }
+    // }
+    // Rcpp::Rcout << "mesh has garbage: " << mesh.has_garbage() << "\n";
+    // mesh.collect_garbage();
+    // Filtered_graph ffg(mesh, 0, fimap);
+    // EMesh3 meshcopy;
+    // CGAL::copy_face_graph(ffg, meshcopy);
+    // EMesh3 submesh;
+    // boost::copy_graph(fg, submesh);
+    //return Rcpp::XPtr<EMesh3>(new EMesh3(meshcopy), false);
+    // Rcpp::Rcout << "vv.second:\n";
+    // for(vertex_descriptor v : vv.second) {
+    //   Rcpp::Rcout << pmap[v];
+    // }
   }
 
 
@@ -1318,15 +1379,100 @@ public:
     // }
 
 
-    std::vector<bool> remove_on_mesh1(mesh.number_of_faces(), true);
-    std::vector<bool> remove_on_mesh2(mesh2.number_of_faces(), true);
-    std::vector<halfedge_descriptor> halfedges_to_remove;
+    // std::vector<bool> remove_on_mesh1(mesh.number_of_faces(), true);
+    // std::vector<bool> remove_on_mesh2(mesh2.number_of_faces(), true);
+    // std::vector<halfedge_descriptor> halfedges_to_remove;
     std::vector<std::string> fcolor_mesh1;
     std::vector<std::string> fcolor_mesh2;
     MapBetweenFaces fmap_mesh1 = *(vis.fmap_mesh1);
     MapBetweenFaces fmap_mesh2 = *(vis.fmap_mesh2);
     MapBetweenFaces fmap_union = *(vis.fmap_union);
+    const bool disjoint = fmap_mesh1.size() == 0 && fmap_mesh2.size() == 0;
+    Rcpp::Rcout << "disjoint: " << disjoint << "\n";
+
+
+    if(disjoint) {
+      std::map<vertex_descriptor, vertex_descriptor> vmap_union = *(vis.vmap_union);
+      // vertex normals
+      std::pair<Normals_map, bool> vnormal1_ = 
+        mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+      std::pair<Normals_map, bool> vnormal2_ = 
+        mesh2.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+      if(vnormal1_.second && vnormal2_.second) {
+        Normals_map vnormal1 = vnormal1_.first;
+        Normals_map vnormal2 = vnormal2_.first;
+        Normals_map vnormal = umesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
+          "v:normal", defaultNormal()
+        ).first;
+        for(int i = 0; i < mesh.number_of_vertices(); i++) {
+          vertex_descriptor vi = CGAL::SM_Vertex_index(i);
+          vertex_descriptor vd = vmap_union[vi];
+          vnormal[vi] = vnormal1[vd];
+        }
+        for(int i = mesh.number_of_vertices(); i < umesh.number_of_vertices(); i++) {
+          vertex_descriptor vi = CGAL::SM_Vertex_index(i);
+          vertex_descriptor vd = vmap_union[vi];
+          vnormal[vi] = vnormal2[vd];
+        }
+      }
+      // vertex colors
+      std::pair<Vcolors_map, bool> vcolor1_ = 
+        mesh.property_map<vertex_descriptor, std::string>("v:color");
+      std::pair<Vcolors_map, bool> vcolor2_ = 
+        mesh2.property_map<vertex_descriptor, std::string>("v:color");
+      if(vcolor1_.second && vcolor2_.second) {
+        Vcolors_map vcolor1 = vcolor1_.first;
+        Vcolors_map vcolor2 = vcolor2_.first;
+        Vcolors_map vcolor = umesh.add_property_map<vertex_descriptor, std::string>(
+          "v:color", ""
+        ).first;
+        for(int i = 0; i < mesh.number_of_vertices(); i++) {
+          vertex_descriptor vi = CGAL::SM_Vertex_index(i);
+          vertex_descriptor vd = vmap_union[vi];
+          vcolor[vi] = vcolor1[vd];
+        }
+        for(int i = mesh.number_of_vertices(); i < umesh.number_of_vertices(); i++) {
+          vertex_descriptor vi = CGAL::SM_Vertex_index(i);
+          vertex_descriptor vd = vmap_union[vi];
+          vcolor[vi] = vcolor2[vd];
+        }
+      }
+      // vertex scalars
+      std::pair<Vscalars_map, bool> vscalar1_ = 
+        mesh.property_map<vertex_descriptor, double>("v:scalar");
+      std::pair<Vscalars_map, bool> vscalar2_ = 
+        mesh2.property_map<vertex_descriptor, double>("v:scalar");
+      if(vscalar1_.second && vscalar2_.second) {
+        Vscalars_map vscalar1 = vscalar1_.first;
+        Vscalars_map vscalar2 = vscalar2_.first;
+        Vscalars_map vscalar = umesh.add_property_map<vertex_descriptor, double>(
+          "v:scalar", nan("")
+        ).first;
+        for(int i = 0; i < mesh.number_of_vertices(); i++) {
+          vertex_descriptor vi = CGAL::SM_Vertex_index(i);
+          vertex_descriptor vd = vmap_union[vi];
+          vscalar[vi] = vscalar1[vd];
+        }
+        for(int i = mesh.number_of_vertices(); i < umesh.number_of_vertices(); i++) {
+          vertex_descriptor vi = CGAL::SM_Vertex_index(i);
+          vertex_descriptor vd = vmap_union[vi];
+          vscalar[vi] = vscalar2[vd];
+        }
+      }
+    }
+
+    if(disjoint && (!hasColors && !hasScalars)) {
+      return Rcpp::List::create(
+        Rcpp::Named("umesh") = Rcpp::XPtr<EMesh3>(new EMesh3(umesh), false)
+      );
+    }
+
+    Rcpp::Rcout << "size fmap_union: " << fmap_union.size() << "\n";
     int nfaces_umesh1 = *(vis.nfaces_umesh1);
+    Rcpp::Rcout << "nfaces_umesh1: " << nfaces_umesh1 << "\n";
+    if(disjoint) {
+      nfaces_umesh1 = nfaces1;
+    }
     Fcolors_map fcolor;
     Fscalars_map fscalar;
     if(hasColors) {
@@ -1340,11 +1486,11 @@ public:
       ).first;
     }
 
-    bool is_mesh1 = true;
+    // bool is_mesh1 = true;
     Face_index_map fwhich = umesh.add_property_map<face_descriptor, std::size_t>(
       "f:which", 0
     ).first;
-    std::string color;
+    // std::string color;
     for(int i = 0; i < nfaces_umesh1; i++) {
       face_descriptor fi = CGAL::SM_Face_index(i);
       face_descriptor fd = fmap_union[fi];
@@ -1368,6 +1514,12 @@ public:
         fscalar[fi] = fscalar2[fd2];
       }
       fwhich[fi] = 2;
+    }
+
+    if(disjoint) {
+      return Rcpp::List::create(
+        Rcpp::Named("umesh") = Rcpp::XPtr<EMesh3>(new EMesh3(umesh), false)
+      );
     }
 /*     for(EMesh3::Face_index fi : umesh.faces()) {
       face_descriptor fd = fmap_union[fi];

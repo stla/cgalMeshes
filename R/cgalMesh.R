@@ -445,7 +445,7 @@ cgalMesh <- R6Class(
     #' @description Check whether the mesh is valid.
     #' @return A Boolean value, whether the mesh is valid.
     "facesAroundVertex" = function(v) {
-      stopfinot(isStrictPositiveInteger(v))
+      stopifnot(isStrictPositiveInteger(v))
       private[[".CGALmesh"]]$facesAroundVertex(as.integer(v) - 1L)
     },
     
@@ -488,7 +488,7 @@ cgalMesh <- R6Class(
     },
 
     "filterGraph" = function() {
-      private[[".CGALmesh"]]$filterGraph()
+      t(private[[".CGALmesh"]]$filterGraph()) + 1L
     },
     
     #' @description Estimated geodesic distances between vertices. The mesh 
@@ -928,10 +928,12 @@ cgalMesh <- R6Class(
       stopifnot(isCGALmesh(mesh2))
       xptr2 <- getXPtr(mesh2)
       xptrs <- private[[".CGALmesh"]]$Union(xptr2)
-      private[[".CGALmesh"]] <- 
-        CGALmesh$new(xptrs[["mesh1"]])
-      mesh2[[".__enclos_env__"]][["private"]][[".CGALmesh"]] <- 
-        CGALmesh$new(xptrs[["mesh2"]])
+      if(length(xptrs) == 3L) {
+        private[[".CGALmesh"]] <- 
+          CGALmesh$new(xptrs[["mesh1"]])
+        mesh2[[".__enclos_env__"]][["private"]][[".CGALmesh"]] <- 
+          CGALmesh$new(xptrs[["mesh2"]])
+      }
       cgalMesh$new(clean = xptrs[["umesh"]])
     },
     

@@ -131,6 +131,7 @@ EMesh3 cloneMesh(
     mesh, out, 
     CGAL::parameters::vertex_to_vertex_map(v2vmap).face_to_face_map(f2fmap)
   );
+  Rcpp::Rcout << "graph copied\n";
   // EMesh3::Property_map<face_descriptor, std::vector<vertex_descriptor>> f2vmap = 
   //   out.add_property_map<face_descriptor, std::vector<vertex_descriptor>>("f:vertices").first;
   // std::map<vertex_descriptor, vertex_descriptor> rv2vmap;
@@ -191,6 +192,7 @@ EMesh3 cloneMesh(
         }
       }
     } else if(prop == "v:normal") {
+      Rcpp::Rcout << "prop vnormal\n";
       std::pair<Normals_map, bool> pmap_ = 
         mesh.property_map<vertex_descriptor, Rcpp::NumericVector>(prop);
       if(pmap_.second) {
@@ -199,6 +201,7 @@ EMesh3 cloneMesh(
             prop, defaultNormal()
           ).first;
         for(EMesh3::Vertex_index vi : mesh.vertices()) {
+          Rcpp::Rcout << vi << "\n";
           pmap[v2vmap[vi]] = pmap_.first[vi];
         }
       }
@@ -407,6 +410,11 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     copy_prop<face_descriptor, double>(clipper, "f:scalar");
   const bool hasScalars = fscalarMap_.second && fscalarMap2_.second;
 
+  // MaybeNormalMap vnormalMap_ = 
+  //   copy_prop<vertex_descriptor, Rcpp::NumericVector>(tm, "v:normal");
+  // const bool hasNormals = vnormalMap_.second;
+
+
 
   std::size_t nfaces = tm.number_of_faces();
   std::size_t nfaces_clipper = clipper.number_of_faces();
@@ -444,6 +452,10 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   Rcpp::Rcout << "clipper has garbage: " << clipper.has_garbage() << "\n";
 
   if(!clipVolume){
+    MapBetweenFaces ftargets = *(vis.ftargets);
+    MapBetweenFaces fmap = *(vis.fmap_tm);
+    bool norefinement = fmap.size() == 0;
+    Rcpp::Rcout << "no refinement: " << norefinement << "\n";
     if(hasColors || hasScalars) {
       std::map<face_descriptor, std::string> fcolorMap;
       Fcolors_map newfcolor;
@@ -463,7 +475,6 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
             "f:scalar", nan("")
           ).first;
       }
-      MapBetweenFaces fmap = *(vis.fmap_tm);
       for(EMesh3::Face_index fi : tm.faces()) {
         face_descriptor fd = CGAL::SM_Face_index(fimap[fi]);
         face_descriptor fdnew = size_t(fd) < nfaces ? fd : fmap[fd];
@@ -475,6 +486,78 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
         }
       }
     }
+
+/*     if(norefinement) {
+      std::map<vertex_descriptor, vertex_descriptor> vmap = *(vis.vmap);
+      // vertex normals
+      std::pair<Normals_map, bool> vnormal1_ = 
+        mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+      std::pair<Normals_map, bool> vnormal2_ = 
+        mesh2.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+      if(vnormal1_.second && vnormal2_.second) {
+        Normals_map vnormal1 = vnormal1_.first;
+        Normals_map vnormal2 = vnormal2_.first;
+        Normals_map vnormal = umesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
+          "v:normal", defaultNormal()
+        ).first;
+        for(int i = 0; i < mesh.number_of_vertices(); i++) {
+          vertex_descriptor vi = CGAL::SM_Vertex_index(i);
+          vertex_descriptor vd = vmap_union[vi];
+          vnormal[vi] = vnormal1[vd];
+        }
+        for(int i = mesh.number_of_vertices(); i < umesh.number_of_vertices(); i++) {
+          vertex_descriptor vi = CGAL::SM_Vertex_index(i);
+          vertex_descriptor vd = vmap_union[vi];
+          vnormal[vi] = vnormal2[vd];
+        }
+      }
+      // vertex colors
+      std::pair<Vcolors_map, bool> vcolor1_ = 
+        mesh.property_map<vertex_descriptor, std::string>("v:color");
+      std::pair<Vcolors_map, bool> vcolor2_ = 
+        mesh2.property_map<vertex_descriptor, std::string>("v:color");
+      if(vcolor1_.second && vcolor2_.second) {
+        Vcolors_map vcolor1 = vcolor1_.first;
+        Vcolors_map vcolor2 = vcolor2_.first;
+        Vcolors_map vcolor = umesh.add_property_map<vertex_descriptor, std::string>(
+          "v:color", ""
+        ).first;
+        for(int i = 0; i < mesh.number_of_vertices(); i++) {
+          vertex_descriptor vi = CGAL::SM_Vertex_index(i);
+          vertex_descriptor vd = vmap_union[vi];
+          vcolor[vi] = vcolor1[vd];
+        }
+        for(int i = mesh.number_of_vertices(); i < umesh.number_of_vertices(); i++) {
+          vertex_descriptor vi = CGAL::SM_Vertex_index(i);
+          vertex_descriptor vd = vmap_union[vi];
+          vcolor[vi] = vcolor2[vd];
+        }
+      }
+      // vertex scalars
+      std::pair<Vscalars_map, bool> vscalar1_ = 
+        mesh.property_map<vertex_descriptor, double>("v:scalar");
+      std::pair<Vscalars_map, bool> vscalar2_ = 
+        mesh2.property_map<vertex_descriptor, double>("v:scalar");
+      if(vscalar1_.second && vscalar2_.second) {
+        Vscalars_map vscalar1 = vscalar1_.first;
+        Vscalars_map vscalar2 = vscalar2_.first;
+        Vscalars_map vscalar = umesh.add_property_map<vertex_descriptor, double>(
+          "v:scalar", nan("")
+        ).first;
+        for(int i = 0; i < mesh.number_of_vertices(); i++) {
+          vertex_descriptor vi = CGAL::SM_Vertex_index(i);
+          vertex_descriptor vd = vmap_union[vi];
+          vscalar[vi] = vscalar1[vd];
+        }
+        for(int i = mesh.number_of_vertices(); i < umesh.number_of_vertices(); i++) {
+          vertex_descriptor vi = CGAL::SM_Vertex_index(i);
+          vertex_descriptor vd = vmap_union[vi];
+          vscalar[vi] = vscalar2[vd];
+        }
+      }
+    }
+
+ */
     tm.remove_property_map(fimap);
     return Rcpp::List::create();
   }
