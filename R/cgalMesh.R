@@ -442,6 +442,13 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$distance(t(points))
     },
 
+    #' @description Check whether the mesh is valid.
+    #' @return A Boolean value, whether the mesh is valid.
+    "facesAroundVertex" = function(v) {
+      stopfinot(isStrictPositiveInteger(v))
+      private[[".CGALmesh"]]$facesAroundVertex(as.integer(v) - 1L)
+    },
+    
     #' @description Fair a region of the mesh, i.e. make it smooth. The mesh 
     #'   must be triangle. This modifies the reference mesh.
     #' @param indices the indices of the vertices in the region to be faired
@@ -478,6 +485,10 @@ cgalMesh <- R6Class(
       }
       private[[".CGALmesh"]]$fair(as.integer(indices) - 1L)
       self
+    },
+
+    "filterGraph" = function() {
+      private[[".CGALmesh"]]$filterGraph()
     },
     
     #' @description Estimated geodesic distances between vertices. The mesh 
@@ -587,6 +598,12 @@ cgalMesh <- R6Class(
     #'   the faces.
     "getFaceScalars" = function() {
       private[[".CGALmesh"]]$getFscalars()
+    },
+
+    #' @description Get the vertices of the mesh.
+    #' @return The vertices in a matrix.
+    "getHalfedges" = function() {
+      private[[".CGALmesh"]]$getHalfedges()
     },
     
     #' @description Get the vertex colors (if there are).
@@ -911,6 +928,8 @@ cgalMesh <- R6Class(
       stopifnot(isCGALmesh(mesh2))
       xptr2 <- getXPtr(mesh2)
       xptrs <- private[[".CGALmesh"]]$Union(xptr2)
+      private[[".CGALmesh"]] <- 
+        CGALmesh$new(xptrs[["mesh1"]])
       mesh2[[".__enclos_env__"]][["private"]][[".CGALmesh"]] <- 
         CGALmesh$new(xptrs[["mesh2"]])
       cgalMesh$new(clean = xptrs[["umesh"]])

@@ -29,6 +29,7 @@
 #include <CGAL/boost/graph/copy_face_graph.h>
 #include <CGAL/boost/graph/Face_filtered_graph.h>
 #include <CGAL/boost/graph/helpers.h>
+#include <CGAL/boost/graph/Euler_operations.h>
 //#include <CGAL/boost/graph/properties_Surface_mesh.h>
 #include <boost/graph/connected_components.hpp>
 #include <boost/property_map/property_map.hpp>
@@ -82,7 +83,7 @@ typedef EMesh3::Property_map<vertex_descriptor, double> Vertex_distance_map;
 typedef EMesh3::Property_map<vertex_descriptor, std::size_t> Vertex_index_map;
 typedef boost::graph_traits<EMesh3>::face_descriptor face_descriptor;
 typedef EMesh3::Property_map<face_descriptor, std::size_t> Face_index_map;
-typedef boost::graph_traits<Mesh3>::halfedge_descriptor halfedge_descriptor;
+typedef boost::graph_traits<EMesh3>::halfedge_descriptor halfedge_descriptor;
 typedef EMesh3::Property_map<halfedge_descriptor, std::size_t> Halfedge_index_map;
 typedef EMesh3::Property_map<vertex_descriptor, Rcpp::NumericVector> Normals_map;
 typedef std::pair<std::map<vertex_descriptor, Rcpp::NumericVector>, bool> MaybeNormalMap;
@@ -96,6 +97,7 @@ typedef std::pair<std::map<vertex_descriptor, double>, bool> MaybeVscalarMap;
 typedef EMesh3::Property_map<face_descriptor, double> Fscalars_map;
 typedef std::pair<std::map<face_descriptor, double>, bool> MaybeFscalarMap;
 typedef std::map<face_descriptor, face_descriptor> MapBetweenFaces;
+typedef boost::graph_traits<EMesh3>::edge_descriptor edge_descriptor;
 
 typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
 typedef AFS_reconstruction::Triangulation_3 AFS_triangulation3;
@@ -103,6 +105,22 @@ typedef AFS_reconstruction::Triangulation_data_structure_2 AFS_Tds2;
 
 //typedef CGAL::Face_filtered_graph<EMesh3, Face_index_map, Vertex_index_map, Halfedge_index_map> Filtered_mesh;
 typedef CGAL::Face_filtered_graph<EMesh3> Filtered_graph;
+
+struct trivial_edge_predicate {
+  trivial_edge_predicate() { }
+  bool operator()(const edge_descriptor& e) const {
+    return true;
+  }
+};
+
+struct positive_vertex_scalar {
+  positive_vertex_scalar() { }
+  positive_vertex_scalar(Vscalars_map vmap) : vscalar(vmap) { }
+  bool operator()(const vertex_descriptor& v) const {
+    return 0 < vscalar[v];
+  }
+  Vscalars_map vscalar;
+};
 
 ///////////////
 // typedef boost::graph_traits<Mesh3>::halfedge_descriptor halfedge_descriptor;
@@ -274,11 +292,11 @@ struct UnionVisitor :
   }
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
     if(*is_tm) {
-      if(int(fnew) - 1 > *fprev) {
+      if(int(fnew) - 2 > *fprev) {
         *is_tm = false;
         (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
       } else {
-        *fprev = int(fnew);
+        *fprev = int(fnew) - 1;
         (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
       }
     } else {
@@ -292,6 +310,10 @@ struct UnionVisitor :
     face_descriptor ftgt, const EMesh3 & tmtgt
   ) {
     (*fmap_union).insert(std::make_pair(ftgt, fsrc));
+    if(*nfaces_umesh1 == -1 && int(fsrc) == *fprev) {
+      *nfaces_umesh1 = int(ftgt) + 1;
+      Rcpp::Rcout << "FTGT: " << ftgt << "\n";
+    }
     (*action).push_back("after_face_copy");
   }
   
@@ -299,6 +321,7 @@ struct UnionVisitor :
     : fmap_mesh1(new MapBetweenFaces()),
       fmap_mesh2(new MapBetweenFaces()),
       fprev(new int(INT_MAX)),
+      nfaces_umesh1(new int(-1)),
       ofaceindex(new face_descriptor()),
       nfaces(new std::vector<size_t>()),
       nfaces2(new std::vector<size_t>()),
@@ -310,6 +333,7 @@ struct UnionVisitor :
   std::shared_ptr<MapBetweenFaces> fmap_mesh1;
   std::shared_ptr<MapBetweenFaces> fmap_mesh2;
   std::shared_ptr<int> fprev;
+  std::shared_ptr<int> nfaces_umesh1;
   std::shared_ptr<MapBetweenFaces> fmap_union;
   std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<std::vector<size_t>> nfaces;

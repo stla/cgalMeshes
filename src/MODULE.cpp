@@ -5,7 +5,7 @@
 #include "MODULE.h"
 
 RCPP_MODULE(class_CGALmesh) {
-  using namespace Rcpp;  
+  using namespace Rcpp;   
   class_<CGALmesh>("CGALmesh")
     .constructor<
       const NumericMatrix, const List, bool,
@@ -31,13 +31,16 @@ RCPP_MODULE(class_CGALmesh) {
     .method("doesSelfIntersect", &CGALmesh::doesSelfIntersect)
     .method("dual", &CGALmesh::dual)
     .method("edges", &CGALmesh::edges)
+    .method("facesAroundVertex", &CGALmesh::facesAroundVertex)
     .method("fair", &CGALmesh::fair)
+    .method("filterGraph", &CGALmesh::filterGraph)
     .method("geoDists", &CGALmesh::geoDists)
     .method("getFacesList", &CGALmesh::getFacesList)
     .method("getFacesMatrix", &CGALmesh::getFacesMatrix)
     .method("getFcolors", &CGALmesh::getFcolors)
     .method("getVcolors", &CGALmesh::getVcolors)
     .method("getFscalars", &CGALmesh::getFscalars)
+    .method("getHalfedges", &CGALmesh::getHalfedges)
     .method("getVscalars", &CGALmesh::getVscalars)
     .method("getVertices", &CGALmesh::getVertices)
     .method("getNormals", &CGALmesh::getNormals)
