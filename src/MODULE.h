@@ -839,8 +839,13 @@ public:
   Rcpp::XPtr<EMesh3> filterMesh(Rcpp::IntegerVector selectedFaces) {
     Face_index_map fimap = 
       mesh.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
+    const int nfaces = mesh.number_of_faces();
     for(int i = 0; i < selectedFaces.size(); i++) {
-      fimap[CGAL::SM_Face_index(selectedFaces(i))] = 1;
+      const int idx = selectedFaces(i);
+      if(idx >= nfaces) {
+        Rcpp::stop("Too large face index.");
+      }
+      fimap[CGAL::SM_Face_index(idx)] = 1;
     }
     Filtered_graph ffg(mesh, 1, fimap);
     MapBetweenVertexDescriptors v2vmap_;

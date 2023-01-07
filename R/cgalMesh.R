@@ -492,7 +492,17 @@ cgalMesh <- R6Class(
     },
 
     "filterMesh" = function(faces) {
-      xptr <- private[[".CGALmesh"]]$filterMesh(faces - 1L)
+      stopifnot(isAtomicVector(faces))
+      stopifnot(is.numeric(faces))
+      integers <- isTRUE(all.equal(faces, floor(faces)))
+      if(!integers) {
+        stop("The face indices must be positive integers.")
+      }
+      positive <- isTRUE(all(faces >= 1))
+      if(!positive) {
+        stop("The face indices must be positive integers.")
+      }
+      xptr <- private[[".CGALmesh"]]$filterMesh(as.integer(faces) - 1L)
       cgalMesh$new(clean = xptr)
     },
     
