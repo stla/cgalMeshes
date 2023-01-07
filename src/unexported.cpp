@@ -701,7 +701,30 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
 
   tm.remove_property_map(fimap);
 
-  std::vector<EPoint3> points;
+  EMesh3 tmesh;
+  {
+    Filtered_graph ffg(tm, 0, whichPart);
+    MapBetweenFaceDescriptors f2fmap_;
+    boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
+    CGAL::copy_face_graph(
+      ffg, tmesh, CGAL::parameters::face_to_face_map(f2fmap)
+    );
+    copy_property<ffg_face_descriptor, face_descriptor, std::string>(tm, tmesh, f2fmap_, "f:color");
+    copy_property<ffg_face_descriptor, face_descriptor, double>(tm, tmesh, f2fmap_, "f:scalar");
+  }
+  EMesh3 tmesh2;
+  {
+    Filtered_graph ffg(tm, 1, whichPart);
+    MapBetweenFaceDescriptors f2fmap_;
+    boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
+    CGAL::copy_face_graph(
+      ffg, tmesh2, CGAL::parameters::face_to_face_map(f2fmap)
+    );
+    copy_property<ffg_face_descriptor, face_descriptor, std::string>(tm, tmesh2, f2fmap_, "f:color");
+    copy_property<ffg_face_descriptor, face_descriptor, double>(tm, tmesh2, f2fmap_, "f:scalar");
+  }
+
+/*   std::vector<EPoint3> points;
   points.reserve(tm.number_of_vertices());
   for(EMesh3::Vertex_index vi : tm.vertices()) {
     points.emplace_back(tm.point(vi));
@@ -792,7 +815,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
       }
     }
   }
-
+ */
   Rcpp::LogicalVector Components(tm.number_of_faces());
   {
     int fint = 0;
