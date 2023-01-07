@@ -490,6 +490,11 @@ cgalMesh <- R6Class(
     "filterGraph" = function() {
       t(private[[".CGALmesh"]]$filterGraph()) + 1L
     },
+
+    "filterMesh" = function(faces) {
+      xptr <- private[[".CGALmesh"]]$filterMesh(faces - 1L)
+      cgalMesh$new(clean = xptr)
+    },
     
     #' @description Estimated geodesic distances between vertices. The mesh 
     #'   must be triangle.

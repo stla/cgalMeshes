@@ -385,17 +385,12 @@ public:
 
       Rcpp::List xptrs(ncc);
 
-      typedef boost::graph_traits<Filtered_graph>::vertex_descriptor 
-        ffg_vertex_descriptor;
-      typedef std::map<ffg_vertex_descriptor, vertex_descriptor> 
-        MapBetweenVertices;
-
       for(std::size_t c = 0; c < ncc; c++) {
 //        EMesh3 cmesh = cc_meshes[c];
         Filtered_graph ffg(tmesh, c, fccmap);
-        MapBetweenVertices v2vmap_;
+        MapBetweenVertexDescriptors v2vmap_;
         //std::map<boost::graph_traits<Filtered_graph>::face_descriptor, face_descriptor> f2fmap_;
-        boost::associative_property_map<MapBetweenVertices> v2vmap(v2vmap_);
+        boost::associative_property_map<MapBetweenVertexDescriptors> v2vmap(v2vmap_);
         //boost::associative_property_map<std::map<boost::graph_traits<Filtered_graph>::face_descriptor, face_descriptor>> f2fmap(f2fmap_);
         // EMesh3::Property_map<boost::graph_traits<Filtered_graph>::vertex_descriptor, vertex_descriptor> v2vmap = 
         //   tmesh.add_property_map<boost::graph_traits<Filtered_graph>::vertex_descriptor, vertex_descriptor>("v:v").first;
@@ -838,6 +833,31 @@ public:
     if(!success) {
       Rcpp::stop("Failed to fair the mesh.");
     }
+  }
+
+
+  Rcpp::XPtr<EMesh3> filterMesh(Rcpp::IntegerVector selectedFaces) {
+    Face_index_map fimap = 
+      mesh.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
+    for(int i = 0; i < selectedFaces.size(); i++) {
+      fimap[CGAL::SM_Face_index(selectedFaces(i))] = 1;
+    }
+    Filtered_graph ffg(mesh, 1, fimap);
+    MapBetweenVertexDescriptors v2vmap_;
+    boost::associative_property_map<MapBetweenVertexDescriptors> v2vmap(v2vmap_);
+    MapBetweenFaceDescriptors f2fmap_;
+    boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
+    EMesh3 fmesh;
+    CGAL::copy_face_graph(
+      ffg, fmesh, 
+      CGAL::parameters::vertex_to_vertex_map(v2vmap).face_to_face_map(f2fmap)
+    );
+    copy_property<ffg_vertex_descriptor, vertex_descriptor, Rcpp::NumericVector>(mesh, fmesh, v2vmap_, "v:normal");
+    copy_property<ffg_vertex_descriptor, vertex_descriptor, std::string>(mesh, fmesh, v2vmap_, "v:color");
+    copy_property<ffg_vertex_descriptor, vertex_descriptor, double>(mesh, fmesh, v2vmap_, "v:scalar");
+    copy_property<ffg_face_descriptor, face_descriptor, std::string>(mesh, fmesh, f2fmap_, "f:color");
+    copy_property<ffg_face_descriptor, face_descriptor, double>(mesh, fmesh, f2fmap_, "v:scalar");
+    return Rcpp::XPtr<EMesh3>(new EMesh3(fmesh), false);
   }
 
 
@@ -1596,11 +1616,12 @@ public:
     // mesh2.collect_garbage();
 
     Rcpp::Rcout << "starting filtering" << "\n";
+
     EMesh3 umesh1;
     {
       Filtered_graph ffg(umesh, 1, fwhich);
-      std::map<boost::graph_traits<Filtered_graph>::face_descriptor, face_descriptor> f2fmap_;
-      boost::associative_property_map<std::map<boost::graph_traits<Filtered_graph>::face_descriptor, face_descriptor>> f2fmap(f2fmap_);
+      MapBetweenFaceDescriptors f2fmap_;
+      boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
       CGAL::copy_face_graph(
         ffg, umesh1, CGAL::parameters::face_to_face_map(f2fmap)
       );
@@ -1642,8 +1663,8 @@ public:
     EMesh3 umesh2;
     {
       Filtered_graph ffg(umesh, 2, fwhich);
-      std::map<boost::graph_traits<Filtered_graph>::face_descriptor, face_descriptor> f2fmap_;
-      boost::associative_property_map<std::map<boost::graph_traits<Filtered_graph>::face_descriptor, face_descriptor>> f2fmap(f2fmap_);
+      MapBetweenFaceDescriptors f2fmap_;
+      boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
       CGAL::copy_face_graph(
         ffg, umesh2, CGAL::parameters::face_to_face_map(f2fmap)
       );

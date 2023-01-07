@@ -34,6 +34,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("facesAroundVertex", &CGALmesh::facesAroundVertex)
     .method("fair", &CGALmesh::fair)
     .method("filterGraph", &CGALmesh::filterGraph)
+    .method("filterMesh", &CGALmesh::filterMesh)
     .method("geoDists", &CGALmesh::geoDists)
     .method("getFacesList", &CGALmesh::getFacesList)
     .method("getFacesMatrix", &CGALmesh::getFacesMatrix)

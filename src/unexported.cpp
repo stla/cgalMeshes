@@ -343,6 +343,30 @@ template MaybeVcolorMap copy_prop<vertex_descriptor, std::string>(EMesh3&, std::
 template MaybeVscalarMap copy_prop<vertex_descriptor, double>(EMesh3&, std::string);
 template MaybeNormalMap copy_prop<vertex_descriptor, Rcpp::NumericVector>(EMesh3&, std::string);
 
+template <typename SourceDescriptor, typename TargetDescriptor, typename Valuetype>
+void copy_property(
+  EMesh3& mesh, EMesh3& fmesh, std::map<SourceDescriptor, TargetDescriptor> dmap, std::string propname
+) {
+  std::pair<EMesh3::Property_map<TargetDescriptor, Valuetype>, bool> pmap_ = 
+    mesh.property_map<TargetDescriptor, Valuetype>(propname);
+  bool has_prop = pmap_.second;
+  if(has_prop) {
+    EMesh3::Property_map<TargetDescriptor, Valuetype> pmap = 
+      fmesh.add_property_map<TargetDescriptor, Valuetype>(
+        propname
+      ).first;
+    for(const auto& [source_decriptor, target_decriptor] : dmap) {
+      pmap[target_decriptor] = pmap_.first[TargetDescriptor(int(source_decriptor))];
+    }
+  }
+}
+
+template void copy_property<ffg_vertex_descriptor, vertex_descriptor, Rcpp::NumericVector>(EMesh3&, EMesh3&, MapBetweenVertexDescriptors, std::string);
+template void copy_property<ffg_vertex_descriptor, vertex_descriptor, std::string>(EMesh3&, EMesh3&, MapBetweenVertexDescriptors, std::string);
+template void copy_property<ffg_vertex_descriptor, vertex_descriptor, double>(EMesh3&, EMesh3&, MapBetweenVertexDescriptors, std::string);
+template void copy_property<ffg_face_descriptor, face_descriptor, std::string>(EMesh3&, EMesh3&, MapBetweenFaceDescriptors, std::string);
+template void copy_property<ffg_face_descriptor, face_descriptor, double>(EMesh3&, EMesh3&, MapBetweenFaceDescriptors, std::string);
+
 
 void triangulateMesh(EMesh3& mesh) {
   MaybeFcolorMap fcolormap_ = 
@@ -452,7 +476,6 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   Rcpp::Rcout << "clipper has garbage: " << clipper.has_garbage() << "\n";
 
   if(!clipVolume){
-    MapBetweenFaces ftargets = *(vis.ftargets);
     MapBetweenFaces fmap = *(vis.fmap_tm);
     bool norefinement = fmap.size() == 0;
     Rcpp::Rcout << "no refinement: " << norefinement << "\n";

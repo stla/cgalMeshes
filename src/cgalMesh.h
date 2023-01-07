@@ -102,12 +102,22 @@ typedef std::pair<std::map<face_descriptor, double>, bool> MaybeFscalarMap;
 typedef std::map<face_descriptor, face_descriptor> MapBetweenFaces;
 typedef boost::graph_traits<EMesh3>::edge_descriptor edge_descriptor;
 
+
 typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
 typedef AFS_reconstruction::Triangulation_3 AFS_triangulation3;
 typedef AFS_reconstruction::Triangulation_data_structure_2 AFS_Tds2;
 
 //typedef CGAL::Face_filtered_graph<EMesh3, Face_index_map, Vertex_index_map, Halfedge_index_map> Filtered_mesh;
 typedef CGAL::Face_filtered_graph<EMesh3> Filtered_graph;
+
+typedef boost::graph_traits<Filtered_graph>::vertex_descriptor 
+  ffg_vertex_descriptor;
+typedef std::map<ffg_vertex_descriptor, vertex_descriptor> 
+  MapBetweenVertexDescriptors;
+typedef boost::graph_traits<Filtered_graph>::face_descriptor 
+  ffg_face_descriptor;
+typedef std::map<ffg_face_descriptor, face_descriptor> 
+  MapBetweenFaceDescriptors;
 
 struct trivial_edge_predicate {
   trivial_edge_predicate() { }
@@ -211,6 +221,10 @@ std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
 
 Rcpp::List clipping(EMesh3&, EMesh3&, const bool);
 
+template <typename SourceDescriptor, typename TargetDescriptor, typename Valuetype>
+void copy_property(
+  EMesh3&, EMesh3&, std::map<SourceDescriptor, TargetDescriptor>, std::string 
+);
 //////////////////////////////////////////
 
 struct ClipVisitor : 
@@ -254,6 +268,7 @@ struct ClipVisitor :
     (*ftargets).insert(std::make_pair(ftgt, fsrc));
     (*action).push_back("after_face_copy");
   }
+
   // void after_edge_duplicated(halfedge_descriptor hsrc, halfedge_descriptor hnew, const EMesh3 & tm) {
   //   (*vmap).insert(std::make_pair(hsrc, hnew));
   // }
