@@ -588,8 +588,8 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   MapBetweenFaces fmap_tm = *(vis.fmap_tm);
   MapBetweenFaces fmap_clipper = *(vis.fmap_clipper);
   MapBetweenFaces ftargets = *(vis.ftargets);
-    MapBetweenFaces zeros;
-  std::vector<std::pair<face_descriptor, bool>> pairs = *(vis.pairs);
+  MapBetweenFaces zeros;
+  //std::vector<std::pair<face_descriptor, bool>> pairs = *(vis.pairs);
   Rcpp::Rcout << "fmap_tm size: " << fmap_tm.size() << "\n";
   Rcpp::Rcout << "fmap_clipper size: " << fmap_clipper.size() << "\n";
   Rcpp::Rcout << "ftargets size: " << ftargets.size() << "\n";
@@ -651,11 +651,11 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   for(EMesh3::Face_index fi : tm.faces()) {
     std::size_t ifi = fimap[fi];
     face_descriptor fd = CGAL::SM_Face_index(ifi);
-    std::pair<face_descriptor, bool> pair0 = std::make_pair(fd, false);
-    std::pair<face_descriptor, bool> pair1 = std::make_pair(fd, true);
-    std::vector<std::pair<face_descriptor, bool>>::iterator it0 = std::find(pairs.begin(), pairs.end(), pair0);
-    std::vector<std::pair<face_descriptor, bool>>::iterator it1 = std::find(pairs.begin(), pairs.end(), pair1);
-    if(int(fi) < fmap_tm.size() && ifi > 0) {
+    // std::pair<face_descriptor, bool> pair0 = std::make_pair(fd, false);
+    // std::pair<face_descriptor, bool> pair1 = std::make_pair(fd, true);
+    // std::vector<std::pair<face_descriptor, bool>>::iterator it0 = std::find(pairs.begin(), pairs.end(), pair0);
+    // std::vector<std::pair<face_descriptor, bool>>::iterator it1 = std::find(pairs.begin(), pairs.end(), pair1);
+    if(fi != fd && ifi > 0) {
       whichPart[fi] = 0;
       if(hasColors) {
         std::string color = fcolorMap[fmap_tm[fd]]; 
@@ -666,7 +666,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
         fcolor_tmesh_vec.push_back(color);
       }
       if(hasScalars) {
-        double scalar = fscalarMap[fd]; 
+        double scalar = fscalarMap[fmap_tm[fd]]; 
         newfscalar[fi] = scalar;
         fscalar_tmesh_vec.push_back(scalar);
       }
@@ -674,7 +674,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     } else if(ifi > 0) {
       whichPart[fi] = 0;
       if(hasColors) {
-        std::string color = fcolorMap[fd]; 
+        std::string color = ifi < nfaces ? fcolorMap[fd] : fcolorMap[fmap_tm[fd]]; 
         if(color == "") {
           a++;
         }
@@ -692,50 +692,21 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
       if(hasColors) {
         std::string color = fcolorMap_clipper[zeros[fi]]; 
         if(color == "") {
+          color = fcolorMap2[fd];
           b++;
+          Rcpp::Rcout << "fi: " << int(fi) << "\n";
+          Rcpp::Rcout << "zeros[fi]: " << int(zeros[fi]) << "\n";
         }
         newfcolor[fi] = color;
         fcolor_tmesh2_vec.push_back(color);
       }
       if(hasScalars) {
-        double scalar = fscalarMap_clipper[fd]; 
+        double scalar = fscalarMap_clipper[zeros[fi]]; 
         newfscalar[fi] = scalar;
         fscalar_tmesh2_vec.push_back(scalar);
       }
       nfaces_tmesh2++;
-    } else if(ifi < nfaces) {
-      whichPart[fi] = 0;
-      if(hasColors) {
-        std::string color = "yellow";//fcolorMap[fd]; 
-         if(color == "") {
-          c++;
-        }
-        newfcolor[fi] = color;
-        fcolor_tmesh_vec.push_back(color);
-      }
-      if(hasScalars) {
-        double scalar = fscalarMap[fd]; 
-        newfscalar[fi] = scalar;
-        fscalar_tmesh_vec.push_back(scalar);
-      }
-      nfaces_tmesh++;
-    } else {
-      whichPart[fi] = 0;
-      if(hasColors) {
-        std::string color = "navy";// fcolorMap[fmap_tm[fd]]; 
-        if(color == "") {
-          d++;
-        }
-        newfcolor[fi] = color;
-        fcolor_tmesh_vec.push_back(color);
-      }
-      if(hasScalars) {
-        double scalar = fscalarMap[fmap_tm[fd]]; 
-        newfscalar[fi] = scalar;
-        fscalar_tmesh_vec.push_back(scalar);
-      }
-      nfaces_tmesh++;
-    }
+    } 
   }
 
   Rcpp::Rcout << "nfaces_tmesh: " << nfaces_tmesh << "\n";
@@ -935,12 +906,19 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     }
   }
 
+  Rcpp::IntegerMatrix Fmaptm(fmap_tm.size(), 2);
+  int iii = 0;
+  for(const auto& [fnew, fsplit] : fmap_tm) {
+    Fmaptm(iii++, Rcpp::_) = Rcpp::IntegerVector({int(fnew), int(fsplit)});
+  }
+
   Rcpp::List meshes = Rcpp::List::create(
     Rcpp::Named("mesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh), false),
     Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh2), false)
   );
   meshes.attr("components") = Components;
   meshes.attr("fimap") = Fimap;
+  meshes.attr("fmaptm") = Fmaptm;
 
   return meshes;
 
@@ -950,11 +928,11 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   for(int i = 0; i < (*(vis.action)).size(); i++) {
     Action(i) = (*(vis.action))[i];
   }
-  Rcpp::IntegerMatrix Fmap1((*(vis.fmap_tm)).size(), 2);
-  int iii = 0;
-  for(const auto& [fnew, fsplit] : *(vis.fmap_tm)) {
-    Fmap1(iii++, Rcpp::_) = Rcpp::IntegerVector({int(fnew), int(fsplit)});
-  }
+  // Rcpp::IntegerMatrix Fmap1((*(vis.fmap_tm)).size(), 2);
+  // int iii = 0;
+  // for(const auto& [fnew, fsplit] : *(vis.fmap_tm)) {
+  //   Fmap1(iii++, Rcpp::_) = Rcpp::IntegerVector({int(fnew), int(fsplit)});
+  // }
   Rcpp::IntegerMatrix Fmap2((*(vis.fmap_clipper)).size(), 2);
   int iii2 = 0;
   for(const auto& [fnew, fsplit] : *(vis.fmap_clipper)) {
@@ -983,7 +961,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     Rcpp::Named("xxx") = xxx, 
     Rcpp::Named("fimap") = Fimap,
 //    Rcpp::Named("fimap2") = Fimap2,
-    Rcpp::Named("fmap1") = Fmap1,
+//    Rcpp::Named("fmap1") = Fmap1,
     Rcpp::Named("fmap2") = Fmap2,
     Rcpp::Named("nfaces") = Nfaces,
     Rcpp::Named("nfaces2") = Nfaces2,

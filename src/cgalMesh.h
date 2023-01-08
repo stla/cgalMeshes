@@ -251,7 +251,7 @@ struct ClipVisitor :
     } else {
       (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
     }
-    (*pairs).push_back(std::make_pair(fnew, *is_tm));
+//    (*pairs).push_back(std::make_pair(fnew, *is_tm));
     (*nfaces2).push_back(tm.number_of_faces());
     (*action).push_back("after_subface_created");
     // Rcpp::Rcout << fnew << "\n";
@@ -288,7 +288,7 @@ struct ClipVisitor :
       nfaces(new std::vector<size_t>()),
       nfaces2(new std::vector<size_t>()),
       ftargets(new MapBetweenFaces()),
-      pairs(new std::vector<std::pair<face_descriptor, bool>>()),
+//      pairs(new std::vector<std::pair<face_descriptor, bool>>()),
       is_tm(new bool(true)),
       action(new std::vector<std::string>())
   {}
@@ -296,7 +296,7 @@ struct ClipVisitor :
   std::shared_ptr<MapBetweenFaces> fmap_tm;
   std::shared_ptr<MapBetweenFaces> fmap_clipper;
   std::shared_ptr<MapBetweenFaces> ftargets;
-  std::shared_ptr<std::vector<std::pair<face_descriptor, bool>>> pairs;
+//  std::shared_ptr<std::vector<std::pair<face_descriptor, bool>>> pairs;
   std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<std::vector<size_t>> nfaces;
   std::shared_ptr<std::vector<size_t>> nfaces2;
