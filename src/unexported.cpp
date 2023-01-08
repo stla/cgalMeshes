@@ -443,9 +443,11 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   std::size_t nfaces = tm.number_of_faces();
   std::size_t nfaces_clipper = clipper.number_of_faces();
   
+  std::size_t undetermined = 999999;
+
   ClipVisitor vis;
   Face_index_map fimap = 
-    tm.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
+    tm.add_property_map<face_descriptor, std::size_t>("f:i", undetermined).first;
   const bool doNotModify = !clipVolume;
   const bool clipping = PMP::clip(
     tm, clipper,
@@ -620,7 +622,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
       if(hasScalars) {
         fscalarMap_clipper[it->first] = fscalarMap2[fd];
       }
-      while(fimap[CGAL::SM_Face_index(fdi)] != 0) {
+      while(fimap[CGAL::SM_Face_index(fdi)] != undetermined) {
         fdi++;
       }
       zeros[CGAL::SM_Face_index(fdi++)] = it->first;
@@ -655,7 +657,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     // std::pair<face_descriptor, bool> pair1 = std::make_pair(fd, true);
     // std::vector<std::pair<face_descriptor, bool>>::iterator it0 = std::find(pairs.begin(), pairs.end(), pair0);
     // std::vector<std::pair<face_descriptor, bool>>::iterator it1 = std::find(pairs.begin(), pairs.end(), pair1);
-    if(fi != fd && ifi > 0) {
+    if(fi != fd && ifi != undetermined) {
       whichPart[fi] = 0;
       if(hasColors) {
         std::string color = fcolorMap[fmap_tm[fd]]; 
@@ -671,7 +673,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
         fscalar_tmesh_vec.push_back(scalar);
       }
       nfaces_tmesh2++;
-    } else if(ifi > 0) {
+    } else if(ifi != undetermined) {
       whichPart[fi] = 0;
       if(hasColors) {
         std::string color = ifi < nfaces ? fcolorMap[fd] : fcolorMap[fmap_tm[fd]]; 
@@ -687,7 +689,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
         fscalar_tmesh_vec.push_back(scalar);
       }
       nfaces_tmesh++;
-    } else if(ifi == 0) {//auto search = ftargets.find(fd); search != ftargets.end()) {
+    } else if(ifi == undetermined) {//auto search = ftargets.find(fd); search != ftargets.end()) {
       whichPart[fi] = 1;
       if(hasColors) {
         std::string color = fcolorMap_clipper[zeros[fi]]; 
