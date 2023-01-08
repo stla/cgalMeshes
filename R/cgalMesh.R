@@ -290,6 +290,7 @@ cgalMesh <- R6Class(
         xptrs <- private[[".CGALmesh"]]$clipMesh(clipperXPtr, TRUE)
         meshes <- lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
         attr(meshes, "components") <- attr(xptrs, "components")
+        attr(meshes, "fimap") <- attr(xptrs, "fimap")
         meshes
       } else {
         . <- private[[".CGALmesh"]]$clipMesh(clipperXPtr, FALSE)
