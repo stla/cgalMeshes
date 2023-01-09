@@ -48,7 +48,7 @@ Plot the given edges with \strong{rgl}.
 library(cgalMeshes)
 library(rgl)
 
-mesh <- cgalMesh$new(pentagrammicPrism, clean = FALSE)
+mesh <- cgalMesh$new(pentagrammicPrism, clean = TRUE)
 vertices <- mesh$getVertices()
 edges <- mesh$getEdges()
 extEdges <- exteriorEdges(edges)
