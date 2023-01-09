@@ -1025,16 +1025,35 @@ public:
   }
 
 
-  void getBorders() {
+  Rcpp::List getBorders() {
     std::vector<halfedge_descriptor> border_cycles;
     PMP::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
-    for(int i = 0; i < border_cycles.size(); i++) {
-      Rcpp::Rcout << "border " << i << "\n";
-      halfedge_descriptor h = border_cycles[i];
-      for(halfedge_descriptor hd : halfedges_around_face(h, mesh)) {
-        Rcpp::Rcout << "  edge: " << mesh.edge(hd) << "\n";
-      }
+    int nborders = border_cycles.size();
+    if(nborders == 0) {
+      return Rcpp::List::create();
     }
+    Rcpp::List Borders(nborders);
+    Rcpp::CharacterVector colnames = {"edge", "v1", "v2"};
+    for(int i = 0; i < nborders; i++) {
+      Rcpp::IntegerVector border_i;
+      halfedge_descriptor h = border_cycles[i];
+      int nedges = 0;
+      for(halfedge_descriptor hd : halfedges_around_face(h, mesh)) {
+        edge_descriptor ed = mesh.edge(hd);
+        vertex_descriptor v1 = source(ed, mesh);
+        vertex_descriptor v2 = target(ed, mesh);
+        border_i.push_back(int(ed) + 1);
+        border_i.push_back(int(v1) + 1);
+        border_i.push_back(int(v2) + 1);
+        nedges++;
+      }
+      border_i.attr("dim") = Rcpp::Dimension(3, nedges);
+      Rcpp::IntegerMatrix Border_i = 
+        Rcpp::transpose(Rcpp::as<Rcpp::IntegerMatrix>(border_i));
+      Rcpp::colnames(Border_i) = colnames;
+      Borders(i) = Border_i;
+    }
+    return Borders;
   }
 
 
