@@ -223,17 +223,23 @@ struct UnionVisitor :
   }
 
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
-    if(*is_tm) {
-      if(*fprev != 0 && tm.number_of_faces() != *fprev + 1) {
-        *is_tm = false;
-        (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
-      } else {
-        *fprev = tm.number_of_faces();
-        (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
-      }
+    bool ismesh1 = tm.property_map<face_descriptor, std::size_t>("f:i").second;
+    if(ismesh1) {
+      (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
     } else {
       (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
     }
+    // if(*is_tm) {
+    //   if(*fprev != 0 && tm.number_of_faces() != *fprev + 1) {
+    //     *is_tm = false;
+    //     (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
+    //   } else {
+    //     *fprev = tm.number_of_faces();
+    //     (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
+    //   }
+    // } else {
+    //   (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
+    // }
     // if(*is_tm) {
     //   if(int(fnew) - 2 > *fprev) {
     //     *is_tm = false;

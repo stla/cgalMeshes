@@ -863,6 +863,7 @@ public:
       fscalar2 = fscalar2_.first;
     }
 
+    Face_index_map fimap = mesh.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
     UnionVisitor vis;
     EMesh3 umesh;
     const bool success = PMP::corefine_and_compute_union(
