@@ -1002,38 +1002,20 @@ void clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
     Rcpp::stop("Clipping has failed.");
   }
 
-  std::size_t undetermined = 9999999;
-  Face_index_map fimap = tm.add_property_map<face_descriptor, std::size_t>("f:i", undetermined).first;
+  Face_index_map fimap = 
+    tm.add_property_map<face_descriptor, std::size_t>("f:i", 9999999).first;
   for(face_descriptor fd : tm.faces()) {
     fimap[fd] = std::size_t(fd);
   }
-
-  // Rcpp::Rcout << "before collect garbage:\n";
-  // for(EMesh3::Face_index fi : tm.faces()) {
-  //   Rcpp::Rcout << "fimap: " << fimap[fi] << "\n";
-  // }
 
   tm.collect_garbage();
 
   if(!clipVolume){
     MapBetweenFaces fmap = *(vis.fmap_tm);
-    MapBetweenFaces ftargets = *(vis.ftargets);
-    MapBetweenFaces fmap_clipper = *(vis.fmap_clipper);
-    std::vector<face_descriptor> fsplit_tm = *(vis.fsplit_tm);
-    // Rcpp::Rcout << "fmap_tm:\n";
-    // for(const auto& [fnew, fsplit] : fmap) {
-    //   Rcpp::Rcout << "fnew: " << fnew << " - fsplit: " << fsplit << "\n";
-    // }
-    // Rcpp::Rcout << "ftargets:\n";
-    // for(const auto& [fnew, fsplit] : ftargets) {
-    //   Rcpp::Rcout << "fnew: " << fnew << " - fsplit: " << fsplit << "\n";
-    // }
-    // Rcpp::Rcout << "fmap_clipper:\n";
-    // for(const auto& [fnew, fsplit] : fmap_clipper) {
-    //   Rcpp::Rcout << "fnew: " << fnew << " - fsplit: " << fsplit << "\n";
-    // }
+
     bool norefinement = fmap.size() == 0;
     Rcpp::Rcout << "no refinement: " << norefinement << "\n";
+
     if(hasColors || hasScalars) {
       std::map<face_descriptor, std::string> fcolorMap;
       Fcolors_map newfcolor;
@@ -1053,17 +1035,59 @@ void clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
             "f:scalar", nan("")
           ).first;
       }
-      int i = 0;
       for(EMesh3::Face_index fi : tm.faces()) {
-        Rcpp::Rcout << "fimap: " << fimap[fi] << "\n";
-        face_descriptor fd = CGAL::SM_Face_index(fimap[fi]);
-        if(fimap[fi]  == undetermined) {
-          Rcpp::Rcout << "undetermined\n";
-          fd = fsplit_tm[i];
-          i++;
-        } else {
-          fd = fimap[fi] < nfaces ? fd : fmap[fd];
+        std::size_t ffi = fimap[fi];
+        face_descriptor fd = CGAL::SM_Face_index(ffi);
+        fd = ffi < nfaces ? fd : fmap[fd];
+        if(hasColors) {
+          newfcolor[fi] = fcolorMap[fd];
         }
+        if(hasScalars) {
+          newfscalar[fi] = fscalarMap[fd];
+        }
+      }
+    }
+    tm.remove_property_map(fimap);
+  }
+
+  MapBetweenFaces fmap = *(vis.fmap_tm);
+  MapBetweenFaces ftargets = *(vis.ftargets);
+
+  bool norefinement = fmap.size() == 0;
+  Rcpp::Rcout << "no refinement: " << norefinement << "\n";
+  
+  if(hasColors || hasScalars) {
+    std::map<face_descriptor, std::string> fcolorMap;
+    Fcolors_map newfcolor;
+    std::map<face_descriptor, double> fscalarMap;
+    Fscalars_map newfscalar;
+    if(hasColors) {
+      fcolorMap = fcolorMap_.first;
+      newfcolor = 
+        tm.add_property_map<face_descriptor, std::string>(
+          "f:color", ""
+        ).first;
+    }
+    if(hasScalars) {
+      fscalarMap = fscalarMap_.first;
+      newfscalar = 
+        tm.add_property_map<face_descriptor, double>(
+          "f:scalar", nan("")
+        ).first;
+    }
+    for(EMesh3::Face_index fi : tm.faces()) {
+      std::size_t ffi = fimap[fi];
+      face_descriptor fd = CGAL::SM_Face_index(ffi);
+      if(auto search = ftargets.find(fd); search != ftargets.end()) {
+        if(hasColors) {
+          newfcolor[fi] = "black";
+        }
+        if(hasScalars) {
+          newfscalar[fi] = nan("");
+        }
+        ftargets.erase(fd);
+      } else {
+        fd = ffi < nfaces ? fd : fmap[fd];
         if(hasColors) {
           newfcolor[fi] = fcolorMap[fd];
         }
@@ -1073,5 +1097,6 @@ void clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
       }
     }
   }
+  tm.remove_property_map(fimap);
 
 }

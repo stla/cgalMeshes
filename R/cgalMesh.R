@@ -300,6 +300,11 @@ cgalMesh <- R6Class(
     },
     
     "clipToPlane" = function(planeOrigin, planeNormal, clipVolume) {
+      check <- is.numeric(planeOrigin) && length(planeOrigin) == 3L && 
+        !anyNA(planeOrigin)
+      if(!check) {
+        stop("Invalid `planeOrigin` vector.")
+      }
       . <- private[[".CGALmesh"]]$clipToPlane(
         planeOrigin, planeNormal, clipVolume
       )
