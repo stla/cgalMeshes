@@ -444,8 +444,8 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$distance(t(points))
     },
 
-    #' @description Check whether the mesh is valid.
-    #' @return A Boolean value, whether the mesh is valid.
+    #' @description xxx
+    #' @return xxx
     "facesAroundVertex" = function(v) {
       stopifnot(isStrictPositiveInteger(v))
       private[[".CGALmesh"]]$facesAroundVertex(as.integer(v) - 1L)
@@ -506,6 +506,13 @@ cgalMesh <- R6Class(
       }
       xptr <- private[[".CGALmesh"]]$filterMesh(as.integer(faces) - 1L)
       cgalMesh$new(clean = xptr)
+    },
+
+    #' @description xxx
+    #' @return xxx
+    "fixManifoldness" = function() {
+      private[[".CGALmesh"]]$fixManifoldness()
+      invisible(self)
     },
     
     #' @description Estimated geodesic distances between vertices. The mesh 

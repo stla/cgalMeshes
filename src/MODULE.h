@@ -940,6 +940,20 @@ public:
   }
 
 
+  void fixManifoldness() {
+    std::size_t nmv = PMP::duplicate_non_manifold_vertices(mesh);
+    if(nmv > 0) {
+      std::string msg;
+      if(nmv = 1) {
+        msg = "One non-manifold vertex duplicated.";
+      } else {
+        msg = "Duplicated " + std::to_string(nmv) + " non-manifold vertices.";
+      }
+      Message(msg);
+    }
+  }
+
+
   Rcpp::NumericVector geoDists(const int index) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
