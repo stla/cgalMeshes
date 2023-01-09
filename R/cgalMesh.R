@@ -709,12 +709,6 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$getFscalars()
     },
 
-    #' @description Get the vertices of the mesh.
-    #' @return The vertices in a matrix.
-    "getHalfedges" = function() {
-      private[[".CGALmesh"]]$getHalfedges()
-    },
-    
     #' @description Get the vertex colors (if there are).
     #' @return The vector of colors (or any character vector) attached to 
     #'   the vertices of the mesh, or \code{NULL} if nothing is assigned to 
@@ -1007,9 +1001,12 @@ cgalMesh <- R6Class(
       invisible(self)
     },
 
-    #' @description Union with another mesh. Both meshes must be triangle.
+    #' @description Union with another mesh. Both meshes must be triangle. 
+    #'  \strong{WARNING}: this modifies the reference mesh and \code{mesh2}. 
     #' @param mesh2 a \code{cgalMesh} object
-    #' @return A \code{cgalMesh} object.
+    #' @return A \code{cgalMesh} object, the union of the reference mesh with 
+    #'   \code{mesh2}. Both the reference mesh and \code{mesh2} are modified: 
+    #'   they are corefined.
     #' @examples 
     #' \donttest{library(cgalMeshes)
     #' library(rgl)

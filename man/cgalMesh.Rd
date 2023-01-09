@@ -545,7 +545,6 @@ mesh$volume()
 \item \href{#method-cgalMesh-getFaces}{\code{cgalMesh$getFaces()}}
 \item \href{#method-cgalMesh-getFaceColors}{\code{cgalMesh$getFaceColors()}}
 \item \href{#method-cgalMesh-getFaceScalars}{\code{cgalMesh$getFaceScalars()}}
-\item \href{#method-cgalMesh-getHalfedges}{\code{cgalMesh$getHalfedges()}}
 \item \href{#method-cgalMesh-getVertexColors}{\code{cgalMesh$getVertexColors()}}
 \item \href{#method-cgalMesh-getVertexScalars}{\code{cgalMesh$getVertexScalars()}}
 \item \href{#method-cgalMesh-getNormals}{\code{cgalMesh$getNormals()}}
@@ -1451,19 +1450,6 @@ The vector of scalars attached to
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cgalMesh-getHalfedges"></a>}}
-\if{latex}{\out{\hypertarget{method-cgalMesh-getHalfedges}{}}}
-\subsection{Method \code{getHalfedges()}}{
-Get the vertices of the mesh.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getHalfedges()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-The vertices in a matrix.
-}
-}
-\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-getVertexColors"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-getVertexColors}{}}}
 \subsection{Method \code{getVertexColors()}}{
@@ -1911,7 +1897,8 @@ mesh$isTriangle() # TRUE
 \if{html}{\out{<a id="method-cgalMesh-union"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-union}{}}}
 \subsection{Method \code{union()}}{
-Union with another mesh. Both meshes must be triangle.
+Union with another mesh. Both meshes must be triangle. 
+ \strong{WARNING}: this modifies the reference mesh and \code{mesh2}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$union(mesh2)}\if{html}{\out{</div>}}
 }
@@ -1924,7 +1911,9 @@ Union with another mesh. Both meshes must be triangle.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \code{cgalMesh} object.
+A \code{cgalMesh} object, the union of the reference mesh with 
+  \code{mesh2}. Both the reference mesh and \code{mesh2} are modified: 
+  they are corefined.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

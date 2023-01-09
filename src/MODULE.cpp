@@ -43,7 +43,6 @@ RCPP_MODULE(class_CGALmesh) {
     .method("getFcolors", &CGALmesh::getFcolors)
     .method("getVcolors", &CGALmesh::getVcolors)
     .method("getFscalars", &CGALmesh::getFscalars)
-    .method("getHalfedges", &CGALmesh::getHalfedges)
     .method("getVscalars", &CGALmesh::getVscalars)
     .method("getVertices", &CGALmesh::getVertices)
     .method("getNormals", &CGALmesh::getNormals)

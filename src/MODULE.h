@@ -1136,15 +1136,15 @@ public:
   }
 
 
-  Rcpp::IntegerMatrix getHalfedges() {
-    Rcpp::IntegerMatrix Halfedges(mesh.number_of_halfedges(), 6);
-    int i = 0;
-    for(halfedge_descriptor hd : mesh.halfedges()) {
-      Rcpp::IntegerVector row = {int(hd), int(mesh.source(hd)), int(mesh.target(hd)), int(mesh.opposite(hd)), int(mesh.face(hd)), int(mesh.is_border(hd))};
-      Halfedges(i++, Rcpp::_) = row;
-    }
-    return Halfedges;
-  }  
+  // Rcpp::IntegerMatrix getHalfedges() {
+  //   Rcpp::IntegerMatrix Halfedges(mesh.number_of_halfedges(), 6);
+  //   int i = 0;
+  //   for(halfedge_descriptor hd : mesh.halfedges()) {
+  //     Rcpp::IntegerVector row = {int(hd), int(mesh.source(hd)), int(mesh.target(hd)), int(mesh.opposite(hd)), int(mesh.face(hd)), int(mesh.is_border(hd))};
+  //     Halfedges(i++, Rcpp::_) = row;
+  //   }
+  //   return Halfedges;
+  // }  
 
 
   Rcpp::Nullable<Rcpp::NumericMatrix> getNormals() {
