@@ -44,8 +44,6 @@ exteriorEdges <- function(edgesDF, angleThreshold = 1) {
 #' @param edgesAsTubes Boolean, whether to draw the edges as tubes
 #' @param tubesRadius the radius of the tubes when \code{edgesAsTubes=TRUE}
 #' @param verticesAsSpheres Boolean, whether to draw the vertices as spheres
-#' @param only integer vector made of the indices of the vertices you want
-#'   to plot (as spheres), or \code{NULL} to plot all vertices
 #' @param spheresRadius the radius of the spheres when
 #'   \code{verticesAsSpheres=TRUE}
 #' @param spheresColor the color of the spheres when
@@ -107,9 +105,8 @@ plotEdges <- function(
     }
   }
   if(verticesAsSpheres){
-    if(!is.null(only)){
-      vertices <- vertices[only, ]
-    }
+    only <- unique(c(edges))
+    vertices <- vertices[only, ]
     spheres3d(vertices, radius = spheresRadius, color = spheresColor)
   }
   invisible(NULL)

@@ -584,14 +584,38 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$geoDists(as.integer(index) - 1L)
     },
 
+    #' @description Get the borders of the mesh.
+    #' @return A list of matrices representing the boundary cycles. Each matrix 
+    #'  has three columns: \code{"edge"}, an edge index, and 
+    #'  \code{"v1"} and \code{"v2"}, the vertex indices of this edge.
+    #' @examples 
+    #' library(cgalMeshes)
+    #' library(rgl)
+    #' cyl <- cylinder3d(
+    #'   rbind(c(0,0,0), c(1,0,0), c(2,0,0)), radius = 1
+    #' )
+    #' mesh <- cgalMesh$new(cyl)
+    #' borders <- mesh$getBorders()
+    #' vertices <- mesh$getVertices()
+    #' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+    #' shade3d(cyl, color = "navy")
+    #' plotEdges(
+    #'   vertices, borders[[1]][, c("v1", "v2")], color = "gold",
+    #'   tubesRadius = 0.03, spheresRadius = 0.03
+    #' )
+    #' plotEdges(
+    #'   vertices, borders[[2]][, c("v1", "v2")], color = "red",
+    #'   tubesRadius = 0.03, spheresRadius = 0.03
+    #' )}  
     "getBorders" = function() {
       private[[".CGALmesh"]]$getBorders()
     },
     
     #' @description Get the edges of the mesh.
-    #' @return A dataframe with four columns; the first two ones give the 
+    #' @return A dataframe with five columns; the first two ones give the 
     #'   vertex indices of each edge (one edge per row), the third one gives 
-    #'   the lengths of each edge, and the fourth one gives the dihedral angles 
+    #'   the lengths of each edge, the fourth one indicates whether the edges 
+    #'   is a border edge, and the fifth one gives the dihedral angles 
     #'   in degrees between the two faces adjacent to each edge 
     #' @examples 
     #' library(rgl)
