@@ -347,19 +347,6 @@ cgalMesh <- R6Class(
       invisible(self)
     },
 
-    # "doubleclip" = function(clipper) {
-    #   stopifnot(isCGALmesh(clipper))
-    #   clipperXPtr <- getXPtr(clipper)
-    #   xptr <- private[[".CGALmesh"]]$doubleclip(clipperXPtr)
-    #   cgalMesh$new(clean = xptr)
-    # },
-    # 
-    # "split" = function(splitter) {
-    #   stopifnot(isCGALmesh(splitter))
-    #   splitterXPtr <- getXPtr(splitter)
-    #   private[[".CGALmesh"]]$testsplit(splitterXPtr)
-    # },
-
     #' @description Compute per-vertex normals of the mesh. 
     #' @return The current \code{cgalMesh} object, invisibly. 
     #'  To get the normals, use the \code{getNormals} method.

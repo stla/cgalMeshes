@@ -88,7 +88,6 @@ plotEdges <- function(
     edgesAsTubes = TRUE,
     tubesRadius = 0.03,
     verticesAsSpheres = TRUE,
-    only = NULL,
     spheresRadius = 0.05,
     spheresColor = color
 ){

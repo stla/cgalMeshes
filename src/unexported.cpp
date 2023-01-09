@@ -36,16 +36,22 @@ EMesh3 vf2mesh(const Rcpp::NumericMatrix vertices,
     mesh.add_vertex(pt);
   }
   const int nf = faces.size();
+  Rcpp::Rcout << "nf: " << nf << "\n";
   for(int i = 0; i < nf; i++) {
     Rcpp::IntegerVector intface = Rcpp::as<Rcpp::IntegerVector>(faces(i));
     const int sf = intface.size();
+    Rcpp::Rcout << "sf: " << sf << "\n";
     std::vector<EMesh3::Vertex_index> face;
     face.reserve(sf);
     for(int k = 0; k < sf; k++) {
+      Rcpp::Rcout << intface(k) << " - ";
       face.emplace_back(CGAL::SM_Vertex_index(intface(k)));
     }
-    mesh.add_face(face);
+    Rcpp::Rcout << "\n";
+    face_descriptor fd = mesh.add_face(face);
+    Rcpp::Rcout << "added face: " << fd << "\n";
   }
+  Rcpp::Rcout << "nfaces: " << mesh.number_of_faces() << "\n";
   return mesh;
 }
 

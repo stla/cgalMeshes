@@ -26,6 +26,7 @@ Imports:
     rgl
 Suggests:
     onion,
+    randomcoloR,
     rmarchingcubes,
     viridisLite
 LinkingTo: 
