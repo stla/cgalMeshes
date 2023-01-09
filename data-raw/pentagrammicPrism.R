@@ -23,24 +23,23 @@ triangles <- list(
 )
 triangles <- c(
   triangles,
-  lapply(triangles, function(x) x + 5L)
+  lapply(triangles, function(x) rev(x) + 5L)
 )
 pentagons <- list(
   11L:15L,
-  16L:20L
+  20L:16L
 )
 rectangles <- list(
   c(1L, 6L, 16L, 11L),
-  c(16L, 11L, 2L, 7L),
+  rev(c(16L, 11L, 2L, 7L)),
   c(2L, 7L, 17L, 12L),
-  c(17L, 12L, 3L, 8L),
+  rev(c(17L, 12L, 3L, 8L)),
   c(3L, 8L, 18L, 13L),
-  c(18L, 13L, 4L, 9L),
+  rev(c(18L, 13L, 4L, 9L)),
   c(4L, 9L, 19L, 14L),
-  c(19L, 14L, 5L, 10L),
+  rev(c(19L, 14L, 5L, 10L)),
   c(5L, 10L, 20L, 15L),
-  c(20L, 15L, 1L, 6L)
+  rev(c(20L, 15L, 1L, 6L))
 )
 faces <- c(triangles, rectangles, pentagons)
-
 pentagrammicPrism <- list("vertices" = vertices, "faces" = faces)
