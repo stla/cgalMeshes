@@ -22,7 +22,6 @@ RCPP_MODULE(class_CGALmesh) {
     .method("centroid", &CGALmesh::centroid)
     .method("clipMesh", &CGALmesh::clipMesh)
     .method("clipToPlane", &CGALmesh::clipToPlane)
-    .method("doubleclip", &CGALmesh::doubleclip)
     .method("clone", &CGALmesh::clone)
     .method("computeNormals", &CGALmesh::computeNormals)
     .method("connectedComponents", &CGALmesh::connectedComponents)
@@ -64,6 +63,5 @@ RCPP_MODULE(class_CGALmesh) {
     .method("triangulate", &CGALmesh::triangulate)
     .method("Union", &CGALmesh::Union)
     .method("volume", &CGALmesh::volume)
-    .method("writeFile", &CGALmesh::writeFile)
-    .method("testsplit", &CGALmesh::testsplit);
+    .method("writeFile", &CGALmesh::writeFile);
 }

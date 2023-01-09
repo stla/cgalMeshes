@@ -30,10 +30,6 @@
 #include <CGAL/boost/graph/copy_face_graph.h>
 #include <CGAL/boost/graph/Face_filtered_graph.h>
 #include <CGAL/boost/graph/helpers.h>
-//#include <CGAL/boost/graph/Euler_operations.h>
-// #include <CGAL/boost/graph/iterator.h>
-// #include <CGAL/Iterator_range.h>
-//#include <CGAL/boost/graph/properties_Surface_mesh.h>
 #include <boost/graph/connected_components.hpp>
 #include <boost/property_map/property_map.hpp>
 #include <boost/graph/copy.hpp>
@@ -41,7 +37,6 @@
 #include <CGAL/convex_decomposition_3.h>
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
-// #include <CGAL/boost/graph/IO/polygon_mesh_io.h>
 #include <CGAL/Surface_mesh/IO/PLY.h>
 #include <locale>  // tolower
 #include <CGAL/IO/io.h>
@@ -53,22 +48,6 @@
 #include <CGAL/Triangle_3.h>
 #include <CGAL/Tetrahedron_3.h>
 #include <CGAL/Plane_3.h>
-//////
-//#include <CGAL/Surface_mesh_parameterization/Discrete_conformal_map_parameterizer_3.h>
-//#include <CGAL/Surface_mesh_parameterization/Error_code.h>
-//#include <CGAL/Surface_mesh_parameterization/parameterize.h>
-//#include <CGAL/boost/graph/Seam_mesh.h>
-
-//#include <CGAL/Surface_mesh_parameterization/IO/File_off.h>
-
-//#include <CGAL/Unique_hash_map.h>
-
-//#include <CGAL/Surface_mesh_parameterization/Orbifold_Tutte_parameterizer_3.h>
-//#include <CGAL/boost/graph/properties.h>
-
-
-//namespace SMP = CGAL::Surface_mesh_parameterization;
-
 
 
 // -------------------------------------------------------------------------- //
@@ -83,7 +62,6 @@ typedef CGAL::Polyhedron_3<EK> EPolyhedron;
 typedef CGAL::Triangle_3<EK> Triangle;
 typedef CGAL::Tetrahedron_3<EK> Tetrahedron;
 
-//typedef CGAL::SM_index_pmap<EPoint3, boost::graph_traits<EMesh3>::vertex_descriptor> boostmap;
 typedef boost::graph_traits<EMesh3>::vertex_descriptor vertex_descriptor;
 typedef EMesh3::Property_map<vertex_descriptor, double> Vertex_distance_map;
 typedef EMesh3::Property_map<vertex_descriptor, std::size_t> Vertex_index_map;
@@ -110,7 +88,6 @@ typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
 typedef AFS_reconstruction::Triangulation_3 AFS_triangulation3;
 typedef AFS_reconstruction::Triangulation_data_structure_2 AFS_Tds2;
 
-//typedef CGAL::Face_filtered_graph<EMesh3, Face_index_map, Vertex_index_map, Halfedge_index_map> Filtered_mesh;
 typedef CGAL::Face_filtered_graph<EMesh3> Filtered_graph;
 
 typedef boost::graph_traits<Filtered_graph>::vertex_descriptor 
@@ -121,54 +98,6 @@ typedef boost::graph_traits<Filtered_graph>::face_descriptor
   ffg_face_descriptor;
 typedef std::map<ffg_face_descriptor, face_descriptor> 
   MapBetweenFaceDescriptors;
-
-struct trivial_edge_predicate {
-  trivial_edge_predicate() { }
-  bool operator()(const edge_descriptor& e) const {
-    return true;
-  }
-};
-
-struct positive_vertex_scalar {
-  positive_vertex_scalar() { }
-  positive_vertex_scalar(Vscalars_map vmap) : vscalar(vmap) { }
-  bool operator()(const vertex_descriptor& v) const {
-    return 0 < vscalar[v];
-  }
-  Vscalars_map vscalar;
-};
-
-///////////////
-// typedef boost::graph_traits<Mesh3>::halfedge_descriptor halfedge_descriptor;
-// typedef K::Point_2 Point2;
-// typedef boost::graph_traits<Mesh3>::vertex_descriptor v_descriptor;
-// typedef boost::graph_traits<Mesh3>::edge_descriptor edge_descriptor;
-// 
-// typedef Mesh3 PolyMesh;
-// typedef boost::graph_traits<PolyMesh>::edge_descriptor SM_edge_descriptor;
-// typedef boost::graph_traits<PolyMesh>::halfedge_descriptor SM_halfedge_descriptor;
-// typedef boost::graph_traits<PolyMesh>::vertex_descriptor SM_vertex_descriptor;
-// 
-// typedef CGAL::Unique_hash_map<SM_halfedge_descriptor, Point2> UV_uhm;
-// typedef CGAL::Unique_hash_map<SM_edge_descriptor, bool> Seam_edge_uhm;
-// typedef CGAL::Unique_hash_map<SM_vertex_descriptor, bool> Seam_vertex_uhm;
-// 
-// typedef boost::associative_property_map<UV_uhm> Seam_UV_pmap;
-// typedef boost::associative_property_map<Seam_edge_uhm> Seam_edge_pmap;
-// typedef boost::associative_property_map<Seam_vertex_uhm> Seam_vertex_pmap;
-// 
-// typedef Mesh3::Property_map<SM_edge_descriptor, bool>           edge_pmap;
-// typedef Mesh3::Property_map<SM_vertex_descriptor, bool>         vertex_pmap;
-// 
-// typedef CGAL::Seam_mesh<PolyMesh, edge_pmap, vertex_pmap> SMesh;
-// 
-// typedef CGAL::Seam_mesh<PolyMesh, Seam_edge_pmap, Seam_vertex_pmap> Mesh;
-// 
-// typedef boost::graph_traits<Mesh>::vertex_descriptor seam_vertex_descriptor;
-// typedef boost::graph_traits<Mesh>::halfedge_descriptor seam_halfedge_descriptor;
-// typedef boost::graph_traits<Mesh>::face_descriptor seam_face_descriptor;
-// 
-// typedef Mesh3::Property_map<halfedge_descriptor, Point2>      UV_pmap;
 
 
 // -------------------------------------------------------------------------- //
@@ -185,8 +114,6 @@ std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix);
 
 template <typename KernelT, typename MeshT, typename PointT>
 Rcpp::DataFrame getEdges(MeshT&);
-
-//Rcpp::NumericMatrix getEKNormals(EMesh3);
 
 Rcpp::NumericMatrix getVertices_EK(EMesh3&);
 Rcpp::List RSurfEKMesh(EMesh3&, const bool);
@@ -211,9 +138,6 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix,
 
 EMesh3 cloneMesh(EMesh3&, std::vector<std::string>);
 void removeProperties(EMesh3&, std::vector<std::string>);
-MaybeNormalMap copy_vnormal(EMesh3&);
-MaybeVcolorMap copy_vcolor(EMesh3&);
-MaybeFcolorMap copy_fcolor(EMesh3&);
 void triangulateMesh(EMesh3&);
 Rcpp::NumericVector defaultNormal();
 
@@ -234,9 +158,6 @@ void copy_property(
 struct ClipVisitor : 
   public PMP::Corefinement::Default_visitor<EMesh3>
 {
-  // void new_vertex_added(std::size_t i_id, vertex_descriptor v, const EMesh3 & tm) {
-  //   Rcpp::Rcout << v << "\n";
-  // }
   void before_subface_creations(face_descriptor fsplit, const EMesh3 & tm) {
     *ofaceindex = fsplit;
     if(*is_tm) {
@@ -247,65 +168,38 @@ struct ClipVisitor :
         (*nfaces).push_back(nf);
       }
     }
-    (*action).push_back("before_subface_creations");
   }
+
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
     if(*is_tm) {
       (*fmap_tm).insert(std::make_pair(fnew, *ofaceindex));
     } else {
       (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
     }
-//    (*pairs).push_back(std::make_pair(fnew, *is_tm));
-    (*nfaces2).push_back(tm.number_of_faces());
-    (*action).push_back("after_subface_created");
-    // Rcpp::Rcout << fnew << "\n";
-    // Rcpp::Rcout << tm.number_of_faces() << "\n";
-    // Rcpp::Rcout << tm.has_garbage() << "\n";
-    // Rcpp::Rcout << "\n";
   }
-  // void in_place_operation(PMP::Corefinement::Boolean_operation_type t) {
-  //   Rcpp::Rcout << t << "\n";
-  // }
+
   void after_face_copy(
     face_descriptor fsrc, const EMesh3 & tmsrc, 
     face_descriptor ftgt, const EMesh3 & tmtgt
   ) {
     (*ftargets).insert(std::make_pair(ftgt, fsrc));
-    (*action).push_back("after_face_copy");
   }
-
-  // void after_edge_duplicated(halfedge_descriptor hsrc, halfedge_descriptor hnew, const EMesh3 & tm) {
-  //   (*vmap).insert(std::make_pair(hsrc, hnew));
-  // }
-  // void intersection_edge_copy(halfedge_descriptor hsrc1, const EMesh3 & tmsrc1, halfedge_descriptor hsrc2, const EMesh3 & tmsrc2, halfedge_descriptor htgt, const EMesh3 & tmtgt) {
-  //   (*vmap).insert(std::make_pair(hsrc1, htgt));
-  // }
-  // void intersection_point_detected(std::size_t i_id, int sdim, halfedge_descriptor h_f, halfedge_descriptor h_e, const EMesh3 & tm_f, const EMesh3 & tm_e, bool is_target_coplanar, bool is_source_coplanar) {
-  //   (*vmap).insert(std::make_pair(h_f, sdim));
-  //   (*i).push_back(tm_f.number_of_faces());
-  // }
   
   ClipVisitor()
     : fmap_tm(new MapBetweenFaces()),
       fmap_clipper(new MapBetweenFaces()),
       ofaceindex(new face_descriptor()),
       nfaces(new std::vector<size_t>()),
-      nfaces2(new std::vector<size_t>()),
       ftargets(new MapBetweenFaces()),
-//      pairs(new std::vector<std::pair<face_descriptor, bool>>()),
-      is_tm(new bool(true)),
-      action(new std::vector<std::string>())
+      is_tm(new bool(true))
   {}
   
   std::shared_ptr<MapBetweenFaces> fmap_tm;
   std::shared_ptr<MapBetweenFaces> fmap_clipper;
   std::shared_ptr<MapBetweenFaces> ftargets;
-//  std::shared_ptr<std::vector<std::pair<face_descriptor, bool>>> pairs;
   std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<std::vector<size_t>> nfaces;
-  std::shared_ptr<std::vector<size_t>> nfaces2;
   std::shared_ptr<bool> is_tm;
-  std::shared_ptr<std::vector<std::string>> action;
 };
 
 struct UnionVisitor : 
@@ -313,8 +207,8 @@ struct UnionVisitor :
 {
   void before_subface_creations(face_descriptor fsplit, const EMesh3 & tm) {
     *ofaceindex = fsplit;
-    (*action).push_back("before_subface_creations");
   }
+
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
     if(*is_tm) {
       if(int(fnew) - 2 > *fprev) {
@@ -327,9 +221,8 @@ struct UnionVisitor :
     } else {
       (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
     }
-    (*nfaces2).push_back(tm.number_of_faces());
-    (*action).push_back("after_subface_created");
   }
+
   void after_face_copy(
     face_descriptor fsrc, const EMesh3 & tmsrc, 
     face_descriptor ftgt, const EMesh3 & tmtgt
@@ -337,10 +230,9 @@ struct UnionVisitor :
     (*fmap_union).insert(std::make_pair(ftgt, fsrc));
     if(*nfaces_umesh1 == -1 && int(fsrc) == *fprev) {
       *nfaces_umesh1 = int(ftgt) + 1;
-      Rcpp::Rcout << "FTGT: " << ftgt << "\n";
     }
-    (*action).push_back("after_face_copy");
   }
+
   void after_vertex_copy(
     vertex_descriptor vsrc, const EMesh3 & tmsrc, 
     vertex_descriptor vtgt, const EMesh3 & tmtgt
@@ -355,11 +247,9 @@ struct UnionVisitor :
       nfaces_umesh1(new int(-1)),
       ofaceindex(new face_descriptor()),
       nfaces(new std::vector<size_t>()),
-      nfaces2(new std::vector<size_t>()),
       fmap_union(new MapBetweenFaces()),
       vmap_union(new std::map<vertex_descriptor, vertex_descriptor>()),
-      is_tm(new bool(true)),
-      action(new std::vector<std::string>())
+      is_tm(new bool(true))
   {}
   
   std::shared_ptr<MapBetweenFaces> fmap_mesh1;
@@ -370,9 +260,7 @@ struct UnionVisitor :
   std::shared_ptr<std::map<vertex_descriptor, vertex_descriptor>> vmap_union;
   std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<std::vector<size_t>> nfaces;
-  std::shared_ptr<std::vector<size_t>> nfaces2;
   std::shared_ptr<bool> is_tm;
-  std::shared_ptr<std::vector<std::string>> action;
 };
 
 struct TriangulateVisitor : 
@@ -381,6 +269,7 @@ struct TriangulateVisitor :
   void before_subface_creations(face_descriptor fsplit) {
     *ofaceindex = fsplit;
   }
+
   void after_subface_created(face_descriptor fnew) {
     (*fmap).insert(std::make_pair(fnew, *ofaceindex));
   }
@@ -405,19 +294,5 @@ struct SoupVisitor :
     Message("Detected a non-manifold edge.");
   }
 
-  // void polygon_orientation_reversed(std::size_t id) {
-  //   Rcpp::Rcout << "ORIENTATION REVERSED: " << id << "\n";
-  // }
-
   SoupVisitor() {} 
 };
-
-// template <class MeshT>
-//using Visitor = PMP::PMPCorefinementVisitor;
-
-//typedef struct PMPCorefinementVisitor Visitor;
-
-//template <typename>
-//void Visitor::new_vertex_added(std::size_t, vertex_descriptor, const EMesh3&);
-
-//void Visitor<EMesh3>::new_vertex_added(std::size_t, vertex_descriptor, const EMesh3&);
