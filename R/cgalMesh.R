@@ -542,10 +542,6 @@ cgalMesh <- R6Class(
       self
     },
 
-    "filterGraph" = function() {
-      t(private[[".CGALmesh"]]$filterGraph()) + 1L
-    },
-
     #' @description Split the mesh into two meshes.
     #' @param faces a vector of face indices
     #' @return Two \code{cgalMesh} objects. The first one is the mesh consisting 

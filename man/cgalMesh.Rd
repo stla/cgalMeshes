@@ -116,6 +116,33 @@ shade3d(rglClippedMesh, color = "firebrick")
 shade3d(sphere, color = "yellow", alpha = 0.15)}
 
 ## ------------------------------------------------
+## Method `cgalMesh$clipToPlane`
+## ------------------------------------------------
+
+library(cgalMeshes)
+library(rgl)
+rmesh <- sphereMesh()
+mesh <- cgalMesh$new(rmesh)
+nfaces <- nrow(mesh$getFaces())
+if(require("randomcoloR")) {
+  colors <- 
+    randomColor(nfaces, hue = "random", luminosity = "dark")
+} else {
+  colors <- rainbow(nfaces)
+}
+mesh$assignFaceColors(colors)
+mesh$clipToPlane(
+  planePoint  = c(0, 0, 0), 
+  planeNormal = c(0, 0, 1), 
+  clipVolume = TRUE
+)
+mesh$computeNormals()
+rClippedMesh <- mesh$getMesh()
+\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(70, 0)
+shade3d(rClippedMesh, meshColor = "faces")}
+
+## ------------------------------------------------
 ## Method `cgalMesh$connectedComponents`
 ## ------------------------------------------------
 
@@ -502,6 +529,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-boundsVolume}{\code{cgalMesh$boundsVolume()}}
 \item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
 \item \href{#method-cgalMesh-clip}{\code{cgalMesh$clip()}}
+\item \href{#method-cgalMesh-clipToPlane}{\code{cgalMesh$clipToPlane()}}
 \item \href{#method-cgalMesh-computeNormals}{\code{cgalMesh$computeNormals()}}
 \item \href{#method-cgalMesh-connectedComponents}{\code{cgalMesh$connectedComponents()}}
 \item \href{#method-cgalMesh-convexParts}{\code{cgalMesh$convexParts()}}
@@ -509,7 +537,6 @@ mesh$volume()
 \item \href{#method-cgalMesh-distance}{\code{cgalMesh$distance()}}
 \item \href{#method-cgalMesh-facesAroundVertex}{\code{cgalMesh$facesAroundVertex()}}
 \item \href{#method-cgalMesh-fair}{\code{cgalMesh$fair()}}
-\item \href{#method-cgalMesh-filterGraph}{\code{cgalMesh$filterGraph()}}
 \item \href{#method-cgalMesh-filterMesh}{\code{cgalMesh$filterMesh()}}
 \item \href{#method-cgalMesh-fixManifoldness}{\code{cgalMesh$fixManifoldness()}}
 \item \href{#method-cgalMesh-geoDists}{\code{cgalMesh$geoDists()}}
@@ -789,7 +816,8 @@ mesh$centroid()}
 \if{html}{\out{<a id="method-cgalMesh-clip"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-clip}{}}}
 \subsection{Method \code{clip()}}{
-Clip mesh to the volume bounded by another mesh. 
+Clip mesh to the volume bounded by another mesh. The
+  mesh must be triangle.
   \strong{WARNING}: the reference mesh is then replaced by its 
   clipped version.
 \subsection{Usage}{
@@ -876,6 +904,61 @@ next3d()
 view3d(0, -70, zoom = 0.8)
 shade3d(rglClippedMesh, color = "firebrick")
 shade3d(sphere, color = "yellow", alpha = 0.15)}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-clipToPlane"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-clipToPlane}{}}}
+\subsection{Method \code{clipToPlane()}}{
+Clip the mesh to a plane. The mesh must be triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$clipToPlane(planePoint, planeNormal, clipVolume)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{planePoint}}{numeric vector of length three, a point belonging 
+to the plane}
+
+\item{\code{planeNormal}}{numeric vector of length three, a vector orthogonal
+to the plane}
+
+\item{\code{clipVolume}}{Boolean, whether to clip on the volume}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The modified reference mesh, invisibly.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(cgalMeshes)
+library(rgl)
+rmesh <- sphereMesh()
+mesh <- cgalMesh$new(rmesh)
+nfaces <- nrow(mesh$getFaces())
+if(require("randomcoloR")) {
+  colors <- 
+    randomColor(nfaces, hue = "random", luminosity = "dark")
+} else {
+  colors <- rainbow(nfaces)
+}
+mesh$assignFaceColors(colors)
+mesh$clipToPlane(
+  planePoint  = c(0, 0, 0), 
+  planeNormal = c(0, 0, 1), 
+  clipVolume = TRUE
+)
+mesh$computeNormals()
+rClippedMesh <- mesh$getMesh()
+\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(70, 0)
+shade3d(rClippedMesh, meshColor = "faces")}
 }
 \if{html}{\out{</div>}}
 
@@ -1134,15 +1217,6 @@ shade3d(rglHopf_faired, color = "orangered")}
 }
 \if{html}{\out{</div>}}
 
-}
-
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cgalMesh-filterGraph"></a>}}
-\if{latex}{\out{\hypertarget{method-cgalMesh-filterGraph}{}}}
-\subsection{Method \code{filterGraph()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$filterGraph()}\if{html}{\out{</div>}}
 }
 
 }

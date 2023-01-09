@@ -932,70 +932,70 @@ public:
   }
 
 
-  Rcpp::IntegerVector filterGraph() {
-    trivial_edge_predicate filter_edge;
-    positive_vertex_scalar filter_vertex(mesh.property_map<vertex_descriptor, double>("v:scalar").first);
-    boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar> fg(mesh, filter_edge, filter_vertex);
-    // EMesh3 submesh;
-    // CGAL::copy_face_graph(fg, submesh);
-    // return Rcpp::XPtr<EMesh3>(new EMesh3(submesh), false);
-    boost::property_map<boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>, CGAL::vertex_index_t>::type pmap = 
-      get(CGAL::vertex_index, fg);
-    std::pair<boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>::vertex_iterator, boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>::vertex_iterator> vv = boost::vertices(fg);
-//    std::vector<bool> keep_vertex(mesh.number_of_vertices(), false);
-    for(auto vd : boost::make_iterator_range(vv)) {
-      Rcpp::Rcout << vd << " - " << pmap[vd] << "\n";
-//      keep_vertex[int(pmap[vd])] = true;
-      //remove_vertex(vd, mesh);
-      //Rcpp::Rcout << "face of removed vertex: " << fd << "\n";
-    }
-    boost::property_map<boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>, CGAL::edge_index_t>::type epmap = 
-      get(CGAL::edge_index, fg);
-    std::pair<boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>::edge_iterator, boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>::edge_iterator> ee = boost::edges(fg);
-    Rcpp::IntegerVector Edges;
-    int nedges = 0;
-    for(auto ed : boost::make_iterator_range(ee)) {
-      Rcpp::Rcout << ed << " - " << epmap[ed] << "\n";
-      Rcpp::Rcout << "source: " << boost::source(ed, fg) << " - target: " << boost::target(ed, fg) << "\n";
-      Edges.push_back(int(boost::source(ed, fg))); Edges.push_back(int(boost::target(ed, fg)));
-      nedges++;
-    }
-    Edges.attr("dim") = Rcpp::Dimension(2, nedges);
-    return Edges;
-    // Rcpp::Rcout << "mesh has garbage: " << mesh.has_garbage() << "\n";
-    // mesh.collect_garbage();
-    // int nvertices = mesh.number_of_vertices();
-    // Face_index_map fimap = 
-    //   mesh.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
-    // EMesh3::Face_range faces = mesh.faces();
-    // for(face_descriptor fd : faces) {
-    //   bool include = true;
-    //   for(vertex_descriptor vd : vertices_around_face(mesh.halfedge(fd), mesh)) {
-    //     if(!keep_vertex[int(vd)]) {
-    //       include = false;
-    //       fimap[fd] = 1;
-    //       break;
-    //     }
-    //     // if(int(vd) >= nvertices) {
-    //     //   //remove_face(fd, mesh);
-    //     //   //Rcpp::Rcout << "face of removed face: " << f << "\n";
-    //     //   break;
-    //     // }
-    //   }
-    // }
-    // Rcpp::Rcout << "mesh has garbage: " << mesh.has_garbage() << "\n";
-    // mesh.collect_garbage();
-    // Filtered_graph ffg(mesh, 0, fimap);
-    // EMesh3 meshcopy;
-    // CGAL::copy_face_graph(ffg, meshcopy);
-    // EMesh3 submesh;
-    // boost::copy_graph(fg, submesh);
-    //return Rcpp::XPtr<EMesh3>(new EMesh3(meshcopy), false);
-    // Rcpp::Rcout << "vv.second:\n";
-    // for(vertex_descriptor v : vv.second) {
-    //   Rcpp::Rcout << pmap[v];
-    // }
-  }
+//   Rcpp::IntegerVector filterGraph() {
+//     trivial_edge_predicate filter_edge;
+//     positive_vertex_scalar filter_vertex(mesh.property_map<vertex_descriptor, double>("v:scalar").first);
+//     boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar> fg(mesh, filter_edge, filter_vertex);
+//     // EMesh3 submesh;
+//     // CGAL::copy_face_graph(fg, submesh);
+//     // return Rcpp::XPtr<EMesh3>(new EMesh3(submesh), false);
+//     boost::property_map<boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>, CGAL::vertex_index_t>::type pmap = 
+//       get(CGAL::vertex_index, fg);
+//     std::pair<boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>::vertex_iterator, boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>::vertex_iterator> vv = boost::vertices(fg);
+// //    std::vector<bool> keep_vertex(mesh.number_of_vertices(), false);
+//     for(auto vd : boost::make_iterator_range(vv)) {
+//       Rcpp::Rcout << vd << " - " << pmap[vd] << "\n";
+// //      keep_vertex[int(pmap[vd])] = true;
+//       //remove_vertex(vd, mesh);
+//       //Rcpp::Rcout << "face of removed vertex: " << fd << "\n";
+//     }
+//     boost::property_map<boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>, CGAL::edge_index_t>::type epmap = 
+//       get(CGAL::edge_index, fg);
+//     std::pair<boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>::edge_iterator, boost::filtered_graph<EMesh3, trivial_edge_predicate, positive_vertex_scalar>::edge_iterator> ee = boost::edges(fg);
+//     Rcpp::IntegerVector Edges;
+//     int nedges = 0;
+//     for(auto ed : boost::make_iterator_range(ee)) {
+//       Rcpp::Rcout << ed << " - " << epmap[ed] << "\n";
+//       Rcpp::Rcout << "source: " << boost::source(ed, fg) << " - target: " << boost::target(ed, fg) << "\n";
+//       Edges.push_back(int(boost::source(ed, fg))); Edges.push_back(int(boost::target(ed, fg)));
+//       nedges++;
+//     }
+//     Edges.attr("dim") = Rcpp::Dimension(2, nedges);
+//     return Edges;
+//     // Rcpp::Rcout << "mesh has garbage: " << mesh.has_garbage() << "\n";
+//     // mesh.collect_garbage();
+//     // int nvertices = mesh.number_of_vertices();
+//     // Face_index_map fimap = 
+//     //   mesh.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
+//     // EMesh3::Face_range faces = mesh.faces();
+//     // for(face_descriptor fd : faces) {
+//     //   bool include = true;
+//     //   for(vertex_descriptor vd : vertices_around_face(mesh.halfedge(fd), mesh)) {
+//     //     if(!keep_vertex[int(vd)]) {
+//     //       include = false;
+//     //       fimap[fd] = 1;
+//     //       break;
+//     //     }
+//     //     // if(int(vd) >= nvertices) {
+//     //     //   //remove_face(fd, mesh);
+//     //     //   //Rcpp::Rcout << "face of removed face: " << f << "\n";
+//     //     //   break;
+//     //     // }
+//     //   }
+//     // }
+//     // Rcpp::Rcout << "mesh has garbage: " << mesh.has_garbage() << "\n";
+//     // mesh.collect_garbage();
+//     // Filtered_graph ffg(mesh, 0, fimap);
+//     // EMesh3 meshcopy;
+//     // CGAL::copy_face_graph(ffg, meshcopy);
+//     // EMesh3 submesh;
+//     // boost::copy_graph(fg, submesh);
+//     //return Rcpp::XPtr<EMesh3>(new EMesh3(meshcopy), false);
+//     // Rcpp::Rcout << "vv.second:\n";
+//     // for(vertex_descriptor v : vv.second) {
+//     //   Rcpp::Rcout << pmap[v];
+//     // }
+//   }
 
 
   void fixManifoldness() {
