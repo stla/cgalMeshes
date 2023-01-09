@@ -226,6 +226,7 @@ struct UnionVisitor :
     bool ismesh1 = tm.property_map<face_descriptor, std::size_t>("f:i").second;
     if(ismesh1) {
       (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
+      *fprev = int(fnew) - 1;
     } else {
       (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
     }
