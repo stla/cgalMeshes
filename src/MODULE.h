@@ -5,11 +5,8 @@
 class CGALmesh {
 public:
   EMesh3 mesh;
-  Rcpp::List mymesh;
   Rcpp::XPtr<EMesh3> xptr;
-  Rcpp::Nullable<Rcpp::NumericMatrix> normals;
-  Rcpp::Nullable<Rcpp::StringVector> vcolors;
-  Rcpp::Nullable<Rcpp::StringVector> fcolors;
+
   CGALmesh(const Rcpp::NumericMatrix vertices,
            const Rcpp::List faces,
            bool soup,
@@ -21,49 +18,19 @@ public:
           vertices, faces, soup, normals_, vcolors_, fcolors_
         )
       ),
-      mymesh(
-        Rcpp::List::create(
-          Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(&mesh, false),
-          Rcpp::Named("normals") = normals_,
-          Rcpp::Named("vcolors") = vcolors_,
-          Rcpp::Named("fcolors") = fcolors_
-        )
-      ), 
-      xptr(Rcpp::XPtr<EMesh3>(&mesh, false)),
-      normals(normals_),
-      vcolors(vcolors_),
-      fcolors(fcolors_) {}
+      xptr(Rcpp::XPtr<EMesh3>(&mesh, false))
+      {}
   
   CGALmesh(Rcpp::XPtr<EMesh3> xptr_)
     : mesh(*(xptr_.get())),
-      mymesh(
-        Rcpp::List::create(
-          Rcpp::Named("xptr") = xptr_,
-          Rcpp::Named("normals") = R_NilValue,
-          Rcpp::Named("vcolors") = R_NilValue,
-          Rcpp::Named("fcolors") = R_NilValue
-        )
-      ),
-      xptr(xptr_),
-      normals(R_NilValue),
-      vcolors(R_NilValue),
-      fcolors(R_NilValue) {}
+      xptr(xptr_)
+      {}
   
   CGALmesh(const std::string filename, const bool binary)
     : mesh(readMeshFile(filename)), 
-      mymesh(
-        Rcpp::List::create(
-          Rcpp::Named("xptr") = Rcpp::XPtr<EMesh3>(&mesh, false),
-          Rcpp::Named("normals") = R_NilValue,
-          Rcpp::Named("vcolors") = R_NilValue,
-          Rcpp::Named("fcolors") = R_NilValue
-        )
-      ),
-      xptr(Rcpp::XPtr<EMesh3>(&mesh, false)),
-      normals(R_NilValue),
-      vcolors(R_NilValue),
-      fcolors(R_NilValue) {}
-
+      xptr(Rcpp::XPtr<EMesh3>(&mesh, false))
+      {}
+      
 
   double area() {
     if(!CGAL::is_triangle_mesh(mesh)) {
