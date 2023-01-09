@@ -1025,6 +1025,19 @@ public:
   }
 
 
+  void getBorders() {
+    std::vector<halfedge_descriptor> border_cycles;
+    PMP::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
+    for(int i = 0; i < border_cycles.size(); i++) {
+      Rcpp::Rcout << "border " << i << "\n";
+      halfedge_descriptor h = border_cycles[i];
+      for(halfedge_descriptor hd : halfedges_around_face(h, mesh)) {
+        Rcpp::Rcout << "  edge: " << mesh.edge(hd) << "\n";
+      }
+    }
+  }
+
+
   Rcpp::IntegerMatrix getFacesMatrix() {
     const size_t nfaces = mesh.number_of_faces();
     if(CGAL::is_triangle_mesh(mesh)) {

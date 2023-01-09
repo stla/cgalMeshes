@@ -37,6 +37,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("filterMesh", &CGALmesh::filterMesh)
     .method("fixManifoldness", &CGALmesh::fixManifoldness)
     .method("geoDists", &CGALmesh::geoDists)
+    .method("getBorders", &CGALmesh::getBorders)
     .method("getFacesList", &CGALmesh::getFacesList)
     .method("getFacesMatrix", &CGALmesh::getFacesMatrix)
     .method("getFcolors", &CGALmesh::getFcolors)

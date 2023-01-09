@@ -584,6 +584,10 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$geoDists(as.integer(index) - 1L)
     },
 
+    "getBorders" = function() {
+      private[[".CGALmesh"]]$getBorders()
+    },
+    
     #' @description Get the edges of the mesh.
     #' @return A dataframe with four columns; the first two ones give the 
     #'   vertex indices of each edge (one edge per row), the third one gives 
