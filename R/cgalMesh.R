@@ -444,8 +444,9 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$distance(t(points))
     },
 
-    #' @description xxx
-    #' @return xxx
+    #' @description Faces containing a given vertex.
+    #' @param v a vertex index
+    #' @return An integer vector, the indices of the faces containing \code{v}.
     "facesAroundVertex" = function(v) {
       stopifnot(isStrictPositiveInteger(v))
       private[[".CGALmesh"]]$facesAroundVertex(as.integer(v) - 1L)
@@ -493,6 +494,11 @@ cgalMesh <- R6Class(
       t(private[[".CGALmesh"]]$filterGraph()) + 1L
     },
 
+    #' @description Split the mesh into two meshes.
+    #' @param faces a vector of face indices
+    #' @return Two \code{cgalMesh} objects. The first one is the mesh consisting 
+    #'  of the faces of the reference mesh given in the \code{faces} 
+    #'  argument. The second one is the complementary mesh.
     "filterMesh" = function(faces) {
       stopifnot(isAtomicVector(faces))
       stopifnot(is.numeric(faces))
@@ -511,8 +517,8 @@ cgalMesh <- R6Class(
       )
     },
 
-    #' @description xxx
-    #' @return xxx
+    #' @description Duplicate non-manifold vertices.
+    #' @return The possibly modified reference mesh, invisibly.
     "fixManifoldness" = function() {
       private[[".CGALmesh"]]$fixManifoldness()
       invisible(self)

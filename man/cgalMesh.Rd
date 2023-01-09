@@ -288,6 +288,29 @@ if(!rgl.useNULL()) {
 }}
 
 ## ------------------------------------------------
+## Method `cgalMesh$getBorders`
+## ------------------------------------------------
+
+library(cgalMeshes)
+library(rgl)
+cyl <- cylinder3d(
+  rbind(c(0,0,0), c(1,0,0), c(2,0,0)), radius = 1
+)
+mesh <- cgalMesh$new(cyl)
+borders <- mesh$getBorders()
+vertices <- mesh$getVertices()
+\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(cyl, color = "navy")
+plotEdges(
+  vertices, borders[[1]][, c("v1", "v2")], color = "gold",
+  tubesRadius = 0.03, spheresRadius = 0.03
+)
+plotEdges(
+  vertices, borders[[2]][, c("v1", "v2")], color = "red",
+  tubesRadius = 0.03, spheresRadius = 0.03
+)}  
+
+## ------------------------------------------------
 ## Method `cgalMesh$getEdges`
 ## ------------------------------------------------
 
@@ -484,12 +507,18 @@ mesh$volume()
 \item \href{#method-cgalMesh-convexParts}{\code{cgalMesh$convexParts()}}
 \item \href{#method-cgalMesh-copy}{\code{cgalMesh$copy()}}
 \item \href{#method-cgalMesh-distance}{\code{cgalMesh$distance()}}
+\item \href{#method-cgalMesh-facesAroundVertex}{\code{cgalMesh$facesAroundVertex()}}
 \item \href{#method-cgalMesh-fair}{\code{cgalMesh$fair()}}
+\item \href{#method-cgalMesh-filterGraph}{\code{cgalMesh$filterGraph()}}
+\item \href{#method-cgalMesh-filterMesh}{\code{cgalMesh$filterMesh()}}
+\item \href{#method-cgalMesh-fixManifoldness}{\code{cgalMesh$fixManifoldness()}}
 \item \href{#method-cgalMesh-geoDists}{\code{cgalMesh$geoDists()}}
+\item \href{#method-cgalMesh-getBorders}{\code{cgalMesh$getBorders()}}
 \item \href{#method-cgalMesh-getEdges}{\code{cgalMesh$getEdges()}}
 \item \href{#method-cgalMesh-getFaces}{\code{cgalMesh$getFaces()}}
 \item \href{#method-cgalMesh-getFaceColors}{\code{cgalMesh$getFaceColors()}}
 \item \href{#method-cgalMesh-getFaceScalars}{\code{cgalMesh$getFaceScalars()}}
+\item \href{#method-cgalMesh-getHalfedges}{\code{cgalMesh$getHalfedges()}}
 \item \href{#method-cgalMesh-getVertexColors}{\code{cgalMesh$getVertexColors()}}
 \item \href{#method-cgalMesh-getVertexScalars}{\code{cgalMesh$getVertexScalars()}}
 \item \href{#method-cgalMesh-getNormals}{\code{cgalMesh$getNormals()}}
@@ -635,7 +664,8 @@ Assign colors (or any character strings) to the faces of
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{colors}}{a character vector whose length equals the number of faces}
+\item{\code{colors}}{a character vector whose length equals the number 
+of faces, or a single character string to be assigned to each face}
 }
 \if{html}{\out{</div>}}
 }
@@ -1042,6 +1072,26 @@ mesh$distance(O2)}
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-facesAroundVertex"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-facesAroundVertex}{}}}
+\subsection{Method \code{facesAroundVertex()}}{
+Faces containing a given vertex.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$facesAroundVertex(v)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{v}}{a vertex index}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+An integer vector, the indices of the faces containing \code{v}.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-fair"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-fair}{}}}
 \subsection{Method \code{fair()}}{
@@ -1086,6 +1136,50 @@ shade3d(rglHopf_faired, color = "orangered")}
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-filterGraph"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-filterGraph}{}}}
+\subsection{Method \code{filterGraph()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$filterGraph()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-filterMesh"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-filterMesh}{}}}
+\subsection{Method \code{filterMesh()}}{
+Split the mesh into two meshes.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$filterMesh(faces)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{faces}}{a vector of face indices}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Two \code{cgalMesh} objects. The first one is the mesh consisting 
+ of the faces of the reference mesh given in the \code{faces} 
+ argument. The second one is the complementary mesh.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-fixManifoldness"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-fixManifoldness}{}}}
+\subsection{Method \code{fixManifoldness()}}{
+Duplicate non-manifold vertices.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$fixManifoldness()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The possibly modified reference mesh, invisibly.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-geoDists"></a>}}
@@ -1172,6 +1266,46 @@ if(!rgl.useNULL()) {
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-getBorders"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-getBorders}{}}}
+\subsection{Method \code{getBorders()}}{
+Get the borders of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getBorders()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A list of matrices representing the boundary cycles. Each matrix 
+ has three columns: \code{"edge"}, an edge index, and 
+ \code{"v1"} and \code{"v2"}, the vertex indices of this edge.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(cgalMeshes)
+library(rgl)
+cyl <- cylinder3d(
+  rbind(c(0,0,0), c(1,0,0), c(2,0,0)), radius = 1
+)
+mesh <- cgalMesh$new(cyl)
+borders <- mesh$getBorders()
+vertices <- mesh$getVertices()
+\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(cyl, color = "navy")
+plotEdges(
+  vertices, borders[[1]][, c("v1", "v2")], color = "gold",
+  tubesRadius = 0.03, spheresRadius = 0.03
+)
+plotEdges(
+  vertices, borders[[2]][, c("v1", "v2")], color = "red",
+  tubesRadius = 0.03, spheresRadius = 0.03
+)}  
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-getEdges"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-getEdges}{}}}
 \subsection{Method \code{getEdges()}}{
@@ -1181,9 +1315,10 @@ Get the edges of the mesh.
 }
 
 \subsection{Returns}{
-A dataframe with four columns; the first two ones give the 
+A dataframe with five columns; the first two ones give the 
   vertex indices of each edge (one edge per row), the third one gives 
-  the lengths of each edge, and the fourth one gives the dihedral angles 
+  the lengths of each edge, the fourth one indicates whether the edges 
+  is a border edge, and the fifth one gives the dihedral angles 
   in degrees between the two faces adjacent to each edge
 }
 \subsection{Examples}{
@@ -1239,6 +1374,19 @@ Get the face scalars (if there are).
 The vector of scalars attached to 
   the faces of the mesh, or \code{NULL} if nothing is assigned to 
   the faces.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-getHalfedges"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-getHalfedges}{}}}
+\subsection{Method \code{getHalfedges()}}{
+Get the vertices of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getHalfedges()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+The vertices in a matrix.
 }
 }
 \if{html}{\out{<hr>}}

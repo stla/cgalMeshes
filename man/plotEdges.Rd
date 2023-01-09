@@ -33,9 +33,6 @@ vertex indices}
 
 \item{verticesAsSpheres}{Boolean, whether to draw the vertices as spheres}
 
-\item{only}{integer vector made of the indices of the vertices you want
-to plot (as spheres), or \code{NULL} to plot all vertices}
-
 \item{spheresRadius}{the radius of the spheres when
 \code{verticesAsSpheres=TRUE}}
 
@@ -53,10 +50,10 @@ library(cgalMeshes)
 library(rgl)
 
 mesh <- cgalMesh$new(pentagrammicPrism, clean = FALSE)
-vertices <- mesh$vertices()
-edges <- mesh$edges()
+vertices <- mesh$getVertices()
+edges <- mesh$getEdges()
 extEdges <- exteriorEdges(edges)
-tmesh <- mesh$triangulate()$getMesh(normals = FALSE)
+tmesh <- mesh$triangulate()$getMesh()
 
 \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(tmesh, color = "navy")
