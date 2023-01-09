@@ -200,6 +200,18 @@ public:
   }
 
 
+  void clipToPlane(
+    Rcpp::NumericVector planeOrigin, 
+    Rcpp::NumericVector planeNormal, 
+    const bool clipVolume
+  ) {
+    EPoint3 origin(planeOrigin[0], planeOrigin[1], planeOrigin[2]);
+    EVector3 normal(planeNormal[0], planeNormal[1], planeNormal[2]);
+    EPlane3 plane(origin, normal);
+    clippingToPlane(mesh, plane, clipVolume);
+  }
+
+
   Rcpp::XPtr<EMesh3> doubleclip(Rcpp::XPtr<EMesh3> clipperXPtr) { // to remove
     EMesh3 meshcopy = cloneMesh(mesh, {"f:color"});
     EMesh3 clipper = *(clipperXPtr.get());

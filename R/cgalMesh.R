@@ -298,6 +298,13 @@ cgalMesh <- R6Class(
         invisible(self)
       }
     },
+    
+    "clipToPlane" = function(planeOrigin, planeNormal, clipVolume) {
+      . <- private[[".CGALmesh"]]$clipToPlane(
+        planeOrigin, planeNormal, clipVolume
+      )
+      invisible(self)
+    },
 
     # "doubleclip" = function(clipper) {
     #   stopifnot(isCGALmesh(clipper))

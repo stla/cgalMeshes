@@ -52,6 +52,7 @@
 #include <CGAL/Advancing_front_surface_reconstruction.h>
 #include <CGAL/Triangle_3.h>
 #include <CGAL/Tetrahedron_3.h>
+#include <CGAL/Plane_3.h>
 //////
 //#include <CGAL/Surface_mesh_parameterization/Discrete_conformal_map_parameterizer_3.h>
 //#include <CGAL/Surface_mesh_parameterization/Error_code.h>
@@ -75,6 +76,7 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef K::Point_3 Point3;
 typedef CGAL::Surface_mesh<Point3> Mesh3;
 typedef EK::Vector_3 EVector3;
+typedef EK::Plane_3 EPlane3;
 typedef CGAL::Nef_polyhedron_3<EK, CGAL::SNC_indexed_items> NefPol;
 typedef CGAL::Polyhedron_3<EK> EPolyhedron;
 
@@ -221,6 +223,7 @@ std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
 );
 
 Rcpp::List clipping(EMesh3&, EMesh3&, const bool);
+void clippingToPlane(EMesh3&, EPlane3, const bool);
 
 template <typename SourceDescriptor, typename TargetDescriptor, typename Valuetype>
 void copy_property(
@@ -241,6 +244,7 @@ struct ClipVisitor :
       if((*nfaces).size() >= 1 && nf < (*nfaces).back()) {
         *is_tm = false;
       } else {
+        (*fsplit_tm).push_back(fsplit);
         (*nfaces).push_back(nf);
       }
     }
@@ -289,6 +293,7 @@ struct ClipVisitor :
       nfaces(new std::vector<size_t>()),
       nfaces2(new std::vector<size_t>()),
       ftargets(new MapBetweenFaces()),
+      fsplit_tm(new std::vector<face_descriptor>()),
 //      pairs(new std::vector<std::pair<face_descriptor, bool>>()),
       is_tm(new bool(true)),
       action(new std::vector<std::string>())
@@ -297,6 +302,7 @@ struct ClipVisitor :
   std::shared_ptr<MapBetweenFaces> fmap_tm;
   std::shared_ptr<MapBetweenFaces> fmap_clipper;
   std::shared_ptr<MapBetweenFaces> ftargets;
+  std::shared_ptr<std::vector<face_descriptor>> fsplit_tm;
 //  std::shared_ptr<std::vector<std::pair<face_descriptor, bool>>> pairs;
   std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<std::vector<size_t>> nfaces;

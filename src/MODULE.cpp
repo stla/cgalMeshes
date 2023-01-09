@@ -21,6 +21,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("assignVertexScalars", &CGALmesh::assignVertexScalars)
     .method("centroid", &CGALmesh::centroid)
     .method("clipMesh", &CGALmesh::clipMesh)
+    .method("clipToPlane", &CGALmesh::clipToPlane)
     .method("doubleclip", &CGALmesh::doubleclip)
     .method("clone", &CGALmesh::clone)
     .method("computeNormals", &CGALmesh::computeNormals)
