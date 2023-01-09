@@ -406,7 +406,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   
   std::size_t undetermined = 999999;
 
-  ClipVisitor vis;
+  ClipVisitor vis; 
   Face_index_map fimap = 
     tm.add_property_map<face_descriptor, std::size_t>("f:i", undetermined).first;
   const bool doNotModify = !clipVolume;

@@ -172,11 +172,11 @@ struct ClipVisitor :
 
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
     if(*is_tm) {
-      if(int(fnew) - 2 > *fprev) {
+      if(*fprev != 0 && tm.number_of_faces() != *fprev + 1) {
         *is_tm = false;
         (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
       } else {
-        *fprev = int(fnew) - 1;
+        *fprev = tm.number_of_faces();
         (*fmap_tm).insert(std::make_pair(fnew, *ofaceindex));
       }
     } else {
@@ -203,7 +203,7 @@ struct ClipVisitor :
       nfaces(new std::vector<size_t>()),
       ftargets(new MapBetweenFaces()),
       is_tm(new bool(true)),
-      fprev(new int(INT_MAX))
+      fprev(new int(0))
   {}
   
   std::shared_ptr<MapBetweenFaces> fmap_tm;
@@ -224,16 +224,27 @@ struct UnionVisitor :
 
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
     if(*is_tm) {
-      if(int(fnew) - 2 > *fprev) {
+      if(*fprev != 0 && tm.number_of_faces() != *fprev + 1) {
         *is_tm = false;
         (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
       } else {
-        *fprev = int(fnew) - 1;
+        *fprev = tm.number_of_faces();
         (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
       }
     } else {
       (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
     }
+    // if(*is_tm) {
+    //   if(int(fnew) - 2 > *fprev) {
+    //     *is_tm = false;
+    //     (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
+    //   } else {
+    //     *fprev = int(fnew) - 1;
+    //     (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
+    //   }
+    // } else {
+    //   (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
+    // }
   }
 
   void after_face_copy(
@@ -256,7 +267,7 @@ struct UnionVisitor :
   UnionVisitor()
     : fmap_mesh1(new MapBetweenFaces()),
       fmap_mesh2(new MapBetweenFaces()),
-      fprev(new int(INT_MAX)),
+      fprev(new int(0)),
       nfaces_umesh1(new int(-1)),
       ofaceindex(new face_descriptor()),
       nfaces(new std::vector<size_t>()),
