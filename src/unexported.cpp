@@ -45,6 +45,9 @@ EMesh3 vf2mesh(const Rcpp::NumericMatrix vertices,
       face.emplace_back(CGAL::SM_Vertex_index(intface(k)));
     }
     face_descriptor fd = mesh.add_face(face);
+    if(fd == EMesh3::null_face()) {
+      Rcpp::stop("Cannot add face " + std::to_string(i+1) + ".");
+    }
   }
   return mesh;
 }
