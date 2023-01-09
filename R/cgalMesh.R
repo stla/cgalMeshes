@@ -208,7 +208,8 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$centroid()
     },
     
-    #' @description Clip mesh to the volume bounded by another mesh. 
+    #' @description Clip mesh to the volume bounded by another mesh. The
+    #'   mesh must be triangle.
     #'   \strong{WARNING}: the reference mesh is then replaced by its 
     #'   clipped version.
     #'
@@ -299,14 +300,53 @@ cgalMesh <- R6Class(
       }
     },
     
-    "clipToPlane" = function(planeOrigin, planeNormal, clipVolume) {
-      check <- is.numeric(planeOrigin) && length(planeOrigin) == 3L && 
-        !anyNA(planeOrigin)
+    #' @description Clip the mesh to a plane. The mesh must be triangle.
+    #' @param planePoint numeric vector of length three, a point belonging 
+    #'  to the plane
+    #' @param planeNormal numeric vector of length three, a vector orthogonal
+    #'   to the plane 
+    #' @param clipVolume Boolean, whether to clip on the volume
+    #' @return The modified reference mesh, invisibly. 
+    #' @examples 
+    #' library(cgalMeshes)
+    #' library(rgl)
+    #' rmesh <- sphereMesh()
+    #' mesh <- cgalMesh$new(rmesh)
+    #' nfaces <- nrow(mesh$getFaces())
+    #' if(require("randomcoloR")) {
+    #'   colors <- 
+    #'     randomColor(nfaces, hue = "random", luminosity = "dark")
+    #' } else {
+    #'   colors <- rainbow(nfaces)
+    #' }
+    #' mesh$assignFaceColors(colors)
+    #' mesh$clipToPlane(
+    #'   planePoint  = c(0, 0, 0), 
+    #'   planeNormal = c(0, 0, 1), 
+    #'   clipVolume = TRUE
+    #' )
+    #' mesh$computeNormals()
+    #' rClippedMesh <- mesh$getMesh()
+    #' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+    #' view3d(70, 0)
+    #' shade3d(rClippedMesh, meshColor = "faces")}
+    "clipToPlane" = function(planePoint, planeNormal, clipVolume) {
+      check <- is.numeric(planePoint) && length(planePoint) == 3L && 
+        !anyNA(planePoint)
       if(!check) {
-        stop("Invalid `planeOrigin` vector.")
+        stop("Invalid `planePoint` vector.")
       }
+      check <- is.numeric(planeNormal) && length(planeNormal) == 3L && 
+        !anyNA(planeNormal)
+      if(!check) {
+        stop("Invalid `planeNormal` vector.")
+      }
+      if(c(crossprod(planeNormal)) == 0) {
+        stop("The `planeNormal` vector cannot be null.")
+      }
+      stopifnot(isBoolean(clipVolume))
       . <- private[[".CGALmesh"]]$clipToPlane(
-        planeOrigin, planeNormal, clipVolume
+        planePoint, planeNormal, clipVolume
       )
       invisible(self)
     },

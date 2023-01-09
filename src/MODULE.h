@@ -201,13 +201,13 @@ public:
 
 
   void clipToPlane(
-    Rcpp::NumericVector planeOrigin, 
+    Rcpp::NumericVector planePoint, 
     Rcpp::NumericVector planeNormal, 
     const bool clipVolume
   ) {
-    EPoint3 origin(planeOrigin[0], planeOrigin[1], planeOrigin[2]);
+    EPoint3 point(planePoint[0], planePoint[1], planePoint[2]);
     EVector3 normal(planeNormal[0], planeNormal[1], planeNormal[2]);
-    EPlane3 plane(origin, normal);
+    EPlane3 plane(point, normal);
     clippingToPlane(mesh, plane, clipVolume);
   }
 
