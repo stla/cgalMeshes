@@ -504,8 +504,11 @@ cgalMesh <- R6Class(
       if(!positive) {
         stop("The face indices must be positive integers.")
       }
-      xptr <- private[[".CGALmesh"]]$filterMesh(as.integer(faces) - 1L)
-      cgalMesh$new(clean = xptr)
+      xptrs <- private[[".CGALmesh"]]$filterMesh(as.integer(faces) - 1L)
+      list(
+        "mesh1" = cgalMesh$new(clean = xptrs[["fmesh1"]]),
+        "mesh2" = cgalMesh$new(clean = xptrs[["fmesh2"]])
+      )
     },
 
     #' @description xxx

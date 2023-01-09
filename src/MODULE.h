@@ -843,9 +843,9 @@ public:
   }
 
 
-  Rcpp::XPtr<EMesh3> filterMesh(Rcpp::IntegerVector selectedFaces) {
+  Rcpp::List filterMesh(Rcpp::IntegerVector selectedFaces) {
     Face_index_map fimap = 
-      mesh.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
+      mesh.add_property_map<face_descriptor, std::size_t>("f:i", 2).first;
     const int nfaces = mesh.number_of_faces();
     for(int i = 0; i < selectedFaces.size(); i++) {
       const int idx = selectedFaces(i);
@@ -854,23 +854,69 @@ public:
       }
       fimap[CGAL::SM_Face_index(idx)] = 1;
     }
-    Filtered_graph ffg(mesh, 1, fimap);
-    MapBetweenVertexDescriptors v2vmap_;
-    boost::associative_property_map<MapBetweenVertexDescriptors> v2vmap(v2vmap_);
-    MapBetweenFaceDescriptors f2fmap_;
-    boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
-    EMesh3 fmesh;
-    CGAL::copy_face_graph(
-      ffg, fmesh, 
-      CGAL::parameters::vertex_to_vertex_map(v2vmap).face_to_face_map(f2fmap)
-    );
-    copy_property<ffg_vertex_descriptor, vertex_descriptor, Rcpp::NumericVector>(mesh, fmesh, v2vmap_, "v:normal");
-    copy_property<ffg_vertex_descriptor, vertex_descriptor, std::string>(mesh, fmesh, v2vmap_, "v:color");
-    copy_property<ffg_vertex_descriptor, vertex_descriptor, double>(mesh, fmesh, v2vmap_, "v:scalar");
-    copy_property<ffg_face_descriptor, face_descriptor, std::string>(mesh, fmesh, f2fmap_, "f:color");
-    copy_property<ffg_face_descriptor, face_descriptor, double>(mesh, fmesh, f2fmap_, "f:scalar");
+    EMesh3 fmesh1;
+    {
+      Filtered_graph ffg(mesh, 1, fimap);
+      MapBetweenVertexDescriptors v2vmap_;
+      boost::associative_property_map<MapBetweenVertexDescriptors> 
+        v2vmap(v2vmap_);
+      MapBetweenFaceDescriptors f2fmap_;
+      boost::associative_property_map<MapBetweenFaceDescriptors> 
+        f2fmap(f2fmap_);
+      CGAL::copy_face_graph(
+        ffg, fmesh1, 
+        CGAL::parameters::vertex_to_vertex_map(v2vmap).face_to_face_map(f2fmap)
+      );
+      copy_property<
+        ffg_vertex_descriptor, vertex_descriptor, Rcpp::NumericVector
+      >(mesh, fmesh1, v2vmap_, "v:normal");
+      copy_property<
+        ffg_vertex_descriptor, vertex_descriptor, std::string
+      >(mesh, fmesh1, v2vmap_, "v:color");
+      copy_property<
+        ffg_vertex_descriptor, vertex_descriptor, double
+      >(mesh, fmesh1, v2vmap_, "v:scalar");
+      copy_property<
+        ffg_face_descriptor, face_descriptor, std::string
+      >(mesh, fmesh1, f2fmap_, "f:color");
+      copy_property<
+        ffg_face_descriptor, face_descriptor, double
+      >(mesh, fmesh1, f2fmap_, "f:scalar");
+    }
+    EMesh3 fmesh2;
+    {
+      Filtered_graph ffg(mesh, 2, fimap);
+      MapBetweenVertexDescriptors v2vmap_;
+      boost::associative_property_map<MapBetweenVertexDescriptors> 
+        v2vmap(v2vmap_);
+      MapBetweenFaceDescriptors f2fmap_;
+      boost::associative_property_map<MapBetweenFaceDescriptors> 
+        f2fmap(f2fmap_);
+      CGAL::copy_face_graph(
+        ffg, fmesh2, 
+        CGAL::parameters::vertex_to_vertex_map(v2vmap).face_to_face_map(f2fmap)
+      );
+      copy_property<
+        ffg_vertex_descriptor, vertex_descriptor, Rcpp::NumericVector
+      >(mesh, fmesh2, v2vmap_, "v:normal");
+      copy_property<
+        ffg_vertex_descriptor, vertex_descriptor, std::string
+      >(mesh, fmesh2, v2vmap_, "v:color");
+      copy_property<
+        ffg_vertex_descriptor, vertex_descriptor, double
+      >(mesh, fmesh2, v2vmap_, "v:scalar");
+      copy_property<
+        ffg_face_descriptor, face_descriptor, std::string
+      >(mesh, fmesh2, f2fmap_, "f:color");
+      copy_property<
+        ffg_face_descriptor, face_descriptor, double
+      >(mesh, fmesh2, f2fmap_, "f:scalar");
+    }
     mesh.remove_property_map(fimap);
-    return Rcpp::XPtr<EMesh3>(new EMesh3(fmesh), false);
+    return Rcpp::List::create(
+      Rcpp::Named("fmesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(fmesh1), false),
+      Rcpp::Named("fmesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(fmesh2), false)
+    );
   }
 
 

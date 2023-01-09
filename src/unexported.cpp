@@ -975,3 +975,4 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   
   //PMP::merge_duplicated_vertices_in_boundary_cycles(mesh);
 }
+
