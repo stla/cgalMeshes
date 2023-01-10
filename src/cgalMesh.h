@@ -172,16 +172,26 @@ struct ClipVisitor :
 
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
     if(*is_tm) {
-      if(*fprev != 0 && tm.number_of_faces() != *fprev + 1) {
+      if(tm.property_map<face_descriptor, std::size_t>("f:i").second) {
+        (*fmap_tm).insert(std::make_pair(fnew, *ofaceindex));
+      } else {
         *is_tm = false;
         (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
-      } else {
-        *fprev = tm.number_of_faces();
-        (*fmap_tm).insert(std::make_pair(fnew, *ofaceindex));
       }
     } else {
       (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
     }
+    // if(*is_tm) {
+    //   if(*fprev != 0 && tm.number_of_faces() != *fprev + 1) {
+    //     *is_tm = false;
+    //     (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
+    //   } else {
+    //     *fprev = tm.number_of_faces();
+    //     (*fmap_tm).insert(std::make_pair(fnew, *ofaceindex));
+    //   }
+    // } else {
+    //   (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
+    // }
     // if(*is_tm) {
     //   (*fmap_tm).insert(std::make_pair(fnew, *ofaceindex));
     // } else {
@@ -223,10 +233,14 @@ struct UnionVisitor :
   }
 
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
-    bool ismesh1 = tm.property_map<face_descriptor, std::size_t>("f:i").second;
-    if(ismesh1) {
-      (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
-      *fprev = int(fnew) - 1;
+    if(*is_mesh1) {
+      if(tm.property_map<face_descriptor, std::size_t>("f:i").second) {
+        (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
+        *fprev = int(fnew) - 1;
+      } else {
+        *is_mesh1 = false;
+        (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
+      }
     } else {
       (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
     }
@@ -280,7 +294,7 @@ struct UnionVisitor :
       nfaces(new std::vector<size_t>()),
       fmap_union(new MapBetweenFaces()),
       vmap_union(new std::map<vertex_descriptor, vertex_descriptor>()),
-      is_tm(new bool(true))
+      is_mesh1(new bool(true))
   {}
   
   std::shared_ptr<MapBetweenFaces> fmap_mesh1;
@@ -291,7 +305,7 @@ struct UnionVisitor :
   std::shared_ptr<std::map<vertex_descriptor, vertex_descriptor>> vmap_union;
   std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<std::vector<size_t>> nfaces;
-  std::shared_ptr<bool> is_tm;
+  std::shared_ptr<bool> is_mesh1;
 };
 
 struct TriangulateVisitor : 
