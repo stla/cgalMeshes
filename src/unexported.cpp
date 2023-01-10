@@ -600,7 +600,7 @@ void clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
     copy_prop<face_descriptor, double>(tm, "f:scalar");
   const bool hasScalars = fscalarMap_.second;
 
-  Face_index_map fimap = 
+  Face_index_map fimap_tmp = 
     tm.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
   ClipVisitor vis;
   const bool clipping = PMP::clip(
@@ -610,7 +610,7 @@ void clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
   if(!clipping) {
     Rcpp::stop("Clipping has failed.");
   }
-  tm.remove_property_map(fimap);
+  tm.remove_property_map(fimap_tmp);
 
   Face_index_map fimap = 
     tm.add_property_map<face_descriptor, std::size_t>("f:i", 9999999).first;
