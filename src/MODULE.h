@@ -506,6 +506,7 @@ public:
     if(nborders == 0) {
       return Rcpp::List::create();
     }
+
     Rcpp::List Borders(nborders);
     Rcpp::CharacterVector colnames = {"edge", "v1", "v2"};
     for(int i = 0; i < nborders; i++) {
@@ -527,6 +528,7 @@ public:
       Rcpp::colnames(Border_i) = colnames;
       Borders(i) = Border_i;
     }
+    
     return Borders;
   }
 
@@ -707,6 +709,7 @@ public:
     if(PMP::does_self_intersect(mesh2)) {
       Rcpp::stop("The second mesh self-intersects.");
     }
+
     EMesh3 imesh;
     const bool success = PMP::corefine_and_compute_intersection(
       mesh, mesh2, imesh
@@ -805,6 +808,7 @@ public:
     if(PMP::does_self_intersect(mesh2)) {
       Rcpp::stop("The second mesh self-intersects.");
     }
+
     EMesh3 imesh;
     const bool success = PMP::corefine_and_compute_difference(
       mesh, mesh2, imesh
