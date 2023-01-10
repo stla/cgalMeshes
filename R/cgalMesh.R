@@ -7,6 +7,7 @@ getXPtr <- function(cMesh){
 #'
 #' @importFrom R6 R6Class
 #' @importFrom rgl mesh3d
+#' @importFrom grDevices col2rgb
 #' @export
 cgalMesh <- R6Class(
   "cgalMesh",
@@ -1079,8 +1080,29 @@ cgalMesh <- R6Class(
       stopifnot(isPositiveInteger(precision))
       stopifnot(isBoolean(binary))
       filename <- path.expand(filename)
+      normals <- self$getNormals()
+      if(!is.null(normals)) {
+        normals <- t(normals)
+      }
+      fcolors <- self$getFaceColors()
+      if(!is.null(fcolors)) {
+        fcolors <- tryCatch({
+          col2rgb(fcolors)
+        }, error = function(e) {
+          NULL
+        })
+      }
+      vcolors <- self$getVertexColors()
+      if(!is.null(vcolors)) {
+        vcolors <- tryCatch({
+          col2rgb(vcolors)
+        }, error = function(e) {
+          NULL
+        })
+      }
       private[[".CGALmesh"]]$writeFile(
-        filename, as.integer(precision), binary
+        filename, as.integer(precision), binary,
+        normals, fcolors, vcolors
       )
     }
     

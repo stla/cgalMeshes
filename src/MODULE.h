@@ -1091,8 +1091,52 @@ public:
 
 
   void writeFile(
-    Rcpp::String filename, const int precision, const bool binary
+    Rcpp::String filename, const int precision, const bool binary,
+    Rcpp::Nullable<Rcpp::NumericMatrix> normals_,
+    Rcpp::Nullable<Rcpp::IntegerMatrix> fcolors_,
+    Rcpp::Nullable<Rcpp::IntegerMatrix> vcolors_
   ) {
+    if(normals_.isNotNull()) {
+      Rcpp::NumericMatrix normals(normals_);
+      CGALnormals_map vnormal = 
+        mesh.add_property_map<vertex_descriptor, EVector3>(
+          "v:normal", CGAL::NULL_VECTOR
+        ).first;
+      for(vertex_descriptor vd : mesh.vertices()) {
+        Rcpp::NumericVector normal = normals(Rcpp::_, int(vd));
+        if(!Rcpp::NumericVector::is_na(normal(0))) {
+          vnormal[vd] = EVector3(normal(0), normal(1), normal(2));
+        }
+      }
+    }
+    if(fcolors_.isNotNull()) {
+      Rcpp::IntegerMatrix fcolors(fcolors_);
+      EMesh3::Property_map<face_descriptor, Color> 
+        fcolor = mesh.add_property_map<face_descriptor, Color>(
+          "f:color"
+        ).first;      
+      for(face_descriptor fd : mesh.faces()) {
+        Rcpp::IntegerVector color = fcolors(Rcpp::_, int(fd));
+        unsigned char red   = color(0);
+        unsigned char green = color(1);
+        unsigned char blue  = color(2);
+        fcolor[fd] = Color(red, green, blue);
+      } 
+    }
+    if(vcolors_.isNotNull()) {
+      Rcpp::IntegerMatrix vcolors(vcolors_);
+      EMesh3::Property_map<vertex_descriptor, Color> 
+        vcolor = mesh.add_property_map<vertex_descriptor, Color>(
+          "v:color"
+        ).first;      
+      for(vertex_descriptor vd : mesh.vertices()) {
+        Rcpp::IntegerVector color = vcolors(Rcpp::_, int(vd));
+        unsigned char red   = color(0);
+        unsigned char green = color(1);
+        unsigned char blue  = color(2);
+        vcolor[vd] = Color(red, green, blue);
+      }      
+    }
     writeMeshFile(filename, precision, binary, mesh);
   }
   

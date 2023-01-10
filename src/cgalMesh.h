@@ -40,6 +40,7 @@
 #include <CGAL/Surface_mesh/IO/PLY.h>
 #include <locale>  // tolower
 #include <CGAL/IO/io.h>
+#include <CGAL/IO/Color.h>
 #include <CGAL/Heat_method_3/Surface_mesh_geodesic_distances_3.h>
 #include <CGAL/Polygon_mesh_processing/connected_components.h>
 #include <CGAL/Polygon_mesh_processing/manifoldness.h>
@@ -83,7 +84,6 @@ typedef std::pair<std::map<face_descriptor, double>, bool> MaybeFscalarMap;
 typedef std::map<face_descriptor, face_descriptor> MapBetweenFaces;
 typedef boost::graph_traits<EMesh3>::edge_descriptor edge_descriptor;
 
-
 typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
 typedef AFS_reconstruction::Triangulation_3 AFS_triangulation3;
 typedef AFS_reconstruction::Triangulation_data_structure_2 AFS_Tds2;
@@ -99,6 +99,7 @@ typedef boost::graph_traits<Filtered_graph>::face_descriptor
 typedef std::map<ffg_face_descriptor, face_descriptor> 
   MapBetweenFaceDescriptors;
 
+typedef CGAL::IO::Color Color;
 
 // -------------------------------------------------------------------------- //
 namespace PMP = CGAL::Polygon_mesh_processing;

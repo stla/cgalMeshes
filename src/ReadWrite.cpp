@@ -49,20 +49,6 @@ void writeMeshFile(const std::string filename,
   } else {
     outfile.open(filename);
   }
-  MaybeNormalMap vnormal_ = 
-    copy_prop<vertex_descriptor, Rcpp::NumericVector>(mesh, "v:normal");
-  if(vnormal_.second) {
-    CGALnormals_map vnormal = 
-      mesh.add_property_map<vertex_descriptor, EVector3>(
-        "v:normal", CGAL::NULL_VECTOR
-      ).first;
-    for(vertex_descriptor vd : mesh.vertices()) {
-      Rcpp::NumericVector normal = vnormal_.first[vd];
-      if(!Rcpp::NumericVector::is_na(normal(0))) {
-        vnormal[vd] = EVector3(normal(0), normal(1), normal(2));
-      }
-    }
-  }
   if(ext == ".ply") {
     ok = CGAL::IO::write_PLY(
       outfile, mesh,

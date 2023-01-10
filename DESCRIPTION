@@ -20,6 +20,7 @@ Depends:
     R (>= 2.10)
 Imports: 
     data.table,
+    grDevices,
     methods,
     R6,
     Rcpp (>= 1.0.9),
