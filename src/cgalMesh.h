@@ -147,7 +147,7 @@ std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
 );
 
 Rcpp::List clipping(EMesh3&, EMesh3&, const bool);
-void clippingToPlane(EMesh3&, EPlane3, const bool);
+Rcpp::List clippingToPlane(EMesh3&, EPlane3, const bool);
 
 template <typename SourceDescriptor, typename TargetDescriptor, typename Valuetype>
 void copy_property(

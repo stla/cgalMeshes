@@ -302,7 +302,11 @@ cgalMesh <- R6Class(
     #' @param planeNormal numeric vector of length three, a vector orthogonal
     #'   to the plane 
     #' @param clipVolume Boolean, whether to clip on the volume
-    #' @return The modified reference mesh, invisibly. 
+    #' @return If \code{clipVolume=FALSE}, the modified reference mesh is 
+    #'   invisibly returned. If \code{clipVolume=TRUE}, a list of two 
+    #'   \code{cgalMesh} objects is returned: the first one is the part of 
+    #'   the clipped mesh corresponding to the original mesh, the second 
+    #'   one is the part of the clipped mesh corresponding to the plane.
     #' @examples 
     #' library(cgalMeshes)
     #' library(rgl)
@@ -316,16 +320,20 @@ cgalMesh <- R6Class(
     #'   colors <- rainbow(nfaces)
     #' }
     #' mesh$assignFaceColors(colors)
-    #' mesh$clipToPlane(
+    #' meshes <- mesh$clipToPlane(
     #'   planePoint  = c(0, 0, 0), 
     #'   planeNormal = c(0, 0, 1), 
     #'   clipVolume = TRUE
     #' )
-    #' mesh$computeNormals()
-    #' rClippedMesh <- mesh$getMesh()
+    #' mesh1 <- meshes[[1]]
+    #' mesh2 <- meshes[[2]]
+    #' mesh1$computeNormals()
+    #' rClippedMesh1 <- mesh1$getMesh()
+    #' rClippedMesh2 <- mesh2$getMesh()
     #' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
     #' view3d(70, 0)
-    #' shade3d(rClippedMesh, meshColor = "faces")}
+    #' shade3d(rClippedMesh1, meshColor = "faces")
+    #' shade3d(rClippedMesh2, color = "orange")}
     "clipToPlane" = function(planePoint, planeNormal, clipVolume) {
       check <- is.numeric(planePoint) && length(planePoint) == 3L && 
         !anyNA(planePoint)
@@ -341,10 +349,17 @@ cgalMesh <- R6Class(
         stop("The `planeNormal` vector cannot be null.")
       }
       stopifnot(isBoolean(clipVolume))
-      . <- private[[".CGALmesh"]]$clipToPlane(
-        planePoint, planeNormal, clipVolume
-      )
-      invisible(self)
+      if(clipVolume) {
+        xptrs <- private[[".CGALmesh"]]$clipToPlane(
+          planePoint, planeNormal, TRUE
+        )
+        lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
+      } else {
+        . <- private[[".CGALmesh"]]$clipToPlane(
+          planePoint, planeNormal, FALSE
+        )
+        invisible(self)
+      }
     },
 
     #' @description Compute per-vertex normals of the mesh. 

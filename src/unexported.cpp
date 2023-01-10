@@ -557,7 +557,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
 }
 
 
-void clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
+Rcpp::List clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
   if(!CGAL::is_triangle_mesh(tm)) {
     Rcpp::stop("The mesh is not triangle.");
   }
@@ -631,53 +631,84 @@ void clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
     }
 
     tm.remove_property_map(fimap);
+    return Rcpp::List::create();
   }
 
   MapBetweenFaces fmap     = *(vis.fmap_tm);
   MapBetweenFaces ftargets = *(vis.ftargets);
 
-  if(hasColors || hasScalars) {
-    std::map<face_descriptor, std::string> fcolorMap;
-    Fcolors_map newfcolor;
-    std::map<face_descriptor, double> fscalarMap;
-    Fscalars_map newfscalar;
-    if(hasColors) {
-      fcolorMap = fcolorMap_.first;
-      newfcolor = 
-        tm.add_property_map<face_descriptor, std::string>(
-          "f:color", ""
-        ).first;
-    }
-    if(hasScalars) {
-      fscalarMap = fscalarMap_.first;
-      newfscalar = 
-        tm.add_property_map<face_descriptor, double>(
-          "f:scalar", nan("")
-        ).first;
-    }
-    
-    for(EMesh3::Face_index fi : tm.faces()) {
-      std::size_t ffi = fimap[fi];
-      face_descriptor fd = CGAL::SM_Face_index(ffi);
-      if(auto search = ftargets.find(fd); search != ftargets.end()) {
-        if(hasColors) {
-          newfcolor[fi] = "black";
-        }
-        if(hasScalars) {
-          newfscalar[fi] = nan("");
-        }
-        ftargets.erase(fd);
-      } else {
-        fd = ffi < nfaces ? fd : fmap[fd];
-        if(hasColors) {
-          newfcolor[fi] = fcolorMap[fd];
-        }
-        if(hasScalars) {
-          newfscalar[fi] = fscalarMap[fd];
-        }
+  std::map<face_descriptor, std::string> fcolorMap;
+  Fcolors_map newfcolor;
+  std::map<face_descriptor, double> fscalarMap;
+  Fscalars_map newfscalar;
+  if(hasColors) {
+    fcolorMap = fcolorMap_.first;
+    newfcolor = 
+      tm.add_property_map<face_descriptor, std::string>(
+        "f:color", ""
+      ).first;
+  }
+  if(hasScalars) {
+    fscalarMap = fscalarMap_.first;
+    newfscalar = 
+      tm.add_property_map<face_descriptor, double>(
+        "f:scalar", nan("")
+      ).first;
+  }
+
+  Face_index_map fwhich = 
+    tm.add_property_map<face_descriptor, std::size_t>("f:which", 2).first;
+
+  for(EMesh3::Face_index fi : tm.faces()) {
+    std::size_t ffi = fimap[fi];
+    face_descriptor fd = CGAL::SM_Face_index(ffi);
+    if(auto search = ftargets.find(fd); search != ftargets.end()) {
+      if(hasColors) {
+        newfcolor[fi] = "black";
+      }
+      if(hasScalars) {
+        newfscalar[fi] = nan("");
+      }
+      ftargets.erase(fd);
+    } else {
+      fwhich[fi] = 1;
+      fd = ffi < nfaces ? fd : fmap[fd];
+      if(hasColors) {
+        newfcolor[fi] = fcolorMap[fd];
+      }
+      if(hasScalars) {
+        newfscalar[fi] = fscalarMap[fd];
       }
     }
   }
 
+  EMesh3 mesh1;
+  {
+    Filtered_graph ffg(tm, 1, fwhich);
+    MapBetweenFaceDescriptors f2fmap_;
+    boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
+    CGAL::copy_face_graph(
+      ffg, mesh1, CGAL::parameters::face_to_face_map(f2fmap)
+    );
+    copy_property<ffg_face_descriptor, face_descriptor, std::string>(
+      tm, mesh1, f2fmap_, "f:color"
+    );
+    copy_property<ffg_face_descriptor, face_descriptor, double>(
+      tm, mesh1, f2fmap_, "f:scalar"
+    );
+  }
+
+  EMesh3 mesh2;
+  {
+    Filtered_graph ffg(tm, 2, fwhich);
+    CGAL::copy_face_graph(ffg, mesh2);
+  }
+
   tm.remove_property_map(fimap);
+  tm.remove_property_map(fwhich);
+
+  return Rcpp::List::create(
+    Rcpp::Named("mesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(mesh1), false),
+    Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(mesh2), false)
+  );
 }

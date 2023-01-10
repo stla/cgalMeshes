@@ -147,7 +147,7 @@ public:
   }
 
 
-  void clipToPlane(
+  Rcpp::List clipToPlane(
     Rcpp::NumericVector planePoint, 
     Rcpp::NumericVector planeNormal, 
     const bool clipVolume
@@ -155,7 +155,7 @@ public:
     EPoint3 point(planePoint[0], planePoint[1], planePoint[2]);
     EVector3 normal(planeNormal[0], planeNormal[1], planeNormal[2]);
     EPlane3 plane(point, normal);
-    clippingToPlane(mesh, plane, clipVolume);
+    return clippingToPlane(mesh, plane, clipVolume);
   }
 
   
@@ -528,7 +528,7 @@ public:
       Rcpp::colnames(Border_i) = colnames;
       Borders(i) = Border_i;
     }
-    
+
     return Borders;
   }
 

@@ -131,16 +131,20 @@ if(require("randomcoloR")) {
   colors <- rainbow(nfaces)
 }
 mesh$assignFaceColors(colors)
-mesh$clipToPlane(
+meshes <- mesh$clipToPlane(
   planePoint  = c(0, 0, 0), 
   planeNormal = c(0, 0, 1), 
   clipVolume = TRUE
 )
-mesh$computeNormals()
-rClippedMesh <- mesh$getMesh()
+mesh1 <- meshes[[1]]
+mesh2 <- meshes[[2]]
+mesh1$computeNormals()
+rClippedMesh1 <- mesh1$getMesh()
+rClippedMesh2 <- mesh2$getMesh()
 \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(70, 0)
-shade3d(rClippedMesh, meshColor = "faces")}
+shade3d(rClippedMesh1, meshColor = "faces")
+shade3d(rClippedMesh2, color = "orange")}
 
 ## ------------------------------------------------
 ## Method `cgalMesh$connectedComponents`
@@ -932,7 +936,11 @@ to the plane}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The modified reference mesh, invisibly.
+If \code{clipVolume=FALSE}, the modified reference mesh is 
+  invisibly returned. If \code{clipVolume=TRUE}, a list of two 
+  \code{cgalMesh} objects is returned: the first one is the part of 
+  the clipped mesh corresponding to the original mesh, the second 
+  one is the part of the clipped mesh corresponding to the plane.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -948,16 +956,20 @@ if(require("randomcoloR")) {
   colors <- rainbow(nfaces)
 }
 mesh$assignFaceColors(colors)
-mesh$clipToPlane(
+meshes <- mesh$clipToPlane(
   planePoint  = c(0, 0, 0), 
   planeNormal = c(0, 0, 1), 
   clipVolume = TRUE
 )
-mesh$computeNormals()
-rClippedMesh <- mesh$getMesh()
+mesh1 <- meshes[[1]]
+mesh2 <- meshes[[2]]
+mesh1$computeNormals()
+rClippedMesh1 <- mesh1$getMesh()
+rClippedMesh2 <- mesh2$getMesh()
 \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(70, 0)
-shade3d(rClippedMesh, meshColor = "faces")}
+shade3d(rClippedMesh1, meshColor = "faces")
+shade3d(rClippedMesh2, color = "orange")}
 }
 \if{html}{\out{</div>}}
 
