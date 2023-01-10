@@ -147,6 +147,9 @@ std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
   EMesh3&, std::string
 );
 
+template <typename Keytype, typename Valuetype>
+void removeProperty(EMesh3&, std::string);
+
 Rcpp::List clipping(EMesh3&, EMesh3&, const bool);
 Rcpp::List clippingToPlane(EMesh3&, EPlane3, const bool);
 

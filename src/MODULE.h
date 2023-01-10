@@ -1138,6 +1138,9 @@ public:
       }      
     }
     writeMeshFile(filename, precision, binary, mesh);
+    removeProperty<face_descriptor, Color>(mesh, "f:color");
+    removeProperty<vertex_descriptor, Color>(mesh, "v:color");
+    removeProperty<vertex_descriptor, EVector3>(mesh, "v:normal");
   }
   
 };

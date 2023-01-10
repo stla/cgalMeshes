@@ -250,6 +250,26 @@ void removeProperties(
 
 
 template <typename Keytype, typename Valuetype>
+void removeProperty(EMesh3& mesh, std::string propname) {
+  std::pair<EMesh3::Property_map<Keytype, Valuetype>, bool> pmap_ = 
+    mesh.property_map<Keytype, Valuetype>(propname);
+  if(pmap_.second) {
+    mesh.remove_property_map(pmap_.first);
+  }
+}
+
+template void removeProperty<face_descriptor, Color>(
+  EMesh3&, std::string
+);
+template void removeProperty<vertex_descriptor, Color>(
+  EMesh3&, std::string
+);
+template void removeProperty<vertex_descriptor, EVector3>(
+  EMesh3&, std::string
+);
+
+
+template <typename Keytype, typename Valuetype>
 std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
   EMesh3& mesh, std::string propname
 ) {
