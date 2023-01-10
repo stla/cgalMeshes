@@ -160,7 +160,9 @@ public:
 
   
   Rcpp::XPtr<EMesh3> clone() {
-    EMesh3 copy = cloneMesh(mesh, {"f:color", "v:color", "v:normal"});
+    EMesh3 copy = cloneMesh(
+      mesh, {"f:color", "v:color", "f:scalar", "v:scalar", "v:normal"}
+    );
     return Rcpp::XPtr<EMesh3>(new EMesh3(copy), false);
   }
 
@@ -222,13 +224,16 @@ public:
 
       Filtered_graph ffg(tmesh, c, fccmap);
       MapBetweenVertexDescriptors v2vmap_;
-      boost::associative_property_map<MapBetweenVertexDescriptors> v2vmap(v2vmap_);
+      boost::associative_property_map<MapBetweenVertexDescriptors> 
+        v2vmap(v2vmap_);
       MapBetweenFaceDescriptors f2fmap_;
-      boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
+      boost::associative_property_map<MapBetweenFaceDescriptors> 
+        f2fmap(f2fmap_);
 
       EMesh3 cmesh;
       CGAL::copy_face_graph(
-        ffg, cmesh, CGAL::parameters::vertex_to_vertex_map(v2vmap).face_to_face_map(f2fmap)
+        ffg, cmesh, 
+        CGAL::parameters::vertex_to_vertex_map(v2vmap).face_to_face_map(f2fmap)
       );
 
       copy_property<
@@ -893,6 +898,8 @@ public:
         mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
       std::pair<Normals_map, bool> vnormal2_ = 
         mesh2.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
+      int nverts_mesh = mesh.number_of_vertices();
+      int nverts_umesh = umesh.number_of_vertices();
       if(vnormal1_.second && vnormal2_.second) {
         Normals_map vnormal1 = vnormal1_.first;
         Normals_map vnormal2 = vnormal2_.first;
@@ -900,12 +907,12 @@ public:
           umesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
           "v:normal", defaultNormal()
         ).first;
-        for(int i = 0; i < mesh.number_of_vertices(); i++) {
+        for(int i = 0; i < nverts_mesh; i++) {
           vertex_descriptor vi = CGAL::SM_Vertex_index(i);
           vertex_descriptor vd = vmap_union[vi];
           vnormal[vi] = vnormal1[vd];
         }
-        for(int i = mesh.number_of_vertices(); i < umesh.number_of_vertices(); i++) {
+        for(int i = nverts_mesh; i < nverts_umesh; i++) {
           vertex_descriptor vi = CGAL::SM_Vertex_index(i);
           vertex_descriptor vd = vmap_union[vi];
           vnormal[vi] = vnormal2[vd];
@@ -919,15 +926,16 @@ public:
       if(vcolor1_.second && vcolor2_.second) {
         Vcolors_map vcolor1 = vcolor1_.first;
         Vcolors_map vcolor2 = vcolor2_.first;
-        Vcolors_map vcolor = umesh.add_property_map<vertex_descriptor, std::string>(
-          "v:color", ""
-        ).first;
-        for(int i = 0; i < mesh.number_of_vertices(); i++) {
+        Vcolors_map vcolor = 
+          umesh.add_property_map<vertex_descriptor, std::string>(
+            "v:color", ""
+          ).first;
+        for(int i = 0; i < nverts_mesh; i++) {
           vertex_descriptor vi = CGAL::SM_Vertex_index(i);
           vertex_descriptor vd = vmap_union[vi];
           vcolor[vi] = vcolor1[vd];
         }
-        for(int i = mesh.number_of_vertices(); i < umesh.number_of_vertices(); i++) {
+        for(int i = nverts_mesh; i < nverts_umesh; i++) {
           vertex_descriptor vi = CGAL::SM_Vertex_index(i);
           vertex_descriptor vd = vmap_union[vi];
           vcolor[vi] = vcolor2[vd];
@@ -944,12 +952,12 @@ public:
         Vscalars_map vscalar = umesh.add_property_map<vertex_descriptor, double>(
           "v:scalar", nan("")
         ).first;
-        for(int i = 0; i < mesh.number_of_vertices(); i++) {
+        for(int i = 0; i < nverts_mesh; i++) {
           vertex_descriptor vi = CGAL::SM_Vertex_index(i);
           vertex_descriptor vd = vmap_union[vi];
           vscalar[vi] = vscalar1[vd];
         }
-        for(int i = mesh.number_of_vertices(); i < umesh.number_of_vertices(); i++) {
+        for(int i = nverts_mesh; i < nverts_umesh; i++) {
           vertex_descriptor vi = CGAL::SM_Vertex_index(i);
           vertex_descriptor vd = vmap_union[vi];
           vscalar[vi] = vscalar2[vd];
@@ -980,9 +988,10 @@ public:
       ).first;
     }
 
-    Face_index_map fwhich = umesh.add_property_map<face_descriptor, std::size_t>(
-      "f:which", 0
-    ).first;
+    Face_index_map fwhich = 
+      umesh.add_property_map<face_descriptor, std::size_t>(
+        "f:which", 0
+      ).first;
     for(int i = 0; i < nfaces_umesh1; i++) {
       face_descriptor fi = CGAL::SM_Face_index(i);
       face_descriptor fd = fmap_union[fi];
@@ -1018,7 +1027,8 @@ public:
     {
       Filtered_graph ffg(umesh, 1, fwhich);
       MapBetweenFaceDescriptors f2fmap_;
-      boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
+      boost::associative_property_map<MapBetweenFaceDescriptors> 
+        f2fmap(f2fmap_);
       CGAL::copy_face_graph(
         ffg, umesh1, CGAL::parameters::face_to_face_map(f2fmap)
       );
@@ -1034,7 +1044,8 @@ public:
     {
       Filtered_graph ffg(umesh, 2, fwhich);
       MapBetweenFaceDescriptors f2fmap_;
-      boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
+      boost::associative_property_map<MapBetweenFaceDescriptors> 
+        f2fmap(f2fmap_);
       CGAL::copy_face_graph(
         ffg, umesh2, CGAL::parameters::face_to_face_map(f2fmap)
       );

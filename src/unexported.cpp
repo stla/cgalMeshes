@@ -269,14 +269,26 @@ std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
   return std::make_pair(pmap, has_prop);
 }
 
-template MaybeFcolorMap copy_prop<face_descriptor, std::string>(EMesh3&, std::string);
-template MaybeFscalarMap copy_prop<face_descriptor, double>(EMesh3&, std::string);
-template MaybeVcolorMap copy_prop<vertex_descriptor, std::string>(EMesh3&, std::string);
-template MaybeVscalarMap copy_prop<vertex_descriptor, double>(EMesh3&, std::string);
-template MaybeNormalMap copy_prop<vertex_descriptor, Rcpp::NumericVector>(EMesh3&, std::string);
+template MaybeFcolorMap copy_prop<face_descriptor, std::string>(
+  EMesh3&, std::string
+);
+template MaybeFscalarMap copy_prop<face_descriptor, double>(
+  EMesh3&, std::string
+);
+template MaybeVcolorMap copy_prop<vertex_descriptor, std::string>(
+  EMesh3&, std::string
+);
+template MaybeVscalarMap copy_prop<vertex_descriptor, double>(
+  EMesh3&, std::string
+);
+template MaybeNormalMap copy_prop<vertex_descriptor, Rcpp::NumericVector>(
+  EMesh3&, std::string
+);
 
 
-template <typename SourceDescriptor, typename TargetDescriptor, typename Valuetype>
+template <
+  typename SourceDescriptor, typename TargetDescriptor, typename Valuetype
+>
 void copy_property(
   EMesh3& mesh, 
   EMesh3& fmesh, 
@@ -292,16 +304,27 @@ void copy_property(
         propname
       ).first;
     for(const auto& [source_decriptor, target_decriptor] : dmap) {
-      pmap[target_decriptor] = pmap_.first[TargetDescriptor(int(source_decriptor))];
+      pmap[target_decriptor] = 
+        pmap_.first[TargetDescriptor(int(source_decriptor))];
     }
   }
 }
 
-template void copy_property<ffg_vertex_descriptor, vertex_descriptor, Rcpp::NumericVector>(EMesh3&, EMesh3&, MapBetweenVertexDescriptors, std::string);
-template void copy_property<ffg_vertex_descriptor, vertex_descriptor, std::string>(EMesh3&, EMesh3&, MapBetweenVertexDescriptors, std::string);
-template void copy_property<ffg_vertex_descriptor, vertex_descriptor, double>(EMesh3&, EMesh3&, MapBetweenVertexDescriptors, std::string);
-template void copy_property<ffg_face_descriptor, face_descriptor, std::string>(EMesh3&, EMesh3&, MapBetweenFaceDescriptors, std::string);
-template void copy_property<ffg_face_descriptor, face_descriptor, double>(EMesh3&, EMesh3&, MapBetweenFaceDescriptors, std::string);
+template void copy_property<
+  ffg_vertex_descriptor, vertex_descriptor, Rcpp::NumericVector
+>(EMesh3&, EMesh3&, MapBetweenVertexDescriptors, std::string);
+template void copy_property<
+  ffg_vertex_descriptor, vertex_descriptor, std::string
+>(EMesh3&, EMesh3&, MapBetweenVertexDescriptors, std::string);
+template void copy_property<
+  ffg_vertex_descriptor, vertex_descriptor, double
+>(EMesh3&, EMesh3&, MapBetweenVertexDescriptors, std::string);
+template void copy_property<
+  ffg_face_descriptor, face_descriptor, std::string
+>(EMesh3&, EMesh3&, MapBetweenFaceDescriptors, std::string);
+template void copy_property<
+  ffg_face_descriptor, face_descriptor, double
+>(EMesh3&, EMesh3&, MapBetweenFaceDescriptors, std::string);
 
 
 void triangulateMesh(EMesh3& mesh) {
@@ -374,7 +397,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   std::size_t nfaces = tm.number_of_faces();
   std::size_t nfaces_clipper = clipper.number_of_faces();
   
-  std::size_t undetermined = 999999;
+  std::size_t undetermined = 9999999;
 
   ClipVisitor vis; 
   Face_index_map fimap = 
@@ -391,6 +414,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   }
 
   tm.collect_garbage();
+
 
   if(!clipVolume) {
     MapBetweenFaces fmap = *(vis.fmap_tm);
@@ -428,6 +452,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     return Rcpp::List::create();
   }
 
+  /* --------------- clipVolume is true --------------- */
   MapBetweenFaces fmap_tm      = *(vis.fmap_tm);
   MapBetweenFaces fmap_clipper = *(vis.fmap_clipper);
   MapBetweenFaces ftargets     = *(vis.ftargets);
@@ -594,6 +619,7 @@ Rcpp::List clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
 
   tm.collect_garbage();
 
+
   if(!clipVolume){
     MapBetweenFaces fmap = *(vis.fmap_tm);
 
@@ -634,6 +660,7 @@ Rcpp::List clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
     return Rcpp::List::create();
   }
 
+  /* --------------- clipVolume is true --------------- */
   MapBetweenFaces fmap     = *(vis.fmap_tm);
   MapBetweenFaces ftargets = *(vis.ftargets);
 
