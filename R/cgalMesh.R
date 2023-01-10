@@ -209,7 +209,8 @@ cgalMesh <- R6Class(
     },
     
     #' @description Clip mesh to the volume bounded by another mesh. The
-    #'   mesh must be triangle.
+    #'   mesh must be triangle. Face properties (colors and scalars) 
+    #'   are preserved. 
     #'   \strong{WARNING}: the reference mesh is then replaced by its 
     #'   clipped version.
     #'
@@ -233,10 +234,15 @@ cgalMesh <- R6Class(
     #' mesh$assignFaceColors("blue")
     #' clipper$assignFaceColors("red")
     #' meshes <- mesh$clip(clipper, clipVolume = TRUE)
-    #' rglmesh <- mesh$getMesh()
+    #' mesh1 <- meshes[[1]]
+    #' mesh2 <- meshes[[2]]
+    #' mesh2$computeNormals()
+    #' rglmesh1 <- mesh1$getMesh()
+    #' rglmesh2 <- mesh2$getMesh()
     #' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
     #' view3d(45, 45, zoom = 0.9)
-    #' shade3d(rglmesh, meshColor = "faces")}
+    #' shade3d(rglmesh1, meshColor = "faces")
+    #' shade3d(rglmesh2, meshColor = "faces")}
     #' 
     #' # Togliatti surface clipped to a ball ####
     #' \donttest{library(rmarchingcubes)
@@ -296,7 +302,8 @@ cgalMesh <- R6Class(
       }
     },
     
-    #' @description Clip the mesh to a plane. The mesh must be triangle.
+    #' @description Clip the mesh to a plane. The mesh must be triangle. Face 
+    #'   properties (colors, scalars) are preserved.
     #' @param planePoint numeric vector of length three, a point belonging 
     #'  to the plane
     #' @param planeNormal numeric vector of length three, a vector orthogonal
@@ -370,7 +377,9 @@ cgalMesh <- R6Class(
       invisible(self)
     },
     
-    #' @description Decomposition into connected components.
+    #' @description Decomposition into connected components. All face 
+    #'   properties (colors, scalars) and vertex properties 
+    #'   (colors, scalars, normals) are preserved.
     #' @param triangulate Boolean, whether to triangulate the connected 
     #'   components.
     #' @return A list of \code{cgalMesh} objects, one for each connected 
@@ -503,7 +512,9 @@ cgalMesh <- R6Class(
     },
     
     #' @description Fair a region of the mesh, i.e. make it smooth. The mesh 
-    #'   must be triangle. This modifies the reference mesh.
+    #'   must be triangle. This modifies the reference mesh. All 
+    #'   face properties and vertex properties except the normals 
+    #'   are preserved.
     #' @param indices the indices of the vertices in the region to be faired
     #' @return The modified \code{cgalMesh} object.
     #' @examples 
@@ -540,7 +551,9 @@ cgalMesh <- R6Class(
       self
     },
 
-    #' @description Split the mesh into two meshes.
+    #' @description Split the mesh into two meshes according to a 
+    #'   given set of selected faces. Face properties are 
+    #'   preserved.
     #' @param faces a vector of face indices
     #' @return Two \code{cgalMesh} objects. The first one is the mesh consisting 
     #'  of the faces of the reference mesh given in the \code{faces} 
@@ -999,7 +1012,8 @@ cgalMesh <- R6Class(
       invisible(self)
     },
 
-    #' @description Union with another mesh. Both meshes must be triangle. 
+    #' @description Union with another mesh. Both meshes must be triangle. Face 
+    #'   properties of the two united meshes are copied to the union mesh. 
     #'  \strong{WARNING}: this modifies the reference mesh and \code{mesh2}. 
     #' @param mesh2 a \code{cgalMesh} object
     #' @return A \code{cgalMesh} object, the union of the reference mesh with 

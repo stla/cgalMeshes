@@ -64,10 +64,15 @@ clipper <- cgalMesh$new(sphereMesh(r= sqrt(2)))
 mesh$assignFaceColors("blue")
 clipper$assignFaceColors("red")
 meshes <- mesh$clip(clipper, clipVolume = TRUE)
-rglmesh <- mesh$getMesh()
+mesh1 <- meshes[[1]]
+mesh2 <- meshes[[2]]
+mesh2$computeNormals()
+rglmesh1 <- mesh1$getMesh()
+rglmesh2 <- mesh2$getMesh()
 \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(45, 45, zoom = 0.9)
-shade3d(rglmesh, meshColor = "faces")}
+shade3d(rglmesh1, meshColor = "faces")
+shade3d(rglmesh2, meshColor = "faces")}
 
 # Togliatti surface clipped to a ball ####
 \donttest{library(rmarchingcubes)
@@ -820,7 +825,8 @@ mesh$centroid()}
 \if{latex}{\out{\hypertarget{method-cgalMesh-clip}{}}}
 \subsection{Method \code{clip()}}{
 Clip mesh to the volume bounded by another mesh. The
-  mesh must be triangle.
+  mesh must be triangle. Face properties (colors and scalars) 
+  are preserved. 
   \strong{WARNING}: the reference mesh is then replaced by its 
   clipped version.
 \subsection{Usage}{
@@ -857,10 +863,15 @@ clipper <- cgalMesh$new(sphereMesh(r= sqrt(2)))
 mesh$assignFaceColors("blue")
 clipper$assignFaceColors("red")
 meshes <- mesh$clip(clipper, clipVolume = TRUE)
-rglmesh <- mesh$getMesh()
+mesh1 <- meshes[[1]]
+mesh2 <- meshes[[2]]
+mesh2$computeNormals()
+rglmesh1 <- mesh1$getMesh()
+rglmesh2 <- mesh2$getMesh()
 \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(45, 45, zoom = 0.9)
-shade3d(rglmesh, meshColor = "faces")}
+shade3d(rglmesh1, meshColor = "faces")
+shade3d(rglmesh2, meshColor = "faces")}
 
 # Togliatti surface clipped to a ball ####
 \donttest{library(rmarchingcubes)
@@ -917,7 +928,8 @@ shade3d(sphere, color = "yellow", alpha = 0.15)}
 \if{html}{\out{<a id="method-cgalMesh-clipToPlane"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-clipToPlane}{}}}
 \subsection{Method \code{clipToPlane()}}{
-Clip the mesh to a plane. The mesh must be triangle.
+Clip the mesh to a plane. The mesh must be triangle. Face 
+  properties (colors, scalars) are preserved.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$clipToPlane(planePoint, planeNormal, clipVolume)}\if{html}{\out{</div>}}
 }
@@ -994,7 +1006,9 @@ The current \code{cgalMesh} object, invisibly.
 \if{html}{\out{<a id="method-cgalMesh-connectedComponents"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-connectedComponents}{}}}
 \subsection{Method \code{connectedComponents()}}{
-Decomposition into connected components.
+Decomposition into connected components. All face 
+  properties (colors, scalars) and vertex properties 
+  (colors, scalars, normals) are preserved.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$connectedComponents(triangulate = FALSE)}\if{html}{\out{</div>}}
 }
@@ -1190,7 +1204,9 @@ An integer vector, the indices of the faces containing \code{v}.
 \if{latex}{\out{\hypertarget{method-cgalMesh-fair}{}}}
 \subsection{Method \code{fair()}}{
 Fair a region of the mesh, i.e. make it smooth. The mesh 
-  must be triangle. This modifies the reference mesh.
+  must be triangle. This modifies the reference mesh. All 
+  face properties and vertex properties except the normals 
+  are preserved.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$fair(indices)}\if{html}{\out{</div>}}
 }
@@ -1235,7 +1251,9 @@ shade3d(rglHopf_faired, color = "orangered")}
 \if{html}{\out{<a id="method-cgalMesh-filterMesh"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-filterMesh}{}}}
 \subsection{Method \code{filterMesh()}}{
-Split the mesh into two meshes.
+Split the mesh into two meshes according to a 
+  given set of selected faces. Face properties are 
+  preserved.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$filterMesh(faces)}\if{html}{\out{</div>}}
 }
@@ -1909,7 +1927,8 @@ mesh$isTriangle() # TRUE
 \if{html}{\out{<a id="method-cgalMesh-union"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-union}{}}}
 \subsection{Method \code{union()}}{
-Union with another mesh. Both meshes must be triangle. 
+Union with another mesh. Both meshes must be triangle. Face 
+  properties of the two united meshes are copied to the union mesh. 
  \strong{WARNING}: this modifies the reference mesh and \code{mesh2}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$union(mesh2)}\if{html}{\out{</div>}}

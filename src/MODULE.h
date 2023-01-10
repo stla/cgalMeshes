@@ -399,6 +399,10 @@ public:
     EMesh3 fmesh1;
     {
       Filtered_graph ffg(mesh, 1, fimap);
+      const bool valid = ffg.is_selection_valid();
+      if(!valid) {
+        Rcpp::stop("Cannot filter the mesh.");
+      }
       MapBetweenVertexDescriptors v2vmap_;
       boost::associative_property_map<MapBetweenVertexDescriptors> 
         v2vmap(v2vmap_);
@@ -429,6 +433,10 @@ public:
     EMesh3 fmesh2;
     {
       Filtered_graph ffg(mesh, 2, fimap);
+      const bool valid = ffg.is_selection_valid();
+      if(!valid) {
+        Rcpp::stop("Cannot filter the mesh.");
+      }
       MapBetweenVertexDescriptors v2vmap_;
       boost::associative_property_map<MapBetweenVertexDescriptors> 
         v2vmap(v2vmap_);
