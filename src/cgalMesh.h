@@ -160,14 +160,6 @@ struct ClipVisitor :
 {
   void before_subface_creations(face_descriptor fsplit, const EMesh3 & tm) {
     *ofaceindex = fsplit;
-    // if(*is_tm) {
-    //   size_t nf = tm.number_of_faces();
-    //   if((*nfaces).size() >= 1 && nf < (*nfaces).back()) {
-    //     *is_tm = false;
-    //   } else {
-    //     (*nfaces).push_back(nf);
-    //   }
-    // }
   }
 
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
@@ -181,22 +173,6 @@ struct ClipVisitor :
     } else {
       (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
     }
-    // if(*is_tm) {
-    //   if(*fprev != 0 && tm.number_of_faces() != *fprev + 1) {
-    //     *is_tm = false;
-    //     (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
-    //   } else {
-    //     *fprev = tm.number_of_faces();
-    //     (*fmap_tm).insert(std::make_pair(fnew, *ofaceindex));
-    //   }
-    // } else {
-    //   (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
-    // }
-    // if(*is_tm) {
-    //   (*fmap_tm).insert(std::make_pair(fnew, *ofaceindex));
-    // } else {
-    //   (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
-    // }
   }
 
   void after_face_copy(
@@ -210,19 +186,15 @@ struct ClipVisitor :
     : fmap_tm(new MapBetweenFaces()),
       fmap_clipper(new MapBetweenFaces()),
       ofaceindex(new face_descriptor()),
-      nfaces(new std::vector<size_t>()),
       ftargets(new MapBetweenFaces()),
-      is_tm(new bool(true)),
-      fprev(new int(0))
+      is_tm(new bool(true))
   {}
   
   std::shared_ptr<MapBetweenFaces> fmap_tm;
   std::shared_ptr<MapBetweenFaces> fmap_clipper;
   std::shared_ptr<MapBetweenFaces> ftargets;
   std::shared_ptr<face_descriptor> ofaceindex;
-  std::shared_ptr<std::vector<size_t>> nfaces;
   std::shared_ptr<bool> is_tm;
-  std::shared_ptr<int> fprev;
 };
 
 struct UnionVisitor : 
@@ -244,28 +216,6 @@ struct UnionVisitor :
     } else {
       (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
     }
-    // if(*is_tm) {
-    //   if(*fprev != 0 && tm.number_of_faces() != *fprev + 1) {
-    //     *is_tm = false;
-    //     (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
-    //   } else {
-    //     *fprev = tm.number_of_faces();
-    //     (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
-    //   }
-    // } else {
-    //   (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
-    // }
-    // if(*is_tm) {
-    //   if(int(fnew) - 2 > *fprev) {
-    //     *is_tm = false;
-    //     (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
-    //   } else {
-    //     *fprev = int(fnew) - 1;
-    //     (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
-    //   }
-    // } else {
-    //   (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
-    // }
   }
 
   void after_face_copy(
@@ -291,7 +241,6 @@ struct UnionVisitor :
       fprev(new int(0)),
       nfaces_umesh1(new int(-1)),
       ofaceindex(new face_descriptor()),
-      nfaces(new std::vector<size_t>()),
       fmap_union(new MapBetweenFaces()),
       vmap_union(new std::map<vertex_descriptor, vertex_descriptor>()),
       is_mesh1(new bool(true))
@@ -304,7 +253,6 @@ struct UnionVisitor :
   std::shared_ptr<MapBetweenFaces> fmap_union;
   std::shared_ptr<std::map<vertex_descriptor, vertex_descriptor>> vmap_union;
   std::shared_ptr<face_descriptor> ofaceindex;
-  std::shared_ptr<std::vector<size_t>> nfaces;
   std::shared_ptr<bool> is_mesh1;
 };
 

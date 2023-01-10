@@ -863,7 +863,7 @@ public:
       fscalar2 = fscalar2_.first;
     }
 
-    Face_index_map fimap = 
+    Face_index_map fimap_tmp = 
       mesh.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
     UnionVisitor vis;
     EMesh3 umesh;
@@ -874,17 +874,16 @@ public:
     if(!success) {
       Rcpp::stop("Union computation has failed.");
     }
-    mesh.remove_property_map(fimap);
+    mesh.remove_property_map(fimap_tmp);
 
-    std::vector<std::string> fcolor_mesh1;
-    std::vector<std::string> fcolor_mesh2;
     MapBetweenFaces fmap_mesh1 = *(vis.fmap_mesh1);
     MapBetweenFaces fmap_mesh2 = *(vis.fmap_mesh2);
     MapBetweenFaces fmap_union = *(vis.fmap_union);
     const bool disjoint = fmap_mesh1.size() == 0 && fmap_mesh2.size() == 0;
 
     if(disjoint) {
-      std::map<vertex_descriptor, vertex_descriptor> vmap_union = *(vis.vmap_union);
+      std::map<vertex_descriptor, vertex_descriptor> vmap_union = 
+        *(vis.vmap_union);
       // vertex normals
       std::pair<Normals_map, bool> vnormal1_ = 
         mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
@@ -893,7 +892,8 @@ public:
       if(vnormal1_.second && vnormal2_.second) {
         Normals_map vnormal1 = vnormal1_.first;
         Normals_map vnormal2 = vnormal2_.first;
-        Normals_map vnormal = umesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
+        Normals_map vnormal = 
+          umesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
           "v:normal", defaultNormal()
         ).first;
         for(int i = 0; i < mesh.number_of_vertices(); i++) {
@@ -1018,8 +1018,12 @@ public:
       CGAL::copy_face_graph(
         ffg, umesh1, CGAL::parameters::face_to_face_map(f2fmap)
       );
-      copy_property<ffg_face_descriptor, face_descriptor, std::string>(umesh, umesh1, f2fmap_, "f:color");
-      copy_property<ffg_face_descriptor, face_descriptor, double>(umesh, umesh1, f2fmap_, "f:scalar");
+      copy_property<ffg_face_descriptor, face_descriptor, std::string>(
+        umesh, umesh1, f2fmap_, "f:color"
+      );
+      copy_property<ffg_face_descriptor, face_descriptor, double>(
+        umesh, umesh1, f2fmap_, "f:scalar"
+      );
     }
 
     EMesh3 umesh2;
@@ -1030,8 +1034,12 @@ public:
       CGAL::copy_face_graph(
         ffg, umesh2, CGAL::parameters::face_to_face_map(f2fmap)
       );
-      copy_property<ffg_face_descriptor, face_descriptor, std::string>(umesh, umesh2, f2fmap_, "f:color");
-      copy_property<ffg_face_descriptor, face_descriptor, double>(umesh, umesh2, f2fmap_, "f:scalar");
+      copy_property<ffg_face_descriptor, face_descriptor, std::string>(
+        umesh, umesh2, f2fmap_, "f:color"
+      );
+      copy_property<ffg_face_descriptor, face_descriptor, double>(
+        umesh, umesh2, f2fmap_, "f:scalar"
+      );
     }
 
     umesh.remove_property_map(fwhich);

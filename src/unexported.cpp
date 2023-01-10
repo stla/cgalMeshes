@@ -26,6 +26,7 @@ template EMesh3 csoup2mesh<EMesh3, EPoint3>(
   std::vector<EPoint3>, std::vector<std::vector<int>>, const bool
 );
 
+
 EMesh3 vf2mesh(const Rcpp::NumericMatrix vertices,
                const Rcpp::List faces) {
   EMesh3 mesh;
@@ -52,6 +53,7 @@ EMesh3 vf2mesh(const Rcpp::NumericMatrix vertices,
   return mesh;
 }
 
+
 Rcpp::NumericVector defaultNormal() {
   Rcpp::NumericVector def = 
     {
@@ -61,6 +63,7 @@ Rcpp::NumericVector defaultNormal() {
     };
   return def;
 }
+
 
 EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
                 const Rcpp::List faces,
@@ -75,6 +78,7 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
       true
     );
   }
+
   EMesh3 mesh = vf2mesh(vertices, faces);
   if(normals_.isNotNull()) {
     Rcpp::NumericMatrix normals(normals_);
@@ -121,6 +125,7 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
   }
   return mesh;
 }
+
 
 EMesh3 cloneMesh(
   EMesh3& mesh, std::vector<std::string> props
@@ -203,6 +208,7 @@ EMesh3 cloneMesh(
   return out;
 }
 
+
 void removeProperties(
   EMesh3& mesh, std::vector<std::string> props
 ) {
@@ -242,48 +248,7 @@ void removeProperties(
   }
 }
 
-/* MaybeFcolorMap copy_fcolor(EMesh3& mesh) {
-  std::pair<Fcolors_map, bool> fcolors_ = 
-    mesh.property_map<face_descriptor, std::string>("f:color");
-  bool has_fcolor = fcolors_.second;
-  std::map<face_descriptor, std::string> fcolorsmap;
-  if(has_fcolor) {
-    for(EMesh3::Face_index fi: mesh.faces()) {
-      fcolorsmap[fi] = fcolors_.first[fi];
-    }
-    mesh.remove_property_map(fcolors_.first);
-  }
-  return std::make_pair(fcolorsmap, has_fcolor);
-}
 
-MaybeVcolorMap copy_vcolor(EMesh3& mesh) {
-  std::pair<Vcolors_map, bool> vcolors_ = 
-    mesh.property_map<vertex_descriptor, std::string>("v:color");
-  bool has_vcolor = vcolors_.second;
-  std::map<vertex_descriptor, std::string> vcolorsmap;
-  if(has_vcolor) {
-    for(EMesh3::Vertex_index vi: mesh.vertices()) {
-      vcolorsmap[vi] = vcolors_.first[vi];
-    }
-    mesh.remove_property_map(vcolors_.first);
-  }
-  return std::make_pair(vcolorsmap, has_vcolor);
-}
-
-MaybeNormalMap copy_vnormal(EMesh3& mesh) {
-  std::pair<Normals_map, bool> vnormals_ = 
-    mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
-  bool has_vnormal = vnormals_.second;
-  std::map<vertex_descriptor, Rcpp::NumericVector> vnormalsmap;
-  if(has_vnormal) {
-    for(EMesh3::Vertex_index vi: mesh.vertices()) {
-      vnormalsmap[vi] = vnormals_.first[vi];
-    }
-    mesh.remove_property_map(vnormals_.first);
-  }
-  return std::make_pair(vnormalsmap, has_vnormal);
-}
- */
 template <typename Keytype, typename Valuetype>
 std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
   EMesh3& mesh, std::string propname
@@ -310,9 +275,13 @@ template MaybeVcolorMap copy_prop<vertex_descriptor, std::string>(EMesh3&, std::
 template MaybeVscalarMap copy_prop<vertex_descriptor, double>(EMesh3&, std::string);
 template MaybeNormalMap copy_prop<vertex_descriptor, Rcpp::NumericVector>(EMesh3&, std::string);
 
+
 template <typename SourceDescriptor, typename TargetDescriptor, typename Valuetype>
 void copy_property(
-  EMesh3& mesh, EMesh3& fmesh, std::map<SourceDescriptor, TargetDescriptor> dmap, std::string propname
+  EMesh3& mesh, 
+  EMesh3& fmesh, 
+  std::map<SourceDescriptor, TargetDescriptor> dmap, 
+  std::string propname
 ) {
   std::pair<EMesh3::Property_map<TargetDescriptor, Valuetype>, bool> pmap_ = 
     mesh.property_map<TargetDescriptor, Valuetype>(propname);
@@ -370,6 +339,7 @@ void triangulateMesh(EMesh3& mesh) {
     }
   }
 }
+
 
 Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   if(!CGAL::is_triangle_mesh(tm)) {
@@ -458,9 +428,9 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     return Rcpp::List::create();
   }
 
-  MapBetweenFaces fmap_tm = *(vis.fmap_tm);
+  MapBetweenFaces fmap_tm      = *(vis.fmap_tm);
   MapBetweenFaces fmap_clipper = *(vis.fmap_clipper);
-  MapBetweenFaces ftargets = *(vis.ftargets);
+  MapBetweenFaces ftargets     = *(vis.ftargets);
   MapBetweenFaces zeros;
   std::map<face_descriptor, std::string> fcolorMap;
   std::map<face_descriptor, std::string> fcolorMap2;
@@ -468,6 +438,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   std::map<face_descriptor, double> fscalarMap;
   std::map<face_descriptor, double> fscalarMap2;
   std::map<face_descriptor, double> fscalarMap_clipper;
+
   if(hasColors) {
     fcolorMap = fcolorMap_.first;
     fcolorMap2 = fcolorMap2_.first;
@@ -476,6 +447,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
     fscalarMap = fscalarMap_.first;
     fscalarMap2 = fscalarMap2_.first;
   }
+
   {
     int fdi = 0;
     for(auto it = ftargets.rbegin(); it != ftargets.rend(); ++it) {
@@ -498,6 +470,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
 
   Face_index_map whichPart = 
     tm.add_property_map<face_descriptor, std::size_t>("f:which").first;
+
   Fcolors_map newfcolor;
   Fscalars_map newfscalar;
   if(hasColors) {
@@ -583,6 +556,7 @@ Rcpp::List clipping(EMesh3& tm, EMesh3& clipper, const bool clipVolume) {
   return meshes;
 }
 
+
 void clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
   if(!CGAL::is_triangle_mesh(tm)) {
     Rcpp::stop("The mesh is not triangle.");
@@ -642,6 +616,7 @@ void clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
             "f:scalar", nan("")
           ).first;
       }
+
       for(EMesh3::Face_index fi : tm.faces()) {
         std::size_t ffi = fimap[fi];
         face_descriptor fd = CGAL::SM_Face_index(ffi);
@@ -654,10 +629,11 @@ void clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
         }
       }
     }
+
     tm.remove_property_map(fimap);
   }
 
-  MapBetweenFaces fmap = *(vis.fmap_tm);
+  MapBetweenFaces fmap     = *(vis.fmap_tm);
   MapBetweenFaces ftargets = *(vis.ftargets);
 
   if(hasColors || hasScalars) {
@@ -679,6 +655,7 @@ void clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
           "f:scalar", nan("")
         ).first;
     }
+    
     for(EMesh3::Face_index fi : tm.faces()) {
       std::size_t ffi = fimap[fi];
       face_descriptor fd = CGAL::SM_Face_index(ffi);
@@ -701,6 +678,6 @@ void clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
       }
     }
   }
-  tm.remove_property_map(fimap);
 
+  tm.remove_property_map(fimap);
 }
