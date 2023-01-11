@@ -767,7 +767,7 @@ Rcpp::List clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
 }
 
 
-void fillHole(EMesh3& mesh, int border) {
+void fillHole(EMesh3& mesh, int border, bool fair) {
   std::vector<halfedge_descriptor> border_cycles;
   PMP::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
   const int nborders = border_cycles.size();
@@ -786,13 +786,20 @@ void fillHole(EMesh3& mesh, int border) {
   halfedge_descriptor h = border_cycles[border];
   std::vector<face_descriptor>   patch_faces;
   std::vector<vertex_descriptor> patch_vertices;
-  const bool success = std::get<0>(
-    PMP::triangulate_refine_and_fair_hole(
+  if(fair) {
+    const bool success = std::get<0>(
+      PMP::triangulate_refine_and_fair_hole(
+        mesh, h, 
+        std::back_inserter(patch_faces), std::back_inserter(patch_vertices)
+      )
+    );
+    if(!success) {
+      Message("Fairing failed.");
+    }
+  } else {
+    PMP::triangulate_and_refine_hole(
       mesh, h, 
       std::back_inserter(patch_faces), std::back_inserter(patch_vertices)
-    )
-  );
-  if(!success) {
-    Message("Fairing failed.");
+    );
   }
 }

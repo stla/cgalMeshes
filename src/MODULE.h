@@ -381,8 +381,8 @@ public:
   }
 
 
-  void fillBoundaryHole(int border) {
-    fillHole(mesh, border);
+  void fillBoundaryHole(int border, bool fairhole) {
+    fillHole(mesh, border, fairhole);
   }
 
 
