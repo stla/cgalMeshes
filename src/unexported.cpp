@@ -304,6 +304,15 @@ template MaybeVscalarMap copy_prop<vertex_descriptor, double>(
 template MaybeNormalMap copy_prop<vertex_descriptor, Rcpp::NumericVector>(
   EMesh3&, std::string
 );
+template MaybeVscalarMap copy_prop<face_descriptor, Color>(
+  EMesh3&, std::string
+);
+template MaybeVscalarMap copy_prop<vertex_descriptor, Color>(
+  EMesh3&, std::string
+);
+template MaybeVscalarMap copy_prop<vertex_descriptor, EVector3>(
+  EMesh3&, std::string
+);
 
 
 template <

@@ -3,6 +3,7 @@
 #endif
 
 #include <Rcpp.h>
+#include <RcppColors.h>
 
 #define CGAL_EIGEN3_ENABLED 1
 
