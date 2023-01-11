@@ -160,7 +160,7 @@ void copy_property(
   EMesh3&, EMesh3&, std::map<SourceDescriptor, TargetDescriptor>, std::string 
 );
 
-void fillHole(EMesh3&, int, bool);
+Rcpp::XPtr<EMesh3> fillHole(EMesh3&, int, bool);
 //////////////////////////////////////////
 
 struct ClipVisitor : 

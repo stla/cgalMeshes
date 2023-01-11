@@ -381,8 +381,8 @@ public:
   }
 
 
-  void fillBoundaryHole(int border, bool fairhole) {
-    fillHole(mesh, border, fairhole);
+  Rcpp::XPtr<EMesh3> fillBoundaryHole(int border, bool fairhole) {
+    return fillHole(mesh, border, fairhole);
   }
 
 

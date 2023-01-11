@@ -767,7 +767,7 @@ Rcpp::List clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
 }
 
 
-void fillHole(EMesh3& mesh, int border, bool fair) {
+Rcpp::XPtr<EMesh3> fillHole(EMesh3& mesh, int border, bool fair) {
   std::vector<halfedge_descriptor> border_cycles;
   PMP::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
   const int nborders = border_cycles.size();
@@ -802,4 +802,15 @@ void fillHole(EMesh3& mesh, int border, bool fair) {
       std::back_inserter(patch_faces), std::back_inserter(patch_vertices)
     );
   }
+  Face_index_map fimap = mesh.add_property_map<face_descriptor, std::size_t>(
+    "f:i", 0
+  ).first;
+  for(int i = 0; i < patch_faces.size(); i++) {
+    fimap[patch_faces[i]] = 2;
+  }
+  EMesh3 hole;
+  Filtered_graph ffg(mesh, 2, fimap);
+  CGAL::copy_face_graph(ffg, hole);
+  mesh.remove_property_map(fimap);
+  return Rcpp::XPtr<EMesh3>(new EMesh3(hole), false);
 }

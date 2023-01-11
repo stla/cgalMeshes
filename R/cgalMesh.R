@@ -557,10 +557,10 @@ cgalMesh <- R6Class(
     "fillBoundaryHole" = function(border, fair = TRUE) {
       stopifnot(isStrictPositiveInteger(border))
       stopifnot(isBoolean(fair))
-      private[[".CGALmesh"]]$fillBoundaryHole(
+      xptr <- private[[".CGALmesh"]]$fillBoundaryHole(
         as.integer(border) - 1L, fair
       )
-      invisible(self)
+      cgalMesh$new(clean = xptr)
     },
     
     #' @description G
