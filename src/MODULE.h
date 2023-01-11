@@ -381,6 +381,11 @@ public:
   }
 
 
+  void fillBoundaryHole(int border) {
+    fillHole(mesh, border);
+  }
+
+
   Rcpp::List filterMesh(Rcpp::IntegerVector selectedFaces) {
 
     Face_index_map fimap = 

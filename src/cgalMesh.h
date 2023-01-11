@@ -158,6 +158,8 @@ template <typename SourceDescriptor, typename TargetDescriptor, typename Valuety
 void copy_property(
   EMesh3&, EMesh3&, std::map<SourceDescriptor, TargetDescriptor>, std::string 
 );
+
+void fillHole(EMesh3&, int);
 //////////////////////////////////////////
 
 struct ClipVisitor : 

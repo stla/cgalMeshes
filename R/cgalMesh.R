@@ -552,6 +552,14 @@ cgalMesh <- R6Class(
       self
     },
 
+    #' @description G
+    #' @return The 
+    "fillHole" = function(border) {
+      stopifnot(isStrictPositiveInteger(border))
+      private[[".CGALmesh"]]$fillBoundaryHole(as.integer(border) - 1L)
+      invisible(self)
+    },
+    
     #' @description Split the mesh into two meshes according to a 
     #'   given set of selected faces. Face properties are 
     #'   preserved.

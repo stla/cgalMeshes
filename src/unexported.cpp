@@ -765,3 +765,37 @@ Rcpp::List clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
     Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(mesh2), false)
   );
 }
+
+
+void fillHole(EMesh3& mesh, int border) {
+  std::vector<halfedge_descriptor> border_cycles;
+  PMP::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
+  const int nborders = border_cycles.size();
+  if(nborders == 0) {
+    Rcpp::stop("There's no border in this mesh.");
+  } 
+  if(border >= nborders) {
+    std::string msg;
+    if(nborders == 1) {
+      msg = "There's only one border in this mesh.";
+    } else {
+      msg = "There are only " + std::to_string(nborders) + " borders.";
+    }
+    Rcpp::stop(msg);
+  }
+  halfedge_descriptor h = border_cycles[border];
+  std::vector<face_descriptor>   patch_faces;
+  std::vector<vertex_descriptor> patch_vertices;
+  const bool success = std::get<0>(
+    PMP::triangulate_refine_and_fair_hole(
+      mesh, h, 
+      std::back_inserter(patch_faces), std::back_inserter(patch_vertices)
+    )
+  );
+  if(!success) {
+    Message("Fairing failed.");
+  }
+  for(int i = 0; i < patch_faces.size(); i++) {
+    Rcpp::Rcout << "face created: " << patch_faces[i] << "\n";
+  }
+}
