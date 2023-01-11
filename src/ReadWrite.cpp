@@ -13,7 +13,9 @@ EMesh3 readMeshFile(const std::string filename) {
   EMesh3 mesh;
   const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
   bool ok = false;
-  std::istream infile;
+  std::filebuf fb;
+  fb.open(filename, std::ios::in);
+  std::istream infile(&fb);
   if(ext == ".ply") {
     ok = CGAL::IO::read_PLY(infile, mesh);
   } else if(ext == ".off") {
@@ -23,7 +25,7 @@ EMesh3 readMeshFile(const std::string filename) {
       filename, mesh, CGAL::parameters::verbose(true)
     );
   }
-  infile.close();
+  fb.close();
   if(!ok) {
     Rcpp::stop("Reading failure.");
   }
@@ -41,9 +43,9 @@ EMesh3 readMeshFile(const std::string filename) {
     for(EMesh3::Face_index fi : mesh.faces()) {
       const Color color = fcolor_.first[fi];
       double red   = color.red();
-      double green = colot.green();
+      double green = color.green();
       double blue  = color.blue();
-      fcolor_map[fi] = rgb2hex(red, green, blue);
+      fcolor_map[fi] = RcppColors::rgb2hex(red, green, blue);
     }
   }
   std::pair<std::map<vertex_descriptor, Color>, bool> vcolor_ = 
@@ -56,9 +58,9 @@ EMesh3 readMeshFile(const std::string filename) {
     for(EMesh3::Vertex_index vi : mesh.vertices()) {
       const Color color = vcolor_.first[vi];
       double red   = color.red();
-      double green = colot.green();
+      double green = color.green();
       double blue  = color.blue();
-      vcolor_map[vi] = rgb2hex(red, green, blue);
+      vcolor_map[vi] = RcppColors::rgb2hex(red, green, blue);
     }
   }
   std::pair<std::map<vertex_descriptor, EVector3>, bool> vnormal_ = 
