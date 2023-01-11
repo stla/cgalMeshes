@@ -830,12 +830,36 @@ public:
     int nfaces1 = mesh.number_of_faces();
     int nfaces2 = mesh2.number_of_faces();
 
+    std::pair<Fcolors_map, bool> fcolor1_ = 
+      mesh.property_map<face_descriptor, std::string>("f:color");
+    std::pair<Fcolors_map, bool> fcolor2_ = 
+      mesh2.property_map<face_descriptor, std::string>("f:color");
+    Fcolors_map fcolor1; 
+    Fcolors_map fcolor2;
+    const bool hasColors = fcolor1_.second && fcolor2_.second;
+    if(hasColors) {
+      fcolor1 = fcolor1_.first;
+      fcolor2 = fcolor2_.first;
+    }
+
+    std::pair<Fscalars_map, bool> fscalar1_ = 
+      mesh.property_map<face_descriptor, double>("f:scalar");
+    std::pair<Fscalars_map, bool> fscalar2_ = 
+      mesh2.property_map<face_descriptor, double>("f:scalar");
+    Fscalars_map fscalar1; 
+    Fscalars_map fscalar2;
+    const bool hasScalars = fscalar1_.second && fscalar2_.second;
+    if(hasScalars) {
+      fscalar1 = fscalar1_.first;
+      fscalar2 = fscalar2_.first;
+    }
+
     Face_index_map fimap_tmp = 
       mesh.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
     DifferenceVisitor vis;
-    EMesh3 umesh;
+    EMesh3 dmesh;
     const bool success = PMP::corefine_and_compute_difference(
-      mesh, mesh2, umesh,
+      mesh, mesh2, dmesh,
       CGAL::parameters::visitor(vis)
     );
     if(!success) {
@@ -846,76 +870,106 @@ public:
     Rcpp::Rcout << "nfaces mesh after computation: " << mesh.number_of_faces() << "\n";
     Rcpp::Rcout << "nfaces mesh2 after computation: " << mesh2.number_of_faces() << "\n";
 
-    MapBetweenFaces fmap_mesh1 = *(vis.fmap_mesh1);
-    MapBetweenFaces fmap_mesh2 = *(vis.fmap_mesh2);
-    MapBetweenFaces fmap_union = *(vis.fmap_union);
+    MapBetweenFaces fmap_mesh1      = *(vis.fmap_mesh1);
+    MapBetweenFaces fmap_mesh2      = *(vis.fmap_mesh2);
+    MapBetweenFaces fmap_difference = *(vis.fmap_difference);
+    int nfaces_dmesh1 = *(vis.nfaces_dmesh1);
+    Rcpp::Rcout << "nfaces dmesh1: " << nfaces_dmesh1 << "\n";
     std::map<face_descriptor, std::size_t> fmap_which = *(vis.fmap_which);
 
     Rcpp::Rcout << "size fmap_mesh1: " << fmap_mesh1.size() << "\n";
     Rcpp::Rcout << "size fmap_mesh2: " << fmap_mesh2.size() << "\n";
-    Rcpp::Rcout << "size fmap_union: " << fmap_union.size() << "\n";
+    Rcpp::Rcout << "size fmap_difference: " << fmap_difference.size() << "\n";
 
-    int nfaces_umesh1 = *(vis.nfaces_umesh1);
-
-    Rcpp::Rcout << "nfaces umesh1: " << nfaces_umesh1 << "\n";
+    Fcolors_map fcolor;
+    Fscalars_map fscalar;
+    if(hasColors) {
+      fcolor = dmesh.add_property_map<face_descriptor, std::string>(
+        "f:color", ""
+      ).first;
+    }
+    if(hasScalars) {
+      fscalar = dmesh.add_property_map<face_descriptor, double>(
+        "f:scalar", nan("")
+      ).first;
+    }
 
     Face_index_map fwhich = 
-      umesh.add_property_map<face_descriptor, std::size_t>(
-        "f:which", 0
+      dmesh.add_property_map<face_descriptor, std::size_t>(
+        "f:which", 2
       ).first;
-    for(face_descriptor fd : umesh.faces()) {
-      fwhich[fd] = fmap_which[fd];
+    if(hasColors || hasScalars) {
+      for(int i = 0; i < nfaces_dmesh1; i++) {
+        face_descriptor fi = CGAL::SM_Face_index(i);
+        face_descriptor fd = fmap_difference[fi];
+        face_descriptor fd1 = int(fd) < nfaces1 ? fd : fmap_mesh1[fd];
+        if(hasColors) {
+          fcolor[fi] = fcolor1[fd1];
+        }
+        if(hasScalars) {
+          fscalar[fi] = fscalar1[fd1];
+        }
+        fwhich[fi] = 1;
+      }
+      for(int i = nfaces_dmesh1; i < dmesh.number_of_faces(); i++) {
+        face_descriptor fi = CGAL::SM_Face_index(i);
+        face_descriptor fd = fmap_difference[fi];
+        face_descriptor fd2 = int(fd) < nfaces2 ? fd : fmap_mesh2[fd];
+        if(hasColors) {
+          fcolor[fi] = fcolor2[fd2];
+        }
+        if(hasScalars) {
+          fscalar[fi] = fscalar2[fd2];
+        }
+      }
+    } else {
+      for(int i = 0; i < nfaces_dmesh1; i++) {
+        fwhich[CGAL::SM_Face_index(i)] = 1;
+      }
     }
-    // for(int i = 0; i < nfaces_umesh1; i++) {
-    //   face_descriptor fi = CGAL::SM_Face_index(i);
-    //   fwhich[fi] = 1;
-    // }
-    // for(int i = nfaces_umesh1; i < umesh.number_of_faces(); i++) {
-    //   face_descriptor fi = CGAL::SM_Face_index(i);
-    //   fwhich[fi] = 2;
-    // }
-    EMesh3 umesh1;
+
+    EMesh3 dmesh1;
     {
-      Filtered_graph ffg(umesh, 1, fwhich);
+      Filtered_graph ffg(dmesh, 1, fwhich);
       Rcpp::Rcout << "valid selection: " << ffg.is_selection_valid() << "\n";
       MapBetweenFaceDescriptors f2fmap_;
       boost::associative_property_map<MapBetweenFaceDescriptors> 
         f2fmap(f2fmap_);
       CGAL::copy_face_graph(
-        ffg, umesh1, CGAL::parameters::face_to_face_map(f2fmap)
+        ffg, dmesh1, CGAL::parameters::face_to_face_map(f2fmap)
       );
       copy_property<ffg_face_descriptor, face_descriptor, std::string>(
-        umesh, umesh1, f2fmap_, "f:color"
+        dmesh, dmesh1, f2fmap_, "f:color"
       );
       copy_property<ffg_face_descriptor, face_descriptor, double>(
-        umesh, umesh1, f2fmap_, "f:scalar"
+        dmesh, dmesh1, f2fmap_, "f:scalar"
       );
     }
 
-    EMesh3 umesh2;
+    EMesh3 dmesh2;
     {
-      Filtered_graph ffg(umesh, 2, fwhich);
+      Filtered_graph ffg(dmesh, 2, fwhich);
       Rcpp::Rcout << "valid selection: " << ffg.is_selection_valid() << "\n";
       MapBetweenFaceDescriptors f2fmap_;
       boost::associative_property_map<MapBetweenFaceDescriptors> 
         f2fmap(f2fmap_);
       CGAL::copy_face_graph(
-        ffg, umesh2, CGAL::parameters::face_to_face_map(f2fmap)
+        ffg, dmesh2, CGAL::parameters::face_to_face_map(f2fmap)
       );
       copy_property<ffg_face_descriptor, face_descriptor, std::string>(
-        umesh, umesh2, f2fmap_, "f:color"
+        dmesh, dmesh2, f2fmap_, "f:color"
       );
       copy_property<ffg_face_descriptor, face_descriptor, double>(
-        umesh, umesh2, f2fmap_, "f:scalar"
+        dmesh, dmesh2, f2fmap_, "f:scalar"
       );
     }
 
-    umesh.remove_property_map(fwhich);
+    dmesh.remove_property_map(fwhich);
 
     return Rcpp::List::create(
-      Rcpp::Named("umesh") = Rcpp::XPtr<EMesh3>(new EMesh3(umesh), false),
-      Rcpp::Named("mesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(umesh1), false),
-      Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(umesh2), false)
+      Rcpp::Named("dmesh") = Rcpp::XPtr<EMesh3>(new EMesh3(dmesh), false),
+      Rcpp::Named("mesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(dmesh1), false),
+      Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(dmesh2), false)
     );
 
 //    return Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false);

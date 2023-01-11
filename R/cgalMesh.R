@@ -1007,7 +1007,7 @@ cgalMesh <- R6Class(
         mesh2[[".__enclos_env__"]][["private"]][[".CGALmesh"]] <- 
           CGALmesh$new(xptrs[["mesh2"]])
       }
-      cgalMesh$new(clean = xptrs[["umesh"]])
+      cgalMesh$new(clean = xptrs[["dmesh"]])
     },
     
     #' @description Triangulate mesh.
