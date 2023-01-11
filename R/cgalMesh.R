@@ -1004,6 +1004,9 @@ cgalMesh <- R6Class(
     #' # the two meshes must be triangle
     #' mesh1$triangulate()
     #' mesh2$triangulate()
+    #' # assign colors
+    #' mesh1$assignFaceColors("red")
+    #' mesh2$assignFaceColors("navy")
     #' # difference
     #' mesh <- mesh1$subtract(mesh2)
     #' rglmesh <- mesh$getMesh()
@@ -1011,7 +1014,7 @@ cgalMesh <- R6Class(
     #' extEdges <- exteriorEdges(mesh$getEdges())
     #' # plot
     #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
-    #' shade3d(rglmesh, color = "red")
+    #' shade3d(rglmesh, meshColor = "faces")
     #' plotEdges(mesh$getVertices(), extEdges)
     #' shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
     "subtract" = function(mesh2) {

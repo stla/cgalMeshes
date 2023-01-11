@@ -710,21 +710,15 @@ Rcpp::List clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
   }
 
   Face_index_map fwhich = 
-    tm.add_property_map<face_descriptor, std::size_t>("f:which", 2).first;
+    tm.add_property_map<face_descriptor, std::size_t>("f:which", 1).first;
 
   for(EMesh3::Face_index fi : tm.faces()) {
     std::size_t ffi = fimap[fi];
     face_descriptor fd = CGAL::SM_Face_index(ffi);
     if(auto search = ftargets.find(fd); search != ftargets.end()) {
-      if(hasColors) {
-        newfcolor[fi] = "black";
-      }
-      if(hasScalars) {
-        newfscalar[fi] = nan("");
-      }
+      fwhich[fi] = 2;
       ftargets.erase(fd);
     } else {
-      fwhich[fi] = 1;
       fd = ffi < nfaces ? fd : fmap[fd];
       if(hasColors) {
         newfcolor[fi] = fcolorMap[fd];
