@@ -554,7 +554,7 @@ cgalMesh <- R6Class(
 
     #' @description G
     #' @return The 
-    "fillHole" = function(border) {
+    "fillBoundaryHole" = function(border) {
       stopifnot(isStrictPositiveInteger(border))
       private[[".CGALmesh"]]$fillBoundaryHole(as.integer(border) - 1L)
       invisible(self)
@@ -1000,8 +1000,14 @@ cgalMesh <- R6Class(
     "subtract" = function(mesh2) {
       stopifnot(isCGALmesh(mesh2))
       xptr2 <- getXPtr(mesh2)
-      dxptr <- private[[".CGALmesh"]]$subtract(xptr2)
-      cgalMesh$new(clean = dxptr)
+      xptrs <- private[[".CGALmesh"]]$subtract(xptr2)
+      if(length(xptrs) == 3L) {
+        private[[".CGALmesh"]] <- 
+          CGALmesh$new(xptrs[["mesh1"]])
+        mesh2[[".__enclos_env__"]][["private"]][[".CGALmesh"]] <- 
+          CGALmesh$new(xptrs[["mesh2"]])
+      }
+      cgalMesh$new(clean = xptrs[["umesh"]])
     },
     
     #' @description Triangulate mesh.

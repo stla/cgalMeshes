@@ -204,6 +204,70 @@ struct ClipVisitor :
   std::shared_ptr<bool> is_tm;
 };
 
+struct DifferenceVisitor : 
+  public PMP::Corefinement::Default_visitor<EMesh3>
+{
+  void before_subface_creations(face_descriptor fsplit, const EMesh3 & tm) {
+    *ofaceindex = fsplit;
+  }
+
+  void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
+    if(*is_mesh1) {
+      if(tm.property_map<face_descriptor, std::size_t>("f:i").second) {
+        (*fmap_mesh1).insert(std::make_pair(fnew, *ofaceindex));
+      } else {
+        *is_mesh1 = false;
+        (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
+      }
+    } else {
+      (*fmap_mesh2).insert(std::make_pair(fnew, *ofaceindex));
+    }
+  }
+
+  void after_face_copy(
+    face_descriptor fsrc, const EMesh3 & tmsrc, 
+    face_descriptor ftgt, const EMesh3 & tmtgt
+  ) {
+    if(*nfaces_umesh1 == -1 && tmsrc.property_map<face_descriptor, std::size_t>("f:i").second) {
+      *nfaces_umesh1 = tmsrc.number_of_faces();
+      Rcpp::Rcout << "ftgt: " << ftgt << "\n";
+    }
+    if(tmsrc.property_map<face_descriptor, std::size_t>("f:i").second) {
+      (*fmap_which).insert(std::make_pair(ftgt, 1));
+    } else {
+      (*fmap_which).insert(std::make_pair(ftgt, 2));
+    }
+    (*fmap_union).insert(std::make_pair(ftgt, fsrc));
+  }
+
+  void after_vertex_copy(
+    vertex_descriptor vsrc, const EMesh3 & tmsrc, 
+    vertex_descriptor vtgt, const EMesh3 & tmtgt
+  ) {
+    (*vmap_union).insert(std::make_pair(vtgt, vsrc));
+  }
+  
+  DifferenceVisitor()
+    : fmap_mesh1(new MapBetweenFaces()),
+      fmap_mesh2(new MapBetweenFaces()),
+      ofaceindex(new face_descriptor()),
+      fmap_union(new MapBetweenFaces()),
+      fmap_which(new std::map<face_descriptor, std::size_t>()),
+      vmap_union(new std::map<vertex_descriptor, vertex_descriptor>()),
+      is_mesh1(new bool(true)),
+      nfaces_umesh1(new int(-1))
+  {}
+  
+  std::shared_ptr<MapBetweenFaces> fmap_mesh1;
+  std::shared_ptr<MapBetweenFaces> fmap_mesh2;
+  std::shared_ptr<MapBetweenFaces> fmap_union;
+  std::shared_ptr<std::map<face_descriptor, std::size_t>> fmap_which;
+  std::shared_ptr<std::map<vertex_descriptor, vertex_descriptor>> vmap_union;
+  std::shared_ptr<face_descriptor> ofaceindex;
+  std::shared_ptr<bool> is_mesh1;
+  std::shared_ptr<int> nfaces_umesh1;
+};
+
 struct UnionVisitor : 
   public PMP::Corefinement::Default_visitor<EMesh3>
 {

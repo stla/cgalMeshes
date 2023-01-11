@@ -798,4 +798,7 @@ void fillHole(EMesh3& mesh, int border) {
   for(int i = 0; i < patch_faces.size(); i++) {
     Rcpp::Rcout << "face created: " << patch_faces[i] << "\n";
   }
+  for(int i = 0; i < patch_vertices.size(); i++) {
+    Rcpp::Rcout << "vertex created: " << patch_vertices[i] << "\n";
+  }
 }
