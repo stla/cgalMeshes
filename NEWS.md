@@ -6,6 +6,8 @@
 
 - New method `getBorders` for `cgalMesh` objects, to extract the boundary cycles from the mesh.
 
+- New method `fillBoundaryHole` for `cgalMesh` objects, to fill the holes of the mesh.
+
 
 # cgalMeshes 1.0.0
 

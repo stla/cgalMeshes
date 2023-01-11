@@ -101,7 +101,12 @@ cgalMesh <- R6Class(
         if(is.list(mesh)) {
           VF <- checkMesh(mesh[["vertices"]], mesh[["faces"]], aslist = TRUE)
         } else if(isFilename(mesh)) {
-          private[[".CGALmesh"]] <- CGALmesh$new(path.expand(mesh), TRUE)
+          binary <- FALSE
+          if(tolower(tools::file_ext(mesh)) == "ply") {
+            r <- readBin(mesh, "raw", 20L)
+            binary <- grepl("binary", rawToChar(r))
+          }
+          private[[".CGALmesh"]] <- CGALmesh$new(path.expand(mesh), binary)
           return(invisible(self))
         } else {
           stop("Invalid `mesh` argument.")
@@ -1140,13 +1145,11 @@ cgalMesh <- R6Class(
     #'   \code{off} or \code{ply}
     #' @param precision a positive integer, the desired number of decimal 
     #'   places
-    #' @param binary Boolean, whether to write a binary PLY file if 
-    #'   \code{filename} has the \code{ply} extension
     #' @return Nothing, just writes a file.
-    "writeMeshFile" = function(filename, precision = 17, binary = FALSE) {
+    "writeMeshFile" = function(filename, precision = 17) {
       stopifnot(isString(filename))
       stopifnot(isPositiveInteger(precision))
-      stopifnot(isBoolean(binary))
+      #stopifnot(isBoolean(binary))
       filename <- path.expand(filename)
       normals <- self$getNormals()
       if(!is.null(normals)) {
@@ -1157,6 +1160,9 @@ cgalMesh <- R6Class(
         fcolors <- tryCatch({
           col2rgb(fcolors)
         }, error = function(e) {
+          warning(
+            "Invalid face colors found - skipping."
+          )
           NULL
         })
       }
@@ -1165,11 +1171,14 @@ cgalMesh <- R6Class(
         vcolors <- tryCatch({
           col2rgb(vcolors)
         }, error = function(e) {
+          warning(
+            "Invalid vertex colors found - skipping."
+          )
           NULL
         })
       }
       private[[".CGALmesh"]]$writeFile(
-        filename, as.integer(precision), binary,
+        filename, as.integer(precision), FALSE,
         normals, fcolors, vcolors
       )
     }

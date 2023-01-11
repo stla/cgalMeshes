@@ -2120,7 +2120,7 @@ mesh$volume()
 \subsection{Method \code{writeMeshFile()}}{
 Write mesh to a file.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$writeMeshFile(filename, precision = 17, binary = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$writeMeshFile(filename, precision = 17)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -2131,9 +2131,6 @@ Write mesh to a file.
 
 \item{\code{precision}}{a positive integer, the desired number of decimal 
 places}
-
-\item{\code{binary}}{Boolean, whether to write a binary PLY file if 
-\code{filename} has the \code{ply} extension}
 }
 \if{html}{\out{</div>}}
 }

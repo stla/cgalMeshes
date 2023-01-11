@@ -26,8 +26,8 @@ public:
       xptr(xptr_)
       {}
   
-  CGALmesh(const std::string filename, const bool binary)
-    : mesh(readMeshFile(filename)), 
+  CGALmesh(const std::string filename, bool binary)
+    : mesh(readMeshFile(filename, binary)), 
       xptr(Rcpp::XPtr<EMesh3>(&mesh, false))
       {}
       
