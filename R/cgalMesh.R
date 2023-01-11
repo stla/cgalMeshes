@@ -554,6 +554,20 @@ cgalMesh <- R6Class(
 
     #' @description G
     #' @return The 
+    "fillFaceColors" = function(color) {
+      stopifnot(isString(color))
+      colors <- self$getFaceColors()
+      if(is.null(colors)) {
+        message("The mesh has no face colors.")
+      } else {
+        colors[colors == ""] <- color
+        self$assignFaceColors(colors)
+      }
+      invisible(self)
+    },
+    
+    #' @description G
+    #' @return The 
     "fillBoundaryHole" = function(border) {
       stopifnot(isStrictPositiveInteger(border))
       private[[".CGALmesh"]]$fillBoundaryHole(as.integer(border) - 1L)

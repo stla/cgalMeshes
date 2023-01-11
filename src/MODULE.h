@@ -867,19 +867,10 @@ public:
     }
     mesh.remove_property_map(fimap_tmp);
 
-    Rcpp::Rcout << "nfaces mesh after computation: " << mesh.number_of_faces() << "\n";
-    Rcpp::Rcout << "nfaces mesh2 after computation: " << mesh2.number_of_faces() << "\n";
-
     MapBetweenFaces fmap_mesh1      = *(vis.fmap_mesh1);
     MapBetweenFaces fmap_mesh2      = *(vis.fmap_mesh2);
     MapBetweenFaces fmap_difference = *(vis.fmap_difference);
     int nfaces_dmesh1 = *(vis.nfaces_dmesh1);
-    Rcpp::Rcout << "nfaces dmesh1: " << nfaces_dmesh1 << "\n";
-    std::map<face_descriptor, std::size_t> fmap_which = *(vis.fmap_which);
-
-    Rcpp::Rcout << "size fmap_mesh1: " << fmap_mesh1.size() << "\n";
-    Rcpp::Rcout << "size fmap_mesh2: " << fmap_mesh2.size() << "\n";
-    Rcpp::Rcout << "size fmap_difference: " << fmap_difference.size() << "\n";
 
     Fcolors_map fcolor;
     Fscalars_map fscalar;
@@ -931,7 +922,7 @@ public:
     EMesh3 dmesh1;
     {
       Filtered_graph ffg(dmesh, 1, fwhich);
-      Rcpp::Rcout << "valid selection: " << ffg.is_selection_valid() << "\n";
+      //Rcpp::Rcout << "valid selection: " << ffg.is_selection_valid() << "\n";
       MapBetweenFaceDescriptors f2fmap_;
       boost::associative_property_map<MapBetweenFaceDescriptors> 
         f2fmap(f2fmap_);
@@ -949,7 +940,7 @@ public:
     EMesh3 dmesh2;
     {
       Filtered_graph ffg(dmesh, 2, fwhich);
-      Rcpp::Rcout << "valid selection: " << ffg.is_selection_valid() << "\n";
+      //Rcpp::Rcout << "valid selection: " << ffg.is_selection_valid() << "\n";
       MapBetweenFaceDescriptors f2fmap_;
       boost::associative_property_map<MapBetweenFaceDescriptors> 
         f2fmap(f2fmap_);
@@ -972,7 +963,6 @@ public:
       Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(dmesh2), false)
     );
 
-//    return Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false);
   }
 
 

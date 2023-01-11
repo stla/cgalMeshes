@@ -83,6 +83,7 @@ typedef std::pair<std::map<vertex_descriptor, double>, bool> MaybeVscalarMap;
 typedef EMesh3::Property_map<face_descriptor, double> Fscalars_map;
 typedef std::pair<std::map<face_descriptor, double>, bool> MaybeFscalarMap;
 typedef std::map<face_descriptor, face_descriptor> MapBetweenFaces;
+typedef std::map<vertex_descriptor, vertex_descriptor> MapBetweenVertices;
 typedef boost::graph_traits<EMesh3>::edge_descriptor edge_descriptor;
 
 typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
@@ -231,7 +232,7 @@ struct DifferenceVisitor :
     if(*is_mesh1src) {
       *is_mesh1src = 
         tmsrc.property_map<face_descriptor, std::size_t>("f:i").second;
-      *nfaces_dmesh1++;
+      (*nfaces_dmesh1)++;
     }
     (*fmap_difference).insert(std::make_pair(ftgt, fsrc));
   }
@@ -248,9 +249,8 @@ struct DifferenceVisitor :
       fmap_mesh2(new MapBetweenFaces()),
       ofaceindex(new face_descriptor()),
       fmap_difference(new MapBetweenFaces()),
-      fmap_which(new std::map<face_descriptor, std::size_t>()),
-      nfaces_dmesh1(new int(-1));
-      vmap_difference(new std::map<vertex_descriptor, vertex_descriptor>()),
+      nfaces_dmesh1(new int(-1)),
+      vmap_difference(new MapBetweenVertices()),
       is_mesh1(new bool(true)),
       is_mesh1src(new bool(true))
   {}
@@ -258,8 +258,7 @@ struct DifferenceVisitor :
   std::shared_ptr<MapBetweenFaces> fmap_mesh1;
   std::shared_ptr<MapBetweenFaces> fmap_mesh2;
   std::shared_ptr<MapBetweenFaces> fmap_difference;
-  std::shared_ptr<std::map<face_descriptor, std::size_t>> fmap_which;
-  std::shared_ptr<std::map<vertex_descriptor, vertex_descriptor>> vmap_union;
+  std::shared_ptr<MapBetweenVertices> vmap_difference;
   std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<bool> is_mesh1;
   std::shared_ptr<bool> is_mesh1src;
