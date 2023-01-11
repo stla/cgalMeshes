@@ -264,6 +264,33 @@ view3d(0, 0, zoom = 0.8)
 shade3d(rglHopf_faired, color = "orangered")}
 
 ## ------------------------------------------------
+## Method `cgalMesh$fillBoundaryHole`
+## ------------------------------------------------
+
+library(cgalMeshes)
+library(rgl)
+# make a sphere
+sphere <- sphereMesh()
+mesh <- cgalMesh$new(sphere)
+# make a hole in this sphere
+mesh$clipToPlane(
+  planePoint  = c(0.5, 0, 0),
+  planeNormal = c(1, 0, 0),
+  clipVolume  = FALSE
+)
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+# fill the hole
+hole <- mesh$fillBoundaryHole(1, fair = TRUE)
+hole$computeNormals()
+rhole <- hole$getMesh()
+# plot
+\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(30, 30)
+shade3d(rmesh, color = "red")
+shade3d(rhole, color = "blue")}
+
+## ------------------------------------------------
 ## Method `cgalMesh$geoDists`
 ## ------------------------------------------------
 
@@ -468,6 +495,9 @@ mesh2 <- cgalMesh$new(rglmesh2)
 # the two meshes must be triangle
 mesh1$triangulate()
 mesh2$triangulate()
+# assign colors
+mesh1$assignFaceColors("red")
+mesh2$assignFaceColors("navy")
 # difference
 mesh <- mesh1$subtract(mesh2)
 rglmesh <- mesh$getMesh()
@@ -475,7 +505,7 @@ rglmesh <- mesh$getMesh()
 extEdges <- exteriorEdges(mesh$getEdges())
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
-shade3d(rglmesh, color = "red")
+shade3d(rglmesh, meshColor = "faces")
 plotEdges(mesh$getVertices(), extEdges)
 shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
 
@@ -546,6 +576,8 @@ mesh$volume()
 \item \href{#method-cgalMesh-distance}{\code{cgalMesh$distance()}}
 \item \href{#method-cgalMesh-facesAroundVertex}{\code{cgalMesh$facesAroundVertex()}}
 \item \href{#method-cgalMesh-fair}{\code{cgalMesh$fair()}}
+\item \href{#method-cgalMesh-fillBoundaryHole}{\code{cgalMesh$fillBoundaryHole()}}
+\item \href{#method-cgalMesh-fillFaceColors}{\code{cgalMesh$fillFaceColors()}}
 \item \href{#method-cgalMesh-filterMesh}{\code{cgalMesh$filterMesh()}}
 \item \href{#method-cgalMesh-fixManifoldness}{\code{cgalMesh$fixManifoldness()}}
 \item \href{#method-cgalMesh-geoDists}{\code{cgalMesh$geoDists()}}
@@ -1248,6 +1280,81 @@ shade3d(rglHopf_faired, color = "orangered")}
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-fillBoundaryHole"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-fillBoundaryHole}{}}}
+\subsection{Method \code{fillBoundaryHole()}}{
+Fill a hole in the mesh. The face properties and the 
+  vertex properties are preserved.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$fillBoundaryHole(border, fair = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{border}}{index of the boundary cycle forming the hole to be 
+filled; the boundary cycles can be identified with 
+\code{$getBorders()}}
+
+\item{\code{fair}}{Boolean, whether to fair (i.e. smooth) the filled hole}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The filled hole as a \code{cgalMesh} object. The reference 
+  mesh is updated.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(cgalMeshes)
+library(rgl)
+# make a sphere
+sphere <- sphereMesh()
+mesh <- cgalMesh$new(sphere)
+# make a hole in this sphere
+mesh$clipToPlane(
+  planePoint  = c(0.5, 0, 0),
+  planeNormal = c(1, 0, 0),
+  clipVolume  = FALSE
+)
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+# fill the hole
+hole <- mesh$fillBoundaryHole(1, fair = TRUE)
+hole$computeNormals()
+rhole <- hole$getMesh()
+# plot
+\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(30, 30)
+shade3d(rmesh, color = "red")
+shade3d(rhole, color = "blue")}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-fillFaceColors"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-fillFaceColors}{}}}
+\subsection{Method \code{fillFaceColors()}}{
+Replace missing face colors with a color.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$fillFaceColors(color)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{color}}{the color to replace the missing face colors}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The reference mesh, invisibly.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-filterMesh"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-filterMesh}{}}}
 \subsection{Method \code{filterMesh()}}{
@@ -1851,7 +1958,9 @@ mesh$selfIntersects()
 \if{html}{\out{<a id="method-cgalMesh-subtract"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-subtract}{}}}
 \subsection{Method \code{subtract()}}{
-Subtract another mesh. Both meshes must be triangle.
+Subtract a mesh. Both meshes must be triangle. Face 
+  properties of the two meshes are copied to the new mesh. 
+ \strong{WARNING}: this modifies the reference mesh and \code{mesh2}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$subtract(mesh2)}\if{html}{\out{</div>}}
 }
@@ -1864,7 +1973,9 @@ Subtract another mesh. Both meshes must be triangle.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \code{cgalMesh} object.
+A \code{cgalMesh} object, the difference between the reference 
+  mesh and \code{mesh2}. Both the reference mesh and \code{mesh2} are 
+  modified: they are corefined.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1878,6 +1989,9 @@ mesh2 <- cgalMesh$new(rglmesh2)
 # the two meshes must be triangle
 mesh1$triangulate()
 mesh2$triangulate()
+# assign colors
+mesh1$assignFaceColors("red")
+mesh2$assignFaceColors("navy")
 # difference
 mesh <- mesh1$subtract(mesh2)
 rglmesh <- mesh$getMesh()
@@ -1885,7 +1999,7 @@ rglmesh <- mesh$getMesh()
 extEdges <- exteriorEdges(mesh$getEdges())
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
-shade3d(rglmesh, color = "red")
+shade3d(rglmesh, meshColor = "faces")
 plotEdges(mesh$getVertices(), extEdges)
 shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
 }

@@ -552,8 +552,37 @@ cgalMesh <- R6Class(
       self
     },
 
-    #' @description G
-    #' @return The 
+    #' @description Fill a hole in the mesh. The face properties and the 
+    #'   vertex properties are preserved.
+    #' @param border index of the boundary cycle forming the hole to be 
+    #'   filled; the boundary cycles can be identified with 
+    #'   \code{$getBorders()} 
+    #' @param fair Boolean, whether to fair (i.e. smooth) the filled hole
+    #' @return The filled hole as a \code{cgalMesh} object. The reference 
+    #'   mesh is updated.
+    #' @examples 
+    #' library(cgalMeshes)
+    #' library(rgl)
+    #' # make a sphere
+    #' sphere <- sphereMesh()
+    #' mesh <- cgalMesh$new(sphere)
+    #' # make a hole in this sphere
+    #' mesh$clipToPlane(
+    #'   planePoint  = c(0.5, 0, 0),
+    #'   planeNormal = c(1, 0, 0),
+    #'   clipVolume  = FALSE
+    #' )
+    #' mesh$computeNormals()
+    #' rmesh <- mesh$getMesh()
+    #' # fill the hole
+    #' hole <- mesh$fillBoundaryHole(1, fair = TRUE)
+    #' hole$computeNormals()
+    #' rhole <- hole$getMesh()
+    #' # plot
+    #' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+    #' view3d(30, 30)
+    #' shade3d(rmesh, color = "red")
+    #' shade3d(rhole, color = "blue")}
     "fillBoundaryHole" = function(border, fair = TRUE) {
       stopifnot(isStrictPositiveInteger(border))
       stopifnot(isBoolean(fair))
@@ -563,8 +592,9 @@ cgalMesh <- R6Class(
       cgalMesh$new(clean = xptr)
     },
     
-    #' @description G
-    #' @return The 
+    #' @description Replace missing face colors with a color.
+    #' @param color the color to replace the missing face colors
+    #' @return The reference mesh, invisibly.
     "fillFaceColors" = function(color) {
       stopifnot(isString(color))
       colors <- self$getFaceColors()
@@ -990,9 +1020,13 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$doesSelfIntersect()
     },
     
-    #' @description Subtract another mesh. Both meshes must be triangle.
+    #' @description Subtract a mesh. Both meshes must be triangle. Face 
+    #'   properties of the two meshes are copied to the new mesh. 
+    #'  \strong{WARNING}: this modifies the reference mesh and \code{mesh2}. 
     #' @param mesh2 a \code{cgalMesh} object
-    #' @return A \code{cgalMesh} object.
+    #' @return A \code{cgalMesh} object, the difference between the reference 
+    #'   mesh and \code{mesh2}. Both the reference mesh and \code{mesh2} are 
+    #'   modified: they are corefined.
     #' @examples 
     #' \donttest{library(cgalMeshes)
     #' library(rgl)
