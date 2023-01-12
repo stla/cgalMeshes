@@ -13,13 +13,12 @@ EMesh3 readMeshFile(const std::string filename, bool binary) {
   EMesh3 mesh;
   const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
   bool ok = false;
-  std::filebuf fb;
+  std::ifstream infile;
   if(binary) {
-    fb.open(filename, std::ios::binary|std::ios::in);
+    infile.open(filename, std::ios::binary);
   } else {
-    fb.open(filename, std::ios::in);
+    infile.open(filename);
   }
-  std::istream infile(&fb);
   if(ext == ".ply") {
     ok = CGAL::IO::read_PLY(infile, mesh);
   } else if(ext == ".off") {
@@ -29,7 +28,7 @@ EMesh3 readMeshFile(const std::string filename, bool binary) {
       filename, mesh, CGAL::parameters::verbose(true)
     );
   }
-  fb.close();
+  infile.close();
   if(!ok) {
     Rcpp::stop("Reading failure.");
   }

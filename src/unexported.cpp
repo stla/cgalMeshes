@@ -329,9 +329,9 @@ void copy_property(
       fmesh.add_property_map<TargetDescriptor, Valuetype>(
         propname
       ).first;
-    for(const auto& [source_decriptor, target_decriptor] : dmap) {
-      pmap[target_decriptor] = 
-        pmap_.first[TargetDescriptor(int(source_decriptor))];
+    for(const auto& [source_descriptor, target_descriptor] : dmap) {
+      pmap[target_descriptor] = 
+        pmap_.first[TargetDescriptor(int(source_descriptor))];
     }
   }
 }
