@@ -1224,7 +1224,8 @@ public:
 
 
   void writeFile(
-    Rcpp::String filename, const int precision, const bool binary,
+    Rcpp::String filename, const int precision, 
+    const bool binary, std::string comments,
     Rcpp::Nullable<Rcpp::NumericMatrix> normals_,
     Rcpp::Nullable<Rcpp::IntegerMatrix> fcolors_,
     Rcpp::Nullable<Rcpp::IntegerMatrix> vcolors_
@@ -1279,10 +1280,7 @@ public:
         vcolor[vtarget] = Color(red, green, blue);
       }
     }
-    writeMeshFile(filename, precision, binary, meshcopy);
-    // removeProperty<face_descriptor, Color>(mesh, "f:color");
-    // removeProperty<vertex_descriptor, Color>(mesh, "v:color");
-    // removeProperty<vertex_descriptor, EVector3>(mesh, "v:normal");
+    writeMeshFile(filename, precision, binary, comments, meshcopy);
   }
   
 };

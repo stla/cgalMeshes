@@ -1145,10 +1145,13 @@ cgalMesh <- R6Class(
     #'   \code{off} or \code{ply}
     #' @param precision a positive integer, the desired number of decimal 
     #'   places
+    #' @param comments for \code{ply} extension only, a string to be included 
+    #'   in the header of the PLY file
     #' @return Nothing, just writes a file.
-    "writeMeshFile" = function(filename, precision = 17) {
+    "writeMeshFile" = function(filename, precision = 17, comments = "") {
       stopifnot(isString(filename))
       stopifnot(isPositiveInteger(precision))
+      stopifnot(isString(comments))
       #stopifnot(isBoolean(binary))
       filename <- path.expand(filename)
       normals <- self$getNormals()
@@ -1178,7 +1181,7 @@ cgalMesh <- R6Class(
         })
       }
       private[[".CGALmesh"]]$writeFile(
-        filename, as.integer(precision), FALSE,
+        filename, as.integer(precision), FALSE, comments, 
         normals, fcolors, vcolors
       )
     }

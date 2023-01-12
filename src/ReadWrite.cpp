@@ -19,8 +19,9 @@ EMesh3 readMeshFile(const std::string filename, bool binary) {
   } else {
     infile.open(filename);
   }
+  std::string comments;
   if(ext == ".ply") {
-    ok = CGAL::IO::read_PLY(infile, mesh);
+    ok = CGAL::IO::read_PLY(infile, mesh, comments);
   } else if(ext == ".off") {
     ok = CGAL::IO::read_OFF(infile, mesh);
   } else {
@@ -31,6 +32,11 @@ EMesh3 readMeshFile(const std::string filename, bool binary) {
   infile.close();
   if(!ok) {
     Rcpp::stop("Reading failure.");
+  }
+  if(!comments.empty()) {
+    Message("Comments found in " + filename + ":");
+    Message("------------------");
+    Message(comments);
   }
   const bool valid = mesh.is_valid(false);
   if(!valid) {
@@ -100,6 +106,7 @@ EMesh3 readMeshFile(const std::string filename, bool binary) {
 void writeMeshFile(const std::string filename,
                    const int precision,
                    const bool binary,
+                   std::string comments,
                    EMesh3& mesh) {
   const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
   bool ok = false;
@@ -112,7 +119,7 @@ void writeMeshFile(const std::string filename,
   }
   if(ext == ".ply") {
     ok = CGAL::IO::write_PLY(
-      outfile, mesh,
+      outfile, mesh, comments,
       CGAL::parameters::stream_precision(precision)
     );
   } else if(ext == ".off") {

@@ -128,7 +128,7 @@ Rcpp::List getFaces(MeshT&);
 void Message(std::string);
 
 EMesh3 readMeshFile(const std::string, bool);
-void writeMeshFile(const std::string, const int, const bool, EMesh3&);
+void writeMeshFile(const std::string, const int, const bool, std::string, EMesh3&);
 
 EMesh3 dualMesh(EMesh3&);
 
