@@ -8,6 +8,7 @@ getXPtr <- function(cMesh){
 #' @importFrom R6 R6Class
 #' @importFrom rgl mesh3d
 #' @importFrom grDevices col2rgb
+#' @importFrom tools file_ext
 #' @export
 cgalMesh <- R6Class(
   "cgalMesh",
@@ -102,7 +103,7 @@ cgalMesh <- R6Class(
           VF <- checkMesh(mesh[["vertices"]], mesh[["faces"]], aslist = TRUE)
         } else if(isFilename(mesh)) {
           binary <- FALSE
-          if(tolower(tools::file_ext(mesh)) == "ply") {
+          if(tolower(file_ext(mesh)) == "ply") {
             r <- readBin(mesh, "raw", 20L)
             binary <- grepl("binary", rawToChar(r))
           }
