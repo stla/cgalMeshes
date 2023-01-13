@@ -22,6 +22,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("boundingBox", &CGALmesh::boundingBox)
     .method("centroid", &CGALmesh::centroid)
     .method("clipMesh", &CGALmesh::clipMesh)
+    .method("clipToIsoCuboid", &CGALmesh::clipToIsoCuboid)
     .method("clipToPlane", &CGALmesh::clipToPlane)
     .method("clone", &CGALmesh::clone)
     .method("computeNormals", &CGALmesh::computeNormals)

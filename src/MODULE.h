@@ -169,6 +169,18 @@ public:
     return clippingToPlane(mesh, plane, clipVolume);
   }
 
+
+  Rcpp::List clipToIsoCuboid(
+    Rcpp::NumericVector lcorner, 
+    Rcpp::NumericVector ucorner, 
+    const bool clipVolume
+  ) {
+    EPoint3 lpoint(lcorner[0], lcorner[1], lcorner[2]);
+    EPoint3 upoint(ucorner[0], ucorner[1], ucorner[2]);
+    IsoCuboid3 isocuboid(lpoint, upoint, 0);
+    return clippingToIsoCuboid(mesh, isocuboid, clipVolume);
+  }
+
   
   Rcpp::XPtr<EMesh3> clone() {
     EMesh3 copy = cloneMesh(

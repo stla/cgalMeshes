@@ -396,6 +396,61 @@ cgalMesh <- R6Class(
       }
     },
 
+    #' @description Clip the mesh to an iso-oriented cuboid. The mesh must be 
+    #'   triangle. Face properties (colors, scalars) are preserved.
+    #' @param lcorner,ucorner two diagonally opposite vertices of the 
+    #'   iso-oriented cuboid, the smallest and the largest (see 
+    #'   \code{\link{isoCuboidMesh}})
+    #' @param clipVolume Boolean, whether to clip on the volume
+    #' @return If \code{clipVolume=FALSE}, the modified reference mesh is 
+    #'   invisibly returned. If \code{clipVolume=TRUE}, a list of two 
+    #'   \code{cgalMesh} objects is returned: the first one is the part of 
+    #'   the clipped mesh corresponding to the original mesh, the second 
+    #'   one is the part of the clipped mesh corresponding to the cuboid.
+    #' @examples 
+    #' \donttest{library(cgalMeshes)
+    #' library(rgl)
+    #' rmesh <- HopfTorusMesh(nu = 200, nv = 200)
+    #' mesh <- cgalMesh$new(rmesh)
+    #' mesh$assignFaceColors("orangered")
+    #' lcorner <- c(-7, -7, -5)
+    #' ucorner <- c(7, 6, 5)
+    #' bxmesh <- isoCuboidMesh(lcorner, ucorner)
+    #' mesh$clipToIsoCuboid(
+    #'   lcorner, ucorner, clipVolume = FALSE
+    #' )
+    #' mesh$computeNormals()
+    #' rClippedMesh <- mesh$getMesh()
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512))
+    #' view3d(-40, 0)
+    #' shade3d(rClippedMesh, meshColor = "faces")
+    #' shade3d(bxmesh, color = "cyan", alpha = 0.3)}
+    "clipToIsoCuboid" = function(lcorner, ucorner, clipVolume) {
+      check <- is.numeric(lcorner) && length(lcorner) == 3L && 
+        !anyNA(lcorner)
+      if(!check) {
+        stop("Invalid `lcorner` vector.")
+      }
+      check <- is.numeric(ucorner) && length(ucorner) == 3L && 
+        !anyNA(ucorner)
+      if(!check) {
+        stop("Invalid `ucorner` vector.")
+      }
+      stopifnot(all(ucorner > lcorner))
+      stopifnot(isBoolean(clipVolume))
+      if(clipVolume) {
+        xptrs <- private[[".CGALmesh"]]$clipToIsoCuboid(
+          lcorner, ucorner, TRUE
+        )
+        lapply(xptrs, function(xptr) cgalMesh$new(clean = xptr))
+      } else {
+        . <- private[[".CGALmesh"]]$clipToIsoCuboid(
+          lcorner, ucorner, FALSE
+        )
+        invisible(self)
+      }
+    },
+    
     #' @description Compute per-vertex normals of the mesh. 
     #' @return The current \code{cgalMesh} object, invisibly. 
     #'  To get the normals, use the \code{getNormals} method.

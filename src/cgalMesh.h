@@ -52,6 +52,7 @@
 #include <CGAL/Tetrahedron_3.h>
 #include <CGAL/Plane_3.h>
 #include <CGAL/Bbox_3.h>
+#include <CGAL/Iso_cuboid_3.h>
 
 
 // -------------------------------------------------------------------------- //
@@ -61,6 +62,7 @@ typedef CGAL::Surface_mesh<Point3> Mesh3;
 typedef EK::Vector_3 EVector3;
 typedef EK::Plane_3 EPlane3;
 typedef CGAL::Bbox_3 Bbox3;
+typedef CGAL::Iso_cuboid_3<EK> IsoCuboid3;
 typedef CGAL::Nef_polyhedron_3<EK, CGAL::SNC_indexed_items> NefPol;
 typedef CGAL::Polyhedron_3<EK> EPolyhedron;
 
@@ -157,6 +159,7 @@ void removeProperty(EMesh3&, std::string);
 
 Rcpp::List clipping(EMesh3&, EMesh3&, const bool);
 Rcpp::List clippingToPlane(EMesh3&, EPlane3, const bool);
+Rcpp::List clippingToIsoCuboid(EMesh3&, IsoCuboid3, const bool);
 
 template <typename SourceDescriptor, typename TargetDescriptor, typename Valuetype>
 void copy_property(

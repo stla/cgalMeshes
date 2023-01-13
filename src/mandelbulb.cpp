@@ -62,8 +62,8 @@ Rcpp::XPtr<EMesh3> mandelbulb(double angle_bound, double radius_bound, double di
 
   // defining meshing criteria
   CGAL::Surface_mesh_default_criteria_3<Tr> criteria(35.,  // angular bound
-                                                     0.05,  // radius bound
-                                                     0.05); // distance bound
+                                                     0.025,  // radius bound
+                                                     0.025); // distance bound
   // typedef CGAL::Surface_mesh_default_criteria_3<Tr> Crit; 
   // Crit criteria(tr::FT(angle_bound),  // angular bound
   //                                                    tr::FT(radius_bound),  // radius bound

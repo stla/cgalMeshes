@@ -167,6 +167,28 @@ shade3d(rClippedMesh1, meshColor = "faces")
 shade3d(rClippedMesh2, color = "orange")}
 
 ## ------------------------------------------------
+## Method `cgalMesh$clipToIsoCuboid`
+## ------------------------------------------------
+
+\donttest{library(cgalMeshes)
+library(rgl)
+rmesh <- HopfTorusMesh(nu = 200, nv = 200)
+mesh <- cgalMesh$new(rmesh)
+mesh$assignFaceColors("orangered")
+lcorner <- c(-7, -7, -5)
+ucorner <- c(7, 6, 5)
+bxmesh <- isoCuboidMesh(lcorner, ucorner)
+mesh$clipToIsoCuboid(
+  lcorner, ucorner, clipVolume = FALSE
+)
+mesh$computeNormals()
+rClippedMesh <- mesh$getMesh()
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(-40, 0)
+shade3d(rClippedMesh, meshColor = "faces")
+shade3d(bxmesh, color = "cyan", alpha = 0.3)}
+
+## ------------------------------------------------
 ## Method `cgalMesh$connectedComponents`
 ## ------------------------------------------------
 
@@ -585,6 +607,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
 \item \href{#method-cgalMesh-clip}{\code{cgalMesh$clip()}}
 \item \href{#method-cgalMesh-clipToPlane}{\code{cgalMesh$clipToPlane()}}
+\item \href{#method-cgalMesh-clipToIsoCuboid}{\code{cgalMesh$clipToIsoCuboid()}}
 \item \href{#method-cgalMesh-computeNormals}{\code{cgalMesh$computeNormals()}}
 \item \href{#method-cgalMesh-connectedComponents}{\code{cgalMesh$connectedComponents()}}
 \item \href{#method-cgalMesh-convexParts}{\code{cgalMesh$convexParts()}}
@@ -1063,6 +1086,59 @@ rClippedMesh2 <- mesh2$getMesh()
 view3d(70, 0)
 shade3d(rClippedMesh1, meshColor = "faces")
 shade3d(rClippedMesh2, color = "orange")}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-clipToIsoCuboid"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-clipToIsoCuboid}{}}}
+\subsection{Method \code{clipToIsoCuboid()}}{
+Clip the mesh to an iso-oriented cuboid. The mesh must be 
+  triangle. Face properties (colors, scalars) are preserved.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$clipToIsoCuboid(lcorner, ucorner, clipVolume)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{lcorner, ucorner}}{two diagonally opposite vertices of the 
+iso-oriented cuboid, the smallest and the largest (see 
+\code{\link{isoCuboidMesh}})}
+
+\item{\code{clipVolume}}{Boolean, whether to clip on the volume}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+If \code{clipVolume=FALSE}, the modified reference mesh is 
+  invisibly returned. If \code{clipVolume=TRUE}, a list of two 
+  \code{cgalMesh} objects is returned: the first one is the part of 
+  the clipped mesh corresponding to the original mesh, the second 
+  one is the part of the clipped mesh corresponding to the cuboid.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
+rmesh <- HopfTorusMesh(nu = 200, nv = 200)
+mesh <- cgalMesh$new(rmesh)
+mesh$assignFaceColors("orangered")
+lcorner <- c(-7, -7, -5)
+ucorner <- c(7, 6, 5)
+bxmesh <- isoCuboidMesh(lcorner, ucorner)
+mesh$clipToIsoCuboid(
+  lcorner, ucorner, clipVolume = FALSE
+)
+mesh$computeNormals()
+rClippedMesh <- mesh$getMesh()
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(-40, 0)
+shade3d(rClippedMesh, meshColor = "faces")
+shade3d(bxmesh, color = "cyan", alpha = 0.3)}
 }
 \if{html}{\out{</div>}}
 
