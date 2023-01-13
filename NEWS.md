@@ -4,11 +4,11 @@
 
 - Writing a mesh to a file includes the colors and the normals in this file if they are present, and reading a mesh file including colors or normals includes these properties in the mesh. 
 
-- New method `clipToPlane` for `cgalMesh` objects, to clip the mesh to a plane.
-
-- New method `getBorders` for `cgalMesh` objects, to extract the boundary cycles from the mesh.
-
-- New method `fillBoundaryHole` for `cgalMesh` objects, to fill the holes of the mesh.
+- New methods for `cgalMesh` objects:
+  * `clipToPlane`, to clip the mesh to a plane;
+  * `clipToIsoCuboid`, to clip the mesh to an iso-oriented cuboid;
+  * `getBorders`, to extract the boundary cycles from the mesh;
+  * `fillBoundaryHole`, to fill the holes of the mesh.
 
 
 # cgalMeshes 1.0.0

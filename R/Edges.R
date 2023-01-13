@@ -51,7 +51,7 @@ exteriorEdges <- function(edgesDF, angleThreshold = 1) {
 #'
 #' @return No value, just produces a 3D graphic.
 #'
-#' @importFrom rgl cylinder3d shade3d lines3d spheres3d
+#' @importFrom rgl cylinder3d shade3d segments3d spheres3d
 #' @export
 #'
 #' @examples
@@ -92,16 +92,21 @@ plotEdges <- function(
     spheresColor = color
 ){
   edges <- as.matrix(edges[, c(1L, 2L)])
-  for(i in 1L:nrow(edges)){
-    edge <- edges[i, ]
-    if(edgesAsTubes){
+  nedges <- nrow(edges)
+  if(edgesAsTubes) {
+    for(i in 1L:nedges){
+      edge <- edges[i, ]
       tube <- cylinder3d(
         vertices[edge, ], radius = tubesRadius, sides = 90
       )
       shade3d(tube, color = color)
-    }else{
-      lines3d(vertices[edge, ], color = color, lwd = lwd)
     }
+  } else {
+    pts <- matrix(NA_real_, nrow = 2L*nedges, ncol = 3L)
+    is_v1 <- rep(c(TRUE, FALSE), times = nedges)
+    pts[is_v1, ]  <- vertices[edges[, 1L], ]
+    pts[!is_v1, ] <- vertices[edges[, 2L], ]
+    segments3d(pts, color = color, lwd = lwd)
   }
   if(verticesAsSpheres){
     only <- unique(c(edges))

@@ -391,24 +391,100 @@ if(!rgl.useNULL()) {
 ## Method `cgalMesh$getBorders`
 ## ------------------------------------------------
 
-library(cgalMeshes)
+\donttest{library(cgalMeshes)
 library(rgl)
-cyl <- cylinder3d(
-  rbind(c(0,0,0), c(1,0,0), c(2,0,0)), radius = 1
+# isosurface f=0
+f <- function(x, y, z) {
+  sin_x <- sin(x)
+  sin_y <- sin(y)
+  sin_z <- sin(z)
+  cos_x <- cos(x)
+  cos_y <- cos(y)
+  cos_z <- cos(z)
+  d <- sqrt(
+    (-sin_x * sin_y + cos_x * cos_z) ** 2
+    + (-sin_y * sin_z + cos_y * cos_x) ** 2
+    + (-sin_z * sin_x + cos_z * cos_y) ** 2
+  )
+  (
+    cos(
+      x - (-sin_x * sin_y + cos_x * cos_z) / d
+    )
+    * sin(
+      y - (-sin_y * sin_z + cos_y * cos_x) / d
+    )
+    + cos(
+      y - (-sin_y * sin_z + cos_y * cos_x) / d
+    )
+    * sin(
+      z - (-sin_z * sin_x + cos_z * cos_y)/ d
+    )
+    + cos(
+      z - (-sin_z * sin_x + cos_z * cos_y) / d
+    )
+    * sin(
+      x - (-sin_x * sin_y + cos_x * cos_z) / d
+    )
+  ) * (
+    (
+      cos(
+        x + (-sin_x * sin_y + cos_x * cos_z) / d
+      )
+      * sin(
+        y + (-sin_y * sin_z + cos_y * cos_x) / d
+      )
+      + cos(
+        y + (-sin_y * sin_z + cos_y * cos_x) / d
+      )
+      * sin(
+        z + (-sin_z * sin_x + cos_z * cos_y) / d
+      )
+      + cos(
+        z + (-sin_z * sin_x + cos_z * cos_y) / d
+      )
+      * sin(
+        x + (-sin_x * sin_y + cos_x * cos_z) / d
+      )
+    )
+  )
+}
+# construct the isosurface f=0
+ngrid <- 200L
+x <- y <- z <- seq(-8.1, 8.1, length.out = ngrid)
+Grid <- expand.grid(X = x, Y = y, Z = z)
+voxel <- array(
+  with(Grid, f(X, Y, Z)), dim = c(ngrid, ngrid, ngrid)
 )
-mesh <- cgalMesh$new(cyl)
+library(rmarchingcubes)
+contour_shape <- contour3d(
+  griddata = voxel, level = 0,
+  x = x, y = y, z = z
+)
+# make mesh
+mesh <- cgalMesh$new(
+  list(
+    "vertices" = contour_shape[["vertices"]],
+    "faces"    = contour_shape[["triangles"]]
+  )
+)
+# clip the mesh to the ball of radius 8
+spheremesh <- cgalMesh$new(sphereMesh(r = 8))
+mesh$clip(spheremesh, clipVolume = FALSE)
+# compute normals
+mesh$computeNormals()
+# we will plot the borders
 borders <- mesh$getBorders()
+# plot
+rmesh <- mesh$getMesh()
+open3d(windowRect = c(50, 50, 562, 562), zoom = 0.7)
+shade3d(rmesh, color = "darkred")
 vertices <- mesh$getVertices()
-\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
-shade3d(cyl, color = "navy")
-plotEdges(
-  vertices, borders[[1]][, c("v1", "v2")], color = "gold",
-  tubesRadius = 0.03, spheresRadius = 0.03
-)
-plotEdges(
-  vertices, borders[[2]][, c("v1", "v2")], color = "red",
-  tubesRadius = 0.03, spheresRadius = 0.03
-)}  
+for(border in borders){
+  plotEdges(
+    vertices, border[, c("v1", "v2")], color = "gold",
+    lwd = 3, edgesAsTubes = FALSE, verticesAsSpheres = FALSE
+  )
+}}
 
 ## ------------------------------------------------
 ## Method `cgalMesh$getEdges`
@@ -1616,24 +1692,100 @@ A list of matrices representing the boundary cycles. Each matrix
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{library(cgalMeshes)
+\preformatted{\donttest{library(cgalMeshes)
 library(rgl)
-cyl <- cylinder3d(
-  rbind(c(0,0,0), c(1,0,0), c(2,0,0)), radius = 1
+# isosurface f=0
+f <- function(x, y, z) {
+  sin_x <- sin(x)
+  sin_y <- sin(y)
+  sin_z <- sin(z)
+  cos_x <- cos(x)
+  cos_y <- cos(y)
+  cos_z <- cos(z)
+  d <- sqrt(
+    (-sin_x * sin_y + cos_x * cos_z) ** 2
+    + (-sin_y * sin_z + cos_y * cos_x) ** 2
+    + (-sin_z * sin_x + cos_z * cos_y) ** 2
+  )
+  (
+    cos(
+      x - (-sin_x * sin_y + cos_x * cos_z) / d
+    )
+    * sin(
+      y - (-sin_y * sin_z + cos_y * cos_x) / d
+    )
+    + cos(
+      y - (-sin_y * sin_z + cos_y * cos_x) / d
+    )
+    * sin(
+      z - (-sin_z * sin_x + cos_z * cos_y)/ d
+    )
+    + cos(
+      z - (-sin_z * sin_x + cos_z * cos_y) / d
+    )
+    * sin(
+      x - (-sin_x * sin_y + cos_x * cos_z) / d
+    )
+  ) * (
+    (
+      cos(
+        x + (-sin_x * sin_y + cos_x * cos_z) / d
+      )
+      * sin(
+        y + (-sin_y * sin_z + cos_y * cos_x) / d
+      )
+      + cos(
+        y + (-sin_y * sin_z + cos_y * cos_x) / d
+      )
+      * sin(
+        z + (-sin_z * sin_x + cos_z * cos_y) / d
+      )
+      + cos(
+        z + (-sin_z * sin_x + cos_z * cos_y) / d
+      )
+      * sin(
+        x + (-sin_x * sin_y + cos_x * cos_z) / d
+      )
+    )
+  )
+}
+# construct the isosurface f=0
+ngrid <- 200L
+x <- y <- z <- seq(-8.1, 8.1, length.out = ngrid)
+Grid <- expand.grid(X = x, Y = y, Z = z)
+voxel <- array(
+  with(Grid, f(X, Y, Z)), dim = c(ngrid, ngrid, ngrid)
 )
-mesh <- cgalMesh$new(cyl)
+library(rmarchingcubes)
+contour_shape <- contour3d(
+  griddata = voxel, level = 0,
+  x = x, y = y, z = z
+)
+# make mesh
+mesh <- cgalMesh$new(
+  list(
+    "vertices" = contour_shape[["vertices"]],
+    "faces"    = contour_shape[["triangles"]]
+  )
+)
+# clip the mesh to the ball of radius 8
+spheremesh <- cgalMesh$new(sphereMesh(r = 8))
+mesh$clip(spheremesh, clipVolume = FALSE)
+# compute normals
+mesh$computeNormals()
+# we will plot the borders
 borders <- mesh$getBorders()
+# plot
+rmesh <- mesh$getMesh()
+open3d(windowRect = c(50, 50, 562, 562), zoom = 0.7)
+shade3d(rmesh, color = "darkred")
 vertices <- mesh$getVertices()
-\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
-shade3d(cyl, color = "navy")
-plotEdges(
-  vertices, borders[[1]][, c("v1", "v2")], color = "gold",
-  tubesRadius = 0.03, spheresRadius = 0.03
-)
-plotEdges(
-  vertices, borders[[2]][, c("v1", "v2")], color = "red",
-  tubesRadius = 0.03, spheresRadius = 0.03
-)}  
+for(border in borders){
+  plotEdges(
+    vertices, border[, c("v1", "v2")], color = "gold",
+    lwd = 3, edgesAsTubes = FALSE, verticesAsSpheres = FALSE
+  )
+}}
 }
 \if{html}{\out{</div>}}
 
