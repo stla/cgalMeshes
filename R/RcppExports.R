@@ -5,3 +5,7 @@ AFSreconstruction_cpp <- function(pts) {
     .Call(`_cgalMeshes_AFSreconstruction_cpp`, pts)
 }
 
+mandelbulb <- function(angle_bound, radius_bound, distance_bound) {
+    .Call(`_cgalMeshes_mandelbulb`, angle_bound, radius_bound, distance_bound)
+}
+

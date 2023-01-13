@@ -27,6 +27,7 @@
 #include <CGAL/Polygon_mesh_processing/triangulate_hole.h>
 #include <CGAL/Polygon_mesh_processing/merge_border_vertices.h>
 #include <CGAL/Polygon_mesh_processing/border.h>
+#include <CGAL/Polygon_mesh_processing/bbox.h>
 #include <CGAL/number_utils.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
 #include <CGAL/boost/graph/Face_filtered_graph.h>
@@ -50,6 +51,7 @@
 #include <CGAL/Triangle_3.h>
 #include <CGAL/Tetrahedron_3.h>
 #include <CGAL/Plane_3.h>
+#include <CGAL/Bbox_3.h>
 
 
 // -------------------------------------------------------------------------- //
@@ -58,6 +60,7 @@ typedef K::Point_3 Point3;
 typedef CGAL::Surface_mesh<Point3> Mesh3;
 typedef EK::Vector_3 EVector3;
 typedef EK::Plane_3 EPlane3;
+typedef CGAL::Bbox_3 Bbox3;
 typedef CGAL::Nef_polyhedron_3<EK, CGAL::SNC_indexed_items> NefPol;
 typedef CGAL::Polyhedron_3<EK> EPolyhedron;
 

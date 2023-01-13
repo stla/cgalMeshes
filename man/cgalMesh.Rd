@@ -34,6 +34,21 @@ mesh <- cgalMesh$new(cube3d())$triangulate()
 mesh$area()
 
 ## ------------------------------------------------
+## Method `cgalMesh$boundingBox`
+## ------------------------------------------------
+
+\donttest{library(cgalMeshes)
+library(rgl)
+rmesh <- cyclideMesh(a = 97, c = 32, mu = 57)
+mesh <- cgalMesh$new(rmesh)
+bbox <- mesh$boundingBox()
+bxmesh <- isoCuboidMesh(bbox[["lcorner"]], bbox[["ucorner"]])
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(0, -60)
+shade3d(rmesh, color = "gold")
+wire3d(bxmesh, color = "black")}
+
+## ------------------------------------------------
 ## Method `cgalMesh$boundsVolume`
 ## ------------------------------------------------
 
@@ -565,6 +580,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-assignFaceScalars}{\code{cgalMesh$assignFaceScalars()}}
 \item \href{#method-cgalMesh-assignVertexColors}{\code{cgalMesh$assignVertexColors()}}
 \item \href{#method-cgalMesh-assignVertexScalars}{\code{cgalMesh$assignVertexScalars()}}
+\item \href{#method-cgalMesh-boundingBox}{\code{cgalMesh$boundingBox()}}
 \item \href{#method-cgalMesh-boundsVolume}{\code{cgalMesh$boundsVolume()}}
 \item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
 \item \href{#method-cgalMesh-clip}{\code{cgalMesh$clip()}}
@@ -801,6 +817,39 @@ of vertices}
 \subsection{Returns}{
 The current \code{cgalMesh} object, invisibly.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-boundingBox"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-boundingBox}{}}}
+\subsection{Method \code{boundingBox()}}{
+Bounding box of the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$boundingBox()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A list containing the smallest corner point and the largest 
+  corner point of the bounding box, named \code{lcorner} and 
+ \code{ucorner} respectively. Use \code{\link{isoCuboidMesh}} to get a 
+ mesh of this bounding box.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
+rmesh <- cyclideMesh(a = 97, c = 32, mu = 57)
+mesh <- cgalMesh$new(rmesh)
+bbox <- mesh$boundingBox()
+bxmesh <- isoCuboidMesh(bbox[["lcorner"]], bbox[["ucorner"]])
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(0, -60)
+shade3d(rmesh, color = "gold")
+wire3d(bxmesh, color = "black")}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-boundsVolume"></a>}}

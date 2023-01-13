@@ -19,6 +19,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("assignVertexColors", &CGALmesh::assignVertexColors)
     .method("assignFaceScalars", &CGALmesh::assignFaceScalars)
     .method("assignVertexScalars", &CGALmesh::assignVertexScalars)
+    .method("boundingBox", &CGALmesh::boundingBox)
     .method("centroid", &CGALmesh::centroid)
     .method("clipMesh", &CGALmesh::clipMesh)
     .method("clipToPlane", &CGALmesh::clipToPlane)

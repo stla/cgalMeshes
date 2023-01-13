@@ -190,6 +190,26 @@ cgalMesh <- R6Class(
       . <- private[[".CGALmesh"]]$assignVertexScalars(scalars)
       invisible(self)
     },
+
+    #' @description Bounding box of the mesh.
+    #' @return A list containing the smallest corner point and the largest 
+    #'   corner point of the bounding box, named \code{lcorner} and 
+    #'  \code{ucorner} respectively. Use \code{\link{isoCuboidMesh}} to get a 
+    #'  mesh of this bounding box.
+    #' @examples 
+    #' \donttest{library(cgalMeshes)
+    #' library(rgl)
+    #' rmesh <- cyclideMesh(a = 97, c = 32, mu = 57)
+    #' mesh <- cgalMesh$new(rmesh)
+    #' bbox <- mesh$boundingBox()
+    #' bxmesh <- isoCuboidMesh(bbox[["lcorner"]], bbox[["ucorner"]])
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512))
+    #' view3d(0, -60)
+    #' shade3d(rmesh, color = "gold")
+    #' wire3d(bxmesh, color = "black")}
+    "boundingBox" = function() {
+      private[[".CGALmesh"]]$boundingBox()
+    },
     
     #' @description Check whether the mesh bounds a volume. The mesh must be 
     #'   triangle.
@@ -1066,8 +1086,10 @@ cgalMesh <- R6Class(
           CGALmesh$new(xptrs[["mesh1"]])
         mesh2[[".__enclos_env__"]][["private"]][[".CGALmesh"]] <- 
           CGALmesh$new(xptrs[["mesh2"]])
+        cgalMesh$new(clean = xptrs[["dmesh"]])
+      } else {
+        invisible(self)
       }
-      cgalMesh$new(clean = xptrs[["dmesh"]])
     },
     
     #' @description Triangulate mesh.

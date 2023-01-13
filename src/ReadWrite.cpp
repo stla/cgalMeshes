@@ -91,17 +91,6 @@ EMesh3 readMeshFile(const std::string filename, bool binary) {
   return mesh;
 }
 
-// void writeMeshFile(const std::string filename,
-//                    const int precision,
-//                    EMesh3 mesh) {
-//   const bool ok = CGAL::IO::write_polygon_mesh(
-//     filename, mesh,
-//     CGAL::parameters::stream_precision(precision).verbose(true)
-//   );
-//   if(!ok) {
-//     Rcpp::stop("Failed to write file.");
-//   }
-// }
 
 void writeMeshFile(const std::string filename,
                    const int precision,

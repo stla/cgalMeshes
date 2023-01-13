@@ -122,6 +122,17 @@ public:
   }
 
 
+  Rcpp::List boundingBox() {
+    Bbox3 bbox = PMP::bbox(mesh);
+    Rcpp::NumericVector lcorner = {bbox.xmin(), bbox.ymin(), bbox.zmin()};
+    Rcpp::NumericVector ucorner = {bbox.xmax(), bbox.ymax(), bbox.zmax()};
+    return Rcpp::List::create(
+      Rcpp::Named("lcorner") = lcorner,
+      Rcpp::Named("ucorner") = ucorner
+    );
+  }
+
+
   Rcpp::NumericVector centroid() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -871,6 +882,11 @@ public:
     MapBetweenFaces fmap_mesh2      = *(vis.fmap_mesh2);
     MapBetweenFaces fmap_difference = *(vis.fmap_difference);
     int nfaces_dmesh1 = *(vis.nfaces_dmesh1);
+
+    const bool disjoint = fmap_mesh1.size() == 0 && fmap_mesh2.size() == 0;
+    if(disjoint) {
+      return Rcpp::List::create();
+    }
 
     Fcolors_map fcolor;
     Fscalars_map fscalar;
