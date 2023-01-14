@@ -17,3 +17,7 @@ brain <- function(filename, isovalue, center, radius, angle_bound, radius_bound,
     .Call(`_cgalMeshes_brain`, filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound)
 }
 
+polynomial <- function(powers, coeffs, x, y, z) {
+    invisible(.Call(`_cgalMeshes_polynomial`, powers, coeffs, x, y, z))
+}
+

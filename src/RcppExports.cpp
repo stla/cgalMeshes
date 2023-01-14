@@ -66,6 +66,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// polynomial
+void polynomial(Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs, double x, double y, double z);
+RcppExport SEXP _cgalMeshes_polynomial(SEXP powersSEXP, SEXP coeffsSEXP, SEXP xSEXP, SEXP ySEXP, SEXP zSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type powers(powersSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type coeffs(coeffsSEXP);
+    Rcpp::traits::input_parameter< double >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type y(ySEXP);
+    Rcpp::traits::input_parameter< double >::type z(zSEXP);
+    polynomial(powers, coeffs, x, y, z);
+    return R_NilValue;
+END_RCPP
+}
 
 RcppExport SEXP _rcpp_module_boot_class_CGALmesh();
 
@@ -74,6 +88,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_mandelbulb", (DL_FUNC) &_cgalMeshes_mandelbulb, 3},
     {"_cgalMeshes_spikes", (DL_FUNC) &_cgalMeshes_spikes, 3},
     {"_cgalMeshes_brain", (DL_FUNC) &_cgalMeshes_brain, 7},
+    {"_cgalMeshes_polynomial", (DL_FUNC) &_cgalMeshes_polynomial, 5},
     {"_rcpp_module_boot_class_CGALmesh", (DL_FUNC) &_rcpp_module_boot_class_CGALmesh, 0},
     {NULL, NULL, 0}
 };
