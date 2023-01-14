@@ -12,6 +12,9 @@
 #include <CGAL/Complex_2_in_triangulation_3.h>
 #include <CGAL/Gray_level_image_3.h>
 
+#include <CGAL/Polynomial.h>
+#include <CGAL/Polynomial_traits_d.h>
+#include <CGAL/Polynomial_type_generator.h>
 
 // default triangulation for Surface_mesher
 typedef CGAL::Surface_mesh_default_triangulation_3 Tr;
@@ -25,11 +28,81 @@ typedef FT (*Function)(Point_3);
 typedef CGAL::Implicit_surface_3<GT, Function> Surface_3;
 typedef CGAL::Surface_mesh<Point_3> Surface_mesh;
 
-
-typedef CGAL::Gray_level_image_3<GT::FT, GT::Point_3> Gray_level_image;
+typedef CGAL::Gray_level_image_3<FT, Point_3> Gray_level_image;
 typedef CGAL::Implicit_surface_3<GT, Gray_level_image> Surface_gray;
 
+typedef CGAL::Polynomial_type_generator<FT, 3>::Type     Poly3;
+typedef CGAL::Polynomial_traits_d<Poly3>                 PT3;
+typedef PT3::Innermost_coefficient_type                  Real;
+
 ////
+
+Poly3 Polynomial(Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs) {
+
+  PT3::Construct_polynomial construct_polynomial;
+
+  std::list<std::pair<CGAL::Exponent_vector, Real>> innermost_coeffs;
+  for(int i = 0; i < coeffs.size(); i++) {
+    Rcpp::IntegerVector pows = powers(i, Rcpp::_);
+    FT coeff(coeffs(i));
+    innermost_coeffs.push_back(
+      std::make_pair(CGAL::Exponent_vector(pows(0), pows(1), pows(2)), coeff)
+    );
+  }
+  return construct_polynomial(innermost_coeffs.begin(),innermost_coeffs.end());
+}
+
+
+// [[Rcpp::export]]
+Rcpp::XPtr<EMesh3> algebraicMesh(
+  Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs,
+  double angle_bound, double radius_bound, double distance_bound
+) {
+  Tr tr;            // 3D-Delaunay triangulation
+  C2t3 c2t3(tr);    // 2D-complex in 3D-Delaunay triangulation
+
+  Poly3 P = Polynomial(powers, coeffs);
+
+  // defining the surface
+  PT3::Substitute substitute;
+
+  auto fun = [P, substitute](Point_3 p) {
+    FT x = p.x();
+    FT y = p.y();
+    FT z = p.z();
+    std::list<Real> replacements;
+    replacements.push_back(x); 
+    replacements.push_back(y);
+    replacements.push_back(z);
+    FT val = substitute(P, replacements.begin(), replacements.end());
+    return val - 1;
+  };
+  Surface_3 surface(fun,      // pointer to function
+                    Sphere_3(CGAL::ORIGIN, 2.)); // bounding sphere
+  // Note that "2." above is the *squared* radius of the bounding sphere!
+
+  // defining meshing criteria
+  // CGAL::Surface_mesh_default_criteria_3<Tr> criteria(35.,  // angular bound
+  //                                                    0.025,  // radius bound
+  //                                                    0.025); // distance bound
+  FT ab(angle_bound);
+  FT rb(radius_bound);
+  FT db(distance_bound); 
+  typedef CGAL::Surface_mesh_default_criteria_3<Tr> Crit; 
+  Crit criteria(ab,  // angular bound
+                                                     rb,  // radius bound
+                                                     db); // distance bound
+  // meshing surface
+  CGAL::make_surface_mesh(c2t3, surface, criteria, CGAL::Non_manifold_tag());
+
+  Surface_mesh sm;
+  CGAL::facets_in_complex_2_to_triangle_mesh(c2t3, sm);
+
+  EMesh3 mesh;
+  CGAL::copy_face_graph(sm, mesh);
+  return Rcpp::XPtr<EMesh3>(new EMesh3(mesh), false);
+}
+
 
 FT mandelbulb_function (Point_3 p) {
   FT x0 = p.x();
@@ -72,7 +145,16 @@ Rcpp::XPtr<EMesh3> mandelbulb(double angle_bound, double radius_bound, double di
   C2t3 c2t3 (tr);   // 2D-complex in 3D-Delaunay triangulation
 
   // defining the surface
-  Surface_3 surface(mandelbulb_function,             // pointer to function
+  auto fun = [](Point_3 p) {
+    FT x = p.x();
+    FT y = p.y();
+    FT z = p.z();
+    FT x2 = x*x;
+    FT y2 = y*y;
+    FT z2 = z*z;
+    return x2 + y2 + z2 - 1;
+  };
+  Surface_3 surface(fun,      // pointer to function
                     Sphere_3(CGAL::ORIGIN, 2.)); // bounding sphere
   // Note that "2." above is the *squared* radius of the bounding sphere!
 

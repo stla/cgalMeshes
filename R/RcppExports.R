@@ -5,6 +5,10 @@ AFSreconstruction_cpp <- function(pts) {
     .Call(`_cgalMeshes_AFSreconstruction_cpp`, pts)
 }
 
+algebraicMesh <- function(powers, coeffs, angle_bound, radius_bound, distance_bound) {
+    .Call(`_cgalMeshes_algebraicMesh`, powers, coeffs, angle_bound, radius_bound, distance_bound)
+}
+
 mandelbulb <- function(angle_bound, radius_bound, distance_bound) {
     .Call(`_cgalMeshes_mandelbulb`, angle_bound, radius_bound, distance_bound)
 }

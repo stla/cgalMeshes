@@ -23,6 +23,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// algebraicMesh
+Rcpp::XPtr<EMesh3> algebraicMesh(Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs, double angle_bound, double radius_bound, double distance_bound);
+RcppExport SEXP _cgalMeshes_algebraicMesh(SEXP powersSEXP, SEXP coeffsSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type powers(powersSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type coeffs(coeffsSEXP);
+    Rcpp::traits::input_parameter< double >::type angle_bound(angle_boundSEXP);
+    Rcpp::traits::input_parameter< double >::type radius_bound(radius_boundSEXP);
+    Rcpp::traits::input_parameter< double >::type distance_bound(distance_boundSEXP);
+    rcpp_result_gen = Rcpp::wrap(algebraicMesh(powers, coeffs, angle_bound, radius_bound, distance_bound));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mandelbulb
 Rcpp::XPtr<EMesh3> mandelbulb(double angle_bound, double radius_bound, double distance_bound);
 RcppExport SEXP _cgalMeshes_mandelbulb(SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP) {
@@ -85,6 +100,7 @@ RcppExport SEXP _rcpp_module_boot_class_CGALmesh();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 1},
+    {"_cgalMeshes_algebraicMesh", (DL_FUNC) &_cgalMeshes_algebraicMesh, 5},
     {"_cgalMeshes_mandelbulb", (DL_FUNC) &_cgalMeshes_mandelbulb, 3},
     {"_cgalMeshes_spikes", (DL_FUNC) &_cgalMeshes_spikes, 3},
     {"_cgalMeshes_Isomesh", (DL_FUNC) &_cgalMeshes_Isomesh, 7},
