@@ -90,6 +90,17 @@ Rcpp::XPtr<EMesh3> algebraicMesh(
     bounding_sphere_center, bounding_sphere_squared_radius
   );
 
+  // check
+  {
+    FT val = fun(bounding_sphere_center);
+    if(val >= 0) {
+      Rcpp::stop(
+        "The value of the polynomial at the center of the bounding sphere ",
+        "must be less than the isovalue."
+      );
+    }
+  }
+
   // isosurface
   Surface_3 surface(fun, bounding_sphere);
 
@@ -100,14 +111,20 @@ Rcpp::XPtr<EMesh3> algebraicMesh(
   MeshingCriteria criteria(ab, rb, db);
 
   // meshing surface
-  CGAL::make_surface_mesh(c2t3, surface, criteria, CGAL::Non_manifold_tag());
+  CGAL::make_surface_mesh(
+    c2t3, surface, criteria, CGAL::Manifold_with_boundary_tag()
+  );
   Surface_mesh sm;
   CGAL::facets_in_complex_2_to_triangle_mesh(c2t3, sm);
+  PMP::orient_to_bound_a_volume(sm);
 
   // convert to EMesh3
   EMesh3 mesh;
-  Surface_mesh::Property_map<Surface_mesh::Vertex_index, vertex_descriptor> v2vmap = 
-    sm.add_property_map<Surface_mesh::Vertex_index, vertex_descriptor>("v:v").first;
+  Surface_mesh::Property_map<Surface_mesh::Vertex_index, vertex_descriptor> 
+    v2vmap = 
+      sm.add_property_map<Surface_mesh::Vertex_index, vertex_descriptor>(
+        "v:v"
+      ).first;
   CGAL::copy_face_graph(sm, mesh, CGAL::parameters::vertex_to_vertex_map(v2vmap));
 
   // normals
@@ -128,10 +145,9 @@ Rcpp::XPtr<EMesh3> algebraicMesh(
     FT nx = substitute(dPx, xyz.begin(), xyz.end());
     FT ny = substitute(dPy, xyz.begin(), xyz.end());
     FT nz = substitute(dPz, xyz.begin(), xyz.end());
-    Rcpp::NumericVector normal = {nx, ny, nz};
+    Rcpp::NumericVector normal = {-nx, -ny, -nz};
     vnormal[v2vmap[vi]] = normal;
   }
-
 
   return Rcpp::XPtr<EMesh3>(new EMesh3(mesh), false);
 }
