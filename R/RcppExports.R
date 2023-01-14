@@ -13,8 +13,8 @@ spikes <- function(angle_bound, radius_bound, distance_bound) {
     .Call(`_cgalMeshes_spikes`, angle_bound, radius_bound, distance_bound)
 }
 
-brain <- function(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound) {
-    .Call(`_cgalMeshes_brain`, filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound)
+Isomesh <- function(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound) {
+    .Call(`_cgalMeshes_Isomesh`, filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound)
 }
 
 polynomial <- function(powers, coeffs, x, y, z) {

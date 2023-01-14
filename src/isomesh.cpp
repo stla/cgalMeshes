@@ -132,8 +132,9 @@ Rcpp::XPtr<EMesh3> spikes(double angle_bound, double radius_bound, double distan
 
 
 // [[Rcpp::export]]
-Rcpp::XPtr<EMesh3> brain(
-  std::string filename, double isovalue, Rcpp::NumericVector center, double radius,
+Rcpp::XPtr<EMesh3> Isomesh(
+  std::string filename, double isovalue, 
+  Rcpp::NumericVector center, double radius,
   double angle_bound, double radius_bound, double distance_bound) {
   Tr tr;            // 3D-Delaunay triangulation
   C2t3 c2t3 (tr);   // 2D-complex in 3D-Delaunay triangulation

@@ -49,9 +49,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// brain
-Rcpp::XPtr<EMesh3> brain(std::string filename, double isovalue, Rcpp::NumericVector center, double radius, double angle_bound, double radius_bound, double distance_bound);
-RcppExport SEXP _cgalMeshes_brain(SEXP filenameSEXP, SEXP isovalueSEXP, SEXP centerSEXP, SEXP radiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP) {
+// Isomesh
+Rcpp::XPtr<EMesh3> Isomesh(std::string filename, double isovalue, Rcpp::NumericVector center, double radius, double angle_bound, double radius_bound, double distance_bound);
+RcppExport SEXP _cgalMeshes_Isomesh(SEXP filenameSEXP, SEXP isovalueSEXP, SEXP centerSEXP, SEXP radiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -62,7 +62,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type angle_bound(angle_boundSEXP);
     Rcpp::traits::input_parameter< double >::type radius_bound(radius_boundSEXP);
     Rcpp::traits::input_parameter< double >::type distance_bound(distance_boundSEXP);
-    rcpp_result_gen = Rcpp::wrap(brain(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound));
+    rcpp_result_gen = Rcpp::wrap(Isomesh(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -87,7 +87,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 1},
     {"_cgalMeshes_mandelbulb", (DL_FUNC) &_cgalMeshes_mandelbulb, 3},
     {"_cgalMeshes_spikes", (DL_FUNC) &_cgalMeshes_spikes, 3},
-    {"_cgalMeshes_brain", (DL_FUNC) &_cgalMeshes_brain, 7},
+    {"_cgalMeshes_Isomesh", (DL_FUNC) &_cgalMeshes_Isomesh, 7},
     {"_cgalMeshes_polynomial", (DL_FUNC) &_cgalMeshes_polynomial, 5},
     {"_rcpp_module_boot_class_CGALmesh", (DL_FUNC) &_rcpp_module_boot_class_CGALmesh, 0},
     {NULL, NULL, 0}
