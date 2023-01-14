@@ -9,3 +9,11 @@ mandelbulb <- function(angle_bound, radius_bound, distance_bound) {
     .Call(`_cgalMeshes_mandelbulb`, angle_bound, radius_bound, distance_bound)
 }
 
+spikes <- function(angle_bound, radius_bound, distance_bound) {
+    .Call(`_cgalMeshes_spikes`, angle_bound, radius_bound, distance_bound)
+}
+
+brain <- function(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound) {
+    .Call(`_cgalMeshes_brain`, filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound)
+}
+

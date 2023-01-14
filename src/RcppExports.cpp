@@ -36,12 +36,44 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// spikes
+Rcpp::XPtr<EMesh3> spikes(double angle_bound, double radius_bound, double distance_bound);
+RcppExport SEXP _cgalMeshes_spikes(SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type angle_bound(angle_boundSEXP);
+    Rcpp::traits::input_parameter< double >::type radius_bound(radius_boundSEXP);
+    Rcpp::traits::input_parameter< double >::type distance_bound(distance_boundSEXP);
+    rcpp_result_gen = Rcpp::wrap(spikes(angle_bound, radius_bound, distance_bound));
+    return rcpp_result_gen;
+END_RCPP
+}
+// brain
+Rcpp::XPtr<EMesh3> brain(std::string filename, double isovalue, Rcpp::NumericVector center, double radius, double angle_bound, double radius_bound, double distance_bound);
+RcppExport SEXP _cgalMeshes_brain(SEXP filenameSEXP, SEXP isovalueSEXP, SEXP centerSEXP, SEXP radiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< double >::type isovalue(isovalueSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type center(centerSEXP);
+    Rcpp::traits::input_parameter< double >::type radius(radiusSEXP);
+    Rcpp::traits::input_parameter< double >::type angle_bound(angle_boundSEXP);
+    Rcpp::traits::input_parameter< double >::type radius_bound(radius_boundSEXP);
+    Rcpp::traits::input_parameter< double >::type distance_bound(distance_boundSEXP);
+    rcpp_result_gen = Rcpp::wrap(brain(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP _rcpp_module_boot_class_CGALmesh();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 1},
     {"_cgalMeshes_mandelbulb", (DL_FUNC) &_cgalMeshes_mandelbulb, 3},
+    {"_cgalMeshes_spikes", (DL_FUNC) &_cgalMeshes_spikes, 3},
+    {"_cgalMeshes_brain", (DL_FUNC) &_cgalMeshes_brain, 7},
     {"_rcpp_module_boot_class_CGALmesh", (DL_FUNC) &_rcpp_module_boot_class_CGALmesh, 0},
     {NULL, NULL, 0}
 };
