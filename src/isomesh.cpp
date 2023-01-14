@@ -18,6 +18,7 @@
 
 // default triangulation for Surface_mesher
 typedef CGAL::Surface_mesh_default_triangulation_3 Tr;
+typedef CGAL::Surface_mesh_default_criteria_3<Tr> MeshingCriteria; 
 // c2t3
 typedef CGAL::Complex_2_in_triangulation_3<Tr> C2t3;
 typedef Tr::Geom_traits GT;
@@ -49,24 +50,25 @@ Poly3 Polynomial(Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs) {
       std::make_pair(CGAL::Exponent_vector(pows(0), pows(1), pows(2)), coeff)
     );
   }
-  return construct_polynomial(innermost_coeffs.begin(),innermost_coeffs.end());
+  return construct_polynomial(innermost_coeffs.begin(), innermost_coeffs.end());
 }
 
 
 // [[Rcpp::export]]
 Rcpp::XPtr<EMesh3> algebraicMesh(
-  Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs,
+  Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs, double isolevel,
+  Rcpp::NumericVector sphereCenter, double sphereRadius,
   double angle_bound, double radius_bound, double distance_bound
 ) {
   Tr tr;            // 3D-Delaunay triangulation
   C2t3 c2t3(tr);    // 2D-complex in 3D-Delaunay triangulation
 
+  // isosurface fun(p)=0
   Poly3 P = Polynomial(powers, coeffs);
-
-  // defining the surface
   PT3::Substitute substitute;
+  FT isoval(isolevel);
 
-  auto fun = [P, substitute](Point_3 p) {
+  auto fun = [P, substitute, isoval](Point_3 p) {
     FT x = p.x();
     FT y = p.y();
     FT z = p.z();
@@ -75,26 +77,29 @@ Rcpp::XPtr<EMesh3> algebraicMesh(
     replacements.push_back(y);
     replacements.push_back(z);
     FT val = substitute(P, replacements.begin(), replacements.end());
-    return val - 1;
+    return val - isoval;
   };
-  Surface_3 surface(fun,      // pointer to function
-                    Sphere_3(CGAL::ORIGIN, 2.)); // bounding sphere
-  // Note that "2." above is the *squared* radius of the bounding sphere!
+
+  // bounding sphere
+  Point_3 bounding_sphere_center(
+    sphereCenter(0), sphereCenter(1), sphereCenter(2)
+  );
+  FT bounding_sphere_squared_radius = sphereRadius * sphereRadius;
+  Sphere_3 bounding_sphere(
+    bounding_sphere_center, bounding_sphere_squared_radius
+  );
+
+  // isosurface
+  Surface_3 surface(fun, bounding_sphere);
 
   // defining meshing criteria
-  // CGAL::Surface_mesh_default_criteria_3<Tr> criteria(35.,  // angular bound
-  //                                                    0.025,  // radius bound
-  //                                                    0.025); // distance bound
   FT ab(angle_bound);
   FT rb(radius_bound);
   FT db(distance_bound); 
-  typedef CGAL::Surface_mesh_default_criteria_3<Tr> Crit; 
-  Crit criteria(ab,  // angular bound
-                                                     rb,  // radius bound
-                                                     db); // distance bound
+  MeshingCriteria criteria(ab, rb, db);
+
   // meshing surface
   CGAL::make_surface_mesh(c2t3, surface, criteria, CGAL::Non_manifold_tag());
-
   Surface_mesh sm;
   CGAL::facets_in_complex_2_to_triangle_mesh(c2t3, sm);
 
@@ -240,9 +245,7 @@ Rcpp::XPtr<EMesh3> Isomesh(
   FT ab(angle_bound);
   FT rb(radius_bound);
   FT db(distance_bound); 
-  CGAL::Surface_mesh_default_criteria_3<Tr> criteria(ab,
-                                                     rb,
-                                                     db);
+  MeshingCriteria criteria(ab, rb, db);
 
   // meshing surface, with the "manifold without boundary" algorithm
   CGAL::make_surface_mesh(c2t3, surface, criteria, CGAL::Manifold_tag());
