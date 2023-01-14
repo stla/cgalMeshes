@@ -15,6 +15,7 @@
 #include <CGAL/Polynomial.h>
 #include <CGAL/Polynomial_traits_d.h>
 #include <CGAL/Polynomial_type_generator.h>
+#include <CGAL/polynomial_utils.h>
 
 // default triangulation for Surface_mesher
 typedef CGAL::Surface_mesh_default_triangulation_3 Tr;
@@ -72,11 +73,11 @@ Rcpp::XPtr<EMesh3> algebraicMesh(
     FT x = p.x();
     FT y = p.y();
     FT z = p.z();
-    std::list<Real> replacements;
-    replacements.push_back(x); 
-    replacements.push_back(y);
-    replacements.push_back(z);
-    FT val = substitute(P, replacements.begin(), replacements.end());
+    std::list<Real> xyz;
+    xyz.push_back(x); 
+    xyz.push_back(y);
+    xyz.push_back(z);
+    FT val = substitute(P, xyz.begin(), xyz.end());
     return val - isoval;
   };
 
@@ -103,8 +104,35 @@ Rcpp::XPtr<EMesh3> algebraicMesh(
   Surface_mesh sm;
   CGAL::facets_in_complex_2_to_triangle_mesh(c2t3, sm);
 
+  // convert to EMesh3
   EMesh3 mesh;
-  CGAL::copy_face_graph(sm, mesh);
+  Surface_mesh::Property_map<Surface_mesh::Vertex_index, vertex_descriptor> v2vmap = 
+    sm.add_property_map<Surface_mesh::Vertex_index, vertex_descriptor>("v:v").first;
+  CGAL::copy_face_graph(sm, mesh, CGAL::parameters::vertex_to_vertex_map(v2vmap));
+
+  // normals
+  PT3::Differentiate differentiate;
+  Poly3 dPx = differentiate(P, 0);
+  Poly3 dPy = differentiate(P, 1);
+  Poly3 dPz = differentiate(P, 2);
+  Normals_map vnormal = 
+    mesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
+      "v:normal", defaultNormal()
+    ).first;
+  for(Surface_mesh::Vertex_index vi : sm.vertices()) {
+    Point_3 p = sm.point(vi);
+    std::list<Real> xyz;
+    xyz.push_back(p.x()); 
+    xyz.push_back(p.y()); 
+    xyz.push_back(p.z());
+    FT nx = substitute(dPx, xyz.begin(), xyz.end());
+    FT ny = substitute(dPy, xyz.begin(), xyz.end());
+    FT nz = substitute(dPz, xyz.begin(), xyz.end());
+    Rcpp::NumericVector normal = {nx, ny, nz};
+    vnormal[v2vmap[vi]] = normal;
+  }
+
+
   return Rcpp::XPtr<EMesh3>(new EMesh3(mesh), false);
 }
 
