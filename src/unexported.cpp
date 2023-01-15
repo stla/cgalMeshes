@@ -630,7 +630,7 @@ Rcpp::List clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
   ClipVisitor vis;
   const bool clipping = PMP::clip(
     tm, plane,
-    PMP::parameters::clip_volume(clipVolume).visitor(vis)
+    PMP::parameters::clip_volume(clipVolume)//.visitor(vis)
   );
   if(!clipping) {
     Rcpp::stop("Clipping has failed.");
@@ -646,6 +646,7 @@ Rcpp::List clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
   tm.collect_garbage();
 
 
+  /* --------------- clipVolume is false --------------- */
   if(!clipVolume){
     MapBetweenFaces fmap = *(vis.fmap_tm);
 
