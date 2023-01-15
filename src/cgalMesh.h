@@ -178,7 +178,7 @@ struct ClipVisitor :
   }
 
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
-    Rcpp::Rcout << "asc\n";
+    Rcpp::Rcout << "asc - istm: " << *is_tm << "\n";
     if(*is_tm) {
       if(tm.property_map<face_descriptor, std::size_t>("f:i").second) {
         (*fmap_tm).insert(std::make_pair(fnew, *ofaceindex));
