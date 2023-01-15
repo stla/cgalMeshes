@@ -96,8 +96,7 @@ Rcpp::XPtr<EMesh3> algebraicMesh(
     FT val = fun(bounding_sphere_center);
     if(val >= 0) {
       Rcpp::stop(
-        "The value of the polynomial at the center of the bounding sphere ",
-        "must be less than the isovalue."
+        "The value of the polynomial at the center of the bounding sphere must be less than the isovalue."
       );
     }
   }
