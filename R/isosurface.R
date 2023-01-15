@@ -40,7 +40,7 @@ isocontour <- function(
   . <- writeAnalyze(img, hdrFile)
   xptr <- Isomesh(
     hdrFile, isolevel, 
-    sphereCenter + c(ax, ay, az)/2, 
+    sphereCenter - c(x[1L], y[1L], z[1L]), 
     sphereRadius,
     angleBound, radiusBound, distanceBound
   )
