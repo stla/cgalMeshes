@@ -2,6 +2,7 @@
 
 export(AFSreconstruction)
 export(HopfTorusMesh)
+export(algebraicMesh)
 export(cgalMesh)
 export(cyclideMesh)
 export(exteriorEdges)

@@ -173,12 +173,10 @@ struct ClipVisitor :
   public PMP::Corefinement::Default_visitor<EMesh3>
 {
   void before_subface_creations(face_descriptor fsplit, const EMesh3 & tm) {
-    Rcpp::Rcout << "bsc\n";
     *ofaceindex = fsplit;
   }
 
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
-    Rcpp::Rcout << "asc - istm: " << *is_tm << "\n";
     if(*is_tm) {
       if(tm.property_map<face_descriptor, std::size_t>("f:i").second) {
         (*fmap_tm).insert(std::make_pair(fnew, *ofaceindex));
@@ -195,7 +193,6 @@ struct ClipVisitor :
     face_descriptor fsrc, const EMesh3 & tmsrc, 
     face_descriptor ftgt, const EMesh3 & tmtgt
   ) {
-    Rcpp::Rcout << "afc\n";
     (*ftargets).insert(std::make_pair(ftgt, fsrc));
   }
   

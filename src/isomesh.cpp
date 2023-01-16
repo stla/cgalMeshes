@@ -57,7 +57,7 @@ Poly3 Polynomial(Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs) {
 
 
 // [[Rcpp::export]]
-Rcpp::XPtr<EMesh3> algebraicMesh(
+Rcpp::XPtr<EMesh3> AlgebraicMesh(
   Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs, double isolevel,
   Rcpp::NumericVector sphereCenter, double sphereRadius,
   double angle_bound, double radius_bound, double distance_bound

@@ -32,6 +32,7 @@ Suggests:
     onion,
     randomcoloR,
     rmarchingcubes,
+    spray,
     viridisLite
 LinkingTo: 
     BH,

@@ -38,6 +38,10 @@ isStrictPositiveInteger <- function(x) {
   isPositiveInteger(x) && x > 0
 }
 
+isVector3 <- function(x) {
+  is.numeric(x) && length(x) == 3L && !anyNA(x)
+}
+
 #' @importFrom R6 is.R6
 #' @noRd
 isCGALmesh <- function(x) {
