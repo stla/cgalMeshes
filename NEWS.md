@@ -6,6 +6,8 @@
 
 - New function `algebraicMesh`, computing a mesh of the isosurface defined by a given polynomial and an isolevel.
 
+- New function `voxel2mesh`, extracting triangle meshes from a NifTI file.
+
 - New methods for `cgalMesh` objects:
   * `clipToPlane`, to clip the mesh to a plane;
   * `clipToIsoCuboid`, to clip the mesh to an iso-oriented cuboid;

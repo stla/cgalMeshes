@@ -167,3 +167,53 @@ getVF <- function(mesh) {
   vertices[, 3L] <- vertices[, 3L] / h 
   list("vertices" = vertices, "faces" = faces)
 }
+
+# Cross product of two 3D vectors.
+crossProduct <- function(v, w){
+  c(
+    v[2L] * w[3L] - v[3L] * w[2L],
+    v[3L] * w[1L] - v[1L] * w[3L],
+    v[1L] * w[2L] - v[2L] * w[1L]
+  )
+}
+
+#' @description Get a unit quaternion whose corresponding rotation 
+#'   sends `u` to `v`; the vectors `u` and `v` must be normalized.
+#' @importFrom onion as.quaternion
+#' @noRd   
+quaternionFromTo <- function(u, v){
+  re <- sqrt((1 + sum(u*v))/2)
+  w <- crossProduct(u, v) / 2 / re
+  as.quaternion(c(re, w), single = TRUE)
+}
+
+#' @description Get a rotation matrix sending `u` to `v`; 
+#'   the vectors `u` and `v` must be normalized.
+#' @importFrom onion as.orthogonal
+#' @noRd   
+rotationFromTo <- function(u, v) {
+  as.orthogonal(quaternionFromTo(u, v))
+}
+
+circumcircle <- function(p1, p2, p3) {
+  # normal of triangle (p1, p2, p3)
+  normal <- crossProduct(p2 - p1, p3 - p1)
+  squaredNorm <- c(crossprod(normal))
+  if(squaredNorm < sqrt(.Machine$double.eps)) {
+    stop("The three points are aligned.", call. = FALSE)
+  }
+  normal <- normal / sqrt(squaredNorm)
+  # circumcenter of this triangle
+  v12 <- p2 - p1
+  v13 <- p3 - p1
+  p12 <- p1 + v12/2
+  p13 <- p1 + v13/2
+  offset <- c(crossprod(p1, normal))
+  A <- rbind(normal, v12, v13)
+  b <- c(offset, crossprod(p12, v12), crossprod(p13, v13))
+  center <- solve(A, b)
+  # circumradius
+  radius <- sqrt(c(crossprod(p1 - center)))
+  #
+  list("center" = center, "radius" = radius, "normal" = normal)
+}

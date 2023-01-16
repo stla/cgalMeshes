@@ -4,10 +4,17 @@
 \alias{torusMesh}
 \title{Torus mesh}
 \usage{
-torusMesh(R, r, nu = 50, nv = 30)
+torusMesh(R, r, p1 = NULL, p2 = NULL, p3 = NULL, nu = 50, nv = 30)
 }
 \arguments{
-\item{R, r}{major and minor radii, positive numbers}
+\item{R, r}{major and minor radii, positive numbers; \code{R} is 
+ignored if \code{p1}, \code{p2} and \code{p3} are given}
+
+\item{p1, p2, p3}{three points or \code{NULL}; if not \code{NULL}, 
+the function returns a mesh of the torus whose equator passes 
+through these three points and with minor radius \code{r}; if 
+\code{NULL}, the torus has equatorial plane z=0 and the 
+z-axis as revolution axis}
 
 \item{nu, nv}{numbers of subdivisions, integers (at least 3)}
 }

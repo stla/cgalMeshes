@@ -28,13 +28,19 @@ sphereMesh <- function(x = 0, y = 0, z = 0, r = 1, iterations = 3L) {
 #' @title Torus mesh
 #' @description Triangle mesh of a torus.
 #'
-#' @param R,r major and minor radii, positive numbers
+#' @param R,r major and minor radii, positive numbers; \code{R} is 
+#'   ignored if \code{p1}, \code{p2} and \code{p3} are given
+#' @param p1,p2,p3 three points or \code{NULL}; if not \code{NULL}, 
+#'   the function returns a mesh of the torus whose equator passes 
+#'   through these three points and with minor radius \code{r}; if 
+#'   \code{NULL}, the torus has equatorial plane z=0 and the 
+#'   z-axis as revolution axis
 #' @param nu,nv numbers of subdivisions, integers (at least 3)
 #'
 #' @return A triangle \strong{rgl} mesh (class \code{mesh3d}).
 #' @export
 #'
-#' @importFrom rgl tmesh3d
+#' @importFrom rgl tmesh3d translate3d rotate3d
 #'
 #' @examples
 #' library(cgalMeshes)
@@ -44,7 +50,14 @@ sphereMesh <- function(x = 0, y = 0, z = 0, r = 1, iterations = 3L) {
 #' view3d(0, 0, zoom = 0.75)
 #' shade3d(mesh, color = "green")
 #' wire3d(mesh)
-torusMesh <- function(R, r, nu = 50, nv = 30){
+torusMesh <- function(R, r, p1 = NULL, p2 = NULL, p3 = NULL, nu = 50, nv = 30) {
+  transformation <- !is.null(p1) && !is.null(p2) && !is.null(p3)
+  if(transformation) {
+    ccircle <- circumcircle(p1, p2, p3)
+    R <- ccircle[["radius"]]
+    rotMatrix <- rotationFromTo(c(0, 0, 1), ccircle[["normal"]])
+    center <- ccircle[["center"]]
+  }
   stopifnot(isPositiveNumber(R), isPositiveNumber(r))
   stopifnot(R > r)
   stopifnot(nu >= 3, nv >= 3)
@@ -104,12 +117,21 @@ torusMesh <- function(R, r, nu = 50, nv = 30){
   k_ <- k1 + j_
   tris1[, k_] <- rbind(j_, l_, k_)
   tris2[, k_] <- rbind(j_, jp1_, l_)
-  tmesh3d(
-    vertices = vs,
-    indices = cbind(tris1, tris2),
-    normals = normals,
+  rmesh <- tmesh3d(
+    vertices    = vs,
+    indices     = cbind(tris1, tris2),
+    normals     = normals,
     homogeneous = FALSE
   )
+  if(transformation) {
+    rmesh <- translate3d(
+      rotate3d(
+        rmesh, matrix = rotMatrix
+      ),
+      x = center[1L], y = center[2L], z = center[3L]
+    )
+  }
+  rmesh
 }
 
 #' @title Cyclide mesh

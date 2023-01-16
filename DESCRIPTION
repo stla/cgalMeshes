@@ -23,13 +23,13 @@ Imports:
     grDevices,
     methods,
     neuroim,
+    onion,
     R6,
     Rcpp (>= 1.0.9),
     RNifti,
     rgl,
     tools
 Suggests:
-    onion,
     randomcoloR,
     rmarchingcubes,
     spray,
