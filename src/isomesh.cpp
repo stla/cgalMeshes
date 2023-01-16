@@ -151,7 +151,9 @@ Rcpp::XPtr<EMesh3> VoxelToMesh(
   MeshingCriteria criteria(ab, rb, db);
 
   // meshing surface, with the "manifold without boundary" algorithm
-  CGAL::make_surface_mesh(cplx2, surface, criteria, CGAL::Manifold_tag());
+  CGAL::make_surface_mesh(
+    cplx2, surface, criteria, CGAL::Manifold_with_boundary_tag()
+  );
   SurfaceMesh smesh;
   CGAL::facets_in_complex_2_to_triangle_mesh(cplx2, smesh);
 
