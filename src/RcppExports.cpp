@@ -67,9 +67,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Isomesh
-Rcpp::XPtr<EMesh3> Isomesh(std::string filename, double isovalue, Rcpp::NumericVector center, double radius, double angle_bound, double radius_bound, double distance_bound);
-RcppExport SEXP _cgalMeshes_Isomesh(SEXP filenameSEXP, SEXP isovalueSEXP, SEXP centerSEXP, SEXP radiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP) {
+// VoxelToMesh
+Rcpp::XPtr<EMesh3> VoxelToMesh(std::string filename, double isovalue, Rcpp::NumericVector center, double radius, double angle_bound, double radius_bound, double distance_bound);
+RcppExport SEXP _cgalMeshes_VoxelToMesh(SEXP filenameSEXP, SEXP isovalueSEXP, SEXP centerSEXP, SEXP radiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -80,22 +80,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type angle_bound(angle_boundSEXP);
     Rcpp::traits::input_parameter< double >::type radius_bound(radius_boundSEXP);
     Rcpp::traits::input_parameter< double >::type distance_bound(distance_boundSEXP);
-    rcpp_result_gen = Rcpp::wrap(Isomesh(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound));
+    rcpp_result_gen = Rcpp::wrap(VoxelToMesh(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound));
     return rcpp_result_gen;
-END_RCPP
-}
-// polynomial
-void polynomial(Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs, double x, double y, double z);
-RcppExport SEXP _cgalMeshes_polynomial(SEXP powersSEXP, SEXP coeffsSEXP, SEXP xSEXP, SEXP ySEXP, SEXP zSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type powers(powersSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type coeffs(coeffsSEXP);
-    Rcpp::traits::input_parameter< double >::type x(xSEXP);
-    Rcpp::traits::input_parameter< double >::type y(ySEXP);
-    Rcpp::traits::input_parameter< double >::type z(zSEXP);
-    polynomial(powers, coeffs, x, y, z);
-    return R_NilValue;
 END_RCPP
 }
 
@@ -106,8 +92,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AlgebraicMesh", (DL_FUNC) &_cgalMeshes_AlgebraicMesh, 8},
     {"_cgalMeshes_mandelbulb", (DL_FUNC) &_cgalMeshes_mandelbulb, 3},
     {"_cgalMeshes_spikes", (DL_FUNC) &_cgalMeshes_spikes, 3},
-    {"_cgalMeshes_Isomesh", (DL_FUNC) &_cgalMeshes_Isomesh, 7},
-    {"_cgalMeshes_polynomial", (DL_FUNC) &_cgalMeshes_polynomial, 5},
+    {"_cgalMeshes_VoxelToMesh", (DL_FUNC) &_cgalMeshes_VoxelToMesh, 7},
     {"_rcpp_module_boot_class_CGALmesh", (DL_FUNC) &_rcpp_module_boot_class_CGALmesh, 0},
     {NULL, NULL, 0}
 };

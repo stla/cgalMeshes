@@ -53,6 +53,18 @@
 #include <CGAL/Plane_3.h>
 #include <CGAL/Bbox_3.h>
 #include <CGAL/Iso_cuboid_3.h>
+#include <CGAL/Surface_mesh_default_triangulation_3.h>
+#include <CGAL/Complex_2_in_triangulation_3.h>
+#include <CGAL/make_surface_mesh.h>
+#include <CGAL/Implicit_surface_3.h>
+#include <CGAL/IO/facets_in_complex_2_to_triangle_mesh.h>
+#include <CGAL/Surface_mesh_default_criteria_3.h>
+#include <CGAL/Complex_2_in_triangulation_3.h>
+#include <CGAL/Gray_level_image_3.h>
+#include <CGAL/Polynomial.h>
+#include <CGAL/Polynomial_traits_d.h>
+#include <CGAL/Polynomial_type_generator.h>
+#include <CGAL/polynomial_utils.h>
 
 
 // -------------------------------------------------------------------------- //
@@ -107,6 +119,24 @@ typedef std::map<ffg_face_descriptor, face_descriptor>
   MapBetweenFaceDescriptors;
 
 typedef CGAL::IO::Color Color;
+
+typedef CGAL::Surface_mesh_default_triangulation_3 Tri;
+typedef CGAL::Surface_mesh_default_criteria_3<Tri> MeshingCriteria; 
+typedef CGAL::Complex_2_in_triangulation_3<Tri> Cplx2;
+typedef Tri::Geom_traits GT;
+typedef GT::Sphere_3 Sphere_3;
+typedef GT::Point_3 Point_3;
+typedef GT::FT FT;
+typedef FT (*Function)(Point_3);
+typedef CGAL::Implicit_surface_3<GT, Function> ImplicitSurface;
+typedef CGAL::Surface_mesh<Point_3> SurfaceMesh;
+
+typedef CGAL::Gray_level_image_3<FT, Point_3> Gray_level_image;
+typedef CGAL::Implicit_surface_3<GT, Gray_level_image> Surface_gray;
+
+typedef CGAL::Polynomial_type_generator<FT, 3>::Type     Poly3;
+typedef CGAL::Polynomial_traits_d<Poly3>                 PT3;
+typedef PT3::Innermost_coefficient_type                  Real;
 
 // -------------------------------------------------------------------------- //
 namespace PMP = CGAL::Polygon_mesh_processing;

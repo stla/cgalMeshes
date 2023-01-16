@@ -2,43 +2,6 @@
 #include "cgalMesh.h"
 #endif
 
-#include <CGAL/Surface_mesh_default_triangulation_3.h>
-#include <CGAL/Complex_2_in_triangulation_3.h>
-#include <CGAL/make_surface_mesh.h>
-#include <CGAL/Implicit_surface_3.h>
-#include <CGAL/IO/facets_in_complex_2_to_triangle_mesh.h>
-
-#include <CGAL/Surface_mesh_default_criteria_3.h>
-#include <CGAL/Complex_2_in_triangulation_3.h>
-#include <CGAL/Gray_level_image_3.h>
-
-#include <CGAL/Polynomial.h>
-#include <CGAL/Polynomial_traits_d.h>
-#include <CGAL/Polynomial_type_generator.h>
-#include <CGAL/polynomial_utils.h>
-
-// default triangulation for Surface_mesher
-typedef CGAL::Surface_mesh_default_triangulation_3 Tri;
-typedef CGAL::Surface_mesh_default_criteria_3<Tri> MeshingCriteria; 
-// c2t3
-typedef CGAL::Complex_2_in_triangulation_3<Tri> Cplx2;
-typedef Tri::Geom_traits GT;
-typedef GT::Sphere_3 Sphere_3;
-typedef GT::Point_3 Point_3;
-typedef GT::FT FT;
-typedef FT (*Function)(Point_3);
-typedef CGAL::Implicit_surface_3<GT, Function> ImplicitSurface;
-typedef CGAL::Surface_mesh<Point_3> SurfaceMesh;
-
-typedef CGAL::Gray_level_image_3<FT, Point_3> Gray_level_image;
-typedef CGAL::Implicit_surface_3<GT, Gray_level_image> Surface_gray;
-
-typedef CGAL::Polynomial_type_generator<FT, 3>::Type     Poly3;
-typedef CGAL::Polynomial_traits_d<Poly3>                 PT3;
-typedef PT3::Innermost_coefficient_type                  Real;
-
-////
-
 Poly3 Polynomial(Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs) {
 
   PT3::Construct_polynomial construct_polynomial;
@@ -51,6 +14,7 @@ Poly3 Polynomial(Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs) {
       std::make_pair(CGAL::Exponent_vector(pows(0), pows(1), pows(2)), coeff)
     );
   }
+
   return 
     construct_polynomial(innermost_coeffs.begin(), innermost_coeffs.end());
 }
@@ -62,7 +26,7 @@ Rcpp::XPtr<EMesh3> AlgebraicMesh(
   Rcpp::NumericVector sphereCenter, double sphereRadius,
   double angle_bound, double radius_bound, double distance_bound
 ) {
-  Tri tr;            // 3D-Delaunay triangulation
+  Tri tr;             // 3D-Delaunay triangulation
   Cplx2 cplx2(tr);    // 2D-complex in 3D-Delaunay triangulation
 
   // isosurface fun(p)=0
@@ -95,9 +59,9 @@ Rcpp::XPtr<EMesh3> AlgebraicMesh(
   {
     FT val = fun(bounding_sphere_center);
     if(val >= 0) {
-      Rcpp::stop(
-        "The value of the polynomial at the center of the bounding sphere must be less than the isovalue."
-      );
+      const std::string msg = 
+        "The value of the polynomial at the center of the bounding sphere must be less than the isovalue.";
+      Rcpp::stop(msg);
     }
   }
 
@@ -265,7 +229,7 @@ Rcpp::XPtr<EMesh3> spikes(double angle_bound, double radius_bound, double distan
 
 
 // [[Rcpp::export]]
-Rcpp::XPtr<EMesh3> Isomesh(
+Rcpp::XPtr<EMesh3> VoxelToMesh(
   std::string filename, double isovalue, 
   Rcpp::NumericVector center, double radius,
   double angle_bound, double radius_bound, double distance_bound) {

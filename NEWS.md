@@ -4,6 +4,8 @@
 
 - Writing a mesh to a file includes the colors and the normals in this file if they are present, and reading a mesh file including colors or normals includes these properties in the mesh. 
 
+- New function `algebraicMesh`, computing a mesh of the isosurface defined by a given polynomial and an isolevel.
+
 - New methods for `cgalMesh` objects:
   * `clipToPlane`, to clip the mesh to a plane;
   * `clipToIsoCuboid`, to clip the mesh to an iso-oriented cuboid;

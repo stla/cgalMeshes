@@ -17,11 +17,7 @@ spikes <- function(angle_bound, radius_bound, distance_bound) {
     .Call(`_cgalMeshes_spikes`, angle_bound, radius_bound, distance_bound)
 }
 
-Isomesh <- function(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound) {
-    .Call(`_cgalMeshes_Isomesh`, filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound)
-}
-
-polynomial <- function(powers, coeffs, x, y, z) {
-    invisible(.Call(`_cgalMeshes_polynomial`, powers, coeffs, x, y, z))
+VoxelToMesh <- function(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound) {
+    .Call(`_cgalMeshes_VoxelToMesh`, filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound)
 }
 
