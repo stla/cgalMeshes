@@ -55,7 +55,7 @@ torusMesh <- function(R, r, p1 = NULL, p2 = NULL, p3 = NULL, nu = 50, nv = 30) {
   if(transformation) {
     ccircle <- circumcircle(p1, p2, p3)
     R <- ccircle[["radius"]]
-    rotMatrix <- rotationFromTo(c(0, 0, 1), ccircle[["normal"]])
+    rotMatrix <- rotationFromTo(ccircle[["normal"]], c(0, 0, 1))
     center <- ccircle[["center"]]
   }
   stopifnot(isPositiveNumber(R), isPositiveNumber(r))
