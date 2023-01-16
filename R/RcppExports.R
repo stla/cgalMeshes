@@ -9,14 +9,6 @@ AlgebraicMesh <- function(powers, coeffs, isolevel, sphereCenter, sphereRadius, 
     .Call(`_cgalMeshes_AlgebraicMesh`, powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound)
 }
 
-mandelbulb <- function(angle_bound, radius_bound, distance_bound) {
-    .Call(`_cgalMeshes_mandelbulb`, angle_bound, radius_bound, distance_bound)
-}
-
-spikes <- function(angle_bound, radius_bound, distance_bound) {
-    .Call(`_cgalMeshes_spikes`, angle_bound, radius_bound, distance_bound)
-}
-
 VoxelToMesh <- function(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound) {
     .Call(`_cgalMeshes_VoxelToMesh`, filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound)
 }

@@ -23,6 +23,13 @@
 #'
 #' @return A \code{cgalMesh} object. The mesh has normals computed 
 #'   with the gradient of the polynomial.
+#'   
+#' @note If either \code{angleBound} is too high, \code{radiusBound} is 
+#'   too small, or \code{distanceBound} is too small, the computation could 
+#'   never finishes. Therefore, it is recommended to start with a small 
+#'   \code{angleBound} and large \code{radiusBound} and \code{distanceBound}, 
+#'   and then to adjust these parameters if the resulting mesh is not nice.  
+#'   
 #' @export
 #'
 #' @examples
@@ -156,7 +163,9 @@ algebraicMesh <- function(
 #' @param fileName path to the NifTI file (extension \code{nii} 
 #'   or \code{nii.gz})
 #' @param isolevel the level at which to construct the isosurface
-#' @param sphereCenter,sphereRadius center and radius of a bounding sphere
+#' @param sphereCenter,sphereRadius center and radius of a bounding sphere; 
+#'   if \code{NULL} is given, a default bounding sphere is used, covering 
+#'   all the space
 #' @param angleBound lower bound in degrees for the angles of the faces of 
 #'   the mesh
 #' @param radiusBound upper bound for the radii of surface Delaunay balls; 
@@ -167,8 +176,15 @@ algebraicMesh <- function(
 #'   ball of this face
 #'
 #' @return A \code{cgalMesh} object.
+#' 
+#' @note If either \code{angleBound} is too high, \code{radiusBound} is 
+#'   too small, or \code{distanceBound} is too small, the computation could 
+#'   never finishes. Therefore, it is recommended to start with a small 
+#'   \code{angleBound} and large \code{radiusBound} and \code{distanceBound}, 
+#'   and then to adjust these parameters if the resulting mesh is not nice.
+#'   
 #' @export
-#' @importFrom RNifti readNifti writeAnalyze
+#' @importFrom RNifti readNifti writeAnalyze niftiHeader
 #' @examples 
 #' library(cgalMeshes)
 #' library(rgl)
@@ -189,13 +205,13 @@ algebraicMesh <- function(
 #' wire3d(rmesh)
 voxel2mesh <- function(
     fileName, isolevel,
-    sphereCenter, sphereRadius,
+    sphereCenter = NULL, sphereRadius = NULL,
     angleBound, radiusBound, distanceBound
 ) {
   stopifnot(isFilename(fileName))
   stopifnot(isNumber(isolevel))
-  stopifnot(isVector3(sphereCenter))
-  stopifnot(isPositiveNumber(sphereRadius))
+  stopifnot(is.null(sphereCenter) || isVector3(sphereCenter))
+  stopifnot(is.null(sphereRadius) || isPositiveNumber(sphereRadius))
   stopifnot(isPositiveNumber(angleBound))
   stopifnot(isPositiveNumber(radiusBound))
   stopifnot(isPositiveNumber(distanceBound))
@@ -203,6 +219,13 @@ voxel2mesh <- function(
     grepl("\\.nii$", tolower(fileName))
   if(!checkFile) {
     stop("Not a NifTI file.")
+  }
+  if(is.null(sphereCenter) || is.null(sphereRadius)) {
+    hdr <- niftiHeader(fileName)
+    spacing <- attr(hdr, "pixdim")
+    imgdim  <- spacing * attr(hdr, "imagedim")
+    sphereCenter <- imgdim / 2
+    sphereRadius <- sqrt(sum((imgdim - sphereCenter)^2))
   }
   hdrFile <- tempfile(fileext = ".hdr")
   img <- readNifti(fileName)

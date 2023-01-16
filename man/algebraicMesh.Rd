@@ -47,6 +47,13 @@ A \code{cgalMesh} object. The mesh has normals computed
 Computes a mesh of an algebraic surface (isosurface defined 
   by a polynomial).
 }
+\note{
+If either \code{angleBound} is too high, \code{radiusBound} is 
+  too small, or \code{distanceBound} is too small, the computation could 
+  never finishes. Therefore, it is recommended to start with a small 
+  \code{angleBound} and large \code{radiusBound} and \code{distanceBound}, 
+  and then to adjust these parameters if the resulting mesh is not nice.
+}
 \examples{
 library(cgalMeshes)
 library(rgl)

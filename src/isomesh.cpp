@@ -59,8 +59,8 @@ Rcpp::XPtr<EMesh3> AlgebraicMesh(
   {
     FT val = fun(bounding_sphere_center);
     if(val >= 0) {
-      const std::string msg = 
-        "The value of the polynomial at the center of the bounding sphere must be less than the isovalue.";
+      std::string msg = "The value of the polynomial at the center of the "; 
+      msg += "bounding sphere must be less than the isovalue.";
       Rcpp::stop(msg);
     }
   }
@@ -119,115 +119,6 @@ Rcpp::XPtr<EMesh3> AlgebraicMesh(
 }
 
 
-FT mandelbulb_function (Point_3 p) {
-  FT x0 = p.x();
-  FT y0 = p.y();
-  FT z0 = p.z();
-  FT x = x0;
-  FT y = y0;
-  FT z = z0;
-  FT r2, theta, phi, r8;
-  for(int i = 0; i < 24; i++){
-    r2 = x*x + y*y + z*z;
-    if(r2 > 4){
-      break;
-    }
-    theta = 8*atan2(sqrt(x*x+y*y),z);
-    phi = 8*atan2(y,x);
-    r8 = r2*r2*r2*r2;
-    x = r8*cos(phi)*sin(theta) + x0;
-    y = r8*sin(phi)*sin(theta) + y0;
-    z = r8*cos(theta) + z0;
-  }
-  return sqrt(r2) - 2;
-}
-
-FT spikes_function (Point_3 p) {
-  FT x = p.x();
-  FT y = p.y();
-  FT z = p.z();
-  FT x2 = x*x;
-  FT y2 = y*y;
-  FT z2 = z*z;
-  FT val = - exp(-(x2+y2+z2)*2)*1 + exp(-(x2*0.03+y2*0.03+z2)*10) +
-    exp(-(x2*0.03+y2+z2*0.03)*10) + exp(-(x2+y2*0.03+z2*0.03)*10);
-  return val - 1;
-}
-
-// [[Rcpp::export]]
-Rcpp::XPtr<EMesh3> mandelbulb(double angle_bound, double radius_bound, double distance_bound) {
-  Tri tr;            // 3D-Delaunay triangulation
-  Cplx2 c2t3 (tr);   // 2D-complex in 3D-Delaunay triangulation
-
-  // defining the surface
-  auto fun = [](Point_3 p) {
-    FT x = p.x();
-    FT y = p.y();
-    FT z = p.z();
-    FT x2 = x*x;
-    FT y2 = y*y;
-    FT z2 = z*z;
-    return x2 + y2 + z2 - 1;
-  };
-  ImplicitSurface surface(fun,      // pointer to function
-                    Sphere_3(CGAL::ORIGIN, 2.)); // bounding sphere
-  // Note that "2." above is the *squared* radius of the bounding sphere!
-
-  // defining meshing criteria
-  // CGAL::Surface_mesh_default_criteria_3<Tri> criteria(35.,  // angular bound
-  //                                                    0.025,  // radius bound
-  //                                                    0.025); // distance bound
-  FT ab(angle_bound);
-  FT rb(radius_bound);
-  FT db(distance_bound); 
-  typedef CGAL::Surface_mesh_default_criteria_3<Tri> Crit; 
-  Crit criteria(ab,  // angular bound
-                                                     rb,  // radius bound
-                                                     db); // distance bound
-  // meshing surface
-  CGAL::make_surface_mesh(c2t3, surface, criteria, CGAL::Non_manifold_tag());
-
-  SurfaceMesh sm;
-  CGAL::facets_in_complex_2_to_triangle_mesh(c2t3, sm);
-
-  EMesh3 mesh;
-  CGAL::copy_face_graph(sm, mesh);
-  return Rcpp::XPtr<EMesh3>(new EMesh3(mesh), false);
-}
-
-// [[Rcpp::export]]
-Rcpp::XPtr<EMesh3> spikes(double angle_bound, double radius_bound, double distance_bound) {
-  Tri tr;            // 3D-Delaunay triangulation
-  Cplx2 c2t3 (tr);   // 2D-complex in 3D-Delaunay triangulation
-
-  // defining the surface
-  ImplicitSurface surface(spikes_function,             // pointer to function
-                    Sphere_3(CGAL::ORIGIN, 16.)); // bounding sphere
-  // Note that "2." above is the *squared* radius of the bounding sphere!
-
-  // defining meshing criteria
-  // CGAL::Surface_mesh_default_criteria_3<Tri> criteria(35.,  // angular bound
-  //                                                    0.025,  // radius bound
-  //                                                    0.025); // distance bound
-  FT ab(angle_bound);
-  FT rb(radius_bound);
-  FT db(distance_bound); 
-  typedef CGAL::Surface_mesh_default_criteria_3<Tri> Crit; 
-  Crit criteria(ab,  // angular bound
-                                                     rb,  // radius bound
-                                                     db); // distance bound
-  // meshing surface
-  CGAL::make_surface_mesh(c2t3, surface, criteria, CGAL::Non_manifold_tag());
-
-  SurfaceMesh sm;
-  CGAL::facets_in_complex_2_to_triangle_mesh(c2t3, sm);
-
-  EMesh3 mesh;
-  CGAL::copy_face_graph(sm, mesh);
-  return Rcpp::XPtr<EMesh3>(new EMesh3(mesh), false);
-}
-
-
 // [[Rcpp::export]]
 Rcpp::XPtr<EMesh3> VoxelToMesh(
   std::string filename, double isovalue, 
@@ -235,7 +126,7 @@ Rcpp::XPtr<EMesh3> VoxelToMesh(
   double angle_bound, double radius_bound, double distance_bound) {
 
   Tri tr;            // 3D-Delaunay triangulation
-  Cplx2 c2t3(tr);   // 2D-complex in 3D-Delaunay triangulation
+  Cplx2 cplx2(tr);   // 2D-complex in 3D-Delaunay triangulation
 
   // the 'function' is a 3D gray level image
   FT isoval(isovalue);
@@ -260,11 +151,11 @@ Rcpp::XPtr<EMesh3> VoxelToMesh(
   MeshingCriteria criteria(ab, rb, db);
 
   // meshing surface, with the "manifold without boundary" algorithm
-  CGAL::make_surface_mesh(c2t3, surface, criteria, CGAL::Manifold_tag());
-  SurfaceMesh sm;
-  CGAL::facets_in_complex_2_to_triangle_mesh(c2t3, sm);
+  CGAL::make_surface_mesh(cplx2, surface, criteria, CGAL::Manifold_tag());
+  SurfaceMesh smesh;
+  CGAL::facets_in_complex_2_to_triangle_mesh(cplx2, smesh);
 
   EMesh3 mesh;
-  CGAL::copy_face_graph(sm, mesh);
+  CGAL::copy_face_graph(smesh, mesh);
   return Rcpp::XPtr<EMesh3>(new EMesh3(mesh), false);
 }

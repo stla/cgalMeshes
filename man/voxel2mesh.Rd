@@ -7,8 +7,8 @@
 voxel2mesh(
   fileName,
   isolevel,
-  sphereCenter,
-  sphereRadius,
+  sphereCenter = NULL,
+  sphereRadius = NULL,
   angleBound,
   radiusBound,
   distanceBound
@@ -20,7 +20,9 @@ or \code{nii.gz})}
 
 \item{isolevel}{the level at which to construct the isosurface}
 
-\item{sphereCenter, sphereRadius}{center and radius of a bounding sphere}
+\item{sphereCenter, sphereRadius}{center and radius of a bounding sphere; 
+if \code{NULL} is given, a default bounding sphere is used, covering 
+all the space}
 
 \item{angleBound}{lower bound in degrees for the angles of the faces of 
 the mesh}
@@ -38,6 +40,13 @@ A \code{cgalMesh} object.
 }
 \description{
 Make a triangle mesh from a NifTI file and an isovalue.
+}
+\note{
+If either \code{angleBound} is too high, \code{radiusBound} is 
+  too small, or \code{distanceBound} is too small, the computation could 
+  never finishes. Therefore, it is recommended to start with a small 
+  \code{angleBound} and large \code{radiusBound} and \code{distanceBound}, 
+  and then to adjust these parameters if the resulting mesh is not nice.
 }
 \examples{
 library(cgalMeshes)
