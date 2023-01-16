@@ -55,6 +55,7 @@ torusMesh <- function(R, r, p1 = NULL, p2 = NULL, p3 = NULL, nu = 50, nv = 30) {
   if(transformation) {
     ccircle <- circumcircle(p1, p2, p3)
     R <- ccircle[["radius"]]
+    # !! we have to take the inverse matrix for rgl::rotate3d
     rotMatrix <- rotationFromTo(ccircle[["normal"]], c(0, 0, 1))
     center <- ccircle[["center"]]
   }
@@ -192,7 +193,7 @@ cyclideMesh <- function(a, c, mu, nu = 90L, nv = 40L){
   b2 <- (a*mu*(c+mu)*(a-c) + bb2 - c*c + bb*(c*(a-mu-c) + 2*a*mu))/denb2
   omegaT <- (b1 + b2)/2
   OmegaT <- c(omegaT, 0, 0)
-  tormesh <- torusMesh(R, r, nu, nv)
+  tormesh <- torusMesh(R, r, nu = nu, nv = nv)
   rtnormals <- r * tormesh[["normals"]][1L:3L, ]
   xvertices <- tormesh[["vb"]][1L:3L, ] + OmegaT
   for(i in 1L:nu){
