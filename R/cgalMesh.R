@@ -170,6 +170,17 @@ cgalMesh <- R6Class(
       . <- private[[".CGALmesh"]]$assignFaceScalars(scalars)
       invisible(self)
     },
+
+    #' @description Assign per-vertex normals to the mesh.
+    #' @param normals a numeric matrix with three columns and as many rows as 
+    #'   the number of vertices
+    #' @return The current \code{cgalMesh} object, invisibly.
+    "assignNormals" = function(normals) {
+      stopifnot(is.matrix(normals), ncol(normals) == 3L)
+      storage.mode(normals) <- "double"
+      . <- private[[".CGALmesh"]]$assignNormals(t(normals))
+      invisible(self)
+    },
     
     #' @description Assign colors (or any character strings) to the vertices of 
     #'   the mesh.

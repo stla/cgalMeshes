@@ -86,6 +86,25 @@ public:
   }
 
 
+  void assignNormals(Rcpp::NumericMatrix normals) {
+    if(normals.ncol() != mesh.number_of_vertices()) {
+      Rcpp::stop(
+        "The number of normals does not match the number of vertices."
+      );
+    }
+    removeProperties(mesh, {"v:normal"});
+    Normals_map vnormal = 
+      mesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
+        "v:normal", defaultNormal()
+      ).first;
+    int i = 0;
+    for(EMesh3::Vertex_index vi : mesh.vertices()) {
+      Rcpp::NumericVector normal = normals(Rcpp::_, i++);
+      vnormal[vi] = normal;
+    }
+  }
+
+
   void assignVertexColors(Rcpp::StringVector colors) {
     if(colors.size() != mesh.number_of_vertices()) {
       Rcpp::stop(
@@ -373,7 +392,8 @@ public:
     }
     vertex_descriptor vd = CGAL::SM_Vertex_index(v);
     Rcpp::IntegerVector faces;
-    for(face_descriptor fd : CGAL::faces_around_target(mesh.halfedge(vd), mesh)) {
+    for(face_descriptor fd : 
+          CGAL::faces_around_target(mesh.halfedge(vd), mesh)) {
       if(fd != EMesh3::null_face()) {
         faces.push_back(int(fd) + 1);
       }
@@ -511,6 +531,8 @@ public:
         msg = "Duplicated " + std::to_string(nmv) + " non-manifold vertices.";
       }
       Message(msg);
+    } else {
+      Message("No non-manifold vertex has been found.");
     }
   }
 

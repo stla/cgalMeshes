@@ -16,6 +16,7 @@ RCPP_MODULE(class_CGALmesh) {
     .field("xptr", &CGALmesh::xptr)
     .method("area", &CGALmesh::area)
     .method("assignFaceColors", &CGALmesh::assignFaceColors)
+    .method("assignNormals", &CGALmesh::assignNormals)
     .method("assignVertexColors", &CGALmesh::assignVertexColors)
     .method("assignFaceScalars", &CGALmesh::assignFaceScalars)
     .method("assignVertexScalars", &CGALmesh::assignVertexScalars)

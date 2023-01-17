@@ -141,7 +141,7 @@ shade3d(sphere, color = "yellow", alpha = 0.15)}
 
 library(cgalMeshes)
 library(rgl)
-rmesh <- sphereMesh()
+rmesh <- sphereMesh(it=1)
 mesh <- cgalMesh$new(rmesh)
 nfaces <- nrow(mesh$getFaces())
 if(require("randomcoloR")) {
@@ -676,6 +676,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-area}{\code{cgalMesh$area()}}
 \item \href{#method-cgalMesh-assignFaceColors}{\code{cgalMesh$assignFaceColors()}}
 \item \href{#method-cgalMesh-assignFaceScalars}{\code{cgalMesh$assignFaceScalars()}}
+\item \href{#method-cgalMesh-assignNormals}{\code{cgalMesh$assignNormals()}}
 \item \href{#method-cgalMesh-assignVertexColors}{\code{cgalMesh$assignVertexColors()}}
 \item \href{#method-cgalMesh-assignVertexScalars}{\code{cgalMesh$assignVertexScalars()}}
 \item \href{#method-cgalMesh-boundingBox}{\code{cgalMesh$boundingBox()}}
@@ -868,6 +869,27 @@ Assign scalars to the faces of the mesh.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{scalars}}{a numeric vector whose length equals the number of faces}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The current \code{cgalMesh} object, invisibly.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-assignNormals"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-assignNormals}{}}}
+\subsection{Method \code{assignNormals()}}{
+Assign per-vertex normals to the mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$assignNormals(normals)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{normals}}{a numeric matrix with three columns and as many rows as 
+the number of vertices}
 }
 \if{html}{\out{</div>}}
 }
