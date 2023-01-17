@@ -65,6 +65,8 @@
 #include <CGAL/Polynomial_traits_d.h>
 #include <CGAL/Polynomial_type_generator.h>
 #include <CGAL/polynomial_utils.h>
+#include <CGAL/Subdivision_method_3/subdivision_methods_3.h>
+#include <CGAL/boost/graph/generators.h>
 
 
 // -------------------------------------------------------------------------- //
