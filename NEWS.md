@@ -6,6 +6,8 @@
 
 - The function `torusMesh` now allows to construct a mesh of the torus with a given minor radius and whose equator passes through three given points.
 
+- New function `sphericalTriangle`, to get a mesh of a spherical triangle.
+
 - New function `algebraicMesh`, computing a mesh of the isosurface defined by a given polynomial and an isolevel.
 
 - New function `voxel2mesh`, extracting triangle meshes from a NifTI file.

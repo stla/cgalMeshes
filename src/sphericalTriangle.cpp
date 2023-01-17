@@ -19,7 +19,10 @@ Rcpp::XPtr<EMesh3> sTriangle(
   EPoint3 pa(A(0), A(1), A(2));
   EPoint3 pb(B(0), B(1), B(2));
   EPoint3 pc(C(0), C(1), C(2));
-  EPoint3 O(center(0), center(1), center(2));
+  double cx = center(0);
+  double cy = center(1);
+  double cz = center(2);
+  EPoint3 O(cx, cy, cz);
   EPlane3 Oab(O, pa, pb);
   if(Oab.has_on_negative_side(pc)) {
     Oab = Oab.opposite();
@@ -47,9 +50,9 @@ Rcpp::XPtr<EMesh3> sTriangle(
   for(vertex_descriptor vd : sphereMesh.vertices()) {
     EPoint3 vx = sphereMesh.point(vd);
     Rcpp::NumericVector normal = {
-      CGAL::to_double<EK::FT>(vx.x()),
-      CGAL::to_double<EK::FT>(vx.y()),
-      CGAL::to_double<EK::FT>(vx.z())
+      CGAL::to_double<EK::FT>(vx.x()) - cx,
+      CGAL::to_double<EK::FT>(vx.y()) - cy,
+      CGAL::to_double<EK::FT>(vx.z()) - cz
     };
     vnormal[vd] = normal;
   }
