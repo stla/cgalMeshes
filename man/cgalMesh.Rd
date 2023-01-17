@@ -141,7 +141,7 @@ shade3d(sphere, color = "yellow", alpha = 0.15)}
 
 library(cgalMeshes)
 library(rgl)
-rmesh <- sphereMesh(it=1)
+rmesh <- sphereMesh()
 mesh <- cgalMesh$new(rmesh)
 nfaces <- nrow(mesh$getFaces())
 if(require("randomcoloR")) {

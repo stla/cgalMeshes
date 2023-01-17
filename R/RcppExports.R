@@ -13,11 +13,7 @@ VoxelToMesh <- function(filename, isovalue, center, radius, angle_bound, radius_
     .Call(`_cgalMeshes_VoxelToMesh`, filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound)
 }
 
-sphericalTriangle <- function(sphereMeshXPtr, A, B, C) {
-    .Call(`_cgalMeshes_sphericalTriangle`, sphereMeshXPtr, A, B, C)
-}
-
-icosphere <- function(iterations) {
-    .Call(`_cgalMeshes_icosphere`, iterations)
+sTriangle <- function(A, B, C, center, radius, iterations) {
+    .Call(`_cgalMeshes_sTriangle`, A, B, C, center, radius, iterations)
 }
 

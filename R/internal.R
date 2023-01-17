@@ -217,3 +217,11 @@ circumcircle <- function(p1, p2, p3) {
   #
   list("center" = center, "radius" = radius, "normal" = normal)
 }
+
+sph2cart <- function(rho, theta, phi) {
+  c(
+    rho * cos(theta) * sin(phi),
+    rho * sin(theta) * sin(phi),
+    rho * cos(phi)
+  )
+}

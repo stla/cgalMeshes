@@ -58,28 +58,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// sphericalTriangle
-Rcpp::XPtr<EMesh3> sphericalTriangle(Rcpp::XPtr<EMesh3> sphereMeshXPtr, Rcpp::NumericVector A, Rcpp::NumericVector B, Rcpp::NumericVector C);
-RcppExport SEXP _cgalMeshes_sphericalTriangle(SEXP sphereMeshXPtrSEXP, SEXP ASEXP, SEXP BSEXP, SEXP CSEXP) {
+// sTriangle
+Rcpp::XPtr<EMesh3> sTriangle(Rcpp::NumericVector A, Rcpp::NumericVector B, Rcpp::NumericVector C, Rcpp::NumericVector center, double radius, unsigned int iterations);
+RcppExport SEXP _cgalMeshes_sTriangle(SEXP ASEXP, SEXP BSEXP, SEXP CSEXP, SEXP centerSEXP, SEXP radiusSEXP, SEXP iterationsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::XPtr<EMesh3> >::type sphereMeshXPtr(sphereMeshXPtrSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type A(ASEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type B(BSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type C(CSEXP);
-    rcpp_result_gen = Rcpp::wrap(sphericalTriangle(sphereMeshXPtr, A, B, C));
-    return rcpp_result_gen;
-END_RCPP
-}
-// icosphere
-Rcpp::XPtr<EMesh3> icosphere(unsigned int iterations);
-RcppExport SEXP _cgalMeshes_icosphere(SEXP iterationsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type center(centerSEXP);
+    Rcpp::traits::input_parameter< double >::type radius(radiusSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type iterations(iterationsSEXP);
-    rcpp_result_gen = Rcpp::wrap(icosphere(iterations));
+    rcpp_result_gen = Rcpp::wrap(sTriangle(A, B, C, center, radius, iterations));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -90,8 +81,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 1},
     {"_cgalMeshes_AlgebraicMesh", (DL_FUNC) &_cgalMeshes_AlgebraicMesh, 8},
     {"_cgalMeshes_VoxelToMesh", (DL_FUNC) &_cgalMeshes_VoxelToMesh, 7},
-    {"_cgalMeshes_sphericalTriangle", (DL_FUNC) &_cgalMeshes_sphericalTriangle, 4},
-    {"_cgalMeshes_icosphere", (DL_FUNC) &_cgalMeshes_icosphere, 1},
+    {"_cgalMeshes_sTriangle", (DL_FUNC) &_cgalMeshes_sTriangle, 6},
     {"_rcpp_module_boot_class_CGALmesh", (DL_FUNC) &_rcpp_module_boot_class_CGALmesh, 0},
     {NULL, NULL, 0}
 };
