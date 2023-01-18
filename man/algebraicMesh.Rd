@@ -11,7 +11,8 @@ algebraicMesh(
   sphereRadius,
   angleBound,
   radiusBound,
-  distanceBound
+  distanceBound,
+  errorBound = 0.001
 )
 }
 \arguments{
@@ -38,6 +39,8 @@ at the surface}
 \item{distanceBound}{upper bound for the distance between the 
 circumcenter of a face and the center of the surface Delaunay 
 ball of this face}
+
+\item{errorBound}{a relative error bound used in the computations}
 }
 \value{
 A \code{cgalMesh} object. The mesh has normals computed 

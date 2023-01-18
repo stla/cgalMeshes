@@ -24,7 +24,8 @@ Poly3 Polynomial(Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs) {
 Rcpp::XPtr<EMesh3> AlgebraicMesh(
   Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs, double isolevel,
   Rcpp::NumericVector sphereCenter, double sphereRadius,
-  double angle_bound, double radius_bound, double distance_bound
+  double angle_bound, double radius_bound, double distance_bound, 
+  double error_bound
 ) {
   Tri tr;             // 3D-Delaunay triangulation
   Cplx2 cplx2(tr);    // 2D-complex in 3D-Delaunay triangulation
@@ -66,7 +67,8 @@ Rcpp::XPtr<EMesh3> AlgebraicMesh(
   }
 
   // isosurface
-  ImplicitSurface surface(fun, bounding_sphere);
+  FT eb(error_bound);
+  ImplicitSurface surface(fun, bounding_sphere, eb);
 
   // defining meshing criteria
   FT ab(angle_bound);
@@ -123,7 +125,9 @@ Rcpp::XPtr<EMesh3> AlgebraicMesh(
 Rcpp::XPtr<EMesh3> VoxelToMesh(
   std::string filename, double isovalue, 
   Rcpp::NumericVector center, double radius,
-  double angle_bound, double radius_bound, double distance_bound) {
+  double angle_bound, double radius_bound, double distance_bound, 
+  double error_bound
+) {
 
   Tri tr;            // 3D-Delaunay triangulation
   Cplx2 cplx2(tr);   // 2D-complex in 3D-Delaunay triangulation
@@ -141,8 +145,9 @@ Rcpp::XPtr<EMesh3> VoxelToMesh(
     bounding_sphere_center, bounding_sphere_squared_radius
   );
 
-  // definition of the surface, with 10^-5 as relative precision
-  Surface_gray surface(image, bounding_sphere, 1e-5);
+  // definition of the surface
+  FT eb(error_bound);
+  Surface_gray surface(image, bounding_sphere, eb);
 
   // defining meshing criteria
   FT ab(angle_bound);
@@ -150,7 +155,7 @@ Rcpp::XPtr<EMesh3> VoxelToMesh(
   FT db(distance_bound); 
   MeshingCriteria criteria(ab, rb, db);
 
-  // meshing surface, with the "manifold without boundary" algorithm
+  // meshing surface, with the "manifold with boundary" algorithm
   CGAL::make_surface_mesh(
     cplx2, surface, criteria, CGAL::Manifold_with_boundary_tag()
   );

@@ -24,8 +24,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // AlgebraicMesh
-Rcpp::XPtr<EMesh3> AlgebraicMesh(Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs, double isolevel, Rcpp::NumericVector sphereCenter, double sphereRadius, double angle_bound, double radius_bound, double distance_bound);
-RcppExport SEXP _cgalMeshes_AlgebraicMesh(SEXP powersSEXP, SEXP coeffsSEXP, SEXP isolevelSEXP, SEXP sphereCenterSEXP, SEXP sphereRadiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP) {
+Rcpp::XPtr<EMesh3> AlgebraicMesh(Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs, double isolevel, Rcpp::NumericVector sphereCenter, double sphereRadius, double angle_bound, double radius_bound, double distance_bound, double error_bound);
+RcppExport SEXP _cgalMeshes_AlgebraicMesh(SEXP powersSEXP, SEXP coeffsSEXP, SEXP isolevelSEXP, SEXP sphereCenterSEXP, SEXP sphereRadiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP, SEXP error_boundSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -37,13 +37,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type angle_bound(angle_boundSEXP);
     Rcpp::traits::input_parameter< double >::type radius_bound(radius_boundSEXP);
     Rcpp::traits::input_parameter< double >::type distance_bound(distance_boundSEXP);
-    rcpp_result_gen = Rcpp::wrap(AlgebraicMesh(powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound));
+    Rcpp::traits::input_parameter< double >::type error_bound(error_boundSEXP);
+    rcpp_result_gen = Rcpp::wrap(AlgebraicMesh(powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound));
     return rcpp_result_gen;
 END_RCPP
 }
 // VoxelToMesh
-Rcpp::XPtr<EMesh3> VoxelToMesh(std::string filename, double isovalue, Rcpp::NumericVector center, double radius, double angle_bound, double radius_bound, double distance_bound);
-RcppExport SEXP _cgalMeshes_VoxelToMesh(SEXP filenameSEXP, SEXP isovalueSEXP, SEXP centerSEXP, SEXP radiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP) {
+Rcpp::XPtr<EMesh3> VoxelToMesh(std::string filename, double isovalue, Rcpp::NumericVector center, double radius, double angle_bound, double radius_bound, double distance_bound, double error_bound);
+RcppExport SEXP _cgalMeshes_VoxelToMesh(SEXP filenameSEXP, SEXP isovalueSEXP, SEXP centerSEXP, SEXP radiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP, SEXP error_boundSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -54,7 +55,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type angle_bound(angle_boundSEXP);
     Rcpp::traits::input_parameter< double >::type radius_bound(radius_boundSEXP);
     Rcpp::traits::input_parameter< double >::type distance_bound(distance_boundSEXP);
-    rcpp_result_gen = Rcpp::wrap(VoxelToMesh(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound));
+    Rcpp::traits::input_parameter< double >::type error_bound(error_boundSEXP);
+    rcpp_result_gen = Rcpp::wrap(VoxelToMesh(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound, error_bound));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -79,8 +81,8 @@ RcppExport SEXP _rcpp_module_boot_class_CGALmesh();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 1},
-    {"_cgalMeshes_AlgebraicMesh", (DL_FUNC) &_cgalMeshes_AlgebraicMesh, 8},
-    {"_cgalMeshes_VoxelToMesh", (DL_FUNC) &_cgalMeshes_VoxelToMesh, 7},
+    {"_cgalMeshes_AlgebraicMesh", (DL_FUNC) &_cgalMeshes_AlgebraicMesh, 9},
+    {"_cgalMeshes_VoxelToMesh", (DL_FUNC) &_cgalMeshes_VoxelToMesh, 8},
     {"_cgalMeshes_sTriangle", (DL_FUNC) &_cgalMeshes_sTriangle, 6},
     {"_rcpp_module_boot_class_CGALmesh", (DL_FUNC) &_rcpp_module_boot_class_CGALmesh, 0},
     {NULL, NULL, 0}

@@ -5,12 +5,12 @@ AFSreconstruction_cpp <- function(pts) {
     .Call(`_cgalMeshes_AFSreconstruction_cpp`, pts)
 }
 
-AlgebraicMesh <- function(powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound) {
-    .Call(`_cgalMeshes_AlgebraicMesh`, powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound)
+AlgebraicMesh <- function(powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound) {
+    .Call(`_cgalMeshes_AlgebraicMesh`, powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound)
 }
 
-VoxelToMesh <- function(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound) {
-    .Call(`_cgalMeshes_VoxelToMesh`, filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound)
+VoxelToMesh <- function(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound, error_bound) {
+    .Call(`_cgalMeshes_VoxelToMesh`, filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound, error_bound)
 }
 
 sTriangle <- function(A, B, C, center, radius, iterations) {

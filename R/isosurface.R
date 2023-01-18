@@ -20,6 +20,7 @@
 #' @param distanceBound upper bound for the distance between the 
 #'   circumcenter of a face and the center of the surface Delaunay 
 #'   ball of this face
+#' @param errorBound a relative error bound used in the computations
 #'
 #' @return A \code{cgalMesh} object. The mesh has normals computed 
 #'   with the gradient of the polynomial.
@@ -118,7 +119,8 @@
 algebraicMesh <- function(
   polynomial, isolevel, 
   sphereCenter, sphereRadius,
-  angleBound, radiusBound, distanceBound
+  angleBound, radiusBound, distanceBound, 
+  errorBound = 1e-3
 ) {
   stopifnot(isNumber(isolevel))
   stopifnot(isVector3(sphereCenter))
@@ -126,6 +128,7 @@ algebraicMesh <- function(
   stopifnot(isPositiveNumber(angleBound))
   stopifnot(isPositiveNumber(radiusBound))
   stopifnot(isPositiveNumber(distanceBound))
+  stopifnot(isPositiveNumber(errorBound))
   if(inherits(polynomial, "spray")) {
     exponents <- polynomial[["index"]]
     coeffs    <- polynomial[["value"]]
@@ -152,7 +155,8 @@ algebraicMesh <- function(
   xptr <- AlgebraicMesh(
     exponents, coeffs, isolevel, 
     sphereCenter, sphereRadius, 
-    angleBound, radiusBound, distanceBound
+    angleBound, radiusBound, distanceBound,
+    errorBound
   )
   cgalMesh$new(clean = xptr)
 }
@@ -174,6 +178,7 @@ algebraicMesh <- function(
 #' @param distanceBound upper bound for the distance between the 
 #'   circumcenter of a face and the center of the surface Delaunay 
 #'   ball of this face
+#' @param errorBound a relative error bound used in the computations
 #'
 #' @return A \code{cgalMesh} object.
 #' 
@@ -206,7 +211,8 @@ algebraicMesh <- function(
 voxel2mesh <- function(
     fileName, isolevel,
     sphereCenter = NULL, sphereRadius = NULL,
-    angleBound, radiusBound, distanceBound
+    angleBound, radiusBound, distanceBound,
+    errorBound = 1e-3
 ) {
   stopifnot(isFilename(fileName))
   stopifnot(isNumber(isolevel))
@@ -215,6 +221,7 @@ voxel2mesh <- function(
   stopifnot(isPositiveNumber(angleBound))
   stopifnot(isPositiveNumber(radiusBound))
   stopifnot(isPositiveNumber(distanceBound))
+  stopifnot(isPositiveNumber(errorBound))
   checkFile <- grepl("\\.nii\\.gz$", tolower(fileName)) || 
     grepl("\\.nii$", tolower(fileName))
   if(!checkFile) {
@@ -232,9 +239,9 @@ voxel2mesh <- function(
   . <- writeAnalyze(img, hdrFile)
   xptr <- VoxelToMesh(
     hdrFile, isolevel, 
-    sphereCenter, 
-    sphereRadius,
-    angleBound, radiusBound, distanceBound
+    sphereCenter, sphereRadius,
+    angleBound, radiusBound, distanceBound, 
+    errorBound
   )
   cgalMesh$new(clean = xptr)
 }

@@ -34,7 +34,7 @@ C <- c(0, 0)
 mesh <- sphericalTriangle(A, B, C)
 rmesh <- mesh$getMesh()
 open3d(windowRect = 50 + c(0, 0, 512, 512))
-view3d(30, 30, zoom = 0.9)
+view3d(30, 30)
 shade3d(rmesh, color = "red")
 wire3d(rmesh)
 }
