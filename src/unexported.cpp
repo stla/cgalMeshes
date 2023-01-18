@@ -630,7 +630,7 @@ Rcpp::List clippingToPlane(EMesh3& tm, EPlane3 plane, const bool clipVolume) {
   ClipVisitor vis;
   const bool clipping = PMP::clip(
     tm, plane,
-    PMP::parameters::clip_volume(clipVolume).visitor(vis).use_compact_clipper(false)
+    PMP::parameters::clip_volume(clipVolume).visitor(vis)
   );
   if(!clipping) {
     Rcpp::stop("Clipping has failed.");
