@@ -25,8 +25,8 @@ double gammaF(Point3 A, double s) {
 Point3 gyromidpoint(Point3 A, Point3 B, double s) {
   Point3 bA = scalePoint(betaF(A, s), A);
   Point3 bB = scalePoint(betaF(B, s), B);
-  double gA = gammaF(A, s);
-  double gB = gammaF(B, s);
+  double gA = gammaF(bA, s);
+  double gB = gammaF(bB, s);
   Point3 M = scalePoint(
     1.0 / (gA + gB), 
     addPoints(scalePoint(gA, bA), scalePoint(gB, bB))
@@ -66,7 +66,30 @@ Mesh3 gyroQuadrisection(Mesh3 mesh, double s) {
     newmesh.add_face(v3, m31, m23);
     newmesh.add_face(m12, m23, m31);
   }
+  Rcpp::Rcout << newmesh << "\n";
   return newmesh;
 }
 
 
+// [[Rcpp::export]]
+Rcpp::XPtr<EMesh3> gyroTriangle(
+  Rcpp::NumericVector A, Rcpp::NumericVector B, Rcpp::NumericVector C,
+  double s, int iterations
+) {
+  Point3 pa(A(0), A(1), A(2));
+  Point3 pb(B(0), B(1), B(2));
+  Point3 pc(C(0), C(1), C(2));
+  Mesh3 mesh;
+  mesh.add_vertex(pa);
+  mesh.add_vertex(pb);
+  mesh.add_vertex(pc);
+  mesh.add_face(vxdescr(0), vxdescr(1), vxdescr(2));
+  std::vector<Mesh3> meshes(iterations);
+  meshes[0] = mesh;
+  for(int i = 1; i < iterations; i++) {
+    meshes[i] = gyroQuadrisection(meshes[i-1], s);
+  }
+  EMesh3 emesh;
+  CGAL::copy_face_graph(meshes[iterations-1], emesh);
+  return Rcpp::XPtr<EMesh3>(new EMesh3(emesh), false);
+}
