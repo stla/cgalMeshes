@@ -2,6 +2,18 @@
 #include "cgalMesh.h"
 #endif
 
+void clippingToPlane(EMesh3& mesh, EPlane3 plane) {
+
+  const bool clipping = PMP::clip(
+    mesh, plane,
+    PMP::parameters::clip_volume(false)
+  );
+  if(!clipping) {
+    Rcpp::stop("Clipping has failed.");
+  }
+  mesh.collect_garbage();
+}
+
 EMesh3 icosphere(EPoint3 center, EK::FT radius, unsigned int iterations) {
   EMesh3 mesh;
   CGAL::make_icosahedron<EMesh3, EPoint3>(mesh, center, radius);
@@ -39,9 +51,9 @@ Rcpp::XPtr<EMesh3> sTriangle(
   EK::FT r(radius);
   EMesh3 sphereMesh = icosphere(O, r, iterations);
 
-  clippingToPlane(sphereMesh, Oab, false);
-  clippingToPlane(sphereMesh, Obc, false);
-  clippingToPlane(sphereMesh, Oca, false);
+  clippingToPlane(sphereMesh, Oab);
+  clippingToPlane(sphereMesh, Obc);
+  clippingToPlane(sphereMesh, Oca);
 
   Normals_map vnormal = 
     sphereMesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(

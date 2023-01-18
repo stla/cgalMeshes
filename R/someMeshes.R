@@ -50,6 +50,33 @@ sphereMesh <- function(x = 0, y = 0, z = 0, r = 1, iterations = 3L) {
 #' view3d(0, 0, zoom = 0.75)
 #' shade3d(mesh, color = "green")
 #' wire3d(mesh)
+#' 
+#' # Villarceau circles ####
+#' Villarceau <- function(beta, theta0, phi) {
+#'   c(
+#'     cos(theta0 + beta) * cos(phi),
+#'     sin(theta0 + beta) * cos(phi),
+#'     cos(beta) * sin(phi)
+#'   ) / (1 - sin(beta) * sin(phi))
+#' }
+#' ncircles <- 30
+#' if(require("randomcoloR")) {
+#'   colors <- 
+#'     randomColor(ncircles, hue = "random", luminosity = "dark")
+#' } else {
+#'   colors <- rainbow(ncircles)
+#' }
+#' theta0_ <- seq(0, 2*pi, length.out = ncircles+1)[-1L]
+#' phi <- 0.7
+#' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
+#' for(i in seq_along(theta0_)) {
+#'   theta0 <- theta0_[i]
+#'   p1 <- Villarceau(0, theta0, phi)
+#'   p2 <- Villarceau(2, theta0, phi)
+#'   p3 <- Villarceau(4, theta0, phi)
+#'   rmesh <- torusMesh(r = 0.05, p1 = p1, p2 = p2, p3 = p3)
+#'   shade3d(rmesh, color = colors[i])
+#' }}
 torusMesh <- function(R, r, p1 = NULL, p2 = NULL, p3 = NULL, nu = 50, nv = 30) {
   transformation <- !is.null(p1) && !is.null(p2) && !is.null(p3)
   if(transformation) {

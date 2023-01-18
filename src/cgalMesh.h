@@ -190,16 +190,11 @@ std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
 template <typename Keytype, typename Valuetype>
 void removeProperty(EMesh3&, std::string);
 
-Rcpp::List clipping(EMesh3&, EMesh3&, const bool);
-Rcpp::List clippingToPlane(EMesh3&, EPlane3, const bool);
-Rcpp::List clippingToIsoCuboid(EMesh3&, IsoCuboid3, const bool);
-
 template <typename SourceDescriptor, typename TargetDescriptor, typename Valuetype>
 void copy_property(
   EMesh3&, EMesh3&, std::map<SourceDescriptor, TargetDescriptor>, std::string 
 );
 
-Rcpp::XPtr<EMesh3> fillHole(EMesh3&, int, bool);
 //////////////////////////////////////////
 
 struct ClipVisitor : 
