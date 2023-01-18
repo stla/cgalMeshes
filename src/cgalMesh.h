@@ -83,6 +83,7 @@ typedef CGAL::Polyhedron_3<EK> EPolyhedron;
 typedef CGAL::Triangle_3<EK> Triangle;
 typedef CGAL::Tetrahedron_3<EK> Tetrahedron;
 
+typedef boost::graph_traits<Mesh3>::vertex_descriptor vxdescr;
 typedef boost::graph_traits<EMesh3>::vertex_descriptor vertex_descriptor;
 typedef EMesh3::Property_map<vertex_descriptor, double> Vertex_distance_map;
 typedef EMesh3::Property_map<vertex_descriptor, std::size_t> Vertex_index_map;
