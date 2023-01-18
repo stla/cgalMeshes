@@ -23,9 +23,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gyroTriangle
-Rcpp::XPtr<EMesh3> gyroTriangle(Rcpp::NumericVector A, Rcpp::NumericVector B, Rcpp::NumericVector C, double s, int iterations);
-RcppExport SEXP _cgalMeshes_gyroTriangle(SEXP ASEXP, SEXP BSEXP, SEXP CSEXP, SEXP sSEXP, SEXP iterationsSEXP) {
+// gTriangle
+Rcpp::XPtr<EMesh3> gTriangle(Rcpp::NumericVector A, Rcpp::NumericVector B, Rcpp::NumericVector C, double s, int iterations);
+RcppExport SEXP _cgalMeshes_gTriangle(SEXP ASEXP, SEXP BSEXP, SEXP CSEXP, SEXP sSEXP, SEXP iterationsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -34,7 +34,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type C(CSEXP);
     Rcpp::traits::input_parameter< double >::type s(sSEXP);
     Rcpp::traits::input_parameter< int >::type iterations(iterationsSEXP);
-    rcpp_result_gen = Rcpp::wrap(gyroTriangle(A, B, C, s, iterations));
+    rcpp_result_gen = Rcpp::wrap(gTriangle(A, B, C, s, iterations));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -96,7 +96,7 @@ RcppExport SEXP _rcpp_module_boot_class_CGALmesh();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 1},
-    {"_cgalMeshes_gyroTriangle", (DL_FUNC) &_cgalMeshes_gyroTriangle, 5},
+    {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},
     {"_cgalMeshes_AlgebraicMesh", (DL_FUNC) &_cgalMeshes_AlgebraicMesh, 9},
     {"_cgalMeshes_VoxelToMesh", (DL_FUNC) &_cgalMeshes_VoxelToMesh, 8},
     {"_cgalMeshes_sTriangle", (DL_FUNC) &_cgalMeshes_sTriangle, 6},

@@ -66,13 +66,12 @@ Mesh3 gyroQuadrisection(Mesh3 mesh, double s) {
     newmesh.add_face(v3, m31, m23);
     newmesh.add_face(m12, m23, m31);
   }
-  Rcpp::Rcout << newmesh << "\n";
   return newmesh;
 }
 
 
 // [[Rcpp::export]]
-Rcpp::XPtr<EMesh3> gyroTriangle(
+Rcpp::XPtr<EMesh3> gTriangle(
   Rcpp::NumericVector A, Rcpp::NumericVector B, Rcpp::NumericVector C,
   double s, int iterations
 ) {

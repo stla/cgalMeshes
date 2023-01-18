@@ -5,8 +5,8 @@ AFSreconstruction_cpp <- function(pts) {
     .Call(`_cgalMeshes_AFSreconstruction_cpp`, pts)
 }
 
-gyroTriangle <- function(A, B, C, s, iterations) {
-    .Call(`_cgalMeshes_gyroTriangle`, A, B, C, s, iterations)
+gTriangle <- function(A, B, C, s, iterations) {
+    .Call(`_cgalMeshes_gTriangle`, A, B, C, s, iterations)
 }
 
 AlgebraicMesh <- function(powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound) {
