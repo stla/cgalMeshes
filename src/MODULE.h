@@ -23,7 +23,7 @@ public:
   
   CGALmesh(Rcpp::XPtr<EMesh3> xptr_)
     : mesh(*(xptr_.get())),
-      xptr(xptr_)
+      xptr(Rcpp::XPtr<EMesh3>(&mesh, false))
       {}
   
   CGALmesh(const std::string filename, bool binary)
