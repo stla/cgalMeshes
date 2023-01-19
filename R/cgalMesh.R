@@ -1070,6 +1070,18 @@ cgalMesh <- R6Class(
     "isClosed" = function() {
       private[[".CGALmesh"]]$isClosed()
     },
+
+    "isotropicRemeshing" = function(
+      targetEdgeLength, iterations = 1, relaxSteps = 1
+    ) {
+      stopifnot(isPositiveNumber(targetEdgeLength))
+      stopifnot(isStrictPositiveInteger(iterations))
+      stopifnot(isStrictPositiveInteger(relaxSteps))
+      private[[".CGALmesh"]]$isotropicRemeshing(
+        targetEdgeLength, as.integer(iterations), as.integer(relaxSteps)        
+      )
+      invisible(self)
+    },
     
     #' @description Check whether the mesh is outward oriented. The mesh must 
     #'   be triangle.

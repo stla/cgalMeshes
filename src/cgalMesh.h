@@ -28,6 +28,7 @@
 #include <CGAL/Polygon_mesh_processing/merge_border_vertices.h>
 #include <CGAL/Polygon_mesh_processing/border.h>
 #include <CGAL/Polygon_mesh_processing/bbox.h>
+#include <CGAL/Polygon_mesh_processing/remesh.h>
 #include <CGAL/number_utils.h>
 #include <CGAL/boost/graph/copy_face_graph.h>
 #include <CGAL/boost/graph/Face_filtered_graph.h>

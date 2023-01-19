@@ -52,6 +52,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("getRmesh", &CGALmesh::getRmesh)
     .method("intersection", &CGALmesh::intersection)
     .method("isClosed", &CGALmesh::isClosed)
+    .method("isotropicRemeshing", &CGALmesh::isotropicRemeshing)
     .method("isOutwardOriented", &CGALmesh::isOutwardOriented)
     .method("isQuad", &CGALmesh::isQuad)
     .method("isTriangle", &CGALmesh::isTriangle)

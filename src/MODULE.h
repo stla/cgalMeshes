@@ -1343,6 +1343,31 @@ public:
   }
 
 
+  void isotropicRemeshing(
+    const double targetEdgeLength, 
+    const unsigned niters, const unsigned nrelaxsteps 
+  ) {
+    std::vector<halfedge_descriptor> borderHalfedges;
+    PMP::border_halfedges(
+      mesh.faces(), mesh, std::back_inserter(borderHalfedges)
+    );
+    std::vector<edge_descriptor> border;
+    int nhborder = borderHalfedges.size();
+    border.reserve(nhborder);
+    for(int i = 0; i < nhborder; i++) {
+      border.emplace_back(mesh.edge(borderHalfedges[i]));
+    }
+    PMP::split_long_edges(border, targetEdgeLength, mesh);
+    PMP::isotropic_remeshing(
+      mesh.faces(), targetEdgeLength, mesh,
+      PMP::parameters::number_of_iterations(niters)
+                      .number_of_relaxation_steps(nrelaxsteps)
+                      .protect_constraints(true)
+    );
+    mesh.collect_garbage();
+  }
+
+
   bool isOutwardOriented() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
