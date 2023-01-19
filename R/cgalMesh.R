@@ -641,7 +641,7 @@ cgalMesh <- R6Class(
         stop("The indices must be positive integers.")
       }
       private[[".CGALmesh"]]$fair(as.integer(indices) - 1L)
-      self
+      invisible(self)
     },
 
     #' @description Fill a hole in the mesh. The face properties and the 
@@ -1071,6 +1071,28 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$isClosed()
     },
 
+    #' @description Isotropic remeshing.
+    #' @param targetEdgeLength positive number, the target edge length of the
+    #'   remeshed mesh
+    #' @param iterations number of iterations, a positive integer
+    #' @param relaxSteps number of relaxation steps, a positive integer
+    #' @return The modified \code{cgalMesh} object, invisibly.
+    #' @examples 
+    #' \donttest{library(cgalMeshes)
+    #' library(rgl)
+    #' mesh <- cgalMesh$new(HopfTorusMesh(nu = 80, nv = 50))
+    #' mesh$isotropicRemeshing(targetEdgeLength = 0.7)
+    #' # squared norms of the vertices
+    #' normsq <- apply(mesh$getVertices(), 1L, crossprod)
+    #' # fair the region where the squared norm is > 19
+    #' mesh$fair(which(normsq > 19))
+    #' # plot
+    #' mesh$computeNormals()
+    #' rmesh <- mesh$getMesh()
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512))
+    #' view3d(0, 0)
+    #' shade3d(rmesh, color = "maroon")
+    #' wire3d(rmesh)}
     "isotropicRemeshing" = function(
       targetEdgeLength, iterations = 1, relaxSteps = 1
     ) {

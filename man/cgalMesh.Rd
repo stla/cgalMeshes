@@ -529,6 +529,26 @@ shade3d(rglmesh1, color = "yellow", alpha = 0.2)
 shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
 
 ## ------------------------------------------------
+## Method `cgalMesh$isotropicRemeshing`
+## ------------------------------------------------
+
+\donttest{library(cgalMeshes)
+library(rgl)
+mesh <- cgalMesh$new(HopfTorusMesh(nu = 80, nv = 50))
+mesh$isotropicRemeshing(targetEdgeLength = 0.7)
+# squared norms of the vertices
+normsq <- apply(mesh$getVertices(), 1L, crossprod)
+# fair the region where the squared norm is > 19
+mesh$fair(which(normsq > 19))
+# plot
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(0, 0)
+shade3d(rmesh, color = "maroon")
+wire3d(rmesh)}
+
+## ------------------------------------------------
 ## Method `cgalMesh$isOutwardOriented`
 ## ------------------------------------------------
 
@@ -709,6 +729,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-getVertices}{\code{cgalMesh$getVertices()}}
 \item \href{#method-cgalMesh-intersection}{\code{cgalMesh$intersection()}}
 \item \href{#method-cgalMesh-isClosed}{\code{cgalMesh$isClosed()}}
+\item \href{#method-cgalMesh-isotropicRemeshing}{\code{cgalMesh$isotropicRemeshing()}}
 \item \href{#method-cgalMesh-isOutwardOriented}{\code{cgalMesh$isOutwardOriented()}}
 \item \href{#method-cgalMesh-isTriangle}{\code{cgalMesh$isTriangle()}}
 \item \href{#method-cgalMesh-isValid}{\code{cgalMesh$isValid()}}
@@ -2038,6 +2059,53 @@ Check whether the mesh is closed.
 \subsection{Returns}{
 A Boolean value, whether the mesh is closed.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-isotropicRemeshing"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-isotropicRemeshing}{}}}
+\subsection{Method \code{isotropicRemeshing()}}{
+Isotropic remeshing.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$isotropicRemeshing(targetEdgeLength, iterations = 1, relaxSteps = 1)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{targetEdgeLength}}{positive number, the target edge length of the
+remeshed mesh}
+
+\item{\code{iterations}}{number of iterations, a positive integer}
+
+\item{\code{relaxSteps}}{number of relaxation steps, a positive integer}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The modified \code{cgalMesh} object, invisibly.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
+mesh <- cgalMesh$new(HopfTorusMesh(nu = 80, nv = 50))
+mesh$isotropicRemeshing(targetEdgeLength = 0.7)
+# squared norms of the vertices
+normsq <- apply(mesh$getVertices(), 1L, crossprod)
+# fair the region where the squared norm is > 19
+mesh$fair(which(normsq > 19))
+# plot
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(0, 0)
+shade3d(rmesh, color = "maroon")
+wire3d(rmesh)}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-isOutwardOriented"></a>}}
