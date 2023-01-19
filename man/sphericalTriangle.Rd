@@ -7,13 +7,14 @@
 sphericalTriangle(A, B, C, center = c(0, 0, 0), radius = 1, iterations = 4)
 }
 \arguments{
-\item{A, B, C}{the three vertices of the triangle, each given as a pair of 
-numbers: the polar angle (between 0 and pi) and the azimuthal angle 
-(between 0 and 2pi)}
+\item{A, B, C}{the three vertices of the triangle, each given either as a pair 
+of numbers: the polar angle (between 0 and pi) and the azimuthal angle 
+(between 0 and 2pi), or as Cartesian coordinates}
 
 \item{center}{center of the sphere}
 
-\item{radius}{radius of the sphere}
+\item{radius}{radius of the sphere, ignored if the three vertices 
+are given as Cartesian coordinates}
 
 \item{iterations}{number of iterations used to construct the mesh of 
 the sphere}
