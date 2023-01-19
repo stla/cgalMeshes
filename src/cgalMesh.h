@@ -69,6 +69,7 @@
 #include <CGAL/Subdivision_method_3/subdivision_methods_3.h>
 #include <CGAL/boost/graph/generators.h>
 #include <CGAL/convex_hull_3.h>
+#include <CGAL/Convex_hull_3/dual/halfspace_intersection_3.h>
 
 // -------------------------------------------------------------------------- //
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;

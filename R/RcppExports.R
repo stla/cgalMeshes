@@ -9,6 +9,10 @@ cxhull <- function(pts) {
     .Call(`_cgalMeshes_cxhull`, pts)
 }
 
+cxhullsIntersection <- function(Pts, origin_) {
+    .Call(`_cgalMeshes_cxhullsIntersection`, Pts, origin_)
+}
+
 gTriangle <- function(A, B, C, s, iterations) {
     .Call(`_cgalMeshes_gTriangle`, A, B, C, s, iterations)
 }
