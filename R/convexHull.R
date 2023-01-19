@@ -37,3 +37,37 @@ convexHull <- function(points) {
   xptr <- cxhull(t(points))
   cgalMesh$new(clean = xptr)
 }
+
+#' @title Intersection of convex hulls.
+#' @description Mesh of the intersection of some convex hulls.
+#'
+#' @param Points a list of numeric matrices with three columns, each matrix 
+#'   represents the points for which a convex hull will be computed
+#' @param origin either \code{NULL} or a numeric vector of length 3 
+#'   corresponding to a point in the intersection; set \code{NULL} if 
+#'   you don't know such a point, otherwise give such a point to 
+#'   gain speed
+#'
+#' @return A \code{cgalMesh} object.
+#' @export
+#'
+#' @examples
+#' library(cgalMeshes)
+#' library(rgl)
+convexHullsIntersection <- function(Points, origin = NULL) {
+  stopifnot(is.null(origin) || isVector3(origin))
+  stopifnot(is.list(Points))
+  stopifnot(length(Points) >= 2L)
+  for(i in seq_along(Points)) {
+    points <- Points[[i]]
+    stopifnot(is.matrix(points))
+    stopifnot(ncol(points) == 3L)
+    storage.mode(points) <- "double"
+    if(anyNA(points)) {
+      stop("Found missing values.")
+    }
+    Points[[i]] <- t(points)
+  }
+  xptr <- cxhullsIntersection(Points, origin)
+  cgalMesh$new(clean = xptr)
+}

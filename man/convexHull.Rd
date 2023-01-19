@@ -33,7 +33,7 @@ mesh <- convexHull(cube)
 # plot
 rmesh <- mesh$getMesh()
 open3d(windowRect = c(50, 50, 562, 562))
-view3d(20, 20, zoom= 0.9)
+view3d(20, 20)
 shade3d(rmesh, color = "orange")
 wire3d(rmesh)
 }
