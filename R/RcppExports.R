@@ -5,6 +5,10 @@ AFSreconstruction_cpp <- function(pts) {
     .Call(`_cgalMeshes_AFSreconstruction_cpp`, pts)
 }
 
+cxhull <- function(pts) {
+    .Call(`_cgalMeshes_cxhull`, pts)
+}
+
 gTriangle <- function(A, B, C, s, iterations) {
     .Call(`_cgalMeshes_gTriangle`, A, B, C, s, iterations)
 }

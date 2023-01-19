@@ -8,6 +8,8 @@
 
 - New function `sphericalTriangle`, to get a mesh of a spherical triangle.
 
+- New function `gyroTriangle`, to get a mesh of a hyperbolic triangle.
+
 - New function `algebraicMesh`, computing a mesh of the isosurface defined by a given polynomial and an isolevel.
 
 - New function `voxel2mesh`, extracting triangle meshes from a NifTI file.
@@ -16,7 +18,8 @@
   * `clipToPlane`, to clip the mesh to a plane;
   * `clipToIsoCuboid`, to clip the mesh to an iso-oriented cuboid;
   * `getBorders`, to extract the boundary cycles from the mesh;
-  * `fillBoundaryHole`, to fill the holes of the mesh.
+  * `fillBoundaryHole`, to fill the holes of the mesh;
+  * `isotropicRemeshing`, to remesh the mesh.
 
 
 # cgalMeshes 1.0.0
