@@ -1406,6 +1406,12 @@ public:
   }
 
 
+  void merge(Rcpp::XPtr<EMesh3> mesh2XPtr) {
+    EMesh3 mesh2 = *(mesh2XPtr.get());
+    mesh += mesh2;
+  }
+
+
   void orientToBoundVolume() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -1418,6 +1424,11 @@ public:
   void print() {
     Rcpp::Rcout << "Mesh with " << mesh.number_of_vertices() 
                 << " vertices and " << mesh.number_of_faces() << " faces.\n";
+    if(CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::Rcout << "The mesh is triangle.\n";
+    } else {
+      Rcpp::Rcout << "The mesh is not triangle.\n";
+    }
   }
 
 

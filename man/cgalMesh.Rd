@@ -567,6 +567,21 @@ mesh <- cgalMesh$new(cube3d())
 mesh$isTriangle()
 
 ## ------------------------------------------------
+## Method `cgalMesh$merge`
+## ------------------------------------------------
+
+\donttest{library(cgalMeshes)
+library(rgl)
+mesh1 <- cgalMesh$new(sphereMesh())
+mesh1$assignFaceColors("red")
+mesh2 <- cgalMesh$new(sphereMesh(x = 3))
+mesh2$assignFaceColors("blue")
+mesh1$merge(mesh2)
+rmesh <- mesh1$getMesh()
+open3d(windowRect = c(50, 50, 562, 562))
+shade3d(rmesh, meshColor = "faces")}
+
+## ------------------------------------------------
 ## Method `cgalMesh$orientToBoundVolume`
 ## ------------------------------------------------
 
@@ -736,6 +751,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-isValidFaceGraph}{\code{cgalMesh$isValidFaceGraph()}}
 \item \href{#method-cgalMesh-isValidHalfedgeGraph}{\code{cgalMesh$isValidHalfedgeGraph()}}
 \item \href{#method-cgalMesh-isValidPolygonMesh}{\code{cgalMesh$isValidPolygonMesh()}}
+\item \href{#method-cgalMesh-merge}{\code{cgalMesh$merge()}}
 \item \href{#method-cgalMesh-orientToBoundVolume}{\code{cgalMesh$orientToBoundVolume()}}
 \item \href{#method-cgalMesh-removeSelfIntersections}{\code{cgalMesh$removeSelfIntersections()}}
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
@@ -2207,6 +2223,43 @@ Check whether the mesh is valid.
 \subsection{Returns}{
 A Boolean value, whether the mesh is valid.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-merge"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-merge}{}}}
+\subsection{Method \code{merge()}}{
+Merge the mesh and another mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$merge(mesh2)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{mesh2}}{a \code{cgalMesh} object}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The updated reference mesh, invisibly.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
+mesh1 <- cgalMesh$new(sphereMesh())
+mesh1$assignFaceColors("red")
+mesh2 <- cgalMesh$new(sphereMesh(x = 3))
+mesh2$assignFaceColors("blue")
+mesh1$merge(mesh2)
+rmesh <- mesh1$getMesh()
+open3d(windowRect = c(50, 50, 562, 562))
+shade3d(rmesh, meshColor = "faces")}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-orientToBoundVolume"></a>}}

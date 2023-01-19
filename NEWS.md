@@ -14,6 +14,10 @@
 
 - New function `voxel2mesh`, extracting triangle meshes from a NifTI file.
 
+- New function `convexHull`, to get a mesh of the convex hull of a given set of points.
+
+- New function `convexHullsIntersection`, to get a mesh of the intersection of some convex hulls.
+
 - New methods for `cgalMesh` objects:
   * `clipToPlane`, to clip the mesh to a plane;
   * `clipToIsoCuboid`, to clip the mesh to an iso-oriented cuboid;

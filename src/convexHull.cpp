@@ -18,11 +18,13 @@ EMesh3 cxhullMesh(Rcpp::NumericMatrix pts) {
   return mesh;
 }
 
+
 // [[Rcpp::export]]
 Rcpp::XPtr<EMesh3> cxhull(Rcpp::NumericMatrix pts) {
   EMesh3 mesh = cxhullMesh(pts);
   return Rcpp::XPtr<EMesh3>(new EMesh3(mesh), false);
 }
+
 
 // [[Rcpp::export]]
 Rcpp::XPtr<EMesh3> cxhullsIntersection(
@@ -39,7 +41,7 @@ Rcpp::XPtr<EMesh3> cxhullsIntersection(
     meshes.emplace_back(cxmesh);
     int nf = cxmesh.number_of_faces();
     if(nf < 4) {
-      Rcpp::stop("xx");
+      Rcpp::stop("Found a flat convex hull.");
     }
     nfaces += nf;
   }

@@ -1151,6 +1151,27 @@ cgalMesh <- R6Class(
     "isValidPolygonMesh" = function() {
       private[[".CGALmesh"]]$isValidPolygonMesh()
     },
+
+    #' @description Merge the mesh and another mesh.
+    #' @param mesh2 a \code{cgalMesh} object
+    #' @return The updated reference mesh, invisibly.
+    #' @examples 
+    #' \donttest{library(cgalMeshes)
+    #' library(rgl)
+    #' mesh1 <- cgalMesh$new(sphereMesh())
+    #' mesh1$assignFaceColors("red")
+    #' mesh2 <- cgalMesh$new(sphereMesh(x = 3))
+    #' mesh2$assignFaceColors("blue")
+    #' mesh1$merge(mesh2)
+    #' rmesh <- mesh1$getMesh()
+    #' open3d(windowRect = c(50, 50, 562, 562))
+    #' shade3d(rmesh, meshColor = "faces")}
+    "merge" = function(mesh2) {
+      stopifnot(isCGALmesh(mesh2))
+      mesh2XPtr <- getXPtr(mesh2)
+      . <- private[[".CGALmesh"]]$merge(mesh2XPtr)
+      invisible(self)
+    },
     
     #' @description Reorient the connected components of the mesh in order that 
     #' it bounds a volume. The mesh must be triangle.
