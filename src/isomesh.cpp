@@ -83,6 +83,9 @@ Rcpp::XPtr<EMesh3> AlgebraicMesh(
   SurfaceMesh smesh;
   CGAL::facets_in_complex_2_to_triangle_mesh(cplx2, smesh);
   PMP::orient_to_bound_a_volume(smesh);
+  if(!PMP::is_outward_oriented(smesh)) {
+    PMP::reverse_face_orientations(smesh);
+  }
 
   // convert to EMesh3
   EMesh3 mesh;
