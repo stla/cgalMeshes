@@ -54,6 +54,18 @@ convexHull <- function(points) {
 #' @examples
 #' library(cgalMeshes)
 #' library(rgl)
+#' # intersection of the compound of five tetrahedra
+#' mesh <- convexHullsIntersection(
+#'   tetrahedraCompound[["Vertices"]],
+#'   origin = c(0, 0, 0)
+#' )
+#' mesh$triangulate()
+#' # plot
+#' rmesh <- mesh$getMesh()
+#' open3d(windowRect = c(50, 50, 562, 562))
+#' view3d(20, 20)
+#' shade3d(rmesh, color = "orange")
+#' wire3d(rmesh)
 convexHullsIntersection <- function(Points, origin = NULL) {
   stopifnot(is.null(origin) || isVector3(origin))
   stopifnot(is.list(Points))
