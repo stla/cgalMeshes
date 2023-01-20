@@ -1,10 +1,12 @@
 # cgalMeshes 1.1.0
 
-- It is now possible to assign colors and scalars to the faces and the vertices of a mesh. These properties are preserved by certain operations. For example, the computation of the connected components preserves all properties, the union preserves the face properties. The normals are also assigned to the mesh as a property, and they are preserved when computing the connected components.
+- It is now possible to assign colors and scalars to the faces and the vertices of a mesh. These properties are preserved by certain operations. For example, the computation of the connected components preserves all properties, the union preserves the face properties. The normals are also assigned to the mesh as such a property, and they are preserved when computing the connected components.
 
 - Writing a mesh to a file includes the colors and the normals in this file if they are present, and reading a mesh file including colors or normals includes these properties in the mesh. 
 
 - The function `torusMesh` now allows to construct a mesh of the torus with a given minor radius and whose equator passes through three given points.
+
+- New function `parametricMesh`, to get a mesh of a parametric surface.
 
 - New function `sphericalTriangle`, to get a mesh of a spherical triangle.
 

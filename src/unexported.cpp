@@ -2,6 +2,7 @@
 #include "cgalMesh.h"
 #endif
 
+
 template <typename MeshT, typename PointT>
 MeshT csoup2mesh(std::vector<PointT> points,
                  std::vector<std::vector<int>> faces,

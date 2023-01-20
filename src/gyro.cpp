@@ -2,25 +2,31 @@
 #include "cgalMesh.h"
 #endif
 
+
 Point3 scalePoint(double lambda, Point3 pt) {
   return Point3(lambda * pt.x(), lambda * pt.y(), lambda * pt.z());
 }
+
 
 Point3 addPoints(Point3 pt1, Point3 pt2) {
   return Point3(pt1.x() + pt2.x(), pt1.y() + pt2.y(), pt1.z() + pt2.z());
 }
 
+
 double sqnormPoint(Point3 pt) {
   return pt.x()*pt.x() + pt.y()*pt.y() + pt.z()*pt.z();
 }
+
 
 double betaF(Point3 A, double s) {
   return s / sqrt(s*s + sqnormPoint(A));
 }
 
+
 double gammaF(Point3 A, double s) {
   return s / sqrt(s*s - sqnormPoint(A));
 }
+
 
 Point3 gyromidpoint(Point3 A, Point3 B, double s) {
   Point3 bA = scalePoint(betaF(A, s), A);
@@ -34,9 +40,11 @@ Point3 gyromidpoint(Point3 A, Point3 B, double s) {
   return scalePoint(gammaF(M, s), M);
 }
 
+
 std::pair<vxdescr, vxdescr> orderedPair(vxdescr vi, vxdescr vj) {
   return int(vi) < int(vj) ? std::make_pair(vi, vj) : std::make_pair(vj, vi);
 }
+
 
 Mesh3 gyroQuadrisection(Mesh3 mesh, double s) {
   Mesh3 newmesh;

@@ -3,7 +3,6 @@
 #endif
 
 void clippingToPlane(EMesh3& mesh, EPlane3 plane) {
-
   const bool clipping = PMP::clip(
     mesh, plane,
     PMP::parameters::clip_volume(false)
@@ -14,6 +13,7 @@ void clippingToPlane(EMesh3& mesh, EPlane3 plane) {
   mesh.collect_garbage();
 }
 
+
 EMesh3 icosphere(EPoint3 center, EK::FT radius, unsigned int iterations) {
   EMesh3 mesh;
   CGAL::make_icosahedron<EMesh3, EPoint3>(mesh, center, radius);
@@ -22,6 +22,7 @@ EMesh3 icosphere(EPoint3 center, EK::FT radius, unsigned int iterations) {
   );
   return mesh;
 }
+
 
 // [[Rcpp::export]]
 Rcpp::XPtr<EMesh3> sTriangle(
