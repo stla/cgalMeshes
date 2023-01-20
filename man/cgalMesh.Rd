@@ -328,6 +328,25 @@ shade3d(rmesh, color = "red")
 shade3d(rhole, color = "blue")}
 
 ## ------------------------------------------------
+## Method `cgalMesh$filterMesh`
+## ------------------------------------------------
+
+\donttest{library(rgl)
+library(cgalMeshes)
+rmesh <- HopfTorusMesh(nu = 80, nv = 60)
+mesh <- cgalMesh$new(rmesh)
+areas <- mesh$getFacesInfo()[, "area"]
+bigFaces <- which(areas > 1)
+meshes <- mesh$filterMesh(bigFaces)
+rmesh1 <- meshes[[1]]$getMesh()
+rmesh2 <- meshes[[2]]$getMesh()
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(0, 0)
+shade3d(rmesh1, color = "red")
+shade3d(rmesh2, color = "blue")
+wire3d(rmesh)}
+
+## ------------------------------------------------
 ## Method `cgalMesh$geoDists`
 ## ------------------------------------------------
 
@@ -761,6 +780,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-triangulate}{\code{cgalMesh$triangulate()}}
 \item \href{#method-cgalMesh-union}{\code{cgalMesh$union()}}
 \item \href{#method-cgalMesh-volume}{\code{cgalMesh$volume()}}
+\item \href{#method-cgalMesh-whereIs}{\code{cgalMesh$whereIs()}}
 \item \href{#method-cgalMesh-writeMeshFile}{\code{cgalMesh$writeMeshFile()}}
 }
 }
@@ -1638,6 +1658,27 @@ Two \code{cgalMesh} objects. The first one is the mesh consisting
  of the faces of the reference mesh given in the \code{faces} 
  argument. The second one is the complementary mesh.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(rgl)
+library(cgalMeshes)
+rmesh <- HopfTorusMesh(nu = 80, nv = 60)
+mesh <- cgalMesh$new(rmesh)
+areas <- mesh$getFacesInfo()[, "area"]
+bigFaces <- which(areas > 1)
+meshes <- mesh$filterMesh(bigFaces)
+rmesh1 <- meshes[[1]]$getMesh()
+rmesh2 <- meshes[[2]]$getMesh()
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(0, 0)
+shade3d(rmesh1, color = "red")
+shade3d(rmesh2, color = "blue")
+wire3d(rmesh)}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-fixManifoldness"></a>}}
@@ -2550,6 +2591,27 @@ mesh$volume()
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-whereIs"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-whereIs}{}}}
+\subsection{Method \code{whereIs()}}{
+Locate points with respect to a closed triangle mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$whereIs(points)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{points}}{a numeric matrix with three columns}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+An integer vector taking values \code{-1} for outside, \code{1} 
+  for inside, and \code{0} if the point is on the boundary.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-writeMeshFile"></a>}}
