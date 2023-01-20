@@ -735,6 +735,7 @@ mesh$volume()
 \item \href{#method-cgalMesh-getBorders}{\code{cgalMesh$getBorders()}}
 \item \href{#method-cgalMesh-getEdges}{\code{cgalMesh$getEdges()}}
 \item \href{#method-cgalMesh-getFaces}{\code{cgalMesh$getFaces()}}
+\item \href{#method-cgalMesh-getFacesInfo}{\code{cgalMesh$getFacesInfo()}}
 \item \href{#method-cgalMesh-getFaceColors}{\code{cgalMesh$getFaceColors()}}
 \item \href{#method-cgalMesh-getFaceScalars}{\code{cgalMesh$getFaceScalars()}}
 \item \href{#method-cgalMesh-getVertexColors}{\code{cgalMesh$getVertexColors()}}
@@ -1890,6 +1891,22 @@ Get the faces of the mesh.
 \subsection{Returns}{
 The faces in a matrix if the mesh is triangle or quad, 
   otherwise in a list.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-getFacesInfo"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-getFacesInfo}{}}}
+\subsection{Method \code{getFacesInfo()}}{
+Get the centroids and the areas of the faces, for a 
+  triangle mesh only.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getFacesInfo()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A matrix with four columns: the first three ones provide the 
+  Cartesian coordinates of the centroids, the fourth one provides the 
+  areas.
 }
 }
 \if{html}{\out{<hr>}}

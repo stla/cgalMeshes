@@ -1150,6 +1150,38 @@ public:
   }
 
 
+  Rcpp::NumericMatrix getFacesInfo() {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    Rcpp::CharacterVector rownames = {"cx", "cy", "cz", "area"};
+    Rcpp::NumericMatrix FacesInfo(4, mesh.number_of_faces());
+    int i = 0;
+    for(face_descriptor fd : mesh.faces()) {
+      auto vs = vertices_around_face(mesh.halfedge(fd), mesh).begin();
+      EPoint3 p1 = mesh.point(*(vs++));
+      EPoint3 p2 = mesh.point(*(vs++));
+      EPoint3 p3 = mesh.point(*vs);
+      EPoint3 centroid = CGAL::centroid(p1, p2, p3);
+      EK::FT sarea = CGAL::squared_area(p1, p2, p3);
+      Rcpp::NumericVector col_i = {
+        CGAL::to_double<EK::FT>(centroid.x()),
+        CGAL::to_double<EK::FT>(centroid.y()),
+        CGAL::to_double<EK::FT>(centroid.z()),
+        sqrt(CGAL::to_double<EK::FT>(sarea))
+      };
+      FacesInfo(Rcpp::_, i++) = col_i;
+    }
+    Rcpp::rownames(FacesInfo) = rownames;
+    return Rcpp::transpose(FacesInfo);
+  }
+
+
+  Rcpp::List getFacesList() {
+    return getFaces<EMesh3>(mesh);
+  }
+
+
   Rcpp::IntegerMatrix getFacesMatrix() {
     const size_t nfaces = mesh.number_of_faces();
     if(CGAL::is_triangle_mesh(mesh)) {
@@ -1179,11 +1211,6 @@ public:
     } else {
       Rcpp::stop("This function can be used with triangle or quad meshes only.");
     }
-  }
-
-
-  Rcpp::List getFacesList() {
-    return getFaces<EMesh3>(mesh);
   }
 
 

@@ -927,6 +927,15 @@ cgalMesh <- R6Class(
         private[[".CGALmesh"]]$getFacesList()
       }
     },
+
+    #' @description Get the centroids and the areas of the faces, for a 
+    #'   triangle mesh only.
+    #' @return A matrix with four columns: the first three ones provide the 
+    #'   Cartesian coordinates of the centroids, the fourth one provides the 
+    #'   areas.
+    "getFacesInfo" = function() {
+      private[[".CGALmesh"]]$getFacesInfo()
+    },
     
     #' @description Get the face colors (if there are).
     #' @return The vector of colors (or any character vector) attached to 
