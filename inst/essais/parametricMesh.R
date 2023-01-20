@@ -44,3 +44,31 @@ rmesh <- tmesh3d(
 )
 
 shade3d(addNormals(rmesh), color = "yellow")
+
+parametricMesh <- function(
+  f, urange, vrange, periodic = c(FALSE, FALSE), nu, nv
+) {
+ uperiodic <- periodic[1L]
+ vperiodic <- periodic[2L]
+ if(uperiodic) {
+   u_ <- seq(urange[1L], urange[2L], length.out = nu+1)[-1L]
+ } else {
+   u_ <- seq(urange[1L], urange[2L], length.out = nu)
+ }
+ if(vperiodic) {
+   v_ <- seq(vrange[1L], vrange[2L], length.out = nv+1)[-1L]
+ } else {
+   v_ <- seq(vrange[1L], vrange[2L], length.out = nv)
+ }
+ Grid <- expand.grid(U = u_, V = v_)
+ varray <- with(Grid, array(f(U, V), dim = c(3, nu, nv)))
+ varray2 <- aperm(varray, c(1L, 3L, 2L))
+ vs <- matrix(varray2, nrow = 3L, ncol = nu*nv)
+ tris <- meshTopology(nu, nv, uperiodic, vperiodic)
+ tmesh3d(
+   vertices    = vs,
+   indices     = tris,
+   homogeneous = FALSE
+ )
+}
+
