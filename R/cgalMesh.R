@@ -1388,6 +1388,12 @@ cgalMesh <- R6Class(
     #' @param points a numeric matrix with three columns
     #' @return An integer vector taking values \code{-1} for outside, \code{1} 
     #'   for inside, and \code{0} if the point is on the boundary.
+    #' @examples 
+    #' library(cgalMeshes)
+    #' mesh <- cgalMesh$new(sphereMesh())
+    #' pt1 <- c(0, 0, 0) # inside
+    #' pt2 <- c(2, 0, 0) # outside
+    #' mesh$whereIs(rbind(pt1, pt2))
     "whereIs" = function(points) {
       if(!is.matrix(points)) {
         points <- rbind(points)

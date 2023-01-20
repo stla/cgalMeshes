@@ -721,6 +721,16 @@ plotEdges(umesh$getVertices(), extEdges)}
 library(rgl)
 mesh <- cgalMesh$new(cube3d())$triangulate()
 mesh$volume()
+
+## ------------------------------------------------
+## Method `cgalMesh$whereIs`
+## ------------------------------------------------
+
+library(cgalMeshes)
+mesh <- cgalMesh$new(sphereMesh())
+pt1 <- c(0, 0, 0) # inside
+pt2 <- c(2, 0, 0) # outside
+mesh$whereIs(rbind(pt1, pt2))
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -2612,6 +2622,18 @@ Locate points with respect to a closed triangle mesh.
 An integer vector taking values \code{-1} for outside, \code{1} 
   for inside, and \code{0} if the point is on the boundary.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(cgalMeshes)
+mesh <- cgalMesh$new(sphereMesh())
+pt1 <- c(0, 0, 0) # inside
+pt2 <- c(2, 0, 0) # outside
+mesh$whereIs(rbind(pt1, pt2))
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-writeMeshFile"></a>}}
