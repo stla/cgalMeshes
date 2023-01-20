@@ -1,8 +1,3 @@
-f <- Vectorize(function(u, v) {
-  c(0, u, v) # or rbind(0, u, v)
-})
-
-
 #' @title Mesh of a parametric surface
 #' @description Mesh of a parametric surface.
 #'
