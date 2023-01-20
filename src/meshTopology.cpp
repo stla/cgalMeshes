@@ -30,7 +30,7 @@ Rcpp::IntegerMatrix meshTopology(
     for(int i = 1; i <= nu; i++) {
       int im1nv = (i - 1) * nv;
       int ip1m1nv = i == nu ? 0 : i * nv;
-      int k = (i - 1) * (nv - 1);
+      int k = (i - 1) * nv;
       for(int j = 1; j <= nv; j++) {
         int jp1 = j == nv ? 1 : j + 1;
         Rcpp::IntegerVector tri1 = {im1nv + j, im1nv + jp1, ip1m1nv + j};
@@ -48,7 +48,7 @@ Rcpp::IntegerMatrix meshTopology(
     for(int i = 1; i <= nu-1; i++) {
       int im1nv = (i - 1) * nv;
       int ip1m1nv = i * nv;
-      int k = (i - 1) * (nv - 1);
+      int k = (i - 1) * nv;
       for(int j = 1; j <= nv; j++) {
         int jp1 = j == nv ? 1 : j + 1;
         Rcpp::IntegerVector tri1 = {im1nv + j, im1nv + jp1, ip1m1nv + j};

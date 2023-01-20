@@ -38,4 +38,23 @@ open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(30, 30)
 shade3d(rmesh, color = "red")
 wire3d(rmesh)
+
+# spherical icosahedron ####
+library(cgalMeshes)
+library(rgl)
+icosahedron <- icosahedron3d()
+vertices    <- icosahedron[["vb"]][-4L, ]
+faces       <- icosahedron[["it"]]
+colors <- rainbow(ncol(faces))
+\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+for(i in 1L:ncol(faces)) {
+  triangle <- faces[, i]
+  A <- vertices[, triangle[1L]]
+  B <- vertices[, triangle[2L]]
+  C <- vertices[, triangle[3L]]
+  mesh <- sphericalTriangle(A, B, C)
+  rmesh <- mesh$getMesh()
+  shade3d(rmesh, color = colors[i])
+  wire3d(rmesh)
+}}
 }

@@ -25,8 +25,8 @@ VoxelToMesh <- function(filename, isovalue, center, radius, angle_bound, radius_
     .Call(`_cgalMeshes_VoxelToMesh`, filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound, error_bound)
 }
 
-meshTopology <- function(nu, nv) {
-    .Call(`_cgalMeshes_meshTopology`, nu, nv)
+meshTopology <- function(nu, nv, uperiodic, vperiodic) {
+    .Call(`_cgalMeshes_meshTopology`, nu, nv, uperiodic, vperiodic)
 }
 
 sTriangle <- function(A, B, C, center, radius, iterations) {

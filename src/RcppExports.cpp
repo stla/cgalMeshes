@@ -99,14 +99,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // meshTopology
-Rcpp::IntegerMatrix meshTopology(int nu, int nv);
-RcppExport SEXP _cgalMeshes_meshTopology(SEXP nuSEXP, SEXP nvSEXP) {
+Rcpp::IntegerMatrix meshTopology(int nu, int nv, bool uperiodic, bool vperiodic);
+RcppExport SEXP _cgalMeshes_meshTopology(SEXP nuSEXP, SEXP nvSEXP, SEXP uperiodicSEXP, SEXP vperiodicSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< int >::type nu(nuSEXP);
     Rcpp::traits::input_parameter< int >::type nv(nvSEXP);
-    rcpp_result_gen = Rcpp::wrap(meshTopology(nu, nv));
+    Rcpp::traits::input_parameter< bool >::type uperiodic(uperiodicSEXP);
+    Rcpp::traits::input_parameter< bool >::type vperiodic(vperiodicSEXP);
+    rcpp_result_gen = Rcpp::wrap(meshTopology(nu, nv, uperiodic, vperiodic));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -136,7 +138,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},
     {"_cgalMeshes_AlgebraicMesh", (DL_FUNC) &_cgalMeshes_AlgebraicMesh, 9},
     {"_cgalMeshes_VoxelToMesh", (DL_FUNC) &_cgalMeshes_VoxelToMesh, 8},
-    {"_cgalMeshes_meshTopology", (DL_FUNC) &_cgalMeshes_meshTopology, 2},
+    {"_cgalMeshes_meshTopology", (DL_FUNC) &_cgalMeshes_meshTopology, 4},
     {"_cgalMeshes_sTriangle", (DL_FUNC) &_cgalMeshes_sTriangle, 6},
     {"_rcpp_module_boot_class_CGALmesh", (DL_FUNC) &_rcpp_module_boot_class_CGALmesh, 0},
     {NULL, NULL, 0}
