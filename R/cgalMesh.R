@@ -1383,6 +1383,22 @@ cgalMesh <- R6Class(
     "volume" = function() {
       private[[".CGALmesh"]]$volume()
     },
+
+    #' @description Locate points with respect to a closed triangle mesh.
+    #' @param points a numeric matrix with three columns
+    #' @return An integer vector taking values \code{-1} for outside, \code{1} 
+    #'   for inside, and \code{0} if the point is on the boundary.
+    "whereIs" = function(points) {
+      if(!is.matrix(points)) {
+        points <- rbind(points)
+      }
+      stopifnot(ncol(points) == 3L)
+      storage.mode(points) <- "double"
+      if(anyNA(points)) {
+        stop("Found missing values.")
+      }
+      private[[".CGALmesh"]]$whereIs(t(points))
+    },
     
     #' @description Write mesh to a file.
     #' @param filename path to the file to be written, with extension 

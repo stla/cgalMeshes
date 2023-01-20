@@ -70,5 +70,6 @@ RCPP_MODULE(class_CGALmesh) {
     .method("triangulate", &CGALmesh::triangulate)
     .method("Union", &CGALmesh::Union)
     .method("volume", &CGALmesh::volume)
+    .method("whereIs", &CGALmesh::whereIs)
     .method("writeFile", &CGALmesh::writeFile);
 }

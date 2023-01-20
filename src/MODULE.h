@@ -1890,6 +1890,37 @@ public:
   }
 
 
+  Rcpp::IntegerVector whereIs(Rcpp::NumericMatrix points) {
+
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    if(!CGAL::is_closed(mesh)) {
+      Rcpp::stop("The mesh is not closed.");
+    }
+
+    CGAL::Side_of_triangle_mesh<EMesh3, EK> Where(mesh);
+
+    int npoints = points.ncol();
+    Rcpp::IntegerVector results(npoints);
+
+    for(int i = 0; i < npoints; i++) {
+      Rcpp::NumericVector point = points(Rcpp::_, i);
+      EPoint3 pt(point(0), point(1), point(2));
+      CGAL::Bounded_side side = Where(pt);
+      int result = -1;
+      if(side == CGAL::ON_BOUNDED_SIDE) {
+        result = 1;
+      } else if(side == CGAL::ON_BOUNDARY) {
+        result = 0;
+      }
+      results(i) = result;
+    }
+
+    return results;
+  }
+
+
   void writeFile(
     Rcpp::String filename, const int precision, 
     const bool binary, std::string comments,
