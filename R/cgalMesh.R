@@ -1204,6 +1204,33 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$isValidPolygonMesh()
     },
 
+    #' @description Performs the Loop subdivision and deformation.
+    #' @param iterations number of iterations
+    #' @return The modified reference mesh, invisibly.
+    #' @examples 
+    #' \donttest{library(cgalMeshes)
+    #' library(rgl)
+    #' hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
+    #' mesh <- cgalMesh$new(hopfMesh)
+    #' mesh$LoopSubdivision(iterations = 2)
+    #' mesh$computeNormals()
+    #' rmesh <- mesh$getMesh()
+    #' # plot
+    #' open3d(windowRect = 50 + c(0, 0, 800, 400))
+    #' mfrow3d(1, 2)
+    #' view3d(0, 0, zoom = 0.9)
+    #' shade3d(hopfMesh, color = "gold")
+    #' wire3d(hopfMesh, color = "black")
+    #' next3d()
+    #' view3d(0, 0, zoom = 0.9)
+    #' shade3d(rmesh, color = "gold")
+    #' wire3d(rmesh, color = "black")}
+    "LoopSubdivision" = function(iterations = 1) {
+      stopifnot(isStrictPositiveInteger(iterations))
+      private[[".CGALmesh"]]$LoopSubdivision(as.integer(iterations))
+      invisible(self)
+    },
+    
     #' @description Merge the mesh and another mesh.
     #' @param mesh2 a \code{cgalMesh} object
     #' @return The updated reference mesh, invisibly.

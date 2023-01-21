@@ -608,6 +608,28 @@ mesh <- cgalMesh$new(cube3d())
 mesh$isTriangle()
 
 ## ------------------------------------------------
+## Method `cgalMesh$LoopSubdivision`
+## ------------------------------------------------
+
+\donttest{library(cgalMeshes)
+library(rgl)
+hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
+mesh <- cgalMesh$new(hopfMesh)
+mesh$LoopSubdivision(iterations = 2)
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+# plot
+open3d(windowRect = 50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+view3d(0, 0, zoom = 0.9)
+shade3d(hopfMesh, color = "red")
+wire3d(hopfMesh, color = "black")
+next3d()
+view3d(0, 0, zoom = 0.9)
+shade3d(rmesh, color = "red")
+wire3d(rmesh, color = "black")}
+
+## ------------------------------------------------
 ## Method `cgalMesh$merge`
 ## ------------------------------------------------
 
@@ -804,6 +826,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-isValidFaceGraph}{\code{cgalMesh$isValidFaceGraph()}}
 \item \href{#method-cgalMesh-isValidHalfedgeGraph}{\code{cgalMesh$isValidHalfedgeGraph()}}
 \item \href{#method-cgalMesh-isValidPolygonMesh}{\code{cgalMesh$isValidPolygonMesh()}}
+\item \href{#method-cgalMesh-LoopSubdivision}{\code{cgalMesh$LoopSubdivision()}}
 \item \href{#method-cgalMesh-merge}{\code{cgalMesh$merge()}}
 \item \href{#method-cgalMesh-orientToBoundVolume}{\code{cgalMesh$orientToBoundVolume()}}
 \item \href{#method-cgalMesh-removeSelfIntersections}{\code{cgalMesh$removeSelfIntersections()}}
@@ -2359,6 +2382,50 @@ Check whether the mesh is valid.
 \subsection{Returns}{
 A Boolean value, whether the mesh is valid.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-LoopSubdivision"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-LoopSubdivision}{}}}
+\subsection{Method \code{LoopSubdivision()}}{
+Performs the Loop subdivision and deformation.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$LoopSubdivision(iterations = 1)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{iterations}}{number of iterations}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The modified reference mesh, invisibly.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
+hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
+mesh <- cgalMesh$new(hopfMesh)
+mesh$LoopSubdivision(iterations = 2)
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+# plot
+open3d(windowRect = 50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+view3d(0, 0, zoom = 0.9)
+shade3d(hopfMesh, color = "red")
+wire3d(hopfMesh, color = "black")
+next3d()
+view3d(0, 0, zoom = 0.9)
+shade3d(rmesh, color = "red")
+wire3d(rmesh, color = "black")}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-merge"></a>}}

@@ -32,6 +32,7 @@ public:
       {}
       
 
+  // ----------------------------------------------------------------------- //
   double area() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -44,6 +45,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void assignFaceColors(Rcpp::StringVector colors) {
     if(colors.size() != 1 && colors.size() != mesh.number_of_faces()) {
       Rcpp::stop(
@@ -68,6 +70,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void assignFaceScalars(Rcpp::NumericVector scalars) {
     if(scalars.size() != mesh.number_of_faces()) {
       Rcpp::stop(
@@ -86,6 +89,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void assignNormals(Rcpp::NumericMatrix normals) {
     if(normals.ncol() != mesh.number_of_vertices()) {
       Rcpp::stop(
@@ -105,6 +109,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void assignVertexColors(Rcpp::StringVector colors) {
     if(colors.size() != mesh.number_of_vertices()) {
       Rcpp::stop(
@@ -123,6 +128,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void assignVertexScalars(Rcpp::NumericVector scalars) {
     if(scalars.size() != mesh.number_of_vertices()) {
       Rcpp::stop(
@@ -141,6 +147,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::List boundingBox() {
     Bbox3 bbox = PMP::bbox(mesh);
     Rcpp::NumericVector lcorner = {bbox.xmin(), bbox.ymin(), bbox.zmin()};
@@ -152,6 +159,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void CatmullClark(unsigned int iterations) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -165,6 +173,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::NumericVector centroid() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -184,6 +193,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::List clipMesh(Rcpp::XPtr<EMesh3> clipperXPtr, const bool clipVolume) {
     EMesh3 clipper = *(clipperXPtr.get());
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -236,7 +246,7 @@ public:
 
     mesh.collect_garbage();
 
-
+    /* --------------- clipVolume is false --------------- */
     if(!clipVolume) {
       MapBetweenFaces fmap = *(vis.fmap_tm);
       if(hasColors || hasScalars) {
@@ -403,6 +413,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::List clipToPlane(
     Rcpp::NumericVector planePoint, 
     Rcpp::NumericVector planeNormal, 
@@ -446,7 +457,6 @@ public:
     }
 
     mesh.collect_garbage();
-
 
     /* --------------- clipVolume is false --------------- */
     if(!clipVolume){
@@ -564,6 +574,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::List clipToIsoCuboid(
     Rcpp::NumericVector lcorner, 
     Rcpp::NumericVector ucorner, 
@@ -608,7 +619,7 @@ public:
 
     mesh.collect_garbage();
 
-
+    /* --------------- clipVolume is false --------------- */
     if(!clipVolume){
       MapBetweenFaces fmap = *(vis.fmap_tm);
 
@@ -724,6 +735,7 @@ public:
   }
 
   
+  // ----------------------------------------------------------------------- //
   Rcpp::XPtr<EMesh3> clone() {
     EMesh3 copy = cloneMesh(
       mesh, {"f:color", "v:color", "f:scalar", "v:scalar", "v:normal"}
@@ -732,6 +744,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void computeNormals() {
     std::pair<CGALnormals_map, bool> vnormals_ = 
       mesh.property_map<vertex_descriptor, EVector3>("v:normals");
@@ -759,6 +772,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::List connectedComponents(const bool triangulate) {
 
     EMesh3 tmesh = cloneMesh(
@@ -824,6 +838,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::List convexParts(const bool triangulate) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -864,6 +879,7 @@ public:
   }
   
   
+  // ----------------------------------------------------------------------- //
   Rcpp::NumericVector distance(Rcpp::NumericMatrix points) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -882,6 +898,7 @@ public:
   }  
 
 
+  // ----------------------------------------------------------------------- //
   bool doesBoundVolume() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -890,6 +907,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   bool doesSelfIntersect() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -898,17 +916,20 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::XPtr<EMesh3> dual() {
     EMesh3 dualmesh = dualMesh(mesh);
     return Rcpp::XPtr<EMesh3>(new EMesh3(dualmesh), false);
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::DataFrame edges() {
     return getEdges<EK, EMesh3, EPoint3>(mesh);
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::IntegerVector facesAroundVertex(int v) {
     if(v >= mesh.number_of_vertices()) {
       Rcpp::stop("Too high vertex index.");
@@ -925,6 +946,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void fair(Rcpp::IntegerVector indices) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -947,6 +969,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::XPtr<EMesh3> fillBoundaryHole(int border, bool fairhole) {
     std::vector<halfedge_descriptor> border_cycles;
     PMP::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
@@ -996,6 +1019,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::List filterMesh(Rcpp::IntegerVector selectedFaces) {
 
     Face_index_map fimap = 
@@ -1088,6 +1112,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void fixManifoldness() {
     std::size_t nmv = PMP::duplicate_non_manifold_vertices(mesh);
     if(nmv > 0) {
@@ -1104,6 +1129,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::NumericVector geoDists(const int index) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -1129,6 +1155,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::List getBorders() {
     std::vector<halfedge_descriptor> border_cycles;
     PMP::extract_boundary_cycles(mesh, std::back_inserter(border_cycles));
@@ -1163,6 +1190,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::NumericMatrix getFacesInfo() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -1190,11 +1218,13 @@ public:
   }
 
 
-  Rcpp::List getFacesList() {
+ // ----------------------------------------------------------------------- //
+ Rcpp::List getFacesList() {
     return getFaces<EMesh3>(mesh);
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::IntegerMatrix getFacesMatrix() {
     const size_t nfaces = mesh.number_of_faces();
     if(CGAL::is_triangle_mesh(mesh)) {
@@ -1227,6 +1257,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::Nullable<Rcpp::StringVector> getFcolors() {
     std::pair<Fcolors_map, bool> fcolorsmap_ = 
       mesh.property_map<face_descriptor, std::string>("f:color");
@@ -1242,6 +1273,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::Nullable<Rcpp::NumericVector> getFscalars() {
     std::pair<Fscalars_map, bool> fscalarsmap_ = 
       mesh.property_map<face_descriptor, double>("f:scalar");
@@ -1257,6 +1289,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::Nullable<Rcpp::NumericMatrix> getNormals() {
     std::pair<Normals_map, bool> normalsmap_ = 
       mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
@@ -1272,6 +1305,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::Nullable<Rcpp::StringVector> getVcolors() {
     std::pair<Vcolors_map, bool> vcolorsmap_ = 
       mesh.property_map<vertex_descriptor, std::string>("v:color");
@@ -1287,6 +1321,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::Nullable<Rcpp::NumericVector> getVscalars() {
     std::pair<Vscalars_map, bool> vscalarsmap_ = 
       mesh.property_map<vertex_descriptor, double>("v:scalar");
@@ -1302,11 +1337,13 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::NumericMatrix getVertices() {
     return getVertices_EK(mesh);
   }  
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::List getRmesh() {
     std::pair<Normals_map, bool> normalsmap_ = 
       mesh.property_map<vertex_descriptor, Rcpp::NumericVector>("v:normal");
@@ -1352,6 +1389,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::XPtr<EMesh3> intersection(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The reference mesh is not triangle.");
@@ -1379,11 +1417,13 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   bool isClosed() {
     return CGAL::is_closed(mesh);
   }
 
 
+  // ----------------------------------------------------------------------- //
   void isotropicRemeshing(
     const double targetEdgeLength, 
     const unsigned niters, const unsigned nrelaxsteps 
@@ -1409,6 +1449,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   bool isOutwardOriented() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -1417,42 +1458,60 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   bool isQuad() {
     return CGAL::is_quad_mesh(mesh);
   }
 
-
+  // ----------------------------------------------------------------------- //
   bool isTriangle() {
     return CGAL::is_triangle_mesh(mesh);
   }
 
 
+  // ----------------------------------------------------------------------- //
   bool isValid() {
     return mesh.is_valid();
   }
 
 
+  // ----------------------------------------------------------------------- //
   bool isValidFaceGraph() {
     return CGAL::is_valid_face_graph(mesh, true);
   }
 
 
+  // ----------------------------------------------------------------------- //
   bool isValidHalfedgeGraph() {
     return CGAL::is_valid_halfedge_graph(mesh, true);
   }
 
 
+  // ----------------------------------------------------------------------- //
   bool isValidPolygonMesh() {
     return CGAL::is_valid_polygon_mesh(mesh, true);
   }
 
 
+  // ----------------------------------------------------------------------- //
+  void LoopSubdivision(unsigned int iterations) {
+    removeProperties(
+      mesh, {"v:normal", "v:scalar", "v:color", "f:scalar", "f:color"}
+    );
+    CGAL::Subdivision_method_3::Loop_subdivision(
+      mesh, CGAL::parameters::number_of_iterations(iterations)
+    );
+  }
+
+
+  // ----------------------------------------------------------------------- //
   void merge(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     EMesh3 mesh2 = *(mesh2XPtr.get());
     mesh += mesh2;
   }
 
 
+  // ----------------------------------------------------------------------- //
   void orientToBoundVolume() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -1462,6 +1521,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void print() {
     Rcpp::Rcout << "Mesh with " << mesh.number_of_vertices() 
                 << " vertices and " << mesh.number_of_faces() << " faces.\n";
@@ -1473,6 +1533,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void removeSelfIntersections() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -1482,12 +1543,14 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void reverseFaceOrientations() {
     PMP::reverse_face_orientations(mesh);
     // update normals ?
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::List subtract(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The reference mesh is not triangle.");
@@ -1647,11 +1710,13 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void triangulate() {
     triangulateMesh(mesh);
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::List Union(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The reference mesh is not triangle.");
@@ -1904,6 +1969,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   Rcpp::IntegerVector whereIs(Rcpp::NumericMatrix points) {
 
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -1935,6 +2001,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   void writeFile(
     Rcpp::String filename, const int precision, 
     const bool binary, std::string comments,

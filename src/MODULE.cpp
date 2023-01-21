@@ -62,6 +62,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("isValidFaceGraph", &CGALmesh::isValidFaceGraph)
     .method("isValidHalfedgeGraph", &CGALmesh::isValidHalfedgeGraph)
     .method("isValidPolygonMesh", &CGALmesh::isValidPolygonMesh)
+    .method("LoopSubdivision", &CGALmesh::LoopSubdivision)
     .method("merge", &CGALmesh::merge)
     .method("orientToBoundVolume", &CGALmesh::orientToBoundVolume)
     .method("print", &CGALmesh::print)
