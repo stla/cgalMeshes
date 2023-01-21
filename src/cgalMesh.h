@@ -74,70 +74,65 @@
 
 // -------------------------------------------------------------------------- //
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
-typedef K::Point_3 Point3;
-typedef CGAL::Surface_mesh<Point3> Mesh3;
-typedef EK::Vector_3 EVector3;
-typedef EK::Plane_3 EPlane3;
-typedef CGAL::Bbox_3 Bbox3;
-typedef CGAL::Iso_cuboid_3<EK> IsoCuboid3;
+typedef K::Point_3                                          Point3;
+typedef CGAL::Surface_mesh<Point3>                          Mesh3;
+typedef EK::Vector_3                                        EVector3;
+typedef EK::Plane_3                                         EPlane3;
+typedef CGAL::Bbox_3                                        Bbox3;
+typedef CGAL::Iso_cuboid_3<EK>                              IsoCuboid3;
 typedef CGAL::Nef_polyhedron_3<EK, CGAL::SNC_indexed_items> NefPol;
-typedef CGAL::Polyhedron_3<EK> EPolyhedron;
+typedef CGAL::Polyhedron_3<EK>                              EPolyhedron;
 
-typedef CGAL::Triangle_3<EK> Triangle;
+typedef CGAL::Triangle_3<EK>    Triangle;
 typedef CGAL::Tetrahedron_3<EK> Tetrahedron;
 
-typedef boost::graph_traits<Mesh3>::vertex_descriptor vxdescr;
-typedef boost::graph_traits<EMesh3>::vertex_descriptor vertex_descriptor;
-typedef EMesh3::Property_map<vertex_descriptor, double> Vertex_distance_map;
-typedef EMesh3::Property_map<vertex_descriptor, std::size_t> Vertex_index_map;
-typedef boost::graph_traits<EMesh3>::face_descriptor face_descriptor;
-typedef EMesh3::Property_map<face_descriptor, std::size_t> Face_index_map;
-typedef boost::graph_traits<EMesh3>::halfedge_descriptor halfedge_descriptor;
-typedef EMesh3::Property_map<halfedge_descriptor, std::size_t> Halfedge_index_map;
-typedef EMesh3::Property_map<vertex_descriptor, Rcpp::NumericVector> Normals_map;
+typedef boost::graph_traits<Mesh3>::vertex_descriptor                     vxdescr;
+typedef boost::graph_traits<EMesh3>::vertex_descriptor                    vertex_descriptor;
+typedef EMesh3::Property_map<vertex_descriptor, double>                   Vertex_distance_map;
+typedef EMesh3::Property_map<vertex_descriptor, std::size_t>              Vertex_index_map;
+typedef boost::graph_traits<EMesh3>::face_descriptor                      face_descriptor;
+typedef EMesh3::Property_map<face_descriptor, std::size_t>                Face_index_map;
+typedef boost::graph_traits<EMesh3>::halfedge_descriptor                  halfedge_descriptor;
+typedef EMesh3::Property_map<halfedge_descriptor, std::size_t>            Halfedge_index_map;
+typedef EMesh3::Property_map<vertex_descriptor, Rcpp::NumericVector>      Normals_map;
 typedef std::pair<std::map<vertex_descriptor, Rcpp::NumericVector>, bool> MaybeNormalMap;
-typedef EMesh3::Property_map<vertex_descriptor, EVector3> CGALnormals_map;
-typedef EMesh3::Property_map<vertex_descriptor, std::string> Vcolors_map;
-typedef std::pair<std::map<vertex_descriptor, std::string>, bool> MaybeVcolorMap;
-typedef EMesh3::Property_map<face_descriptor, std::string> Fcolors_map;
-typedef std::pair<std::map<face_descriptor, std::string>, bool> MaybeFcolorMap;
-typedef EMesh3::Property_map<vertex_descriptor, double> Vscalars_map;
-typedef std::pair<std::map<vertex_descriptor, double>, bool> MaybeVscalarMap;
-typedef EMesh3::Property_map<face_descriptor, double> Fscalars_map;
-typedef std::pair<std::map<face_descriptor, double>, bool> MaybeFscalarMap;
-typedef std::map<face_descriptor, face_descriptor> MapBetweenFaces;
-typedef std::map<vertex_descriptor, vertex_descriptor> MapBetweenVertices;
-typedef boost::graph_traits<EMesh3>::edge_descriptor edge_descriptor;
+typedef EMesh3::Property_map<vertex_descriptor, EVector3>                 CGALnormals_map;
+typedef EMesh3::Property_map<vertex_descriptor, std::string>              Vcolors_map;
+typedef std::pair<std::map<vertex_descriptor, std::string>, bool>         MaybeVcolorMap;
+typedef EMesh3::Property_map<face_descriptor, std::string>                Fcolors_map;
+typedef std::pair<std::map<face_descriptor, std::string>, bool>           MaybeFcolorMap;
+typedef EMesh3::Property_map<vertex_descriptor, double>                   Vscalars_map;
+typedef std::pair<std::map<vertex_descriptor, double>, bool>              MaybeVscalarMap;
+typedef EMesh3::Property_map<face_descriptor, double>                     Fscalars_map;
+typedef std::pair<std::map<face_descriptor, double>, bool>                MaybeFscalarMap;
+typedef std::map<face_descriptor, face_descriptor>                        MapBetweenFaces;
+typedef std::map<vertex_descriptor, vertex_descriptor>                    MapBetweenVertices;
+typedef boost::graph_traits<EMesh3>::edge_descriptor                      edge_descriptor;
 
-typedef CGAL::Advancing_front_surface_reconstruction<> AFS_reconstruction;
-typedef AFS_reconstruction::Triangulation_3 AFS_triangulation3;
+typedef CGAL::Advancing_front_surface_reconstruction<>     AFS_reconstruction;
+typedef AFS_reconstruction::Triangulation_3                AFS_triangulation3;
 typedef AFS_reconstruction::Triangulation_data_structure_2 AFS_Tds2;
 
-typedef CGAL::Face_filtered_graph<EMesh3> Filtered_graph;
-
-typedef boost::graph_traits<Filtered_graph>::vertex_descriptor 
-  ffg_vertex_descriptor;
-typedef std::map<ffg_vertex_descriptor, vertex_descriptor> 
-  MapBetweenVertexDescriptors;
-typedef boost::graph_traits<Filtered_graph>::face_descriptor 
-  ffg_face_descriptor;
-typedef std::map<ffg_face_descriptor, face_descriptor> 
-  MapBetweenFaceDescriptors;
+typedef CGAL::Face_filtered_graph<EMesh3>                      Filtered_graph;
+typedef boost::graph_traits<Filtered_graph>::vertex_descriptor ffg_vertex_descriptor;
+typedef std::map<ffg_vertex_descriptor, vertex_descriptor>     MapBetweenVertexDescriptors;
+typedef boost::graph_traits<Filtered_graph>::face_descriptor   ffg_face_descriptor;
+typedef std::map<ffg_face_descriptor, face_descriptor>         MapBetweenFaceDescriptors;
 
 typedef CGAL::IO::Color Color;
 
 typedef CGAL::Surface_mesh_default_triangulation_3 Tri;
 typedef CGAL::Surface_mesh_default_criteria_3<Tri> MeshingCriteria; 
-typedef CGAL::Complex_2_in_triangulation_3<Tri> Cplx2;
-typedef Tri::Geom_traits GT;
-typedef GT::Sphere_3 Sphere_3;
-typedef GT::Point_3 Point_3;
-typedef GT::FT FT;
-typedef FT (*Function)(Point_3);
-typedef CGAL::Implicit_surface_3<GT, Function> ImplicitSurface;
-typedef CGAL::Surface_mesh<Point_3> SurfaceMesh;
+typedef CGAL::Complex_2_in_triangulation_3<Tri>    Cplx2;
+typedef Tri::Geom_traits                           GT;
+typedef GT::Sphere_3                               Sphere_3;
+typedef GT::Point_3                                Point_3;
+typedef GT::FT                                     FT;
+typedef                                            FT (*Function)(Point_3);
+typedef CGAL::Implicit_surface_3<GT, Function>     ImplicitSurface;
+typedef CGAL::Surface_mesh<Point_3>                SurfaceMesh;
 
-typedef CGAL::Gray_level_image_3<FT, Point_3> Gray_level_image;
+typedef CGAL::Gray_level_image_3<FT, Point_3>          Gray_level_image;
 typedef CGAL::Implicit_surface_3<GT, Gray_level_image> Surface_gray;
 
 typedef CGAL::Polynomial_type_generator<FT, 3>::Type     Poly3;
@@ -169,7 +164,9 @@ Rcpp::List getFaces(MeshT&);
 void Message(std::string);
 
 EMesh3 readMeshFile(const std::string, bool);
-void writeMeshFile(const std::string, const int, const bool, std::string, EMesh3&);
+void writeMeshFile(
+  const std::string, const int, const bool, std::string, EMesh3&
+);
 
 EMesh3 dualMesh(EMesh3&);
 
@@ -242,6 +239,7 @@ struct ClipVisitor :
   std::shared_ptr<bool> is_tm;
 };
 
+
 struct DifferenceVisitor : 
   public PMP::Corefinement::Default_visitor<EMesh3>
 {
@@ -302,6 +300,7 @@ struct DifferenceVisitor :
   std::shared_ptr<int> nfaces_dmesh1;
 };
 
+
 struct UnionVisitor : 
   public PMP::Corefinement::Default_visitor<EMesh3>
 {
@@ -361,6 +360,7 @@ struct UnionVisitor :
   std::shared_ptr<bool> is_mesh1;
 };
 
+
 struct TriangulateVisitor : 
   public PMP::Triangulate_faces::Default_visitor<EMesh3>
 {
@@ -380,6 +380,7 @@ struct TriangulateVisitor :
   std::shared_ptr<MapBetweenFaces> fmap;
   std::shared_ptr<face_descriptor> ofaceindex;
 };
+
 
 struct SoupVisitor : 
   public PMP::Default_orientation_visitor

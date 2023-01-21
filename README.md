@@ -34,6 +34,11 @@ R6 based utilities for 3D meshes.
 ![](https://raw.githubusercontent.com/stla/MeshesOperations/master/inst/screenshots/pentagrammicPrism.png)
 
 
+### Convex hull
+
+![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/oloid.gif)
+
+
 ### Boolean operations
 
 #### Intersection
