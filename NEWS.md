@@ -25,7 +25,8 @@
   * `clipToIsoCuboid`, to clip the mesh to an iso-oriented cuboid;
   * `getBorders`, to extract the boundary cycles from the mesh;
   * `fillBoundaryHole`, to fill the holes of the mesh;
-  * `isotropicRemeshing`, to remesh the mesh.
+  * `isotropicRemeshing`, to remesh the mesh;
+  * `whereIs`, to check whether a point is inside or outside the mesh, when the mesh is closed.
 
 
 # cgalMeshes 1.0.0

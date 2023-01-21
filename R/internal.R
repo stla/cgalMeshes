@@ -181,7 +181,7 @@ crossProduct <- function(v, w){
 #'   sends `u` to `v`; the vectors `u` and `v` must be normalized.
 #' @importFrom onion as.quaternion
 #' @noRd   
-quaternionFromTo <- function(u, v){
+quaternionFromTo <- function(u, v) {
   re <- sqrt((1 + sum(u*v))/2)
   w <- crossProduct(u, v) / 2 / re
   as.quaternion(c(re, w), single = TRUE)
