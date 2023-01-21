@@ -1002,9 +1002,9 @@ public:
     {
       Filtered_graph ffg(mesh, 1, fimap);
       const bool valid = ffg.is_selection_valid();
-      // if(!valid) {
-      //   Rcpp::stop("Cannot filter the mesh.");
-      // }
+      if(!valid) {
+        Rcpp::warning("Selection is possibly invalid.");
+      }
       MapBetweenVertexDescriptors v2vmap_;
       boost::associative_property_map<MapBetweenVertexDescriptors> 
         v2vmap(v2vmap_);
@@ -1036,9 +1036,9 @@ public:
     {
       Filtered_graph ffg(mesh, 2, fimap);
       const bool valid = ffg.is_selection_valid();
-      // if(!valid) {
-      //   Rcpp::stop("Cannot filter the mesh.");
-      // }
+      if(!valid) {
+        Rcpp::warning("Selection is possibly invalid.");
+      }
       MapBetweenVertexDescriptors v2vmap_;
       boost::associative_property_map<MapBetweenVertexDescriptors> 
         v2vmap(v2vmap_);
@@ -1361,6 +1361,7 @@ public:
     if(!success) {
       Rcpp::stop("Intersection computation has failed.");
     }
+
     return Rcpp::XPtr<EMesh3>(new EMesh3(imesh), false);
   }
 
@@ -1470,7 +1471,7 @@ public:
 
   void reverseFaceOrientations() {
     PMP::reverse_face_orientations(mesh);
-    // update normals
+    // update normals ?
   }
 
 
