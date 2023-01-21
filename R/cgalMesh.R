@@ -234,6 +234,34 @@ cgalMesh <- R6Class(
     "boundsVolume" = function() {
       private[[".CGALmesh"]]$doesBoundVolume()
     },
+
+    #' @description Performs the Catmull-Clark subdivision and deformation. 
+    #'   The mesh must be triangle.
+    #' @param iterations number of iterations
+    #' @return The modified reference mesh, invisibly.
+    #' @examples 
+    #' \donttest{library(cgalMeshes)
+    #' library(rgl)
+    #' hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
+    #' mesh <- cgalMesh$new(hopfMesh)
+    #' mesh$CatmullClark(iterations = 2)
+    #' mesh$computeNormals()
+    #' rmesh <- mesh$getMesh()
+    #' # plot
+    #' open3d(windowRect = 50 + c(0, 0, 800, 400))
+    #' mfrow3d(1, 2)
+    #' view3d(0, 0, zoom = 0.9)
+    #' shade3d(hopfMesh, color = "red")
+    #' wire3d(hopfMesh, color = "black")
+    #' next3d()
+    #' view3d(0, 0, zoom = 0.9)
+    #' shade3d(rmesh, color = "red")
+    #' wire3d(rmesh, color = "black")}
+    "CatmullClark" = function(iterations = 1) {
+      stopifnot(isStrictPositiveInteger(iterations))
+      private[[".CGALmesh"]]$CatmullClark(as.integer(iterations))
+      invisible(self)
+    },
     
     #' @description Centroid of the mesh. The mesh must be triangle.
     #' @return The Cartesian coordinates of the centroid of the mesh.

@@ -21,6 +21,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("assignFaceScalars", &CGALmesh::assignFaceScalars)
     .method("assignVertexScalars", &CGALmesh::assignVertexScalars)
     .method("boundingBox", &CGALmesh::boundingBox)
+    .method("CatmullClark", &CGALmesh::CatmullClark)
     .method("centroid", &CGALmesh::centroid)
     .method("clipMesh", &CGALmesh::clipMesh)
     .method("clipToIsoCuboid", &CGALmesh::clipToIsoCuboid)

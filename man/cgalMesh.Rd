@@ -59,6 +59,28 @@ mesh$reverseOrientation()
 mesh$boundsVolume() # TRUE
 
 ## ------------------------------------------------
+## Method `cgalMesh$CatmullClark`
+## ------------------------------------------------
+
+\donttest{library(cgalMeshes)
+library(rgl)
+hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
+mesh <- cgalMesh$new(hopfMesh)
+mesh$CatmullClark(iterations = 2)
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+# plot
+open3d(windowRect = 50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+view3d(0, 0, zoom = 0.9)
+shade3d(hopfMesh, color = "red")
+wire3d(hopfMesh, color = "black")
+next3d()
+view3d(0, 0, zoom = 0.9)
+shade3d(rmesh, color = "red")
+wire3d(rmesh, color = "black")}
+
+## ------------------------------------------------
 ## Method `cgalMesh$centroid`
 ## ------------------------------------------------
 
@@ -745,6 +767,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-assignVertexScalars}{\code{cgalMesh$assignVertexScalars()}}
 \item \href{#method-cgalMesh-boundingBox}{\code{cgalMesh$boundingBox()}}
 \item \href{#method-cgalMesh-boundsVolume}{\code{cgalMesh$boundsVolume()}}
+\item \href{#method-cgalMesh-CatmullClark}{\code{cgalMesh$CatmullClark()}}
 \item \href{#method-cgalMesh-centroid}{\code{cgalMesh$centroid()}}
 \item \href{#method-cgalMesh-clip}{\code{cgalMesh$clip()}}
 \item \href{#method-cgalMesh-clipToPlane}{\code{cgalMesh$clipToPlane()}}
@@ -1060,6 +1083,51 @@ mesh <- cgalMesh$new(tetrahedron3d())
 mesh$boundsVolume() # TRUE
 mesh$reverseOrientation()
 mesh$boundsVolume() # TRUE
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-CatmullClark"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-CatmullClark}{}}}
+\subsection{Method \code{CatmullClark()}}{
+Performs the Catmull-Clark subdivision and deformation. 
+  The mesh must be triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$CatmullClark(iterations = 1)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{iterations}}{number of iterations}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The modified reference mesh, invisibly.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
+hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
+mesh <- cgalMesh$new(hopfMesh)
+mesh$CatmullClark(iterations = 2)
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+# plot
+open3d(windowRect = 50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+view3d(0, 0, zoom = 0.9)
+shade3d(hopfMesh, color = "red")
+wire3d(hopfMesh, color = "black")
+next3d()
+view3d(0, 0, zoom = 0.9)
+shade3d(rmesh, color = "red")
+wire3d(rmesh, color = "black")}
 }
 \if{html}{\out{</div>}}
 

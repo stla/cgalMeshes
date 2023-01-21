@@ -152,6 +152,19 @@ public:
   }
 
 
+  void CatmullClark(unsigned int iterations) {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    removeProperties(
+      mesh, {"v:normal", "v:scalar", "v:color", "f:scalar", "f:color"}
+    );
+    CGAL::Subdivision_method_3::CatmullClark_subdivision(
+      mesh, CGAL::parameters::number_of_iterations(iterations)
+    );
+  }
+
+
   Rcpp::NumericVector centroid() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");

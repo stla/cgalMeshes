@@ -40,7 +40,7 @@ revolutionMesh <- function(x, y, n = 100) {
   varray  <- with(Grid, array(f(U, V), dim = c(3L, nu, nv)))
   varray2 <- aperm(varray, c(1L, 3L, 2L))
   vs <- matrix(varray2, nrow = 3L, ncol = nu*nv)
-  tris <- cgalMeshes:::meshTopology(nu, nv, uperiodic, vperiodic)
+  tris <- meshTopology(nu, nv, uperiodic, vperiodic)
   tmesh3d(
     vertices    = vs,
     indices     = tris,
