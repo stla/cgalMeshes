@@ -8,6 +8,8 @@
 
 - New function `parametricMesh`, to get a mesh of a parametric surface.
 
+- New function `revolutionMesh`, to get a mesh of a surface of revolution.
+
 - New function `sphericalTriangle`, to get a mesh of a spherical triangle.
 
 - New function `gyroTriangle`, to get a mesh of a hyperbolic triangle.
