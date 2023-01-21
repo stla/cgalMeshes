@@ -43,7 +43,41 @@ m2$computeNormals()
 rm1 <- m1a$getMesh()
 rm2 <- m1b$getMesh()
 rm3 <- m2$getMesh()
-open3d(windowRect = 50 + c(0, 0, 512, 512)); view3d(30, 30)
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(30, 30, zoom = 0.8)
 shade3d(rm1, color = "red")
 shade3d(rm2, color = "green")
 shade3d(rm3, color = "blue")
+
+# # -- if you want an animation 
+M <- par3d("userMatrix")
+movie3d(
+  par3dinterp(
+    time = seq(0, 1, len = 9),
+    userMatrix = list(
+      M,
+      rotate3d(M, pi, 1, 0, 0),
+      rotate3d(M, pi, 1, 1, 0),
+      rotate3d(M, pi, 1, 1, 1),
+      rotate3d(M, pi, 0, 1, 1),
+      rotate3d(M, pi, 0, 1, 0),
+      rotate3d(M, pi, 1, 0, 1),
+      rotate3d(M, pi, 0, 0, 1),
+      M
+    )
+  ),
+  fps = 100,
+  duration = 1,
+  dir = ".",
+  movie = "cc",
+  convert = FALSE,
+  webshot = FALSE
+)
+
+library(gifski)
+pngs <- list.files(pattern = "^cc.*png$")
+gifski(
+  pngs, "clippedCylinders.gif", width = 512, height = 512, delay = 1/10
+)
+
+file.remove(pngs)
