@@ -39,6 +39,11 @@ R6 based utilities for 3D meshes.
 ![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/oloid.gif)
 
 
+### Subdivision methods
+
+![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/Hopf_LoopSubdivision.png)
+
+
 ### Boolean operations
 
 #### Intersection
