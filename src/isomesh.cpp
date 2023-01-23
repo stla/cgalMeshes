@@ -124,48 +124,48 @@ Rcpp::XPtr<EMesh3> AlgebraicMesh(
 }
 
 
-// [[Rcpp::export]]
-Rcpp::XPtr<EMesh3> VoxelToMesh(
-  std::string filename, double isovalue, 
-  Rcpp::NumericVector center, double radius,
-  double angle_bound, double radius_bound, double distance_bound, 
-  double error_bound
-) {
+// // [[Rcpp::export]]
+// Rcpp::XPtr<EMesh3> VoxelToMesh(
+//   std::string filename, double isovalue, 
+//   Rcpp::NumericVector center, double radius,
+//   double angle_bound, double radius_bound, double distance_bound, 
+//   double error_bound
+// ) {
 
-  Tri tr;            // 3D-Delaunay triangulation
-  Cplx2 cplx2(tr);   // 2D-complex in 3D-Delaunay triangulation
+//   Tri tr;            // 3D-Delaunay triangulation
+//   Cplx2 cplx2(tr);   // 2D-complex in 3D-Delaunay triangulation
 
-  // the 'function' is a 3D gray level image
-  FT isoval(isovalue);
-  Gray_level_image image(CGAL::data_file_path(filename), isoval);
+//   // the 'function' is a 3D gray level image
+//   FT isoval(isovalue);
+//   Gray_level_image image(CGAL::data_file_path(filename), isoval);
 
-  // Carefully chosen bounding sphere: the center must be inside the
-  // surface defined by 'image' and the radius must be high enough so that
-  // the sphere actually bounds the whole image.
-  Point_3 bounding_sphere_center(center(0), center(1), center(2));
-  FT bounding_sphere_squared_radius = radius * radius;
-  Sphere_3 bounding_sphere(
-    bounding_sphere_center, bounding_sphere_squared_radius
-  );
+//   // Carefully chosen bounding sphere: the center must be inside the
+//   // surface defined by 'image' and the radius must be high enough so that
+//   // the sphere actually bounds the whole image.
+//   Point_3 bounding_sphere_center(center(0), center(1), center(2));
+//   FT bounding_sphere_squared_radius = radius * radius;
+//   Sphere_3 bounding_sphere(
+//     bounding_sphere_center, bounding_sphere_squared_radius
+//   );
 
-  // definition of the surface
-  FT eb(error_bound);
-  Surface_gray surface(image, bounding_sphere, eb);
+//   // definition of the surface
+//   FT eb(error_bound);
+//   Surface_gray surface(image, bounding_sphere, eb);
 
-  // defining meshing criteria
-  FT ab(angle_bound);
-  FT rb(radius_bound);
-  FT db(distance_bound); 
-  MeshingCriteria criteria(ab, rb, db);
+//   // defining meshing criteria
+//   FT ab(angle_bound);
+//   FT rb(radius_bound);
+//   FT db(distance_bound); 
+//   MeshingCriteria criteria(ab, rb, db);
 
-  // meshing surface, with the "manifold with boundary" algorithm
-  CGAL::make_surface_mesh(
-    cplx2, surface, criteria, CGAL::Manifold_with_boundary_tag()
-  );
-  SurfaceMesh smesh;
-  CGAL::facets_in_complex_2_to_triangle_mesh(cplx2, smesh);
+//   // meshing surface, with the "manifold with boundary" algorithm
+//   CGAL::make_surface_mesh(
+//     cplx2, surface, criteria, CGAL::Manifold_with_boundary_tag()
+//   );
+//   SurfaceMesh smesh;
+//   CGAL::facets_in_complex_2_to_triangle_mesh(cplx2, smesh);
 
-  EMesh3 mesh;
-  CGAL::copy_face_graph(smesh, mesh);
-  return Rcpp::XPtr<EMesh3>(new EMesh3(mesh), false);
-}
+//   EMesh3 mesh;
+//   CGAL::copy_face_graph(smesh, mesh);
+//   return Rcpp::XPtr<EMesh3>(new EMesh3(mesh), false);
+// }

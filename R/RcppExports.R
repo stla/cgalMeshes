@@ -21,10 +21,6 @@ AlgebraicMesh <- function(powers, coeffs, isolevel, sphereCenter, sphereRadius, 
     .Call(`_cgalMeshes_AlgebraicMesh`, powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound)
 }
 
-VoxelToMesh <- function(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound, error_bound) {
-    .Call(`_cgalMeshes_VoxelToMesh`, filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound, error_bound)
-}
-
 meshTopology <- function(nu, nv, uperiodic, vperiodic) {
     .Call(`_cgalMeshes_meshTopology`, nu, nv, uperiodic, vperiodic)
 }

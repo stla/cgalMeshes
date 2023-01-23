@@ -80,24 +80,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// VoxelToMesh
-Rcpp::XPtr<EMesh3> VoxelToMesh(std::string filename, double isovalue, Rcpp::NumericVector center, double radius, double angle_bound, double radius_bound, double distance_bound, double error_bound);
-RcppExport SEXP _cgalMeshes_VoxelToMesh(SEXP filenameSEXP, SEXP isovalueSEXP, SEXP centerSEXP, SEXP radiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP, SEXP error_boundSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
-    Rcpp::traits::input_parameter< double >::type isovalue(isovalueSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type center(centerSEXP);
-    Rcpp::traits::input_parameter< double >::type radius(radiusSEXP);
-    Rcpp::traits::input_parameter< double >::type angle_bound(angle_boundSEXP);
-    Rcpp::traits::input_parameter< double >::type radius_bound(radius_boundSEXP);
-    Rcpp::traits::input_parameter< double >::type distance_bound(distance_boundSEXP);
-    Rcpp::traits::input_parameter< double >::type error_bound(error_boundSEXP);
-    rcpp_result_gen = Rcpp::wrap(VoxelToMesh(filename, isovalue, center, radius, angle_bound, radius_bound, distance_bound, error_bound));
-    return rcpp_result_gen;
-END_RCPP
-}
 // meshTopology
 Rcpp::IntegerMatrix meshTopology(int nu, int nv, bool uperiodic, bool vperiodic);
 RcppExport SEXP _cgalMeshes_meshTopology(SEXP nuSEXP, SEXP nvSEXP, SEXP uperiodicSEXP, SEXP vperiodicSEXP) {
@@ -137,7 +119,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_cxhullsIntersection", (DL_FUNC) &_cgalMeshes_cxhullsIntersection, 2},
     {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},
     {"_cgalMeshes_AlgebraicMesh", (DL_FUNC) &_cgalMeshes_AlgebraicMesh, 9},
-    {"_cgalMeshes_VoxelToMesh", (DL_FUNC) &_cgalMeshes_VoxelToMesh, 8},
     {"_cgalMeshes_meshTopology", (DL_FUNC) &_cgalMeshes_meshTopology, 4},
     {"_cgalMeshes_sTriangle", (DL_FUNC) &_cgalMeshes_sTriangle, 6},
     {"_rcpp_module_boot_class_CGALmesh", (DL_FUNC) &_rcpp_module_boot_class_CGALmesh, 0},
