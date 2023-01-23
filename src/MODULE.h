@@ -917,6 +917,18 @@ public:
 
 
   // ----------------------------------------------------------------------- //
+  void DooSabin(unsigned int iterations) {
+    removeProperties(
+      mesh, {"v:normal", "v:scalar", "v:color", "f:scalar", "f:color"}
+    );
+    CGAL::Subdivision_method_3::DooSabin_subdivision(
+      mesh, CGAL::parameters::number_of_iterations(iterations)
+    );
+    mesh.collect_garbage();
+  }
+
+
+  // ----------------------------------------------------------------------- //
   Rcpp::XPtr<EMesh3> dual() {
     EMesh3 dualmesh = dualMesh(mesh);
     return Rcpp::XPtr<EMesh3>(new EMesh3(dualmesh), false);

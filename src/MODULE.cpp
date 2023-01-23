@@ -5,7 +5,7 @@
 #include "MODULE.h"
 
 RCPP_MODULE(class_CGALmesh) {
-  using namespace Rcpp;
+  using namespace Rcpp;  
   class_<CGALmesh>("CGALmesh")
     .constructor<
       const NumericMatrix, const List, bool,
@@ -33,6 +33,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("distance", &CGALmesh::distance)
     .method("doesBoundVolume", &CGALmesh::doesBoundVolume)
     .method("doesSelfIntersect", &CGALmesh::doesSelfIntersect)
+    .method("DooSabin", &CGALmesh::DooSabin)
     .method("dual", &CGALmesh::dual)
     .method("edges", &CGALmesh::edges)
     .method("facesAroundVertex", &CGALmesh::facesAroundVertex)

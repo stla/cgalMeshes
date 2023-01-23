@@ -624,6 +624,34 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$distance(t(points))
     },
 
+    #' @description Performs the Doo-Sabin subdivision and deformation.
+    #' @param iterations number of iterations
+    #' @return The modified reference mesh, invisibly.
+    #' @examples 
+    #' \donttest{library(cgalMeshes)
+    #' library(rgl)
+    #' hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
+    #' mesh <- cgalMesh$new(hopfMesh)
+    #' mesh$DooSabin(iterations = 2)
+    #' mesh$triangulate()
+    #' mesh$computeNormals()
+    #' rmesh <- mesh$getMesh()
+    #' # plot
+    #' open3d(windowRect = 50 + c(0, 0, 800, 400))
+    #' mfrow3d(1, 2)
+    #' view3d(0, 0, zoom = 0.9)
+    #' shade3d(hopfMesh, color = "brown")
+    #' wire3d(hopfMesh, color = "black")
+    #' next3d()
+    #' view3d(0, 0, zoom = 0.9)
+    #' shade3d(rmesh, color = "brown")
+    #' wire3d(rmesh, color = "black")}
+    "DooSabin" = function(iterations = 1) {
+      stopifnot(isStrictPositiveInteger(iterations))
+      private[[".CGALmesh"]]$DooSabin(as.integer(iterations))
+      invisible(self)
+    },
+    
     #' @description Faces containing a given vertex.
     #' @param v a vertex index
     #' @return An integer vector, the indices of the faces containing \code{v}.

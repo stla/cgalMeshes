@@ -300,6 +300,28 @@ O2 <- c(c, 0, 0)
 mesh$distance(O2)}    
 
 ## ------------------------------------------------
+## Method `cgalMesh$DooSabin`
+## ------------------------------------------------
+
+\donttest{library(cgalMeshes)
+library(rgl)
+hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
+mesh <- cgalMesh$new(hopfMesh)
+mesh$DooSabin(iterations = 2)
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+# plot
+open3d(windowRect = 50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+view3d(0, 0, zoom = 0.9)
+shade3d(hopfMesh, color = "brown")
+wire3d(hopfMesh, color = "black")
+next3d()
+view3d(0, 0, zoom = 0.9)
+shade3d(rmesh, color = "brown")
+wire3d(rmesh, color = "black")}
+
+## ------------------------------------------------
 ## Method `cgalMesh$fair`
 ## ------------------------------------------------
 
@@ -622,11 +644,11 @@ rmesh <- mesh$getMesh()
 open3d(windowRect = 50 + c(0, 0, 800, 400))
 mfrow3d(1, 2)
 view3d(0, 0, zoom = 0.9)
-shade3d(hopfMesh, color = "red")
+shade3d(hopfMesh, color = "gold")
 wire3d(hopfMesh, color = "black")
 next3d()
 view3d(0, 0, zoom = 0.9)
-shade3d(rmesh, color = "red")
+shade3d(rmesh, color = "gold")
 wire3d(rmesh, color = "black")}
 
 ## ------------------------------------------------
@@ -799,6 +821,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-convexParts}{\code{cgalMesh$convexParts()}}
 \item \href{#method-cgalMesh-copy}{\code{cgalMesh$copy()}}
 \item \href{#method-cgalMesh-distance}{\code{cgalMesh$distance()}}
+\item \href{#method-cgalMesh-DooSabin}{\code{cgalMesh$DooSabin()}}
 \item \href{#method-cgalMesh-facesAroundVertex}{\code{cgalMesh$facesAroundVertex()}}
 \item \href{#method-cgalMesh-fair}{\code{cgalMesh$fair()}}
 \item \href{#method-cgalMesh-fillBoundaryHole}{\code{cgalMesh$fillBoundaryHole()}}
@@ -1587,6 +1610,50 @@ mesh <- cgalMesh$new(cyclideMesh(a, c, mu, nu = 100L, nv = 100L))
 O2 <- c(c, 0, 0)
 # should be a - mu = 20 (see ?cyclideMesh):
 mesh$distance(O2)}    
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-DooSabin"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-DooSabin}{}}}
+\subsection{Method \code{DooSabin()}}{
+Performs the Doo-Sabin subdivision and deformation.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$DooSabin(iterations = 1)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{iterations}}{number of iterations}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The modified reference mesh, invisibly.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
+hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
+mesh <- cgalMesh$new(hopfMesh)
+mesh$DooSabin(iterations = 2)
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+# plot
+open3d(windowRect = 50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+view3d(0, 0, zoom = 0.9)
+shade3d(hopfMesh, color = "brown")
+wire3d(hopfMesh, color = "black")
+next3d()
+view3d(0, 0, zoom = 0.9)
+shade3d(rmesh, color = "brown")
+wire3d(rmesh, color = "black")}
 }
 \if{html}{\out{</div>}}
 
@@ -2415,11 +2482,11 @@ rmesh <- mesh$getMesh()
 open3d(windowRect = 50 + c(0, 0, 800, 400))
 mfrow3d(1, 2)
 view3d(0, 0, zoom = 0.9)
-shade3d(hopfMesh, color = "red")
+shade3d(hopfMesh, color = "gold")
 wire3d(hopfMesh, color = "black")
 next3d()
 view3d(0, 0, zoom = 0.9)
-shade3d(rmesh, color = "red")
+shade3d(rmesh, color = "gold")
 wire3d(rmesh, color = "black")}
 }
 \if{html}{\out{</div>}}
