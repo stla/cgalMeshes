@@ -25,7 +25,6 @@ Imports:
     onion,
     R6,
     Rcpp (>= 1.0.9),
-    RNifti,
     rgl,
     tools
 Suggests:
