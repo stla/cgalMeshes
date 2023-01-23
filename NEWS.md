@@ -28,7 +28,7 @@
   * `getBorders`, to extract the boundary cycles from the mesh;
   * `fillBoundaryHole`, to fill the holes of the mesh;
   * `isotropicRemeshing`, to remesh the mesh;
-  * subdivision methods: `CatmullClark`, `LoopSubdivision`, `DooSabin`;
+  * subdivision methods: `CatmullClark`, `LoopSubdivision`, `DooSabin`, `Sqrt3Subdivision`;
   * `whereIs`, to check whether a point is inside or outside the mesh, when the mesh is closed.
 
 

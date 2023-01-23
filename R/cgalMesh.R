@@ -489,6 +489,13 @@ cgalMesh <- R6Class(
         invisible(self)
       }
     },
+
+    #' @description tmp. 
+    #' @return tmp.
+    "collectGarbage" = function() {
+      . <- private[[".CGALmesh"]]$collectGarbage()
+      invisible(self)
+    },
     
     #' @description Compute per-vertex normals of the mesh. 
     #' @return The current \code{cgalMesh} object, invisibly. 
@@ -1350,7 +1357,8 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$doesSelfIntersect()
     },
 
-    #' @description Performs the 'Sqrt3' subdivision and deformation.
+    #' @description Performs the 'Sqrt3' subdivision and deformation. The mesh 
+    #'   must be triangle.
     #' @param iterations number of iterations
     #' @return The modified reference mesh, invisibly.
     #' @examples 
