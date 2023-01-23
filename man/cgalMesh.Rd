@@ -716,6 +716,34 @@ mesh <- cgalMesh$new(dodecahedron3d())
 mesh$selfIntersects()
 
 ## ------------------------------------------------
+## Method `cgalMesh$sharpEdges`
+## ------------------------------------------------
+
+\donttest{library(cgalMeshes)
+library(rgl)
+# astroidal ellipsoid
+f <- function(u, v) {
+  rbind(
+    cos(u)^3 * cos(v)^3,
+    sin(u)^3 * cos(v)^3,
+    sin(v)^3
+  )
+}
+rmesh <- parametricMesh(
+  f, urange = c(0, 2*pi), vrange = c(0, 2*pi), 
+  periodic = c(TRUE, TRUE), nu = 130, nv = 130
+)
+mesh <- cgalMesh$new(rmesh)
+sharpEdges <- mesh$sharpEdges(150)
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
+shade3d(addNormals(rmesh), color = "chartreuse")
+plotEdges(
+  mesh$getVertices(), sharpEdges[, c("v1", "v2")], 
+  edgesAsTubes = FALSE, lwd = 5, verticesAsSpheres = FALSE
+)}
+
+## ------------------------------------------------
 ## Method `cgalMesh$Sqrt3Subdivision`
 ## ------------------------------------------------
 
@@ -2707,6 +2735,36 @@ An integer matrix with three columns: \code{"edge"}, an edge
   index, and \code{"v1"} and \code{"v2"}, the vertex indices of this 
   edge.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
+# astroidal ellipsoid
+f <- function(u, v) {
+  rbind(
+    cos(u)^3 * cos(v)^3,
+    sin(u)^3 * cos(v)^3,
+    sin(v)^3
+  )
+}
+rmesh <- parametricMesh(
+  f, urange = c(0, 2*pi), vrange = c(0, 2*pi), 
+  periodic = c(TRUE, TRUE), nu = 130, nv = 130
+)
+mesh <- cgalMesh$new(rmesh)
+sharpEdges <- mesh$sharpEdges(150)
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
+shade3d(addNormals(rmesh), color = "chartreuse")
+plotEdges(
+  mesh$getVertices(), sharpEdges[, c("v1", "v2")], 
+  edgesAsTubes = FALSE, lwd = 5, verticesAsSpheres = FALSE
+)}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-Sqrt3Subdivision"></a>}}

@@ -1578,7 +1578,7 @@ public:
     std::vector<int> vedges;
     int n = 0;
     for(edge_descriptor ed : mesh.edges()) {
-      if(!edmap[ed]) {
+      if(edmap[ed]) {
         n++;
         vedges.push_back(int(ed) + 1);
         vedges.push_back(int(source(ed, mesh)) + 1);

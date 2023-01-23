@@ -1364,8 +1364,33 @@ cgalMesh <- R6Class(
     #' @return An integer matrix with three columns: \code{"edge"}, an edge 
     #'   index, and \code{"v1"} and \code{"v2"}, the vertex indices of this 
     #'   edge.
+    #' @examples 
+    #' \donttest{library(cgalMeshes)
+    #' library(rgl)
+    #' # astroidal ellipsoid
+    #' f <- function(u, v) {
+    #'   rbind(
+    #'     cos(u)^3 * cos(v)^3,
+    #'     sin(u)^3 * cos(v)^3,
+    #'     sin(v)^3
+    #'   )
+    #' }
+    #' rmesh <- parametricMesh(
+    #'   f, urange = c(0, 2*pi), vrange = c(0, 2*pi), 
+    #'   periodic = c(TRUE, TRUE), nu = 130, nv = 130
+    #' )
+    #' mesh <- cgalMesh$new(rmesh)
+    #' sharpEdges <- mesh$sharpEdges(150)
+    #' # plot
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
+    #' shade3d(addNormals(rmesh), color = "chartreuse")
+    #' plotEdges(
+    #'   mesh$getVertices(), sharpEdges[, c("v1", "v2")], 
+    #'   edgesAsTubes = FALSE, lwd = 5, verticesAsSpheres = FALSE
+    #' )}
     "sharpEdges" = function(angleBound) {
-      private[[".CGALmesh"]]$sharpEdges(angleBound)
+      stopifnot(isNumber(angleBound))
+      private[[".CGALmesh"]]$sharpEdges(angleBound - 180)
     },
     
     #' @description Performs the 'Sqrt3' subdivision and deformation. The mesh 
