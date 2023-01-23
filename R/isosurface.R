@@ -237,11 +237,11 @@ voxel2mesh <- function(
   hdrFile <- tempfile(fileext = ".hdr")
   img <- readNifti(fileName)
   . <- writeAnalyze(img, hdrFile)
-  xptr <- VoxelToMesh(
-    hdrFile, isolevel, 
-    sphereCenter, sphereRadius,
-    angleBound, radiusBound, distanceBound, 
-    errorBound
-  )
-  cgalMesh$new(clean = xptr)
+  # xptr <- VoxelToMesh(
+  #   hdrFile, isolevel, 
+  #   sphereCenter, sphereRadius,
+  #   angleBound, radiusBound, distanceBound, 
+  #   errorBound
+  # )
+  # cgalMesh$new(clean = xptr)
 }

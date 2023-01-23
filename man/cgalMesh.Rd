@@ -308,6 +308,7 @@ library(rgl)
 hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
 mesh <- cgalMesh$new(hopfMesh)
 mesh$DooSabin(iterations = 2)
+mesh$triangulate()
 mesh$computeNormals()
 rmesh <- mesh$getMesh()
 # plot
