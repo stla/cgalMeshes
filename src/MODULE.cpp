@@ -5,7 +5,7 @@
 #include "MODULE.h"
 
 RCPP_MODULE(class_CGALmesh) {
-  using namespace Rcpp;  
+  using namespace Rcpp;
   class_<CGALmesh>("CGALmesh")
     .constructor<
       const NumericMatrix, const List, bool,
@@ -70,6 +70,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("print", &CGALmesh::print)
     .method("removeSelfIntersections", &CGALmesh::removeSelfIntersections)
     .method("reverseFaceOrientations", &CGALmesh::reverseFaceOrientations)
+    .method("sharpEdges", &CGALmesh::sharpEdges)
     .method("Sqrt3Subdivision", &CGALmesh::Sqrt3Subdivision)
     .method("subtract", &CGALmesh::subtract)
     .method("triangulate", &CGALmesh::triangulate)

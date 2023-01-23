@@ -839,6 +839,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-clip}{\code{cgalMesh$clip()}}
 \item \href{#method-cgalMesh-clipToPlane}{\code{cgalMesh$clipToPlane()}}
 \item \href{#method-cgalMesh-clipToIsoCuboid}{\code{cgalMesh$clipToIsoCuboid()}}
+\item \href{#method-cgalMesh-collectGarbage}{\code{cgalMesh$collectGarbage()}}
 \item \href{#method-cgalMesh-computeNormals}{\code{cgalMesh$computeNormals()}}
 \item \href{#method-cgalMesh-connectedComponents}{\code{cgalMesh$connectedComponents()}}
 \item \href{#method-cgalMesh-convexParts}{\code{cgalMesh$convexParts()}}
@@ -878,6 +879,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-removeSelfIntersections}{\code{cgalMesh$removeSelfIntersections()}}
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
+\item \href{#method-cgalMesh-sharpEdges}{\code{cgalMesh$sharpEdges()}}
 \item \href{#method-cgalMesh-Sqrt3Subdivision}{\code{cgalMesh$Sqrt3Subdivision()}}
 \item \href{#method-cgalMesh-subtract}{\code{cgalMesh$subtract()}}
 \item \href{#method-cgalMesh-triangulate}{\code{cgalMesh$triangulate()}}
@@ -1448,6 +1450,19 @@ shade3d(bxmesh, color = "cyan", alpha = 0.3)}
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-collectGarbage"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-collectGarbage}{}}}
+\subsection{Method \code{collectGarbage()}}{
+tmp.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$collectGarbage()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+tmp.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-computeNormals"></a>}}
@@ -2670,10 +2685,35 @@ mesh$selfIntersects()
 
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-sharpEdges"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-sharpEdges}{}}}
+\subsection{Method \code{sharpEdges()}}{
+Returns edges considered to be sharp according to the given 
+  angle bound.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$sharpEdges(angleBound)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{angleBound}}{angle bound in degrees; an edge whose corresponding 
+dihedral angle is smaller than this bound is considered as sharp}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+An integer matrix with three columns: \code{"edge"}, an edge 
+  index, and \code{"v1"} and \code{"v2"}, the vertex indices of this 
+  edge.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-Sqrt3Subdivision"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-Sqrt3Subdivision}{}}}
 \subsection{Method \code{Sqrt3Subdivision()}}{
-Performs the 'Sqrt3' subdivision and deformation.
+Performs the 'Sqrt3' subdivision and deformation. The mesh 
+  must be triangle.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$Sqrt3Subdivision(iterations = 1)}\if{html}{\out{</div>}}
 }

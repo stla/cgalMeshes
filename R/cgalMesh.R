@@ -1357,6 +1357,17 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$doesSelfIntersect()
     },
 
+    #' @description Returns edges considered to be sharp according to the given 
+    #'   angle bound.
+    #' @param angleBound angle bound in degrees; an edge whose corresponding 
+    #'   dihedral angle is smaller than this bound is considered as sharp 
+    #' @return An integer matrix with three columns: \code{"edge"}, an edge 
+    #'   index, and \code{"v1"} and \code{"v2"}, the vertex indices of this 
+    #'   edge.
+    "sharpEdges" = function(angleBound) {
+      private[[".CGALmesh"]]$sharpEdges(angleBound)
+    },
+    
     #' @description Performs the 'Sqrt3' subdivision and deformation. The mesh 
     #'   must be triangle.
     #' @param iterations number of iterations

@@ -1570,6 +1570,33 @@ public:
 
 
   // ----------------------------------------------------------------------- //
+  Rcpp::IntegerMatrix sharpEdges(double angleBound) {
+    EK::FT angle_bound(angleBound);
+    EMesh3::Property_map<edge_descriptor, bool> edmap = 
+      mesh.add_property_map<edge_descriptor, bool>("e:bool", false).first;
+    PMP::detect_sharp_edges(mesh, angle_bound, edmap);
+    std::vector<int> vedges;
+    int n = 0;
+    for(edge_descriptor ed : mesh.edges()) {
+      if(!edmap[ed]) {
+        n++;
+        vedges.push_back(int(ed) + 1);
+        vedges.push_back(int(source(ed, mesh)) + 1);
+        vedges.push_back(int(target(ed, mesh)) + 1);
+      }
+    }
+    mesh.remove_property_map(edmap);
+    Rcpp::IntegerVector Vedges(vedges.begin(), vedges.end());
+    Rcpp::CharacterVector colnames = {"edge", "v1", "v2"};
+    Vedges.attr("dim") = Rcpp::Dimension(3, n);
+    Rcpp::IntegerMatrix Edges = 
+      Rcpp::transpose(Rcpp::as<Rcpp::IntegerMatrix>(Vedges));
+    Rcpp::colnames(Edges) = colnames;
+    return Edges;
+  }
+
+
+  // ----------------------------------------------------------------------- //
   void Sqrt3Subdivision(unsigned int iterations) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");

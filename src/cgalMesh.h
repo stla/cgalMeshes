@@ -47,7 +47,8 @@
 #include <CGAL/Heat_method_3/Surface_mesh_geodesic_distances_3.h>
 #include <CGAL/Polygon_mesh_processing/connected_components.h>
 #include <CGAL/Polygon_mesh_processing/manifoldness.h>
-#include <CGAL/Polygon_mesh_processing/stitch_borders.h>
+//#include <CGAL/Polygon_mesh_processing/stitch_borders.h>
+#include <CGAL/Polygon_mesh_processing/detect_features.h>
 #include <CGAL/Advancing_front_surface_reconstruction.h>
 #include <CGAL/Triangle_3.h>
 #include <CGAL/Tetrahedron_3.h>
@@ -61,7 +62,7 @@
 #include <CGAL/IO/facets_in_complex_2_to_triangle_mesh.h>
 #include <CGAL/Surface_mesh_default_criteria_3.h>
 #include <CGAL/Complex_2_in_triangulation_3.h>
-#include <CGAL/Gray_level_image_3.h>
+//#include <CGAL/Gray_level_image_3.h>
 #include <CGAL/Polynomial.h>
 #include <CGAL/Polynomial_traits_d.h>
 #include <CGAL/Polynomial_type_generator.h>
@@ -132,8 +133,8 @@ typedef                                            FT (*Function)(Point_3);
 typedef CGAL::Implicit_surface_3<GT, Function>     ImplicitSurface;
 typedef CGAL::Surface_mesh<Point_3>                SurfaceMesh;
 
-typedef CGAL::Gray_level_image_3<FT, Point_3>          Gray_level_image;
-typedef CGAL::Implicit_surface_3<GT, Gray_level_image> Surface_gray;
+//typedef CGAL::Gray_level_image_3<FT, Point_3>          Gray_level_image;
+//typedef CGAL::Implicit_surface_3<GT, Gray_level_image> Surface_gray;
 
 typedef CGAL::Polynomial_type_generator<FT, 3>::Type     Poly3;
 typedef CGAL::Polynomial_traits_d<Poly3>                 PT3;
