@@ -44,6 +44,11 @@ R6 based utilities for 3D meshes.
 ![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/Hopf_LoopSubdivision.png)
 
 
+### Hole filling
+
+![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/holeFilling.png)
+
+
 ### Boolean operations
 
 #### Intersection
