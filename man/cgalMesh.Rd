@@ -716,6 +716,28 @@ mesh <- cgalMesh$new(dodecahedron3d())
 mesh$selfIntersects()
 
 ## ------------------------------------------------
+## Method `cgalMesh$Sqrt3Subdivision`
+## ------------------------------------------------
+
+\donttest{library(cgalMeshes)
+library(rgl)
+hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
+mesh <- cgalMesh$new(hopfMesh)
+mesh$Sqrt3Subdivision(iterations = 2)
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+# plot
+open3d(windowRect = 50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+view3d(0, 0, zoom = 0.9)
+shade3d(hopfMesh, color = "cyan")
+wire3d(hopfMesh, color = "black")
+next3d()
+view3d(0, 0, zoom = 0.9)
+shade3d(rmesh, color = "cyan")
+wire3d(rmesh, color = "black")}
+
+## ------------------------------------------------
 ## Method `cgalMesh$subtract`
 ## ------------------------------------------------
 
@@ -856,6 +878,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-removeSelfIntersections}{\code{cgalMesh$removeSelfIntersections()}}
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
+\item \href{#method-cgalMesh-Sqrt3Subdivision}{\code{cgalMesh$Sqrt3Subdivision()}}
 \item \href{#method-cgalMesh-subtract}{\code{cgalMesh$subtract()}}
 \item \href{#method-cgalMesh-triangulate}{\code{cgalMesh$triangulate()}}
 \item \href{#method-cgalMesh-union}{\code{cgalMesh$union()}}
@@ -1643,6 +1666,7 @@ library(rgl)
 hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
 mesh <- cgalMesh$new(hopfMesh)
 mesh$DooSabin(iterations = 2)
+mesh$triangulate()
 mesh$computeNormals()
 rmesh <- mesh$getMesh()
 # plot
@@ -2639,6 +2663,50 @@ A Boolean value, whether the mesh self-intersects.
 \preformatted{library(rgl)
 mesh <- cgalMesh$new(dodecahedron3d())
 mesh$selfIntersects()
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-Sqrt3Subdivision"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-Sqrt3Subdivision}{}}}
+\subsection{Method \code{Sqrt3Subdivision()}}{
+Performs the 'Sqrt3' subdivision and deformation.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$Sqrt3Subdivision(iterations = 1)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{iterations}}{number of iterations}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The modified reference mesh, invisibly.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\donttest{library(cgalMeshes)
+library(rgl)
+hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
+mesh <- cgalMesh$new(hopfMesh)
+mesh$Sqrt3Subdivision(iterations = 2)
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+# plot
+open3d(windowRect = 50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+view3d(0, 0, zoom = 0.9)
+shade3d(hopfMesh, color = "cyan")
+wire3d(hopfMesh, color = "black")
+next3d()
+view3d(0, 0, zoom = 0.9)
+shade3d(rmesh, color = "cyan")
+wire3d(rmesh, color = "black")}
 }
 \if{html}{\out{</div>}}
 

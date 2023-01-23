@@ -188,7 +188,7 @@ algebraicMesh <- function(
 #'   \code{angleBound} and large \code{radiusBound} and \code{distanceBound}, 
 #'   and then to adjust these parameters if the resulting mesh is not nice.
 #'   
-#' @export
+#' @noRd
 #' @importFrom RNifti readNifti writeAnalyze niftiHeader
 #' @examples 
 #' library(cgalMeshes)

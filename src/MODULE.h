@@ -745,6 +745,13 @@ public:
 
 
   // ----------------------------------------------------------------------- //
+  void collectGarbage() {
+    Rcpp::Rcout << "Mesh has garbage: " << mesh.has_garbage() << ".\n";
+    mesh.collect_garbage();
+  }
+
+
+  // ----------------------------------------------------------------------- //
   void computeNormals() {
     std::pair<CGALnormals_map, bool> vnormals_ = 
       mesh.property_map<vertex_descriptor, EVector3>("v:normals");
@@ -1559,6 +1566,20 @@ public:
   void reverseFaceOrientations() {
     PMP::reverse_face_orientations(mesh);
     // update normals ?
+  }
+
+
+  // ----------------------------------------------------------------------- //
+  void Sqrt3Subdivision(unsigned int iterations) {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    removeProperties(
+      mesh, {"v:normal", "v:scalar", "v:color", "f:scalar", "f:color"}
+    );
+    CGAL::Subdivision_method_3::Sqrt3_subdivision(
+      mesh, CGAL::parameters::number_of_iterations(iterations)
+    );
   }
 
 

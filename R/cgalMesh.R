@@ -1349,6 +1349,33 @@ cgalMesh <- R6Class(
     "selfIntersects" = function() {
       private[[".CGALmesh"]]$doesSelfIntersect()
     },
+
+    #' @description Performs the 'Sqrt3' subdivision and deformation.
+    #' @param iterations number of iterations
+    #' @return The modified reference mesh, invisibly.
+    #' @examples 
+    #' \donttest{library(cgalMeshes)
+    #' library(rgl)
+    #' hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
+    #' mesh <- cgalMesh$new(hopfMesh)
+    #' mesh$Sqrt3Subdivision(iterations = 2)
+    #' mesh$computeNormals()
+    #' rmesh <- mesh$getMesh()
+    #' # plot
+    #' open3d(windowRect = 50 + c(0, 0, 800, 400))
+    #' mfrow3d(1, 2)
+    #' view3d(0, 0, zoom = 0.9)
+    #' shade3d(hopfMesh, color = "cyan")
+    #' wire3d(hopfMesh, color = "black")
+    #' next3d()
+    #' view3d(0, 0, zoom = 0.9)
+    #' shade3d(rmesh, color = "cyan")
+    #' wire3d(rmesh, color = "black")}
+    "Sqrt3Subdivision" = function(iterations = 1) {
+      stopifnot(isStrictPositiveInteger(iterations))
+      private[[".CGALmesh"]]$Sqrt3Subdivision(as.integer(iterations))
+      invisible(self)
+    },
     
     #' @description Subtract a mesh. Both meshes must be triangle. Face 
     #'   properties of the two meshes are copied to the new mesh. 
