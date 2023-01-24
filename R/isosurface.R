@@ -194,6 +194,29 @@ algebraicMesh <- function(
 #'   and then to adjust these parameters if the resulting mesh is not nice.  
 #'   
 #' @export
+#' @examples
+#' \donttest{library(cgalMeshes)
+#' library(rgl)
+#' library(spray)
+#' x <- lone(1, 3); y <- lone(2, 3); z <- lone(3, 3)
+#' P1 <-  x^2 + y^2 - z^2 - 1
+#' P2 <-  x^2 - y^2 + z^2 - 1
+#' P3 <- -x^2 + y^2 + z^2 - 1
+#' # compute the mesh of the intersection (trihyperboloid)
+#' mesh <- algebraicMeshesIntersection(
+#'   polynomials = list(P1, P2, P3), 
+#'   sphereCenter = c(0, 0, 0), sphereRadius = 2,
+#'   angleBound    = 10, 
+#'   radiusBound   = 0.008, 
+#'   distanceBound = 0.005,
+#'   errorBound = 5e-6
+#' )
+#' # plot
+#' rmesh <- mesh$getMesh()
+#' open3d(windowRect = c(50, 50, 562, 562))
+#' view3d(20, 20)
+#' bg3d(rgb(54, 57, 64, maxColorValue = 255))
+#' shade3d(rmesh, color = "orangered")}
 algebraicMeshesIntersection <- function(
     polynomials, 
     sphereCenter, sphereRadius,
