@@ -97,6 +97,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// AlgebraicMeshesUnion
+Rcpp::XPtr<EMesh3> AlgebraicMeshesUnion(Rcpp::List Rpolynomials, Rcpp::NumericVector sphereCenter, double sphereRadius, double angle_bound, double radius_bound, double distance_bound, double error_bound);
+RcppExport SEXP _cgalMeshes_AlgebraicMeshesUnion(SEXP RpolynomialsSEXP, SEXP sphereCenterSEXP, SEXP sphereRadiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP, SEXP error_boundSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type Rpolynomials(RpolynomialsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sphereCenter(sphereCenterSEXP);
+    Rcpp::traits::input_parameter< double >::type sphereRadius(sphereRadiusSEXP);
+    Rcpp::traits::input_parameter< double >::type angle_bound(angle_boundSEXP);
+    Rcpp::traits::input_parameter< double >::type radius_bound(radius_boundSEXP);
+    Rcpp::traits::input_parameter< double >::type distance_bound(distance_boundSEXP);
+    Rcpp::traits::input_parameter< double >::type error_bound(error_boundSEXP);
+    rcpp_result_gen = Rcpp::wrap(AlgebraicMeshesUnion(Rpolynomials, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound));
+    return rcpp_result_gen;
+END_RCPP
+}
 // meshTopology
 Rcpp::IntegerMatrix meshTopology(int nu, int nv, bool uperiodic, bool vperiodic);
 RcppExport SEXP _cgalMeshes_meshTopology(SEXP nuSEXP, SEXP nvSEXP, SEXP uperiodicSEXP, SEXP vperiodicSEXP) {
@@ -137,6 +154,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},
     {"_cgalMeshes_AlgebraicMesh", (DL_FUNC) &_cgalMeshes_AlgebraicMesh, 9},
     {"_cgalMeshes_AlgebraicMeshesIntersection", (DL_FUNC) &_cgalMeshes_AlgebraicMeshesIntersection, 7},
+    {"_cgalMeshes_AlgebraicMeshesUnion", (DL_FUNC) &_cgalMeshes_AlgebraicMeshesUnion, 7},
     {"_cgalMeshes_meshTopology", (DL_FUNC) &_cgalMeshes_meshTopology, 4},
     {"_cgalMeshes_sTriangle", (DL_FUNC) &_cgalMeshes_sTriangle, 6},
     {"_rcpp_module_boot_class_CGALmesh", (DL_FUNC) &_rcpp_module_boot_class_CGALmesh, 0},

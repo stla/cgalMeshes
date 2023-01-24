@@ -213,6 +213,95 @@ Rcpp::XPtr<EMesh3> AlgebraicMeshesIntersection(
 }
 
 
+// [[Rcpp::export]]
+Rcpp::XPtr<EMesh3> AlgebraicMeshesUnion(
+  Rcpp::List Rpolynomials,
+  Rcpp::NumericVector sphereCenter, double sphereRadius,
+  double angle_bound, double radius_bound, double distance_bound, 
+  double error_bound
+) {
+  Tri tr;             // 3D-Delaunay triangulation
+  Cplx2 cplx2(tr);    // 2D-complex in 3D-Delaunay triangulation
+
+  // isosurface fun(p)=0
+  const int npolys = Rpolynomials.size();
+  std::vector<Poly3> Polys;
+  Polys.reserve(npolys);
+  for(int i = 0; i < npolys; i++) {
+    Rcpp::List Rpoly = Rcpp::as<Rcpp::List>(Rpolynomials(i));
+    Rcpp::IntegerMatrix powers = Rcpp::as<Rcpp::IntegerMatrix>(Rpoly["exponents"]); 
+    Rcpp::NumericVector coeffs = Rcpp::as<Rcpp::NumericVector>(Rpoly["coeffs"]);
+    Poly3 P = Polynomial(powers, coeffs);
+    Polys.emplace_back(P);
+  }
+
+  PT3::Substitute substitute;
+
+  auto fun = [Polys, substitute, npolys](Point_3 p) {
+    std::list<Real> xyz;
+    xyz.push_back(p.x()); 
+    xyz.push_back(p.y());
+    xyz.push_back(p.z());
+    std::vector<FT> values;
+    values.reserve(npolys);
+    for(int i = 0; i < npolys; i++) {
+      Poly3 P = Polys[i];
+      values.emplace_back(substitute(P, xyz.begin(), xyz.end()));
+    }
+    FT val = *min_element(values.begin(), values.end());
+    return val;
+  };
+
+  // bounding sphere
+  Point_3 bounding_sphere_center(
+    sphereCenter(0), sphereCenter(1), sphereCenter(2)
+  );
+  FT bounding_sphere_squared_radius = sphereRadius * sphereRadius;
+  Sphere_3 bounding_sphere(
+    bounding_sphere_center, bounding_sphere_squared_radius
+  );
+
+  // check
+  {
+    FT val = fun(bounding_sphere_center);
+    if(val >= 0) {
+      std::string msg = "The value at the center of the "; 
+      msg += "bounding sphere must be less than zero.";
+      Rcpp::stop(msg);
+    }
+  }
+
+  // isosurface
+  FT eb(error_bound);
+  ImplicitSurface surface(fun, bounding_sphere, eb);
+
+  // defining meshing criteria
+  FT ab(angle_bound);
+  FT rb(radius_bound);
+  FT db(distance_bound); 
+  MeshingCriteria criteria(ab, rb, db);
+
+  // meshing surface
+  CGAL::make_surface_mesh(
+    cplx2, surface, criteria, CGAL::Manifold_with_boundary_tag()
+  );
+  SurfaceMesh smesh;
+  CGAL::facets_in_complex_2_to_triangle_mesh(cplx2, smesh);
+
+  // fix orientation
+  PMP::orient_to_bound_a_volume(smesh);
+  if(!PMP::is_outward_oriented(smesh)) {
+    PMP::reverse_face_orientations(smesh);
+  }
+
+  // convert to EMesh3
+  EMesh3 mesh;
+  CGAL::copy_face_graph(smesh, mesh);
+  //
+  return Rcpp::XPtr<EMesh3>(new EMesh3(mesh), false);
+}
+
+
 // // [[Rcpp::export]]
 // Rcpp::XPtr<EMesh3> VoxelToMesh(
 //   std::string filename, double isovalue, 
