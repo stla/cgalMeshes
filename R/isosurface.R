@@ -130,9 +130,10 @@ algebraicMesh <- function(
   stopifnot(isPositiveNumber(distanceBound))
   stopifnot(isPositiveNumber(errorBound))
   if(inherits(polynomial, "spray")) {
-    exponents <- polynomial[["index"]]
-    coeffs    <- polynomial[["value"]]
-  } else if(is.list(polynomial)) {
+    polynomial[["exponents"]] <- polynomial[["index"]]
+    polynomial[["coeffs"]]    <- polynomial[["value"]]
+  }
+  if(is.list(polynomial)) {
     exponents <- polynomial[["exponents"]]
     stopifnot(is.matrix(exponents))
     stopifnot(ncol(exponents) == 3L)
@@ -154,6 +155,92 @@ algebraicMesh <- function(
   }
   xptr <- AlgebraicMesh(
     exponents, coeffs, isolevel, 
+    sphereCenter, sphereRadius, 
+    angleBound, radiusBound, distanceBound,
+    errorBound
+  )
+  cgalMesh$new(clean = xptr)
+}
+
+#' @title Intersection of algebraic surfaces
+#' @description Computes a mesh of the intersection of some algebraic surfaces 
+#'   (isosurfaces defined by a polynomial).
+#'
+#' @param polynomials the polynomials defining the isosurfaces, a list; 
+#'   each element of this list can be either a \code{\link[spray]{spray}} 
+#'   object or a list with two fields: \code{exponents}, an integer matrix with 
+#'   three columns, and \code{coeffs}, a numeric vector; each isosurface is 
+#'   then defined by \code{P(x,y,z)=0}, where \code{P} is a polynomial of this 
+#'   list 
+#' @param sphereCenter,sphereRadius center and radius of a sphere bounding the 
+#'   isosurface; the values of the polynomials at the center of this sphere 
+#'   must be less than zero
+#' @param angleBound lower bound in degrees for the angles of the faces of 
+#'   the mesh
+#' @param radiusBound upper bound for the radii of surface Delaunay balls; 
+#'   a surface Delaunay ball is a ball circumscribing a face and centered 
+#'  at the surface
+#' @param distanceBound upper bound for the distance between the 
+#'   circumcenter of a face and the center of the surface Delaunay 
+#'   ball of this face
+#' @param errorBound a relative error bound used in the computations
+#'
+#' @return A \code{cgalMesh} object.
+#'   
+#' @note If either \code{angleBound} is too high, \code{radiusBound} is 
+#'   too small, or \code{distanceBound} is too small, the computation could 
+#'   never finishes. Therefore, it is recommended to start with a small 
+#'   \code{angleBound} and large \code{radiusBound} and \code{distanceBound}, 
+#'   and then to adjust these parameters if the resulting mesh is not nice.  
+#'   
+#' @export
+algebraicMeshesIntersection <- function(
+    polynomials, 
+    sphereCenter, sphereRadius,
+    angleBound, radiusBound, distanceBound, 
+    errorBound = 1e-3
+) {
+  stopifnot(is.list(polynomials), length(polynomials) >= 2L)
+  stopifnot(isVector3(sphereCenter))
+  stopifnot(isPositiveNumber(sphereRadius))
+  stopifnot(isPositiveNumber(angleBound))
+  stopifnot(isPositiveNumber(radiusBound))
+  stopifnot(isPositiveNumber(distanceBound))
+  stopifnot(isPositiveNumber(errorBound))
+  Polynomials <- vector("list", length = length(polynomials))
+  for(i in seq_along(polynomials)) {
+    polynomial <- polynomials[[i]]
+    if(inherits(polynomial, "spray")) {
+      polynomial[["exponents"]] <- polynomial[["index"]]
+      polynomial[["coeffs"]]    <- polynomial[["value"]]
+    }
+    if(is.list(polynomial)) {
+      exponents <- polynomial[["exponents"]]
+      stopifnot(is.matrix(exponents))
+      stopifnot(ncol(exponents) == 3L)
+      storage.mode(exponents) <- "integer"
+      if(anyNA(exponents)) {
+        stop("Found missing values in the exponents of a polynomial.")
+      }
+      if(any(exponents < 0L)) {
+        stop("The exponents of a polynomial must be positive.")
+      }
+      coeffs <- polynomial[["coeffs"]]
+      storage.mode(coeffs) <- "double"
+      if(anyNA(coeffs)) {
+        stop("Found missing values in the coefficients of a polynomial.")
+      }
+      stopifnot(nrow(exponents) == length(coeffs))
+    } else {
+      stop("Invalid polynomial found.")
+    }
+    Polynomials[[i]] <- list(
+      "exponents" = exponents, 
+      "coeffs"    = coeffs
+    )
+  }
+  xptr <- AlgebraicMeshesIntersection(
+    Polynomials, 
     sphereCenter, sphereRadius, 
     angleBound, radiusBound, distanceBound,
     errorBound
