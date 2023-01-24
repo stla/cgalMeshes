@@ -132,7 +132,7 @@ checkMesh <- function(vertices, faces, aslist) {
       if(homogeneousFaces %in% c(3L, 4L)) {
         toRGL <- homogeneousFaces
       }
-    }else if(usizes == 2L && all(sizes %in% c(3L, 4L))) {
+    } else if(usizes == 2L && all(sizes %in% c(3L, 4L))) {
       toRGL <- 34L
     }
   } else {

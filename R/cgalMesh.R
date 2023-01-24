@@ -1377,10 +1377,10 @@ cgalMesh <- R6Class(
     #' }
     #' rmesh <- parametricMesh(
     #'   f, urange = c(0, 2*pi), vrange = c(0, 2*pi), 
-    #'   periodic = c(TRUE, TRUE), nu = 130, nv = 130
+    #'   periodic = c(TRUE, TRUE), nu = 120, nv = 110
     #' )
     #' mesh <- cgalMesh$new(rmesh)
-    #' sharpEdges <- mesh$sharpEdges(150)
+    #' sharpEdges <- mesh$sharpEdges(30)
     #' # plot
     #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
     #' shade3d(addNormals(rmesh), color = "chartreuse")

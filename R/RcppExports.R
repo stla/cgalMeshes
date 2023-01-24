@@ -21,6 +21,10 @@ AlgebraicMesh <- function(powers, coeffs, isolevel, sphereCenter, sphereRadius, 
     .Call(`_cgalMeshes_AlgebraicMesh`, powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound)
 }
 
+AlgebraicMeshesIntersection <- function(Rpolynomials, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound) {
+    .Call(`_cgalMeshes_AlgebraicMeshesIntersection`, Rpolynomials, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound)
+}
+
 meshTopology <- function(nu, nv, uperiodic, vperiodic) {
     .Call(`_cgalMeshes_meshTopology`, nu, nv, uperiodic, vperiodic)
 }
