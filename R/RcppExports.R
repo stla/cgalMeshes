@@ -29,6 +29,10 @@ AlgebraicMeshesUnion <- function(Rpolynomials, sphereCenter, sphereRadius, angle
     .Call(`_cgalMeshes_AlgebraicMeshesUnion`, Rpolynomials, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound)
 }
 
+Mandelbulb <- function(maxloop, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound) {
+    .Call(`_cgalMeshes_Mandelbulb`, maxloop, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound)
+}
+
 meshTopology <- function(nu, nv, uperiodic, vperiodic) {
     .Call(`_cgalMeshes_meshTopology`, nu, nv, uperiodic, vperiodic)
 }
