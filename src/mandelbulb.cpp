@@ -20,20 +20,24 @@ Rcpp::XPtr<EMesh3> Mandelbulb(
     FT x = x0;
     FT y = y0;
     FT z = z0;
-    FT r2, theta, phi, r8;
+    FT isoval(0.005);
+    FT r2, r6, theta, phi, r8;
+    FT dr(1.0);
     for(int i = 0; i < maxloop; i++){
       r2 = x*x + y*y + z*z;
-      if(r2 > 4){
-        break;
+      if(r2 > 4.0) {
+        return 0.25 * sqrt(r2) * log(r2) / dr - isoval;
       }
-      theta = 8 * atan2(sqrt(x*x + y*y), z);
-      phi = 8 * atan2(y, x);
-      r8 = r2 * r2 * r2 * r2;
+      r6 = r2 * r2 * r2;
+      dr = 8.0 * r6 * sqrt(r2) * dr + 1.0;
+      theta = 8.0 * atan2(sqrt(x*x + y*y), z);
+      phi = 8.0 * atan2(y, x);
+      r8 = r6 * r2;
       x = r8 * cos(phi) * sin(theta) + x0;
       y = r8 * sin(phi) * sin(theta) + y0;
       z = r8 * cos(theta) + z0;
     }
-    return sqrt(r2) - 2;
+    return -isoval;
   };
 
   // bounding sphere
