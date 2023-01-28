@@ -24,7 +24,7 @@ EMesh3 icosphere(EPoint3 center, EK::FT radius, unsigned int iterations) {
 }
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export]] 
 Rcpp::XPtr<EMesh3> sTriangle(
   Rcpp::NumericVector A, Rcpp::NumericVector B, Rcpp::NumericVector C,
   Rcpp::NumericVector center, double radius, unsigned int iterations
