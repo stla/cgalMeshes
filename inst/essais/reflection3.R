@@ -1,32 +1,40 @@
 library(cgalMeshes)
 library(rgl)
 
-icosahedron <- icosahedron3d()
-vertices    <- icosahedron[["vb"]][-4L, ]
-faces       <- icosahedron[["it"]]
-
-mesh <- cgalMesh$new(icosahedron)
-
-i <- 1L
-triangle <- faces[, i]
-A <- vertices[, triangle[1L]]
-B <- vertices[, triangle[2L]]
-C <- vertices[, triangle[3L]]
-
-n <- rgl:::xprod(C-A, B-A)
-n <- n / sqrt(c(crossprod(n)))
-offset <- c(crossprod(n, B)) 
-v <- -2*offset*n
-
 phi <- (1+sqrt(5))/2
 r <- sqrt(1 + (phi - 1)^2)
 
-clipper <- cgalMesh$new(sphereMesh(v[1], v[2], v[3], r))
+icosahedron <- icosahedron3d()
+vertices    <- icosahedron[["vb"]][-4L, ]
+faces       <- icosahedron[["it"]]
+mesh <- cgalMesh$new(icosahedron)
 
-mesh$clip(clipper, FALSE)
+for(i in 1:20) {
+  triangle <- faces[, i]
+  A <- vertices[, triangle[1L]]
+  B <- vertices[, triangle[2L]]
+  C <- vertices[, triangle[3L]]
+  n <- rgl:::xprod(C-A, B-A)
+  n <- n / sqrt(c(crossprod(n)))
+  offset <- c(crossprod(n, B)) 
+  v <- -2*offset*n
+  clipper <- cgalMesh$new(sphereMesh(v[1], v[2], v[3], r, iterations = 4))
+  mesh <- mesh$subtract(clipper)
+}
+
+
 rmesh <- mesh$getMesh()
-
 shade3d(rmesh, col = "red")
 
+sharpEdges <- mesh$sharpEdges(120)
+
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.7)
+shade3d(rmesh, col = "springgreen")
+plotEdges(mesh$getVertices(), sharpEdges[, c("v1", "v2")], 
+          edgesAsTubes = TRUE, tubesRadius = 0.011,
+          verticesAsSpheres = FALSE)
 
 
