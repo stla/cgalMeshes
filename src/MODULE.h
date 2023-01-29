@@ -232,7 +232,9 @@ public:
 
     ClipVisitor vis; 
     Face_index_map fimap = 
-      mesh.add_property_map<face_descriptor, std::size_t>("f:i", undetermined).first;
+      mesh.add_property_map<face_descriptor, std::size_t>(
+        "f:i", undetermined
+      ).first;
     const bool doNotModify = !clipVolume;
     const bool clipping = PMP::clip(
       mesh, clipper,
@@ -425,7 +427,7 @@ public:
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
-    if(PMP::does_self_intersect(mesh)) {
+    if(clipVolume && PMP::does_self_intersect(mesh)) {
       Rcpp::stop("The mesh self-intersects.");
     }
 
@@ -443,7 +445,9 @@ public:
     ClipVisitor vis;
     const bool clipping = PMP::clip(
       mesh, plane,
-      PMP::parameters::clip_volume(clipVolume).visitor(vis)
+      PMP::parameters::clip_volume(clipVolume)
+                      .visitor(vis)
+                      .allow_self_intersections(!clipVolume)
     );
     if(!clipping) {
       Rcpp::stop("Clipping has failed.");
@@ -451,7 +455,9 @@ public:
     mesh.remove_property_map(fimap_tmp);
 
     Face_index_map fimap = 
-      mesh.add_property_map<face_descriptor, std::size_t>("f:i", 9999999).first;
+      mesh.add_property_map<face_descriptor, std::size_t>(
+        "f:i", 9999999
+      ).first;
     for(face_descriptor fd : mesh.faces()) {
       fimap[fd] = std::size_t(fd);
     }
@@ -586,7 +592,7 @@ public:
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
-    if(PMP::does_self_intersect(mesh)) {
+    if(clipVolume && PMP::does_self_intersect(mesh)) {
       Rcpp::stop("The mesh self-intersects.");
     }
 
@@ -604,7 +610,9 @@ public:
     ClipVisitor vis;
     const bool clipping = PMP::clip(
       mesh, isocuboid,
-      PMP::parameters::clip_volume(clipVolume).visitor(vis)
+      PMP::parameters::clip_volume(clipVolume)
+                      .visitor(vis)
+                      .allow_self_intersections(!clipVolume)
     );
     if(!clipping) {
       Rcpp::stop("Clipping has failed.");
@@ -612,7 +620,9 @@ public:
     mesh.remove_property_map(fimap_tmp);
 
     Face_index_map fimap = 
-      mesh.add_property_map<face_descriptor, std::size_t>("f:i", 9999999).first;
+      mesh.add_property_map<face_descriptor, std::size_t>(
+        "f:i", 9999999
+      ).first;
     for(face_descriptor fd : mesh.faces()) {
       fimap[fd] = std::size_t(fd);
     }

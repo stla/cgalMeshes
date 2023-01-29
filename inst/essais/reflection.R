@@ -1,15 +1,14 @@
 library(cgalMeshes)
 library(rgl)
 
-A <- c(1, 0, 0) #/ sqrt(2)
-B <- c(0, 1, 0) #/ sqrt(2)
-C <- c(0, 0, 1)#/ sqrt(2)
+A <- c(1, 1, 0) #/ sqrt(2)
+B <- c(0, 1, 1) #/ sqrt(2)
+C <- c(1, 0, 1)#/ sqrt(2)
 
 n <- rgl:::xprod(C-A, B-A)
 n <- n / sqrt(c(crossprod(n)))
 R <- diag(3) - 2 * tcrossprod(n)#/c(crossprod(n))
 
-#a <- n[1]; b <- n[2]; c <- n[3]
 offset <- c(crossprod(n, B)) 
 M <- rbind(
   cbind(R, -2*offset*n), 
