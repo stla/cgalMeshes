@@ -552,7 +552,8 @@ public:
     {
       Filtered_graph ffg(mesh, 1, fwhich);
       MapBetweenFaceDescriptors f2fmap_;
-      boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
+      boost::associative_property_map<MapBetweenFaceDescriptors> 
+        f2fmap(f2fmap_);
       CGAL::copy_face_graph(
         ffg, mesh1, CGAL::parameters::face_to_face_map(f2fmap)
       );

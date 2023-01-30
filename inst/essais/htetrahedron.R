@@ -1,13 +1,13 @@
 library(cgalMeshes)
 library(rgl)
 
-phi <- (1+sqrt(5))/2
-r <- sqrt(1 + (phi - 1)^2)
+r <- 1/1.25^2
+r <- 1/sqrt(3)
 
-icosahedron <- icosahedron3d()
-vertices    <- icosahedron[["vb"]][-4L, ]
-faces       <- icosahedron[["it"]]
-mesh <- cgalMesh$new(icosahedron)
+tetrahedron <- tetrahedraCompound$rglMeshes[[1]]
+vertices    <- tetrahedron[["vb"]][-4L, ]
+faces       <- tetrahedron[["it"]]
+mesh <- cgalMesh$new(tetrahedron)
 
 for(i in 1:ncol(faces)) {
   triangle <- faces[, i]

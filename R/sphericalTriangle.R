@@ -12,6 +12,7 @@
 #'
 #' @return A \code{cgalMesh} object. The mesh has normals.
 #' @export
+#' @importFrom utils packageVersion
 #'
 #' @examples
 #' library(cgalMeshes)
@@ -65,8 +66,10 @@ sphericalTriangle <- function(
     }
     radius <- sqrt(r1)
   }
-  x <- sqrt(1 + (1 + sqrt(5)) / 4) # bug make_icosahedron
-  radius <- radius / x
+  if(packageVersion("RcppCGAL") < "5.5") {
+    x <- sqrt(1 + (1 + sqrt(5)) / 4) # bug make_icosahedron
+    radius <- radius / x
+  }
   stopifnot(isPositiveNumber(radius))
   stopifnot(isStrictPositiveInteger(iterations))
   xptr <- sTriangle(A, B, C, center, radius, as.integer(iterations))
