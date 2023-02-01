@@ -60,6 +60,16 @@ cgalMesh <- R6Class(
     #' plotEdges(
     #'   mesh$getVertices(), mesh$getEdges(), color = "darkred"
     #' )}
+    #' 
+    #' # this one has colors: ####
+    #' meshFile <- system.file(
+    #'   "extdata", "pentagrammicDipyramid.ply", package = "cgalMeshes"
+    #' )
+    #' mesh <- cgalMesh$new(meshFile)
+    #' rmesh <- mesh$getMesh()
+    #' \donttest{library(rgl)
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.85)
+    #' shade3d(rmesh, meshColor = "faces")}
     "initialize" = function(
       mesh, vertices, faces, normals = NULL, clean = FALSE
     ){
