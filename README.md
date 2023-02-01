@@ -93,9 +93,11 @@ Volume, area, centroid, distance between a point and a mesh, connected
 components.
 
 
-### Blog post
+### Blog posts
 
-['CGAL' meets 'R6': the 'cgalMeshes' package](https://laustep.github.io/stlahblog/posts/cgalMeshes.html)
+- ['CGAL' meets 'R6': the 'cgalMeshes' package](https://laustep.github.io/stlahblog/posts/cgalMeshes.html)
+
+- [Update of 'cgalMeshes'](https://laustep.github.io/stlahblog/posts/cgalMeshes2.html)
 
 
 
