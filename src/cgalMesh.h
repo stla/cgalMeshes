@@ -50,6 +50,7 @@
 //#include <CGAL/Polygon_mesh_processing/stitch_borders.h>
 #include <CGAL/Polygon_mesh_processing/detect_features.h>
 #include <CGAL/Advancing_front_surface_reconstruction.h>
+#include <CGAL/jet_smooth_point_set.h>
 #include <CGAL/Triangle_3.h>
 #include <CGAL/Tetrahedron_3.h>
 #include <CGAL/Plane_3.h>

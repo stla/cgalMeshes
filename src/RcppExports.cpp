@@ -13,13 +13,14 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // AFSreconstruction_cpp
-Rcpp::XPtr<EMesh3> AFSreconstruction_cpp(const Rcpp::NumericMatrix pts);
-RcppExport SEXP _cgalMeshes_AFSreconstruction_cpp(SEXP ptsSEXP) {
+Rcpp::XPtr<EMesh3> AFSreconstruction_cpp(const Rcpp::NumericMatrix pts, const unsigned nneighs);
+RcppExport SEXP _cgalMeshes_AFSreconstruction_cpp(SEXP ptsSEXP, SEXP nneighsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type pts(ptsSEXP);
-    rcpp_result_gen = Rcpp::wrap(AFSreconstruction_cpp(pts));
+    Rcpp::traits::input_parameter< const unsigned >::type nneighs(nneighsSEXP);
+    rcpp_result_gen = Rcpp::wrap(AFSreconstruction_cpp(pts, nneighs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -165,7 +166,7 @@ END_RCPP
 RcppExport SEXP _rcpp_module_boot_class_CGALmesh();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 1},
+    {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 2},
     {"_cgalMeshes_cxhull", (DL_FUNC) &_cgalMeshes_cxhull, 1},
     {"_cgalMeshes_cxhullsIntersection", (DL_FUNC) &_cgalMeshes_cxhullsIntersection, 2},
     {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},

@@ -4,10 +4,16 @@
 \alias{AFSreconstruction}
 \title{Advancing front surface reconstruction}
 \usage{
-AFSreconstruction(points)
+AFSreconstruction(points, jetSmoothing = NULL)
 }
 \arguments{
 \item{points}{numeric matrix which stores the points, one point per row}
+
+\item{jetSmoothing}{if not \code{NULL}, must be an integer, and then the 
+points cloud is smoothed before the reconstruction, using this integer as 
+the number of neighbors for the smoothing; note that this smoothing 
+relocates the points and then should not be used if the points have been 
+sampled without noise on the surface}
 }
 \value{
 A \code{cgalMesh} object.

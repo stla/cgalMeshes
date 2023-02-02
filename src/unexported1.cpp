@@ -20,7 +20,11 @@ std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix M) {
 }
 
 template std::vector<EPoint3> matrix_to_points3<EPoint3>(
-    const Rcpp::NumericMatrix);
+  const Rcpp::NumericMatrix
+);
+template std::vector<Point3> matrix_to_points3<Point3>(
+  const Rcpp::NumericMatrix
+);
 
 std::vector<std::vector<int>> list_to_faces(const Rcpp::List L) {
   const size_t nfaces = L.size();

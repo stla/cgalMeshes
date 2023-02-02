@@ -2,6 +2,11 @@
 #' @description Reconstruction of a surface from a cloud of 3D points.
 #'
 #' @param points numeric matrix which stores the points, one point per row
+#' @param jetSmoothing if not \code{NULL}, must be an integer higher than two, 
+#'   and then the points cloud is smoothed before the reconstruction, using 
+#'   this integer as the number of neighbors for the smoothing; note that this 
+#'   smoothing preprocessing relocates the points and then should not be used 
+#'   if the points have been sampled without noise on the surface
 #'
 #' @return A \code{cgalMesh} object.
 #'
@@ -16,9 +21,7 @@
 #' rglMesh <- mesh$getMesh()
 #' library(rgl)
 #' shade3d(rglMesh, color = "firebrick")
-AFSreconstruction <- function(
-    points
-){
+AFSreconstruction <- function(points, jetSmoothing = NULL){
   if(!is.matrix(points) || !is.numeric(points)){
     stop("The `points` argument must be a numeric matrix.", call. = TRUE)
   }
@@ -32,6 +35,11 @@ AFSreconstruction <- function(
     stop("Points with missing values are not allowed.", call. = TRUE)
   }
   storage.mode(points) <- "double"
-  xptr <- AFSreconstruction_cpp(t(points))
+  if(!is.null(jetSmoothing)) {
+    stopifnot(isPositiveInteger(jetSmoothing), jetSmoothing >= 2L)
+  } else {
+    jetSmoothing <- 0L
+  }
+  xptr <- AFSreconstruction_cpp(t(points), as.integer(jetSmoothing))
   cgalMesh$new(clean = xptr)
 }

@@ -3,12 +3,14 @@
 #endif
 
 // [[Rcpp::export]]
-Rcpp::XPtr<EMesh3> AFSreconstruction_cpp(const Rcpp::NumericMatrix pts) {
-  const size_t npoints = pts.ncol();
-  std::vector<Point3> points(npoints);
-  for(size_t i = 0; i < npoints; i++) {
-    const Rcpp::NumericVector pt_i = pts(Rcpp::_, i); 
-    points[i] = Point3(pt_i(0), pt_i(1), pt_i(2));
+Rcpp::XPtr<EMesh3> AFSreconstruction_cpp(
+  const Rcpp::NumericMatrix pts, const unsigned nneighs
+) {
+
+  std::vector<Point3> points = matrix_to_points3<Point3>(pts);
+
+  if(nneighs >= 2) {
+    CGAL::jet_smooth_point_set<CGAL::Sequential_tag>(points, nneighs);
   }
   
   AFS_triangulation3 dt(points.begin(), points.end());
@@ -17,10 +19,12 @@ Rcpp::XPtr<EMesh3> AFSreconstruction_cpp(const Rcpp::NumericMatrix pts) {
   const AFS_Tds2& tds = reconstruction.triangulation_data_structure_2();
   
   std::vector<EPoint3> vertices;
-  vertices.reserve(npoints);
+  vertices.reserve(pts.ncol());
   int counter = 0;
-  for(AFS_Tds2::Face_iterator fit = tds.faces_begin(); fit != tds.faces_end();
-  ++fit) {
+  for(
+    AFS_Tds2::Face_iterator fit = tds.faces_begin(); 
+    fit != tds.faces_end();++fit
+  ) {
     if(reconstruction.has_on_surface(fit)) {
       counter++;
       AFS_triangulation3::Facet f = fit->facet();
