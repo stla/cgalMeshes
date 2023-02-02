@@ -5,6 +5,10 @@ AFSreconstruction_cpp <- function(pts, nneighs) {
     .Call(`_cgalMeshes_AFSreconstruction_cpp`, pts, nneighs)
 }
 
+SSSreconstruction_cpp <- function(pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle) {
+    .Call(`_cgalMeshes_SSSreconstruction_cpp`, pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle)
+}
+
 cxhull <- function(pts) {
     .Call(`_cgalMeshes_cxhull`, pts)
 }

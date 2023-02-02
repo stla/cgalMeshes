@@ -24,6 +24,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// SSSreconstruction_cpp
+Rcpp::XPtr<EMesh3> SSSreconstruction_cpp(const Rcpp::NumericMatrix pts, const size_t scaleIterations, const unsigned nneighs, const unsigned nsamples, const bool separateShells, const bool forceManifold, const double borderAngle);
+RcppExport SEXP _cgalMeshes_SSSreconstruction_cpp(SEXP ptsSEXP, SEXP scaleIterationsSEXP, SEXP nneighsSEXP, SEXP nsamplesSEXP, SEXP separateShellsSEXP, SEXP forceManifoldSEXP, SEXP borderAngleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type pts(ptsSEXP);
+    Rcpp::traits::input_parameter< const size_t >::type scaleIterations(scaleIterationsSEXP);
+    Rcpp::traits::input_parameter< const unsigned >::type nneighs(nneighsSEXP);
+    Rcpp::traits::input_parameter< const unsigned >::type nsamples(nsamplesSEXP);
+    Rcpp::traits::input_parameter< const bool >::type separateShells(separateShellsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type forceManifold(forceManifoldSEXP);
+    Rcpp::traits::input_parameter< const double >::type borderAngle(borderAngleSEXP);
+    rcpp_result_gen = Rcpp::wrap(SSSreconstruction_cpp(pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cxhull
 Rcpp::XPtr<EMesh3> cxhull(Rcpp::NumericMatrix pts);
 RcppExport SEXP _cgalMeshes_cxhull(SEXP ptsSEXP) {
@@ -167,6 +184,7 @@ RcppExport SEXP _rcpp_module_boot_class_CGALmesh();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 2},
+    {"_cgalMeshes_SSSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_SSSreconstruction_cpp, 7},
     {"_cgalMeshes_cxhull", (DL_FUNC) &_cgalMeshes_cxhull, 1},
     {"_cgalMeshes_cxhullsIntersection", (DL_FUNC) &_cgalMeshes_cxhullsIntersection, 2},
     {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},

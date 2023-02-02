@@ -2,6 +2,7 @@
 
 export(AFSreconstruction)
 export(HopfTorusMesh)
+export(SSSreconstruction)
 export(algebraicMesh)
 export(algebraicMeshesIntersection)
 export(algebraicMeshesUnion)

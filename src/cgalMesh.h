@@ -51,6 +51,7 @@
 #include <CGAL/Polygon_mesh_processing/detect_features.h>
 #include <CGAL/Advancing_front_surface_reconstruction.h>
 #include <CGAL/jet_smooth_point_set.h>
+#include <CGAL/Scale_space_surface_reconstruction_3.h>
 #include <CGAL/Triangle_3.h>
 #include <CGAL/Tetrahedron_3.h>
 #include <CGAL/Plane_3.h>
@@ -114,6 +115,12 @@ typedef boost::graph_traits<EMesh3>::edge_descriptor                      edge_d
 typedef CGAL::Advancing_front_surface_reconstruction<>     AFS_reconstruction;
 typedef AFS_reconstruction::Triangulation_3                AFS_triangulation3;
 typedef AFS_reconstruction::Triangulation_data_structure_2 AFS_Tds2;
+
+typedef CGAL::Scale_space_surface_reconstruction_3<K>                SSS_reconstruction;
+typedef CGAL::Scale_space_reconstruction_3::Weighted_PCA_smoother<K> SSS_smoother;
+typedef CGAL::Scale_space_reconstruction_3::Alpha_shape_mesher<K>    SSS_mesher;
+typedef SSS_reconstruction::Facet_const_iterator                      SSS_facet_iterator;
+typedef SSS_reconstruction::Point_const_iterator                      SSS_point_iterator;
 
 typedef CGAL::Face_filtered_graph<EMesh3>                      Filtered_graph;
 typedef boost::graph_traits<Filtered_graph>::vertex_descriptor ffg_vertex_descriptor;
