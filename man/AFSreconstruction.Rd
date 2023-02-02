@@ -9,11 +9,11 @@ AFSreconstruction(points, jetSmoothing = NULL)
 \arguments{
 \item{points}{numeric matrix which stores the points, one point per row}
 
-\item{jetSmoothing}{if not \code{NULL}, must be an integer, and then the 
-points cloud is smoothed before the reconstruction, using this integer as 
-the number of neighbors for the smoothing; note that this smoothing 
-relocates the points and then should not be used if the points have been 
-sampled without noise on the surface}
+\item{jetSmoothing}{if not \code{NULL}, must be an integer higher than two, 
+and then the points cloud is smoothed before the reconstruction, using 
+this integer as the number of neighbors for the smoothing; note that this 
+smoothing preprocessing relocates the points and then should not be used 
+if the points have been sampled without noise on the surface}
 }
 \value{
 A \code{cgalMesh} object.
@@ -29,6 +29,27 @@ library(cgalMeshes)
 data(bunny, package = "onion")
 mesh <- AFSreconstruction(bunny)
 rglMesh <- mesh$getMesh()
-library(rgl)
-shade3d(rglMesh, color = "firebrick")
+\donttest{library(rgl)
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+shade3d(rglMesh, color = "firebrick")}
+
+# jet smoothing example ####
+library(cgalMeshes)
+# no smoothing
+mesh1 <- AFSreconstruction(SolidMobiusStrip)
+mesh1$computeNormals()
+rglMesh1 <- mesh1$getMesh()
+# jet smoothing
+mesh2 <- AFSreconstruction(SolidMobiusStrip, jetSmoothing = 30)
+mesh2$computeNormals()
+rglMesh2 <- mesh2$getMesh()
+# plot
+\donttest{library(rgl)
+open3d(windowRect = 50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+view3d(20, -40, zoom = 0.85)
+shade3d(rglMesh1, color = "gold")
+next3d()
+view3d(20, -40, zoom = 0.85)
+shade3d(rglMesh2, color = "gold")}
 }
