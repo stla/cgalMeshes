@@ -22,6 +22,10 @@
 
 - New function `convexHullsIntersection`, to get a mesh of the intersection of some convex hulls.
 
+- The function `AFSreconstruction` gains a new argument `jetSmoothing` allowing to smooth the points cloud before the surface reconstruction.
+
+- New function `SSSreconstruction` to perform scale-space surface reconstruction.
+
 - New methods for `cgalMesh` objects:
   * `clipToPlane`, to clip the mesh to a plane;
   * `clipToIsoCuboid`, to clip the mesh to an iso-oriented cuboid;
