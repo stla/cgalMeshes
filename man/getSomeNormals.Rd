@@ -7,9 +7,9 @@
 getSomeNormals(neighbors, method = "pca")
 }
 \arguments{
-\item{method}{one of \code{"pca"} or \code{"jet"}}
+\item{neighbors}{integer, number of neighbors used to compute the normals}
 
-\item{nbNeighbors}{integer, number of neighbors used to compute the normals}
+\item{method}{one of \code{"pca"} or \code{"jet"}}
 }
 \value{
 A function which takes just one argument: a numeric matrix with

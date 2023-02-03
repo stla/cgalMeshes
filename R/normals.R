@@ -2,7 +2,7 @@
 #' @description Returns a function which computes some normals for a 3D points
 #'   cloud.
 #'
-#' @param nbNeighbors integer, number of neighbors used to compute the normals
+#' @param neighbors integer, number of neighbors used to compute the normals
 #' @param method one of \code{"pca"} or \code{"jet"}
 #'
 #' @return A function which takes just one argument: a numeric matrix with
