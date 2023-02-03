@@ -302,6 +302,12 @@ Rcpp::XPtr<EMesh3> AlgebraicMeshesUnion(
 }
 
 
+
+
+// #include <CGAL/Gray_level_image_3.h>
+// typedef CGAL::Gray_level_image_3<FT, Point_3>          Gray_level_image;
+// typedef CGAL::Implicit_surface_3<GT, Gray_level_image> Surface_gray;
+
 // // [[Rcpp::export]]
 // Rcpp::XPtr<EMesh3> VoxelToMesh(
 //   std::string filename, double isovalue, 
