@@ -1625,13 +1625,15 @@ public:
     );
     {
       const size_t nbv = constrained_vertices.size();
-      std::string tail;
-      if(nbv > 1) {
-        tail = std::to_string(nbv) + " border vertices.\n";
-      } else {
-        tail = " one border vertex.\n";
+      if(nbv > 0) {
+        std::string tail;
+        if(nbv > 1) {
+          tail = std::to_string(nbv) + " border vertices.\n";
+        } else {
+          tail = " one border vertex.\n";
+        }
+        Message("Constraining: " + tail);
       }
-      Message("Constraining: " + tail);
     }
     {
       std::string tail;

@@ -5,7 +5,7 @@
 #include "MODULE.h"
 
 RCPP_MODULE(class_CGALmesh) {
-  using namespace Rcpp; 
+  using namespace Rcpp;
   class_<CGALmesh>("CGALmesh")
     .constructor<
       const NumericMatrix, const List, bool,
