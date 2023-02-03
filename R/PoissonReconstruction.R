@@ -25,18 +25,15 @@
 #' @export
 #' 
 #' @examples 
-#' library(SurfaceReconstruction)
+#' library(cgalMeshes)
 #' library(rgl)
-#' 
-#' # Solid Möbius strip 
-#' Psr_mesh <- PoissonReconstruction(SolidMobiusStrip)
-#' shade3d(Psr_mesh, color= "yellow")
-#' wire3d(Psr_mesh, color = "black")
-#' 
-#' # Hopf torus
-#' Psr_mesh <- PoissonReconstruction(HopfTorus, spacing = 0.2)
-#' shade3d(Psr_mesh, color= "darkorange")
-#' wire3d(Psr_mesh, color = "black")
+#' mesh <- PoissonReconstruction(SolidMobiusStrip)
+#' mesh$computeNormals()
+#' rmesh <- mesh$getMesh()
+#' open3d(windowRect = 50 + c(0, 0, 512, 512))
+#' view3d(20, -40, zoom = 0.85)
+#' shade3d(rmesh, color = "darkorange")
+#' wire3d(rmesh)
 PoissonReconstruction <- function(
     points, normals = "jet", neighbors = 12, spacing = NULL,
     sm_angle = 20, sm_radius = 30, sm_distance = 0.375

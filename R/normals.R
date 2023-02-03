@@ -15,16 +15,6 @@
 #'   another purpose, be careful because the function it returns does not
 #'   check the matrix it takes as argument.
 #' @export
-#'
-#' @examples 
-#' library(cgalMeshes)
-#' library(rgl)
-#' psr <- PoissonReconstruction( XXXXXXXXXXXXXXXXXXXXXXXXXXXX,
-#'   SolidMobiusStrip, normals = "jet", neighbors = 6
-#' )
-#' open3d()
-#' shade3d(psr, color = "cyan")
-#' wire3d(psr)
 getSomeNormals <- function(neighbors, method = "pca") {
   method <- match.arg(method, c("pca", "jet"))
   stopifnot(isPositiveInteger(neighbors))
