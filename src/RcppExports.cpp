@@ -24,6 +24,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// MinkowskiSum_cpp
+Rcpp::XPtr<EMesh3> MinkowskiSum_cpp(Rcpp::XPtr<EMesh3> mesh1XPtr, Rcpp::XPtr<EMesh3> mesh2XPtr);
+RcppExport SEXP _cgalMeshes_MinkowskiSum_cpp(SEXP mesh1XPtrSEXP, SEXP mesh2XPtrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<EMesh3> >::type mesh1XPtr(mesh1XPtrSEXP);
+    Rcpp::traits::input_parameter< Rcpp::XPtr<EMesh3> >::type mesh2XPtr(mesh2XPtrSEXP);
+    rcpp_result_gen = Rcpp::wrap(MinkowskiSum_cpp(mesh1XPtr, mesh2XPtr));
+    return rcpp_result_gen;
+END_RCPP
+}
 // jet_normals
 Rcpp::NumericMatrix jet_normals(const Rcpp::NumericMatrix pts, const unsigned nb_neighbors);
 RcppExport SEXP _cgalMeshes_jet_normals(SEXP ptsSEXP, SEXP nb_neighborsSEXP) {
@@ -224,6 +236,7 @@ RcppExport SEXP _rcpp_module_boot_class_CGALmesh();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 2},
+    {"_cgalMeshes_MinkowskiSum_cpp", (DL_FUNC) &_cgalMeshes_MinkowskiSum_cpp, 2},
     {"_cgalMeshes_jet_normals", (DL_FUNC) &_cgalMeshes_jet_normals, 2},
     {"_cgalMeshes_pca_normals", (DL_FUNC) &_cgalMeshes_pca_normals, 2},
     {"_cgalMeshes_Poisson_reconstruction_cpp", (DL_FUNC) &_cgalMeshes_Poisson_reconstruction_cpp, 6},

@@ -5,6 +5,10 @@ AFSreconstruction_cpp <- function(pts, nneighs) {
     .Call(`_cgalMeshes_AFSreconstruction_cpp`, pts, nneighs)
 }
 
+MinkowskiSum_cpp <- function(mesh1XPtr, mesh2XPtr) {
+    .Call(`_cgalMeshes_MinkowskiSum_cpp`, mesh1XPtr, mesh2XPtr)
+}
+
 jet_normals <- function(pts, nb_neighbors) {
     .Call(`_cgalMeshes_jet_normals`, pts, nb_neighbors)
 }
