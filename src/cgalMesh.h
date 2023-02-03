@@ -74,6 +74,8 @@
 #include <CGAL/Convex_hull_3/dual/halfspace_intersection_3.h>
 #include <CGAL/Side_of_triangle_mesh.h>
 
+#include <CGAL/Polygon_mesh_processing/smooth_shape.h>
+
 // -------------------------------------------------------------------------- //
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef K::Point_3                                          Point3;
