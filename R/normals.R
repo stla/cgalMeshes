@@ -33,9 +33,9 @@ getSomeNormals <- function(neighbors, method = "pca") {
     stop("There must be at least two neighbors.", call. = TRUE)
   }
   if(method == "pca") {
-    out <- function(points) pca_normals(t(points), neighbors)
-  }else{
-    out <- function(points) jet_normals(t(points), neighbors)
+    out <- function(points) t(pca_normals(t(points), neighbors))
+  } else {
+    out <- function(points) t(jet_normals(t(points), neighbors))
   }
   out
 }

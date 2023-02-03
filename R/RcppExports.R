@@ -5,6 +5,18 @@ AFSreconstruction_cpp <- function(pts, nneighs) {
     .Call(`_cgalMeshes_AFSreconstruction_cpp`, pts, nneighs)
 }
 
+jet_normals <- function(pts, nb_neighbors) {
+    .Call(`_cgalMeshes_jet_normals`, pts, nb_neighbors)
+}
+
+pca_normals <- function(pts, nb_neighbors) {
+    .Call(`_cgalMeshes_pca_normals`, pts, nb_neighbors)
+}
+
+Poisson_reconstruction_cpp <- function(pts, normals, spacing, sm_angle, sm_radius, sm_distance) {
+    .Call(`_cgalMeshes_Poisson_reconstruction_cpp`, pts, normals, spacing, sm_angle, sm_radius, sm_distance)
+}
+
 SSSreconstruction_cpp <- function(pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle) {
     .Call(`_cgalMeshes_SSSreconstruction_cpp`, pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle)
 }

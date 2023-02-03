@@ -147,7 +147,7 @@ Rcpp::List Poisson_reconstruction_cpp(
     int i1 = fit->halfedge()->vertex()->id();
     int i2 = fit->halfedge()->next()->vertex()->id();
     int i3 = fit->halfedge()->opposite()->vertex()->id();
-    mesh.add_face(i1, i2, i3); 
+    mesh.add_face(vxdescr(i1), vxdescr(i2), vxdescr(i3)); 
   }
   
   EMesh3 emesh;

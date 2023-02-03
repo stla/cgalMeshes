@@ -83,7 +83,7 @@ PoissonReconstruction <- function(
   stopifnot(isPositiveNumber(sm_radius))
   stopifnot(isPositiveNumber(sm_distance))
   Psr <- Poisson_reconstruction_cpp(
-    t(points), normals, spacing, sm_angle, sm_radius, sm_distance
+    t(points), t(normals), spacing, sm_angle, sm_radius, sm_distance
   )
   out <- cgalMesh$new(clean = Psr[["xptr"]])
   if(spacing == -1){
