@@ -61,18 +61,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // Poisson_reconstruction_cpp
-Rcpp::List Poisson_reconstruction_cpp(const Rcpp::NumericMatrix pts, const Rcpp::NumericMatrix normals, double spacing, const double sm_angle, const double sm_radius, const double sm_distance);
-RcppExport SEXP _cgalMeshes_Poisson_reconstruction_cpp(SEXP ptsSEXP, SEXP normalsSEXP, SEXP spacingSEXP, SEXP sm_angleSEXP, SEXP sm_radiusSEXP, SEXP sm_distanceSEXP) {
+Rcpp::List Poisson_reconstruction_cpp(const Rcpp::NumericMatrix pts, const Rcpp::NumericMatrix normals, double spacing, const unsigned int neighbors, const double sm_angle, const double sm_radius, const double sm_distance);
+RcppExport SEXP _cgalMeshes_Poisson_reconstruction_cpp(SEXP ptsSEXP, SEXP normalsSEXP, SEXP spacingSEXP, SEXP neighborsSEXP, SEXP sm_angleSEXP, SEXP sm_radiusSEXP, SEXP sm_distanceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type pts(ptsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type normals(normalsSEXP);
     Rcpp::traits::input_parameter< double >::type spacing(spacingSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type neighbors(neighborsSEXP);
     Rcpp::traits::input_parameter< const double >::type sm_angle(sm_angleSEXP);
     Rcpp::traits::input_parameter< const double >::type sm_radius(sm_radiusSEXP);
     Rcpp::traits::input_parameter< const double >::type sm_distance(sm_distanceSEXP);
-    rcpp_result_gen = Rcpp::wrap(Poisson_reconstruction_cpp(pts, normals, spacing, sm_angle, sm_radius, sm_distance));
+    rcpp_result_gen = Rcpp::wrap(Poisson_reconstruction_cpp(pts, normals, spacing, neighbors, sm_angle, sm_radius, sm_distance));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -239,7 +240,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_MinkowskiSum_cpp", (DL_FUNC) &_cgalMeshes_MinkowskiSum_cpp, 2},
     {"_cgalMeshes_jet_normals", (DL_FUNC) &_cgalMeshes_jet_normals, 2},
     {"_cgalMeshes_pca_normals", (DL_FUNC) &_cgalMeshes_pca_normals, 2},
-    {"_cgalMeshes_Poisson_reconstruction_cpp", (DL_FUNC) &_cgalMeshes_Poisson_reconstruction_cpp, 6},
+    {"_cgalMeshes_Poisson_reconstruction_cpp", (DL_FUNC) &_cgalMeshes_Poisson_reconstruction_cpp, 7},
     {"_cgalMeshes_SSSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_SSSreconstruction_cpp, 7},
     {"_cgalMeshes_cxhull", (DL_FUNC) &_cgalMeshes_cxhull, 1},
     {"_cgalMeshes_cxhullsIntersection", (DL_FUNC) &_cgalMeshes_cxhullsIntersection, 2},

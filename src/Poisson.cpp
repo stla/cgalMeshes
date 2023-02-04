@@ -13,6 +13,7 @@ typedef CGAL::Polyhedron_3<K, CGAL::Polyhedron_items_with_id_3> Polyhedron;
 typedef CGAL::Parallel_if_available_tag Concurrency_tag;
 
 
+// -------------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::NumericMatrix jet_normals(
   const Rcpp::NumericMatrix pts, const unsigned nb_neighbors
@@ -52,6 +53,8 @@ Rcpp::NumericMatrix jet_normals(
   return Normals;
 }
 
+
+// -------------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::NumericMatrix pca_normals(
   const Rcpp::NumericMatrix pts, const unsigned nb_neighbors
@@ -92,10 +95,12 @@ Rcpp::NumericMatrix pca_normals(
 }
 
 
+
+// -------------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List Poisson_reconstruction_cpp(
   const Rcpp::NumericMatrix pts, const Rcpp::NumericMatrix normals,
-  double spacing, 
+  double spacing, const unsigned int neighbors,
   const double sm_angle, const double sm_radius, const double sm_distance
 ) {
   const int npoints = pts.ncol();
@@ -114,7 +119,7 @@ Rcpp::List Poisson_reconstruction_cpp(
   
   if(spacing == -1.0) {
     spacing = CGAL::compute_average_spacing<CGAL::Sequential_tag>(
-      points, 6, // ??
+      points, neighbors, 
       CGAL::parameters::point_map(CGAL::First_of_pair_property_map<P3wn>())
     );
   }

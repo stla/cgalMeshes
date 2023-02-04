@@ -6,9 +6,8 @@
 \usage{
 PoissonReconstruction(
   points,
-  normals = "jet",
-  neighbors = 12,
-  spacing = NULL,
+  normals = "jet(12)",
+  spacing = "ave(12)",
   sm_angle = 20,
   sm_radius = 30,
   sm_distance = 0.375
@@ -19,17 +18,18 @@ PoissonReconstruction(
 
 \item{normals}{either a numeric matrix which stores the normals, one normal 
 per row (i.e. it must have the same size as the \code{points} matrix), or 
-one character string, either \code{"jet"} or \code{"pca"}; in this case, 
+a character string, having form either \code{"jet(k)"} or 
+\code{"pca(k)"} where \code{k} is an integer higher than 2; in this case, 
 the normals are computed with the help of the \code{\link{getSomeNormals}} 
-function, and you also have to specify the \code{neighbors} argument, 
+function, and \code{k} is the value the \code{neighbors} argument, 
 which is passed to \code{\link{getSomeNormals}}}
 
-\item{neighbors}{argument passed to \code{\link{getSomeNormals}}, see above}
-
 \item{spacing}{size parameter; smaller values increase the precision of the
-output mesh at the cost of higher computation time; set to \code{NULL}
-(the default) for a reasonable automatic value: an average spacing whose
-value will be displayed in a message and that you can also get in the
+output mesh at the cost of higher computation time; you can set it to 
+a positive number or to a character string of the form \code{"ave(k)"}
+where \code{k} is an integer higher than 2; in this case, an automatic 
+value is taken: an average spacing using \code{k} nearest neighbors; this
+value will be displayed in a message and you will also get in the
 \code{"spacing"} attribute of the output}
 
 \item{sm_angle}{bound for the minimum facet angle in degrees}
@@ -39,7 +39,7 @@ value will be displayed in a message and that you can also get in the
 \item{sm_distance}{relative bound for the center-center distances}
 }
 \value{
-A \code{cgalMesh} object.
+A \code{cgalMesh} object. The mesh is triangle.
 }
 \description{
 Poisson reconstruction of a surface, from a cloud of 3D points.

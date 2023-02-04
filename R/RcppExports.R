@@ -17,8 +17,8 @@ pca_normals <- function(pts, nb_neighbors) {
     .Call(`_cgalMeshes_pca_normals`, pts, nb_neighbors)
 }
 
-Poisson_reconstruction_cpp <- function(pts, normals, spacing, sm_angle, sm_radius, sm_distance) {
-    .Call(`_cgalMeshes_Poisson_reconstruction_cpp`, pts, normals, spacing, sm_angle, sm_radius, sm_distance)
+Poisson_reconstruction_cpp <- function(pts, normals, spacing, neighbors, sm_angle, sm_radius, sm_distance) {
+    .Call(`_cgalMeshes_Poisson_reconstruction_cpp`, pts, normals, spacing, neighbors, sm_angle, sm_radius, sm_distance)
 }
 
 SSSreconstruction_cpp <- function(pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle) {

@@ -4,21 +4,23 @@
 #' @param points numeric matrix which stores the points, one point per row
 #' @param normals either a numeric matrix which stores the normals, one normal 
 #'   per row (i.e. it must have the same size as the \code{points} matrix), or 
-#'   one character string, either \code{"jet"} or \code{"pca"}; in this case, 
+#'   a character string, having form either \code{"jet(k)"} or 
+#'   \code{"pca(k)"} where \code{k} is an integer higher than 2; in this case, 
 #'   the normals are computed with the help of the \code{\link{getSomeNormals}} 
-#'   function, and you also have to specify the \code{neighbors} argument, 
+#'   function, and \code{k} is the value the \code{neighbors} argument, 
 #'   which is passed to \code{\link{getSomeNormals}}
-#' @param neighbors argument passed to \code{\link{getSomeNormals}}, see above
 #' @param spacing size parameter; smaller values increase the precision of the
-#'   output mesh at the cost of higher computation time; set to \code{NULL}
-#'   (the default) for a reasonable automatic value: an average spacing whose
-#'   value will be displayed in a message and that you can also get in the
+#'   output mesh at the cost of higher computation time; you can set it to 
+#'   a positive number or to a character string of the form \code{"ave(k)"}
+#'   where \code{k} is an integer higher than 2; in this case, an automatic 
+#'   value is taken: an average spacing using \code{k} nearest neighbors; this
+#'   value will be displayed in a message and you will also get in the
 #'   \code{"spacing"} attribute of the output
 #' @param sm_angle bound for the minimum facet angle in degrees
 #' @param sm_radius relative bound for the radius of the surface Delaunay balls
 #' @param sm_distance relative bound for the center-center distances
 #'
-#' @return A \code{cgalMesh} object.
+#' @return A \code{cgalMesh} object. The mesh is triangle.
 #'
 #' @details See \href{https://doc.cgal.org/latest/Poisson_surface_reconstruction_3/index.html}{Poisson Surface Reconstruction}.
 #'
@@ -35,7 +37,7 @@
 #' shade3d(rmesh, color = "darkorange")
 #' wire3d(rmesh)
 PoissonReconstruction <- function(
-    points, normals = "jet", neighbors = 12, spacing = NULL,
+    points, normals = "jet(12)", spacing = "ave(12)",
     sm_angle = 20, sm_radius = 30, sm_distance = 0.375
 ){
   if(!is.matrix(points)){
@@ -52,10 +54,16 @@ PoissonReconstruction <- function(
     stop("Insufficient number of points.", call. = TRUE)
   }
   if(!is.matrix(normals)) {
-    if(!isString(normals) && !is.element(normals, c("jet", "pca"))) {
+    regex <- "^(jet|pca)\\((\\d+)\\)$"
+    if(!isString(normals) || !grepl(regex, normals)) {
       stop("Invalid `normals` argument.")
     }
-    normals <- getSomeNormals(neighbors, method = normals)(points)
+    method    <- sub(regex, "\\1", normals)
+    neighbors <- as.integer(sub(regex, "\\2", normals))
+    if(neighbors < 2L) {
+      stop("Invalid `normals` argument.")
+    }
+    normals   <- getSomeNormals(neighbors, method = method)(points)
   } else {
     if(ncol(normals) != 3L){
       stop("The `normals` matrix must have three columns.", call. = TRUE)
@@ -71,7 +79,16 @@ PoissonReconstruction <- function(
       )
     }
   }
-  if(is.null(spacing)) {
+  neighbors <- 0L
+  if(isString(spacing)) {
+    regex <- "^ave\\((\\d+)\\)$"
+    if(!grepl(regex, spacing)) {
+      stop("Invalid `spacing` argument.")
+    }
+    neighbors <- as.integer(sub(regex, "\\1", spacing))
+    if(neighbors < 2L) {
+      stop("Invalid `spacing` argument.")
+    }
     spacing <- -1
   } else {
     stopifnot(isPositiveNumber(spacing))
@@ -80,7 +97,7 @@ PoissonReconstruction <- function(
   stopifnot(isPositiveNumber(sm_radius))
   stopifnot(isPositiveNumber(sm_distance))
   Psr <- Poisson_reconstruction_cpp(
-    t(points), t(normals), spacing, sm_angle, sm_radius, sm_distance
+    t(points), t(normals), spacing, neighbors, sm_angle, sm_radius, sm_distance
   )
   out <- cgalMesh$new(clean = Psr[["xptr"]])
   if(spacing == -1){
