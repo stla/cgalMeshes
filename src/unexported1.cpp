@@ -2,11 +2,17 @@
 #include "cgalMesh.h"
 #endif
 
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 void Message(std::string msg) {
   SEXP rmsg = Rcpp::wrap(msg);
   Rcpp::message(rmsg);
 }
 
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 template <typename PointT>
 std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix M) {
   const size_t npoints = M.ncol();
@@ -26,6 +32,9 @@ template std::vector<Point3> matrix_to_points3<Point3>(
   const Rcpp::NumericMatrix
 );
 
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 std::vector<std::vector<int>> list_to_faces(const Rcpp::List L) {
   const size_t nfaces = L.size();
   std::vector<std::vector<int>> faces;

@@ -3,6 +3,8 @@
 #endif
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 template <typename MeshT, typename PointT>
 MeshT csoup2mesh(std::vector<PointT> points,
                  std::vector<std::vector<int>> faces,
@@ -28,6 +30,8 @@ template EMesh3 csoup2mesh<EMesh3, EPoint3>(
 );
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 EMesh3 vf2mesh(const Rcpp::NumericMatrix vertices,
                const Rcpp::List faces) {
   EMesh3 mesh;
@@ -55,6 +59,8 @@ EMesh3 vf2mesh(const Rcpp::NumericMatrix vertices,
 }
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 Rcpp::NumericVector defaultNormal() {
   Rcpp::NumericVector def = 
     {
@@ -66,6 +72,8 @@ Rcpp::NumericVector defaultNormal() {
 }
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
                 const Rcpp::List faces,
                 bool soup,
@@ -128,6 +136,8 @@ EMesh3 makeMesh(const Rcpp::NumericMatrix vertices,
 }
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 EMesh3 cloneMesh(
   EMesh3& mesh, std::vector<std::string> props
 ) {
@@ -210,6 +220,8 @@ EMesh3 cloneMesh(
 }
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 void removeProperties(
   EMesh3& mesh, std::vector<std::string> props
 ) {
@@ -250,6 +262,8 @@ void removeProperties(
 }
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 template <typename Keytype, typename Valuetype>
 void removeProperty(EMesh3& mesh, std::string propname) {
   std::pair<EMesh3::Property_map<Keytype, Valuetype>, bool> pmap_ = 
@@ -270,6 +284,8 @@ template void removeProperty<vertex_descriptor, EVector3>(
 );
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 template <typename Keytype, typename Valuetype>
 std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
   EMesh3& mesh, std::string propname
@@ -313,6 +329,8 @@ template std::pair<std::map<vertex_descriptor, EVector3>, bool>
   copy_prop<vertex_descriptor, EVector3>(EMesh3&, std::string);
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 template <
   typename SourceDescriptor, typename TargetDescriptor, typename Valuetype
 >
@@ -354,6 +372,8 @@ template void copy_property<
 >(EMesh3&, EMesh3&, MapBetweenFaceDescriptors, std::string);
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 void triangulateMesh(EMesh3& mesh) {
   MaybeFcolorMap fcolormap_ = 
     copy_prop<face_descriptor, std::string>(mesh, "f:color");
