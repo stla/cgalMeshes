@@ -41,6 +41,9 @@
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polygon_mesh_processing/IO/polygon_mesh_io.h>
 #include <CGAL/Surface_mesh/IO/PLY.h>
+#include <CGAL/IO/PLY.h>
+#include <CGAL/IO/OFF.h>
+#include <CGAL/IO/polygon_soup_io.h>
 #include <locale>  // tolower
 #include <CGAL/IO/io.h>
 #include <CGAL/IO/Color.h>
@@ -151,9 +154,11 @@ namespace PMP = CGAL::Polygon_mesh_processing;
 
 // -------------------------------------------------------------------------- //
 template <typename MeshT, typename PointT>
-MeshT csoup2mesh(std::vector<PointT>, std::vector<std::vector<int>>, const bool);
+MeshT csoup2mesh(
+  std::vector<PointT>, std::vector<std::vector<size_t>>, const bool
+);
 
-std::vector<std::vector<int>> list_to_faces(const Rcpp::List);
+std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List);
 
 template <typename PointT>
 std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix);
@@ -170,7 +175,7 @@ Rcpp::List getFaces(MeshT&);
 
 void Message(std::string);
 
-EMesh3 readMeshFile(const std::string, bool);
+EMesh3 readMeshFile(const std::string, bool, bool);
 void writeMeshFile(
   const std::string, const int, const bool, std::string, EMesh3&
 );

@@ -117,7 +117,8 @@ cgalMesh <- R6Class(
             r <- readBin(mesh, "raw", 20L)
             binary <- grepl("binary", rawToChar(r))
           }
-          private[[".CGALmesh"]] <- CGALmesh$new(path.expand(mesh), binary)
+          private[[".CGALmesh"]] <- 
+            CGALmesh$new(path.expand(mesh), binary, clean)
           return(invisible(self))
         } else {
           stop("Invalid `mesh` argument.")
@@ -1070,8 +1071,8 @@ cgalMesh <- R6Class(
     #' @param ... arguments passed to \code{\link[rgl:mesh3d]{mesh3d}} (if 
     #'   a \strong{rgl} mesh is returned)
     #' @return A \strong{rgl} mesh or a list with two or three fields: 
-    #'   \code{vertices}, \code{faces}, and \code{normals} if XXXXXXXXXXXXXXXXXXXXXXXXX the argument 
-    #'   \code{normals} is set to \code{TRUE}
+    #'   \code{vertices}, \code{faces}, and \code{normals} if the normals of 
+    #'   the mesh have been given or computed.
     #' @examples 
     #' library(rgl)
     #' mesh <- cgalMesh$new(cube3d())$triangulate()

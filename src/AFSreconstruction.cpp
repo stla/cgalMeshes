@@ -20,7 +20,7 @@ Rcpp::XPtr<EMesh3> AFSreconstruction_cpp(
   
   std::vector<EPoint3> vertices;
   vertices.reserve(pts.ncol());
-  int counter = 0;
+  size_t counter = 0;
   for(
     AFS_Tds2::Face_iterator fit = tds.faces_begin(); 
     fit != tds.faces_end();++fit
@@ -44,11 +44,11 @@ Rcpp::XPtr<EMesh3> AFSreconstruction_cpp(
       }
     }
   }
-  std::vector<std::vector<int>> triangles;
+  std::vector<std::vector<size_t>> triangles;
   triangles.reserve(counter);
-  for(int i = 0; i < counter; i++) {
-    const int k = 3*i;
-    const std::vector<int> triangle = {k, k+1, k+2};
+  for(size_t i = 0; i < counter; i++) {
+    const size_t k = 3*i;
+    const std::vector<size_t> triangle = {k, k+1, k+2};
     triangles.emplace_back(triangle);
   }
   
