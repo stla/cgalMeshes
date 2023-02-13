@@ -42,10 +42,9 @@ cgalMesh <- R6Class(
     #'   vectors of integers (each one gives the vertex indices of a face)
     #' @param normals if \code{mesh} is missing, must be \code{NULL} or a 
     #'   numeric matrix with three columns and as many rows as vertices
-    #' @param clean Boolean, no effect if the mesh is given by a file, 
-    #'   otherwise it indicates whether to clean the mesh (merge duplicated 
-    #'   vertices and duplicated faces, remove isolated vertices); set to 
-    #'   \code{FALSE} if you know your mesh is already clean
+    #' @param clean Boolean value indicating whether to clean the mesh (merge 
+    #'   duplicated vertices and duplicated faces, remove isolated vertices); 
+    #'   set to \code{FALSE} if you know your mesh is already clean
     #' @return A \code{cgalMesh} object.
     #' @examples 
     #' library(cgalMeshes)

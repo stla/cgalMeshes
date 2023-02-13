@@ -984,10 +984,9 @@ vectors of integers (each one gives the vertex indices of a face)}
 \item{\code{normals}}{if \code{mesh} is missing, must be \code{NULL} or a 
 numeric matrix with three columns and as many rows as vertices}
 
-\item{\code{clean}}{Boolean, no effect if the mesh is given by a file, 
-otherwise it indicates whether to clean the mesh (merge duplicated 
-vertices and duplicated faces, remove isolated vertices); set to 
-\code{FALSE} if you know your mesh is already clean}
+\item{\code{clean}}{Boolean value indicating whether to clean the mesh (merge 
+duplicated vertices and duplicated faces, remove isolated vertices); 
+set to \code{FALSE} if you know your mesh is already clean}
 }
 \if{html}{\out{</div>}}
 }
@@ -2325,8 +2324,8 @@ a \strong{rgl} mesh is returned)}
 }
 \subsection{Returns}{
 A \strong{rgl} mesh or a list with two or three fields: 
-  \code{vertices}, \code{faces}, and \code{normals} if XXXXXXXXXXXXXXXXXXXXXXXXX the argument 
-  \code{normals} is set to \code{TRUE}
+  \code{vertices}, \code{faces}, and \code{normals} if the normals of 
+  the mesh have been given or computed.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
