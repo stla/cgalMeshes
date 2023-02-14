@@ -1609,6 +1609,10 @@ public:
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   void orientToBoundVolume() {
+    if(mesh.is_empty()) {
+      Message("The mesh is empty.");
+      return ;
+    }
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
