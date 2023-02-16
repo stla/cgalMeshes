@@ -947,6 +947,9 @@ public:
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
+    if(!CGAL::is_closed(mesh)) {
+      Rcpp::stop("The mesh is not closed.");
+    }
     return PMP::does_bound_a_volume(mesh);
   }
 
