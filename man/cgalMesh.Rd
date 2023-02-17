@@ -1210,7 +1210,7 @@ wire3d(bxmesh, color = "black")}
 \if{latex}{\out{\hypertarget{method-cgalMesh-boundsVolume}{}}}
 \subsection{Method \code{boundsVolume()}}{
 Check whether the mesh bounds a volume. The mesh must be 
-  triangle and closed.
+  triangle and closed, and must not self-intersect.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$boundsVolume()}\if{html}{\out{</div>}}
 }

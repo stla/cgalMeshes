@@ -950,6 +950,9 @@ public:
     if(!CGAL::is_closed(mesh)) {
       Rcpp::stop("The mesh is not closed.");
     }
+    if(PMP::does_self_intersect(mesh)) {
+      Rcpp::stop("The mesh self-intersects.");
+    }
     return PMP::does_bound_a_volume(mesh);
   }
 

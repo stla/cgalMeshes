@@ -233,7 +233,7 @@ cgalMesh <- R6Class(
     },
     
     #' @description Check whether the mesh bounds a volume. The mesh must be 
-    #'   triangle and closed.
+    #'   triangle and closed, and must not self-intersect.
     #' @return A Boolean value, whether the mesh bounds a volume.
     #' @examples 
     #' library(rgl)
