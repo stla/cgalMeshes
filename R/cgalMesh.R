@@ -97,6 +97,9 @@ cgalMesh <- R6Class(
             if(!is.null(ib <- mesh[["ib"]])) {
               nf <- nf + ncol(ib)
             }
+            if(nf == 0L) {
+              stop("This mesh is empty.")
+            }
             if(length(colors) == nf) {
               fcolors <- colors
             }
