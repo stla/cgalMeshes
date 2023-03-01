@@ -101,14 +101,14 @@ parametricMesh <- function(
   if(!is.null(fnormal)) {
     narray <- with(Grid, array(fnormal(U, V), dim = c(3L, nu, nv)))
     narray2 <- aperm(narray, c(1L, 3L, 2L))
-    normals <- matrix(narray2, nrow = 3L, ncol = nu*nv)
+    normals <- t(matrix(narray2, nrow = 3L, ncol = nu*nv))
   } else {
     normals <- NULL
   }
   tmesh3d(
     vertices    = vs,
     indices     = tris,
-    normals     = t(normals),
+    normals     = normals,
     homogeneous = FALSE
   )
 }
