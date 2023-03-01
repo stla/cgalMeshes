@@ -4,7 +4,15 @@
 \alias{parametricMesh}
 \title{Mesh of a parametric surface}
 \usage{
-parametricMesh(f, urange, vrange, periodic = c(FALSE, FALSE), nu, nv)
+parametricMesh(
+  f,
+  urange,
+  vrange,
+  periodic = c(FALSE, FALSE),
+  nu,
+  nv,
+  fnormal = NULL
+)
 }
 \arguments{
 \item{f}{vectorized function of two variables returning a three-dimensional 
@@ -16,9 +24,13 @@ point}
 first variable and in the second variable}
 
 \item{nu, nv}{numbers of subdivisions}
+
+\item{fnormal}{if given (i.e. not \code{NULL}), a vectorized function 
+returning at \code{(u,v)} the normal for the vertex \code{f(u,v)}}
 }
 \value{
-A \strong{rgl} mesh (\code{mesh3d} object).
+A \strong{rgl} mesh (\code{mesh3d} object), with normals if 
+  \code{fnormal} is given.
 }
 \description{
 Mesh of a parametric surface.
@@ -48,4 +60,39 @@ rmesh <- addNormals(rmesh)
 open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(50, 10, zoom = 0.8)
 shade3d(rmesh, color = "gold")
+
+# an example with normals ####
+library(cgalMeshes)
+library(rgl)
+# twisted sphere
+fx <- function(u, v) cos(u) * cos(v)
+fy <- function(u, v) sin(u) * cos(v)
+fz <- function(u, v) sin(v) + u
+f <- function(u, v) {
+  rbind(fx(u, v), fy(u, v), fz(u, v))
+}
+if(require("dfdr")) {
+  # compute the gradient with the 'dfdr' package
+  dfx <- gradient(fx, FALSE, u, v)
+  dfy <- gradient(fy, FALSE, u, v)
+  dfz <- gradient(fz, FALSE, u, v)
+  fnormal <- Vectorize(function(u, v) {
+    dx <- dfx(u, v)
+    dy <- dfy(u, v)
+    dz <- dfz(u, v)
+    v1 <- c(dx[1L], dy[1L], dz[1L])
+    v2 <- c(dx[2L], dy[2L], dz[2L])
+    - crossProduct(v1, v2)
+  })
+} else {
+  fnormal <- NULL
+}
+# compute mesh of the parametric surface
+rmesh <- cgalMeshes::parametricMesh(
+  f, c(0, 2*pi), c(0, 2*pi), c(FALSE, TRUE), nu = 60L, nv = 30L, fnormal
+)
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(50, 10)
+shade3d(rmesh, color = "midnightblue", specular = "black")
 }
