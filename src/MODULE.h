@@ -1477,7 +1477,63 @@ public:
     return rmesh;
   }
 
+  
+  // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
+  double HausdorffApproximate(Rcpp::XPtr<EMesh3> mesh2XPtr, bool symmetric) {
+    if(CGAL::is_empty(mesh)) {
+      Rcpp::stop("The reference mesh is empty.");
+    }
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The reference mesh is not triangle.");
+    }
+    EMesh3 mesh2 = *(mesh2XPtr.get());
+    if(CGAL::is_empty(mesh2)) {
+      Rcpp::stop("The second mesh is empty.");
+    }
+    if(!CGAL::is_triangle_mesh(mesh2)) {
+      Rcpp::stop("The second mesh is not triangle.");
+    }
+    double d;
+    if(symmetric) {
+      d = PMP::approximate_symmetric_Hausdorff_distance<PIA_TAG>(mesh, mesh2);
+    } else {
+      d = PMP::approximate_Hausdorff_distance<PIA_TAG>(mesh, mesh2);
+    }
+    return d;
+  }
 
+  
+  // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
+  double HausdorffEstimate(
+      Rcpp::XPtr<EMesh3> mesh2XPtr, double errorBound, bool symmetric
+  ) {
+    if(CGAL::is_empty(mesh)) {
+      Rcpp::stop("The reference mesh is empty.");
+    }
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The reference mesh is not triangle.");
+    }
+    EMesh3 mesh2 = *(mesh2XPtr.get());
+    if(CGAL::is_empty(mesh2)) {
+      Rcpp::stop("The second mesh is empty.");
+    }
+    if(!CGAL::is_triangle_mesh(mesh2)) {
+      Rcpp::stop("The second mesh is not triangle.");
+    }
+    double d;
+    if(symmetric) {
+      d = PMP::bounded_error_symmetric_Hausdorff_distance<PIA_TAG>(
+        mesh, mesh2, errorBound
+      );
+    } else {
+      d = PMP::bounded_error_Hausdorff_distance<PIA_TAG>(mesh, mesh2, errorBound);
+    }
+    return d;
+  }
+  
+  
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   Rcpp::XPtr<EMesh3> intersection(Rcpp::XPtr<EMesh3> mesh2XPtr) {
