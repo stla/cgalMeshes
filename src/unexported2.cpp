@@ -33,6 +33,8 @@ Rcpp::DataFrame getEdges(MeshT& mesh) {
   Rcpp::NumericVector Length(nedges);
   Rcpp::LogicalVector Border(nedges);
   Rcpp::NumericVector Angle(nedges);
+  Rcpp::IntegerVector F1(nedges);
+  Rcpp::IntegerVector F2(nedges);
   {
     size_t i = 0;
     for(typename MeshT::Edge_index ed : mesh.edges()) {
@@ -45,8 +47,10 @@ Rcpp::DataFrame getEdges(MeshT& mesh) {
       Length(i) = CGAL::to_double(el);
       const bool isBorder = mesh.is_border(ed);
       Border(i) = isBorder;
+      F1(i) = int(mesh.face(h0)) + 1;
       if(isBorder) {
         Angle(i) = Rcpp::NumericVector::get_na();
+        F2(i) = Rcpp::IntegerVector::get_na();
       } else {
         std::vector<PointT> points(4);
         points[0] = mesh.point(s);
@@ -57,6 +61,7 @@ Rcpp::DataFrame getEdges(MeshT& mesh) {
         typename KernelT::FT angle = CGAL::abs(CGAL::approximate_dihedral_angle(
             points[0], points[1], points[2], points[3]));
         Angle(i) = CGAL::to_double(angle);
+        F2(i) = int(mesh.face(h1)) + 1;
       }
       i++;
     }
@@ -66,7 +71,9 @@ Rcpp::DataFrame getEdges(MeshT& mesh) {
     Rcpp::Named("i2")       = I2,
     Rcpp::Named("length")   = Length,
     Rcpp::Named("border")   = Border,
-    Rcpp::Named("angle")    = Angle
+    Rcpp::Named("angle")    = Angle,
+    Rcpp::Named("f1")       = F1,
+    Rcpp::Named("f2")       = F2
   );
   return Edges;
 }
