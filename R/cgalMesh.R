@@ -1021,11 +1021,12 @@ cgalMesh <- R6Class(
       }
     },
 
-    #' @description Get the centroids and the areas of the faces, for a 
-    #'   triangle mesh only.
-    #' @return A matrix with four columns: the first three ones provide the 
-    #'   Cartesian coordinates of the centroids, the fourth one provides the 
-    #'   areas.
+    #' @description Get the centroids, the circumcenters, and the areas of the 
+    #'   faces, for a triangle mesh only.
+    #' @return A matrix with seven columns: the first three ones provide the 
+    #'   Cartesian coordinates of the centroids, the three next ones provide 
+    #'   the Cartesian coordinates of the circumcenters, and the last one 
+    #'   provides the areas.
     "getFacesInfo" = function() {
       private[[".CGALmesh"]]$getFacesInfo()
     },
