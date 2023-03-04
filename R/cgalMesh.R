@@ -1132,6 +1132,38 @@ cgalMesh <- R6Class(
     "getVertices" = function() {
       t(private[[".CGALmesh"]]$getVertices())
     },
+
+    #' @description Approximate Hausdorff distance between the reference mesh
+    #'   and another mesh.
+    #' @param mesh2 a \code{cgalMesh} object
+    #' @param symmetric Boolean, whether to consider the symmetric Hausdorff 
+    #'   distance.
+    #' @return A number. The algorithm uses some simulations and thus the 
+    #'   result can vary.
+    "HausdorffApproximate" = function(mesh2, symmetric = TRUE) {
+      stopifnot(isCGALmesh(mesh2))
+      stopifnot(isBoolean(symmetric))
+      xptr2 <- getXPtr(mesh2)
+      private[[".CGALmesh"]]$HausdorffApproximate(xptr2, symmetric)
+    },
+
+    #' @description Estimate of Hausdorff distance between the reference mesh
+    #'   and another mesh.
+    #' @param mesh2 a \code{cgalMesh} object
+    #' @param errorBound a positive number, a bound on the error of the 
+    #'   estimate
+    #' @param symmetric Boolean, whether to consider the symmetric Hausdorff 
+    #'   distance.
+    #' @return A number. 
+    "HausdorffEstimate" = function(
+      mesh2, errorBound = 0.0001, symmetric = TRUE
+    ) {
+      stopifnot(isCGALmesh(mesh2))
+      stopifnot(isPositiveNumber(errorBound))
+      stopifnot(isBoolean(symmetric))
+      xptr2 <- getXPtr(mesh2)
+      private[[".CGALmesh"]]$HausdorffEstimate(xptr2, errorBound, symmetric)
+    },
     
     #' @description Intersection with another mesh.
     #' @param mesh2 a \code{cgalMesh} object

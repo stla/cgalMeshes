@@ -54,6 +54,8 @@ RCPP_MODULE(class_CGALmesh) {
     .method("getVertices", &CGALmesh::getVertices)
     .method("getNormals", &CGALmesh::getNormals)
     .method("getRmesh", &CGALmesh::getRmesh)
+    .method("HausdorffApproximate", &CGALmesh::HausdorffApproximate)
+    .method("HausdorffEstimate", &CGALmesh::HausdorffEstimate)
     .method("intersection", &CGALmesh::intersection)
     .method("isClosed", &CGALmesh::isClosed)
     .method("isotropicRemeshing", &CGALmesh::isotropicRemeshing)
