@@ -1723,6 +1723,9 @@ public:
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   Rcpp::NumericMatrix sampleMesh(const unsigned nsims) {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
     std::vector<EPoint3> sims;
     PMP::sample_triangle_mesh(
       mesh, std::back_inserter(sims),

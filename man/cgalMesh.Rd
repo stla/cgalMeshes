@@ -940,6 +940,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-orientToBoundVolume}{\code{cgalMesh$orientToBoundVolume()}}
 \item \href{#method-cgalMesh-removeSelfIntersections}{\code{cgalMesh$removeSelfIntersections()}}
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
+\item \href{#method-cgalMesh-sample}{\code{cgalMesh$sample()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
 \item \href{#method-cgalMesh-sharpEdges}{\code{cgalMesh$sharpEdges()}}
 \item \href{#method-cgalMesh-smoothShape}{\code{cgalMesh$smoothShape()}}
@@ -2786,6 +2787,26 @@ mesh$isOutwardOriented() # FALSE
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-sample"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-sample}{}}}
+\subsection{Method \code{sample()}}{
+Random sampling on the mesh. The mesh must be triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$sample(nsims)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{nsims}}{integer, the desired number of simulations}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{nsims x 3} matrix containing the simulations.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-selfIntersects"></a>}}
