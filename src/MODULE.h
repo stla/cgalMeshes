@@ -1719,7 +1719,20 @@ public:
     // update normals ?
   }
 
+  
+  // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
+  Rcpp::NumericMatrix sampleMesh(const unsigned nsims) {
+    std::vector<EPoint3> sims;
+    PMP::sample_triangle_mesh(
+      mesh, std::back_inserter(sims),
+      PMP::parameters::number_of_points_on_faces(nsims)
+    );
+    Rcpp::NumericMatrix rsims = points3_to_matrix(sims);
+    return Rcpp::transpose(rsims);
+  }  
 
+  
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   Rcpp::IntegerMatrix sharpEdges(double angleBound) {
