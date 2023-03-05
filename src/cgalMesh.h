@@ -165,6 +165,9 @@ std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List);
 template <typename PointT>
 std::vector<PointT> matrix_to_points3(const Rcpp::NumericMatrix);
 
+template <typename PointT>
+Rcpp::NumericMatrix points3_to_matrix(std::vector<PointT>);
+  
 template <typename KernelT, typename MeshT, typename PointT>
 Rcpp::DataFrame getEdges(MeshT&);
 
