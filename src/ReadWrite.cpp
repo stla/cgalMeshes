@@ -139,7 +139,7 @@ void writeMeshFile(const std::string filename,
                    const int precision,
                    const bool binary,
                    std::string comments,
-                   EMesh3& emesh) {
+                   EMesh3& mesh) {
   const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
   bool ok = false;
   std::ofstream outfile;
@@ -149,13 +149,20 @@ void writeMeshFile(const std::string filename,
   } else {
     outfile.open(filename);
   }
-  Mesh3 mesh;
-  CGAL::copy_face_graph(emesh, mesh);
   if(ext == ".ply") {
-    ok = CGAL::IO::write_PLY(
-      outfile, mesh, comments,
-      CGAL::parameters::stream_precision(precision)
-    );
+    if(binary) {
+      Mesh3 mesh_epick;
+      CGAL::copy_face_graph(mesh, mesh_epick);
+      ok = CGAL::IO::write_PLY(
+        outfile, mesh_epick, comments,
+        CGAL::parameters::stream_precision(precision)
+      );
+    } else {
+      ok = CGAL::IO::write_PLY(
+        outfile, mesh, comments,
+        CGAL::parameters::stream_precision(precision)
+      );
+    }
   } else if(ext == ".off") {
     ok = CGAL::IO::write_OFF(
       outfile, mesh,

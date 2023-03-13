@@ -1658,7 +1658,8 @@ cgalMesh <- R6Class(
     #' @param comments for \code{ply} extension only, a string to be included 
     #'   in the header of the PLY file
     #' @param binary Boolean, for \code{ply} extension only, whether to write 
-    #'   a binary \code{ply} file
+    #'   a binary \code{ply} file; the mesh properties (vertex colors, face 
+    #'   colors, normals) are lost with this format
     #' @return Nothing, just writes a file.
     "writeMeshFile" = function(
       filename, precision = 17, comments = "", binary = FALSE

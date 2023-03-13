@@ -3195,7 +3195,8 @@ places}
 in the header of the PLY file}
 
 \item{\code{binary}}{Boolean, for \code{ply} extension only, whether to write 
-a binary \code{ply} file}
+a binary \code{ply} file; the mesh properties (vertex colors, face 
+colors, normals) are lost with this format}
 }
 \if{html}{\out{</div>}}
 }
