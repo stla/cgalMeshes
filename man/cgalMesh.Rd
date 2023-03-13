@@ -3179,7 +3179,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \subsection{Method \code{writeMeshFile()}}{
 Write mesh to a file.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$writeMeshFile(filename, precision = 17, comments = "")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$writeMeshFile(filename, precision = 17, comments = "", binary = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -3193,6 +3193,9 @@ places}
 
 \item{\code{comments}}{for \code{ply} extension only, a string to be included 
 in the header of the PLY file}
+
+\item{\code{binary}}{Boolean, for \code{ply} extension only, whether to write 
+a binary \code{ply} file}
 }
 \if{html}{\out{</div>}}
 }

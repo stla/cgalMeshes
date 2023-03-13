@@ -1657,12 +1657,16 @@ cgalMesh <- R6Class(
     #'   places
     #' @param comments for \code{ply} extension only, a string to be included 
     #'   in the header of the PLY file
+    #' @param binary Boolean, for \code{ply} extension only, whether to write 
+    #'   a binary \code{ply} file
     #' @return Nothing, just writes a file.
-    "writeMeshFile" = function(filename, precision = 17, comments = "") {
+    "writeMeshFile" = function(
+      filename, precision = 17, comments = "", binary = FALSE
+    ) {
       stopifnot(isString(filename))
       stopifnot(isPositiveInteger(precision))
       stopifnot(isString(comments))
-      #stopifnot(isBoolean(binary))
+      stopifnot(isBoolean(binary))
       filename <- path.expand(filename)
       normals <- self$getNormals()
       if(!is.null(normals)) {
@@ -1691,7 +1695,7 @@ cgalMesh <- R6Class(
         })
       }
       private[[".CGALmesh"]]$writeFile(
-        filename, as.integer(precision), FALSE, comments, 
+        filename, as.integer(precision), binary, comments, 
         normals, fcolors, vcolors
       )
     }

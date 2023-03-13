@@ -8,7 +8,11 @@ myinstall <- function() {
   }
 }
 mydocument <- function() {
-  rstudioapi::restartSession(
-   "roxygen2::roxygenise(load_code = roxygen2::load_installed)" 
-  )
+  if(rstudioapi::isAvailable()) {
+    rstudioapi::restartSession(
+      "roxygen2::roxygenise(load_code = roxygen2::load_installed)" 
+    )
+  } else {
+    roxygen2::roxygenise(load_code = roxygen2::load_installed)
+  }
 }

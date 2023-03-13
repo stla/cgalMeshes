@@ -139,7 +139,7 @@ void writeMeshFile(const std::string filename,
                    const int precision,
                    const bool binary,
                    std::string comments,
-                   EMesh3& mesh) {
+                   EMesh3& emesh) {
   const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
   bool ok = false;
   std::ofstream outfile;
@@ -149,6 +149,8 @@ void writeMeshFile(const std::string filename,
   } else {
     outfile.open(filename);
   }
+  Mesh3 mesh;
+  CGAL::copy_face_graph(emesh, mesh);
   if(ext == ".ply") {
     ok = CGAL::IO::write_PLY(
       outfile, mesh, comments,
