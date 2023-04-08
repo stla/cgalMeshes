@@ -979,12 +979,12 @@ meshFile <- system.file(
 )
 mesh <- cgalMesh$new(meshFile)
 rglmesh <- mesh$getMesh()
-\donttest{library(rgl)
+library(rgl)
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglmesh, color = "tomato")
 plotEdges(
   mesh$getVertices(), mesh$getEdges(), color = "darkred"
-)}
+)
 
 # this one has colors: ####
 meshFile <- system.file(
@@ -992,9 +992,9 @@ meshFile <- system.file(
 )
 mesh <- cgalMesh$new(meshFile)
 rmesh <- mesh$getMesh()
-\donttest{library(rgl)
+library(rgl)
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.85)
-shade3d(rmesh, meshColor = "faces")}
+shade3d(rmesh, meshColor = "faces")
 }
 \if{html}{\out{</div>}}
 
@@ -1167,7 +1167,7 @@ A list containing the smallest corner point and the largest
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 rmesh <- cyclideMesh(a = 97, c = 32, mu = 57)
 mesh <- cgalMesh$new(rmesh)
@@ -1176,7 +1176,7 @@ bxmesh <- isoCuboidMesh(bbox[["lcorner"]], bbox[["ucorner"]])
 open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(0, -60)
 shade3d(rmesh, color = "gold")
-wire3d(bxmesh, color = "black")}
+wire3d(bxmesh, color = "black")
 }
 \if{html}{\out{</div>}}
 
@@ -1231,7 +1231,7 @@ The modified reference mesh, invisibly.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
 mesh <- cgalMesh$new(hopfMesh)
@@ -1247,7 +1247,7 @@ wire3d(hopfMesh, color = "black")
 next3d()
 view3d(0, 0, zoom = 0.9)
 shade3d(rmesh, color = "red")
-wire3d(rmesh, color = "black")}
+wire3d(rmesh, color = "black")
 }
 \if{html}{\out{</div>}}
 
@@ -1268,10 +1268,10 @@ The Cartesian coordinates of the centroid of the mesh.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 mesh <- cgalMesh$new(icosahedron3d())
-mesh$centroid()}
+mesh$centroid()
 }
 \if{html}{\out{</div>}}
 
@@ -1326,13 +1326,13 @@ mesh2 <- meshes[[2]]
 mesh2$computeNormals()
 rglmesh1 <- mesh1$getMesh()
 rglmesh2 <- mesh2$getMesh()
-\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(45, 45, zoom = 0.9)
 shade3d(rglmesh1, meshColor = "faces")
-shade3d(rglmesh2, meshColor = "faces")}
+shade3d(rglmesh2, meshColor = "faces")
 
 # Togliatti surface clipped to a ball ####
-\donttest{library(rmarchingcubes)
+library(rmarchingcubes)
 library(rgl)
 library(cgalMeshes)
 # Togliatti surface equation: f(x,y,z) = 0
@@ -1375,7 +1375,7 @@ shade3d(rglMesh, color = "firebrick")
 next3d()
 view3d(0, -70, zoom = 0.8)
 shade3d(rglClippedMesh, color = "firebrick")
-shade3d(sphere, color = "yellow", alpha = 0.15)}
+shade3d(sphere, color = "yellow", alpha = 0.15)
 }
 \if{html}{\out{</div>}}
 
@@ -1436,10 +1436,10 @@ mesh2 <- meshes[[2]]
 mesh1$computeNormals()
 rClippedMesh1 <- mesh1$getMesh()
 rClippedMesh2 <- mesh2$getMesh()
-\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(70, 0)
 shade3d(rClippedMesh1, meshColor = "faces")
-shade3d(rClippedMesh2, color = "orange")}
+shade3d(rClippedMesh2, color = "orange")
 }
 \if{html}{\out{</div>}}
 
@@ -1476,7 +1476,7 @@ If \code{clipVolume=FALSE}, the modified reference mesh is
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 rmesh <- HopfTorusMesh(nu = 200, nv = 200)
 mesh <- cgalMesh$new(rmesh)
@@ -1492,7 +1492,7 @@ rClippedMesh <- mesh$getMesh()
 open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(-40, 0)
 shade3d(rClippedMesh, meshColor = "faces")
-shade3d(bxmesh, color = "cyan", alpha = 0.3)}
+shade3d(bxmesh, color = "cyan", alpha = 0.3)
 }
 \if{html}{\out{</div>}}
 
@@ -1551,7 +1551,7 @@ A list of \code{cgalMesh} objects, one for each connected
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rmarchingcubes)
 # isosurface function (slice of a seven-dimensional toratope)
 f <- function(x, y, z, a) {
@@ -1586,7 +1586,7 @@ view3d(30, 50)
 for(i in 1L:ncc) {
   rglMesh <- components[[i]]$getMesh()
   shade3d(rglMesh, color = colors[i])
-}}
+}
 }
 \if{html}{\out{</div>}}
 
@@ -1614,7 +1614,7 @@ A list of \code{cgalMesh} objects, one for each convex part.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 mesh <- cgalMesh$new(pentagrammicPrism)$triangulate()
 cxparts <- mesh$convexParts()
@@ -1625,7 +1625,7 @@ view3d(20, -20, zoom = 0.8)
 for(i in 1L:ncxparts) {
   cxmesh <- cxparts[[i]]$getMesh()
   shade3d(cxmesh, color = colors[i])
-}}
+}
 }
 \if{html}{\out{</div>}}
 
@@ -1691,12 +1691,12 @@ points <- rbind(
 mesh$distance(points) # should be 1 and 0
 
 # cyclide example ####
-\donttest{library(cgalMeshes)
+library(cgalMeshes)
 a <- 100; c <- 30; mu <- 80
 mesh <- cgalMesh$new(cyclideMesh(a, c, mu, nu = 100L, nv = 100L))
 O2 <- c(c, 0, 0)
 # should be a - mu = 20 (see ?cyclideMesh):
-mesh$distance(O2)}    
+mesh$distance(O2)    
 }
 \if{html}{\out{</div>}}
 
@@ -1724,7 +1724,7 @@ The modified reference mesh, invisibly.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
 mesh <- cgalMesh$new(hopfMesh)
@@ -1741,7 +1741,7 @@ wire3d(hopfMesh, color = "black")
 next3d()
 view3d(0, 0, zoom = 0.9)
 shade3d(rmesh, color = "brown")
-wire3d(rmesh, color = "black")}
+wire3d(rmesh, color = "black")
 }
 \if{html}{\out{</div>}}
 
@@ -1802,14 +1802,14 @@ indices <- which(normsq > 19)
 hopf$fair(indices)
 rglHopf_faired <- hopf$getMesh()
 # plot
-\donttest{library(rgl)
+library(rgl)
 open3d(windowRect = 50 + c(0, 0, 900, 450))
 mfrow3d(1L, 2L)
 view3d(0, 0, zoom = 0.8)
 shade3d(rglHopf, color = "orangered")
 next3d()
 view3d(0, 0, zoom = 0.8)
-shade3d(rglHopf_faired, color = "orangered")}
+shade3d(rglHopf_faired, color = "orangered")
 }
 \if{html}{\out{</div>}}
 
@@ -1861,10 +1861,10 @@ hole <- mesh$fillBoundaryHole(1, fair = TRUE)
 hole$computeNormals()
 rhole <- hole$getMesh()
 # plot
-\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(30, 30)
 shade3d(rmesh, color = "red")
-shade3d(rhole, color = "blue")}
+shade3d(rhole, color = "blue")
 }
 \if{html}{\out{</div>}}
 
@@ -1916,7 +1916,7 @@ Two \code{cgalMesh} objects. The first one is the mesh consisting
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(rgl)
+\preformatted{library(rgl)
 library(cgalMeshes)
 rmesh <- HopfTorusMesh(nu = 80, nv = 60)
 mesh <- cgalMesh$new(rmesh)
@@ -1929,7 +1929,7 @@ open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(0, 0)
 shade3d(rmesh1, color = "red")
 shade3d(rmesh2, color = "blue")
-wire3d(rmesh)}
+wire3d(rmesh)
 }
 \if{html}{\out{</div>}}
 
@@ -1972,7 +1972,7 @@ The estimated geodesic distances from the source vertex to each
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{# torus ####
+\preformatted{# torus ####
 library(cgalMeshes)
 library(rgl)
 rglmesh <- torusMesh(R = 3, r = 2, nu = 90, nv = 60)
@@ -1992,10 +1992,10 @@ shade3d(rglmesh)
 wire3d(rglmesh, color = "black")
 if(!rgl.useNULL()) {
   play3d(spin3d(axis = c(1, 1, 1), rpm = 5), duration = 20)  
-}}
+}
 
 # a trefoil knot (taken from `?rgl::cylinder3d`) ####
-\donttest{library(cgalMeshes)
+library(cgalMeshes)
 library(rgl)
 theta <- seq(0, 2*pi, length.out = 50L)
 knot <- cylinder3d(
@@ -2026,7 +2026,7 @@ open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
 shade3d(rglmesh)
 if(!rgl.useNULL()) {
   play3d(spin3d(axis = c(1, 1, 0), rpm = 5), duration = 20)  
-}}
+}
 }
 \if{html}{\out{</div>}}
 
@@ -2049,7 +2049,7 @@ A list of matrices representing the boundary cycles. Each matrix
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 # isosurface f=0
 f <- function(x, y, z) {
@@ -2142,7 +2142,7 @@ for(border in borders){
     vertices, border[, c("v1", "v2")], color = "gold",
     lwd = 3, edgesAsTubes = FALSE, verticesAsSpheres = FALSE
   )
-}}
+}
 }
 \if{html}{\out{</div>}}
 
@@ -2350,7 +2350,7 @@ A \code{cgalMesh} object.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 # take two cubes
 rglmesh1 <- cube3d()
@@ -2370,7 +2370,7 @@ open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglimesh, color = "red")
 plotEdges(imesh$getVertices(), extEdges)
 shade3d(rglmesh1, color = "yellow", alpha = 0.2)
-shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
+shade3d(rglmesh2, color = "cyan", alpha = 0.2)
 }
 \if{html}{\out{</div>}}
 
@@ -2416,7 +2416,7 @@ The modified \code{cgalMesh} object, invisibly.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 mesh <- cgalMesh$new(HopfTorusMesh(nu = 80, nv = 50))
 mesh$isotropicRemeshing(targetEdgeLength = 0.7)
@@ -2430,7 +2430,7 @@ rmesh <- mesh$getMesh()
 open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(0, 0)
 shade3d(rmesh, color = "maroon")
-wire3d(rmesh)}
+wire3d(rmesh)
 }
 \if{html}{\out{</div>}}
 
@@ -2559,7 +2559,7 @@ The modified reference mesh, invisibly.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
 mesh <- cgalMesh$new(hopfMesh)
@@ -2575,7 +2575,7 @@ wire3d(hopfMesh, color = "black")
 next3d()
 view3d(0, 0, zoom = 0.9)
 shade3d(rmesh, color = "gold")
-wire3d(rmesh, color = "black")}
+wire3d(rmesh, color = "black")
 }
 \if{html}{\out{</div>}}
 
@@ -2603,7 +2603,7 @@ The updated reference mesh, invisibly.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 mesh1 <- cgalMesh$new(sphereMesh())
 mesh1$assignFaceColors("red")
@@ -2612,7 +2612,7 @@ mesh2$assignFaceColors("blue")
 mesh1$merge(mesh2)
 rmesh <- mesh1$getMesh()
 open3d(windowRect = c(50, 50, 562, 562))
-shade3d(rmesh, meshColor = "faces")}
+shade3d(rmesh, meshColor = "faces")
 }
 \if{html}{\out{</div>}}
 
@@ -2757,7 +2757,7 @@ An integer matrix with three columns: \code{"edge"}, an edge
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 # astroidal ellipsoid
 f <- function(u, v) {
@@ -2779,7 +2779,7 @@ shade3d(addNormals(rmesh), color = "chartreuse")
 plotEdges(
   mesh$getVertices(), sharpEdges[, c("v1", "v2")], 
   edgesAsTubes = FALSE, lwd = 5, verticesAsSpheres = FALSE
-)}
+)
 }
 \if{html}{\out{</div>}}
 
@@ -2808,7 +2808,7 @@ The modified reference mesh, invisibly.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 hopfMesh <- HopfTorusMesh(nu = 80, nv = 40)
 mesh <- cgalMesh$new(hopfMesh)
@@ -2824,7 +2824,7 @@ wire3d(hopfMesh, color = "black")
 next3d()
 view3d(0, 0, zoom = 0.9)
 shade3d(rmesh, color = "cyan")
-wire3d(rmesh, color = "black")}
+wire3d(rmesh, color = "black")
 }
 \if{html}{\out{</div>}}
 
@@ -2856,7 +2856,7 @@ A \code{cgalMesh} object, the difference between the reference
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 # take two cubes
 rglmesh1 <- cube3d()
@@ -2878,7 +2878,7 @@ extEdges <- exteriorEdges(mesh$getEdges())
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglmesh, meshColor = "faces")
 plotEdges(mesh$getVertices(), extEdges)
-shade3d(rglmesh2, color = "cyan", alpha = 0.2)}
+shade3d(rglmesh2, color = "cyan", alpha = 0.2)
 }
 \if{html}{\out{</div>}}
 
@@ -2939,7 +2939,7 @@ A \code{cgalMesh} object, the union of the reference mesh with
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{\donttest{library(cgalMeshes)
+\preformatted{library(cgalMeshes)
 library(rgl)
 # take two cubes
 rglmesh1 <- cube3d()
@@ -2960,7 +2960,7 @@ extEdges <- exteriorEdges(umesh$getEdges())
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(rglumesh, meshColor = "faces")
-plotEdges(umesh$getVertices(), extEdges)}
+plotEdges(umesh$getVertices(), extEdges)
 }
 \if{html}{\out{</div>}}
 
