@@ -1,5 +1,4 @@
-## R CMD check results
+## Issues with VALGRIND
 
-0 errors | 0 warnings | 1 note
-
-* This is a new release.
+This package has some issues with Valgrind. This is because the CGAL library is 
+not supposed to work with Valgrind.
