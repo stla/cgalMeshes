@@ -21,10 +21,6 @@ gTriangle <- function(A, B, C, s, iterations) {
     .Call(`_cgalMeshes_gTriangle`, A, B, C, s, iterations)
 }
 
-Mandelbulb <- function(maxloop, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound) {
-    .Call(`_cgalMeshes_Mandelbulb`, maxloop, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound)
-}
-
 meshTopology <- function(nu, nv, uperiodic, vperiodic) {
     .Call(`_cgalMeshes_meshTopology`, nu, nv, uperiodic, vperiodic)
 }
