@@ -66,7 +66,7 @@ sphericalTriangle <- function(
     }
     radius <- sqrt(r1)
   }
-  if(packageVersion("RcppCGAL") < "5.5") {
+  if(CGALversion() < 5.5) {
     x <- sqrt(1 + (1 + sqrt(5)) / 4) # bug make_icosahedron
     radius <- radius / x
   }

@@ -251,8 +251,8 @@ struct ClipVisitor :
   
   std::shared_ptr<MapBetweenFaces> fmap_tm;
   std::shared_ptr<MapBetweenFaces> fmap_clipper;
-  std::shared_ptr<MapBetweenFaces> ftargets;
   std::shared_ptr<face_descriptor> ofaceindex;
+  std::shared_ptr<MapBetweenFaces> ftargets;
   std::shared_ptr<bool> is_tm;
 };
 
@@ -309,12 +309,12 @@ struct DifferenceVisitor :
   
   std::shared_ptr<MapBetweenFaces> fmap_mesh1;
   std::shared_ptr<MapBetweenFaces> fmap_mesh2;
-  std::shared_ptr<MapBetweenFaces> fmap_difference;
-  std::shared_ptr<MapBetweenVertices> vmap_difference;
   std::shared_ptr<face_descriptor> ofaceindex;
+  std::shared_ptr<MapBetweenFaces> fmap_difference;
+  std::shared_ptr<int> nfaces_dmesh1;
+  std::shared_ptr<MapBetweenVertices> vmap_difference;
   std::shared_ptr<bool> is_mesh1;
   std::shared_ptr<bool> is_mesh1src;
-  std::shared_ptr<int> nfaces_dmesh1;
 };
 
 
@@ -371,9 +371,9 @@ struct UnionVisitor :
   std::shared_ptr<MapBetweenFaces> fmap_mesh2;
   std::shared_ptr<int> fprev;
   std::shared_ptr<int> nfaces_umesh1;
+  std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<MapBetweenFaces> fmap_union;
   std::shared_ptr<std::map<vertex_descriptor, vertex_descriptor>> vmap_union;
-  std::shared_ptr<face_descriptor> ofaceindex;
   std::shared_ptr<bool> is_mesh1;
 };
 
