@@ -41,29 +41,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cxhull
-Rcpp::XPtr<EMesh3> cxhull(Rcpp::NumericMatrix pts);
-RcppExport SEXP _cgalMeshes_cxhull(SEXP ptsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type pts(ptsSEXP);
-    rcpp_result_gen = Rcpp::wrap(cxhull(pts));
-    return rcpp_result_gen;
-END_RCPP
-}
-// cxhullsIntersection
-Rcpp::XPtr<EMesh3> cxhullsIntersection(Rcpp::List Pts, Rcpp::Nullable<Rcpp::NumericVector> origin_);
-RcppExport SEXP _cgalMeshes_cxhullsIntersection(SEXP PtsSEXP, SEXP origin_SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::List >::type Pts(PtsSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericVector> >::type origin_(origin_SEXP);
-    rcpp_result_gen = Rcpp::wrap(cxhullsIntersection(Pts, origin_));
-    return rcpp_result_gen;
-END_RCPP
-}
 // gTriangle
 Rcpp::XPtr<EMesh3> gTriangle(Rcpp::NumericVector A, Rcpp::NumericVector B, Rcpp::NumericVector C, double s, int iterations);
 RcppExport SEXP _cgalMeshes_gTriangle(SEXP ASEXP, SEXP BSEXP, SEXP CSEXP, SEXP sSEXP, SEXP iterationsSEXP) {
@@ -115,8 +92,6 @@ RcppExport SEXP _rcpp_module_boot_class_CGALmesh();
 static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 2},
     {"_cgalMeshes_SSSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_SSSreconstruction_cpp, 7},
-    {"_cgalMeshes_cxhull", (DL_FUNC) &_cgalMeshes_cxhull, 1},
-    {"_cgalMeshes_cxhullsIntersection", (DL_FUNC) &_cgalMeshes_cxhullsIntersection, 2},
     {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},
     {"_cgalMeshes_meshTopology", (DL_FUNC) &_cgalMeshes_meshTopology, 4},
     {"_cgalMeshes_sTriangle", (DL_FUNC) &_cgalMeshes_sTriangle, 6},

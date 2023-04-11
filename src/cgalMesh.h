@@ -70,8 +70,8 @@
 // #include <CGAL/polynomial_utils.h>
 #include <CGAL/Subdivision_method_3/subdivision_methods_3.h>
 #include <CGAL/boost/graph/generators.h>
-#include <CGAL/convex_hull_3.h>
-#include <CGAL/Convex_hull_3/dual/halfspace_intersection_3.h>
+// #include <CGAL/convex_hull_3.h>
+// #include <CGAL/Convex_hull_3/dual/halfspace_intersection_3.h>
 #include <CGAL/Side_of_triangle_mesh.h>
 
 // -------------------------------------------------------------------------- //
