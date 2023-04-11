@@ -21,18 +21,6 @@ gTriangle <- function(A, B, C, s, iterations) {
     .Call(`_cgalMeshes_gTriangle`, A, B, C, s, iterations)
 }
 
-AlgebraicMesh <- function(powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound) {
-    .Call(`_cgalMeshes_AlgebraicMesh`, powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound)
-}
-
-AlgebraicMeshesIntersection <- function(Rpolynomials, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound) {
-    .Call(`_cgalMeshes_AlgebraicMeshesIntersection`, Rpolynomials, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound)
-}
-
-AlgebraicMeshesUnion <- function(Rpolynomials, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound) {
-    .Call(`_cgalMeshes_AlgebraicMeshesUnion`, Rpolynomials, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound)
-}
-
 Mandelbulb <- function(maxloop, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound) {
     .Call(`_cgalMeshes_Mandelbulb`, maxloop, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound)
 }

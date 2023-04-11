@@ -79,59 +79,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// AlgebraicMesh
-Rcpp::XPtr<EMesh3> AlgebraicMesh(Rcpp::IntegerMatrix powers, Rcpp::NumericVector coeffs, double isolevel, Rcpp::NumericVector sphereCenter, double sphereRadius, double angle_bound, double radius_bound, double distance_bound, double error_bound);
-RcppExport SEXP _cgalMeshes_AlgebraicMesh(SEXP powersSEXP, SEXP coeffsSEXP, SEXP isolevelSEXP, SEXP sphereCenterSEXP, SEXP sphereRadiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP, SEXP error_boundSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type powers(powersSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type coeffs(coeffsSEXP);
-    Rcpp::traits::input_parameter< double >::type isolevel(isolevelSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sphereCenter(sphereCenterSEXP);
-    Rcpp::traits::input_parameter< double >::type sphereRadius(sphereRadiusSEXP);
-    Rcpp::traits::input_parameter< double >::type angle_bound(angle_boundSEXP);
-    Rcpp::traits::input_parameter< double >::type radius_bound(radius_boundSEXP);
-    Rcpp::traits::input_parameter< double >::type distance_bound(distance_boundSEXP);
-    Rcpp::traits::input_parameter< double >::type error_bound(error_boundSEXP);
-    rcpp_result_gen = Rcpp::wrap(AlgebraicMesh(powers, coeffs, isolevel, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound));
-    return rcpp_result_gen;
-END_RCPP
-}
-// AlgebraicMeshesIntersection
-Rcpp::XPtr<EMesh3> AlgebraicMeshesIntersection(Rcpp::List Rpolynomials, Rcpp::NumericVector sphereCenter, double sphereRadius, double angle_bound, double radius_bound, double distance_bound, double error_bound);
-RcppExport SEXP _cgalMeshes_AlgebraicMeshesIntersection(SEXP RpolynomialsSEXP, SEXP sphereCenterSEXP, SEXP sphereRadiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP, SEXP error_boundSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::List >::type Rpolynomials(RpolynomialsSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sphereCenter(sphereCenterSEXP);
-    Rcpp::traits::input_parameter< double >::type sphereRadius(sphereRadiusSEXP);
-    Rcpp::traits::input_parameter< double >::type angle_bound(angle_boundSEXP);
-    Rcpp::traits::input_parameter< double >::type radius_bound(radius_boundSEXP);
-    Rcpp::traits::input_parameter< double >::type distance_bound(distance_boundSEXP);
-    Rcpp::traits::input_parameter< double >::type error_bound(error_boundSEXP);
-    rcpp_result_gen = Rcpp::wrap(AlgebraicMeshesIntersection(Rpolynomials, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound));
-    return rcpp_result_gen;
-END_RCPP
-}
-// AlgebraicMeshesUnion
-Rcpp::XPtr<EMesh3> AlgebraicMeshesUnion(Rcpp::List Rpolynomials, Rcpp::NumericVector sphereCenter, double sphereRadius, double angle_bound, double radius_bound, double distance_bound, double error_bound);
-RcppExport SEXP _cgalMeshes_AlgebraicMeshesUnion(SEXP RpolynomialsSEXP, SEXP sphereCenterSEXP, SEXP sphereRadiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP, SEXP error_boundSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::List >::type Rpolynomials(RpolynomialsSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sphereCenter(sphereCenterSEXP);
-    Rcpp::traits::input_parameter< double >::type sphereRadius(sphereRadiusSEXP);
-    Rcpp::traits::input_parameter< double >::type angle_bound(angle_boundSEXP);
-    Rcpp::traits::input_parameter< double >::type radius_bound(radius_boundSEXP);
-    Rcpp::traits::input_parameter< double >::type distance_bound(distance_boundSEXP);
-    Rcpp::traits::input_parameter< double >::type error_bound(error_boundSEXP);
-    rcpp_result_gen = Rcpp::wrap(AlgebraicMeshesUnion(Rpolynomials, sphereCenter, sphereRadius, angle_bound, radius_bound, distance_bound, error_bound));
-    return rcpp_result_gen;
-END_RCPP
-}
 // Mandelbulb
 Rcpp::XPtr<EMesh3> Mandelbulb(int maxloop, Rcpp::NumericVector sphereCenter, double sphereRadius, double angle_bound, double radius_bound, double distance_bound, double error_bound);
 RcppExport SEXP _cgalMeshes_Mandelbulb(SEXP maxloopSEXP, SEXP sphereCenterSEXP, SEXP sphereRadiusSEXP, SEXP angle_boundSEXP, SEXP radius_boundSEXP, SEXP distance_boundSEXP, SEXP error_boundSEXP) {
@@ -188,9 +135,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_cxhull", (DL_FUNC) &_cgalMeshes_cxhull, 1},
     {"_cgalMeshes_cxhullsIntersection", (DL_FUNC) &_cgalMeshes_cxhullsIntersection, 2},
     {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},
-    {"_cgalMeshes_AlgebraicMesh", (DL_FUNC) &_cgalMeshes_AlgebraicMesh, 9},
-    {"_cgalMeshes_AlgebraicMeshesIntersection", (DL_FUNC) &_cgalMeshes_AlgebraicMeshesIntersection, 7},
-    {"_cgalMeshes_AlgebraicMeshesUnion", (DL_FUNC) &_cgalMeshes_AlgebraicMeshesUnion, 7},
     {"_cgalMeshes_Mandelbulb", (DL_FUNC) &_cgalMeshes_Mandelbulb, 7},
     {"_cgalMeshes_meshTopology", (DL_FUNC) &_cgalMeshes_meshTopology, 4},
     {"_cgalMeshes_sTriangle", (DL_FUNC) &_cgalMeshes_sTriangle, 6},

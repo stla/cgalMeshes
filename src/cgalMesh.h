@@ -57,17 +57,17 @@
 #include <CGAL/Plane_3.h>
 #include <CGAL/Bbox_3.h>
 #include <CGAL/Iso_cuboid_3.h>
-#include <CGAL/Surface_mesh_default_triangulation_3.h>
-#include <CGAL/Complex_2_in_triangulation_3.h>
-#include <CGAL/make_surface_mesh.h>
-#include <CGAL/Implicit_surface_3.h>
-#include <CGAL/IO/facets_in_complex_2_to_triangle_mesh.h>
-#include <CGAL/Surface_mesh_default_criteria_3.h>
-#include <CGAL/Complex_2_in_triangulation_3.h>
-#include <CGAL/Polynomial.h>
-#include <CGAL/Polynomial_traits_d.h>
-#include <CGAL/Polynomial_type_generator.h>
-#include <CGAL/polynomial_utils.h>
+// #include <CGAL/Surface_mesh_default_triangulation_3.h>
+// #include <CGAL/Complex_2_in_triangulation_3.h>
+// #include <CGAL/make_surface_mesh.h>
+// #include <CGAL/Implicit_surface_3.h>
+// #include <CGAL/IO/facets_in_complex_2_to_triangle_mesh.h>
+// #include <CGAL/Surface_mesh_default_criteria_3.h>
+// #include <CGAL/Complex_2_in_triangulation_3.h>
+// #include <CGAL/Polynomial.h>
+// #include <CGAL/Polynomial_traits_d.h>
+// #include <CGAL/Polynomial_type_generator.h>
+// #include <CGAL/polynomial_utils.h>
 #include <CGAL/Subdivision_method_3/subdivision_methods_3.h>
 #include <CGAL/boost/graph/generators.h>
 #include <CGAL/convex_hull_3.h>

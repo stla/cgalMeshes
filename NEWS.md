@@ -14,10 +14,6 @@
 
 - New function `gyroTriangle`, to get a mesh of a hyperbolic triangle.
 
-- New function `algebraicMesh`, computing a mesh of the isosurface defined by a given polynomial and an isolevel.
-
-- New function `voxel2mesh`, extracting triangle meshes from a NifTI file.
-
 - New function `convexHull`, to get a mesh of the convex hull of a given set of points.
 
 - New function `convexHullsIntersection`, to get a mesh of the intersection of some convex hulls.
