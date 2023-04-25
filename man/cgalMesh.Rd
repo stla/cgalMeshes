@@ -961,10 +961,9 @@ vectors of integers (each one gives the vertex indices of a face)}
 \item{\code{normals}}{if \code{mesh} is missing, must be \code{NULL} or a 
 numeric matrix with three columns and as many rows as vertices}
 
-\item{\code{clean}}{Boolean, no effect if the mesh is given by a file, 
-otherwise it indicates whether to clean the mesh (merge duplicated 
-vertices and duplicated faces, remove isolated vertices); set to 
-\code{FALSE} if you know your mesh is already clean}
+\item{\code{clean}}{Boolean value indicating whether to clean the mesh (merge 
+duplicated vertices and duplicated faces, remove isolated vertices); 
+set to \code{FALSE} if you know your mesh is already clean}
 }
 \if{html}{\out{</div>}}
 }
@@ -3030,7 +3029,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \subsection{Method \code{writeMeshFile()}}{
 Write mesh to a file.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$writeMeshFile(filename, precision = 17, comments = "")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$writeMeshFile(filename, precision = 17, comments = "", binary = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -3044,6 +3043,10 @@ places}
 
 \item{\code{comments}}{for \code{ply} extension only, a string to be included 
 in the header of the PLY file}
+
+\item{\code{binary}}{Boolean, for \code{ply} extension only, whether to write 
+a binary \code{ply} file; the mesh properties (vertex colors, face 
+colors, normals) are lost with this format}
 }
 \if{html}{\out{</div>}}
 }

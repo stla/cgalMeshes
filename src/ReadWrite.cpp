@@ -9,7 +9,7 @@ std::string toLower(std::string s) {
   return s;
 }
 
-EMesh3 readMeshFile(const std::string filename, bool binary) {
+EMesh3 readValidMesh(const std::string filename, bool binary) {
   EMesh3 mesh;
   const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
   bool ok = false;
@@ -92,6 +92,49 @@ EMesh3 readMeshFile(const std::string filename, bool binary) {
 }
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+EMesh3 readPolygonSoup(const std::string filename, bool binary) {
+  std::vector<EPoint3> points;
+  std::vector<std::vector<size_t>> faces;
+  const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
+  bool ok = false;
+  std::ifstream infile;
+  if(binary) {
+    infile.open(filename, std::ios::binary);
+  } else {
+    infile.open(filename);
+  }
+  if(ext == ".ply") {
+    ok = CGAL::IO::read_PLY(infile, points, faces);
+  } else if(ext == ".off") {
+    ok = CGAL::IO::read_OFF(infile, points, faces);
+  } else {
+    ok = CGAL::IO::read_polygon_soup(
+      filename, points, faces, CGAL::parameters::verbose(true)
+    );
+  }
+  infile.close();
+  if(!ok) {
+    Rcpp::stop("Reading failure.");
+  }
+  return csoup2mesh<EMesh3, EPoint3>(points, faces, true);
+}
+
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+EMesh3 readMeshFile(const std::string filename, bool binary, bool soup) {
+  if(soup) {
+    return readPolygonSoup(filename, binary);
+  } else {
+    return readValidMesh(filename, binary);
+  }
+}
+
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 void writeMeshFile(const std::string filename,
                    const int precision,
                    const bool binary,
@@ -107,10 +150,19 @@ void writeMeshFile(const std::string filename,
     outfile.open(filename);
   }
   if(ext == ".ply") {
-    ok = CGAL::IO::write_PLY(
-      outfile, mesh, comments,
-      CGAL::parameters::stream_precision(precision)
-    );
+    if(binary) {
+      Mesh3 mesh_epick;
+      CGAL::copy_face_graph(mesh, mesh_epick);
+      ok = CGAL::IO::write_PLY(
+        outfile, mesh_epick, comments,
+        CGAL::parameters::stream_precision(precision)
+      );
+    } else {
+      ok = CGAL::IO::write_PLY(
+        outfile, mesh, comments,
+        CGAL::parameters::stream_precision(precision)
+      );
+    }
   } else if(ext == ".off") {
     ok = CGAL::IO::write_OFF(
       outfile, mesh,

@@ -42,10 +42,9 @@ cgalMesh <- R6Class(
     #'   vectors of integers (each one gives the vertex indices of a face)
     #' @param normals if \code{mesh} is missing, must be \code{NULL} or a 
     #'   numeric matrix with three columns and as many rows as vertices
-    #' @param clean Boolean, no effect if the mesh is given by a file, 
-    #'   otherwise it indicates whether to clean the mesh (merge duplicated 
-    #'   vertices and duplicated faces, remove isolated vertices); set to 
-    #'   \code{FALSE} if you know your mesh is already clean
+    #' @param clean Boolean value indicating whether to clean the mesh (merge 
+    #'   duplicated vertices and duplicated faces, remove isolated vertices); 
+    #'   set to \code{FALSE} if you know your mesh is already clean
     #' @return A \code{cgalMesh} object.
     #' @examples 
     #' library(cgalMeshes)
@@ -71,7 +70,7 @@ cgalMesh <- R6Class(
     #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.85)
     #' shade3d(rmesh, meshColor = "faces")}
     "initialize" = function(
-      mesh, vertices, faces, normals = NULL, clean = FALSE
+    mesh, vertices, faces, normals = NULL, clean = FALSE
     ){
       # one can also initialize from an external pointer, but 
       # this is hidden to the user
@@ -98,6 +97,9 @@ cgalMesh <- R6Class(
             if(!is.null(ib <- mesh[["ib"]])) {
               nf <- nf + ncol(ib)
             }
+            if(nf == 0L) {
+              stop("This mesh is empty.")
+            }
             if(length(colors) == nf) {
               fcolors <- colors
             }
@@ -117,7 +119,8 @@ cgalMesh <- R6Class(
             r <- readBin(mesh, "raw", 20L)
             binary <- grepl("binary", rawToChar(r))
           }
-          private[[".CGALmesh"]] <- CGALmesh$new(path.expand(mesh), binary)
+          private[[".CGALmesh"]] <- 
+            CGALmesh$new(path.expand(mesh), binary, clean)
           return(invisible(self))
         } else {
           stop("Invalid `mesh` argument.")
@@ -1577,12 +1580,17 @@ cgalMesh <- R6Class(
     #'   places
     #' @param comments for \code{ply} extension only, a string to be included 
     #'   in the header of the PLY file
+    #' @param binary Boolean, for \code{ply} extension only, whether to write 
+    #'   a binary \code{ply} file; the mesh properties (vertex colors, face 
+    #'   colors, normals) are lost with this format
     #' @return Nothing, just writes a file.
-    "writeMeshFile" = function(filename, precision = 17, comments = "") {
+    "writeMeshFile" = function(
+      filename, precision = 17, comments = "", binary = FALSE
+    ) {
       stopifnot(isString(filename))
       stopifnot(isPositiveInteger(precision))
       stopifnot(isString(comments))
-      #stopifnot(isBoolean(binary))
+      stopifnot(isBoolean(binary))
       filename <- path.expand(filename)
       normals <- self$getNormals()
       if(!is.null(normals)) {
@@ -1611,7 +1619,7 @@ cgalMesh <- R6Class(
         })
       }
       private[[".CGALmesh"]]$writeFile(
-        filename, as.integer(precision), FALSE, comments, 
+        filename, as.integer(precision), binary, comments, 
         normals, fcolors, vcolors
       )
     }

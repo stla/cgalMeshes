@@ -26,13 +26,13 @@ template std::vector<Point3> matrix_to_points3<Point3>(
   const Rcpp::NumericMatrix
 );
 
-std::vector<std::vector<int>> list_to_faces(const Rcpp::List L) {
+std::vector<std::vector<size_t>> list_to_faces(const Rcpp::List L) {
   const size_t nfaces = L.size();
-  std::vector<std::vector<int>> faces;
+  std::vector<std::vector<size_t>> faces;
   faces.reserve(nfaces);
   for(size_t i = 0; i < nfaces; i++) {
     Rcpp::IntegerVector face_rcpp = Rcpp::as<Rcpp::IntegerVector>(L(i));
-    std::vector<int> face(face_rcpp.begin(), face_rcpp.end());
+    std::vector<size_t> face(face_rcpp.begin(), face_rcpp.end());
     faces.emplace_back(face);
   }
   return faces;

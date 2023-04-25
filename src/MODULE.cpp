@@ -12,7 +12,7 @@ RCPP_MODULE(class_CGALmesh) {
       Nullable<NumericMatrix>, Nullable<StringVector>, Nullable<StringVector>
     >()
     .constructor<XPtr<EMesh3>>()
-    .constructor<Rcpp::String, bool>()
+    .constructor<Rcpp::String, bool, bool>()
     .field("xptr", &CGALmesh::xptr)
     .method("area", &CGALmesh::area)
     .method("assignFaceColors", &CGALmesh::assignFaceColors)

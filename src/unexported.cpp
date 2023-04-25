@@ -5,7 +5,7 @@
 
 template <typename MeshT, typename PointT>
 MeshT csoup2mesh(std::vector<PointT> points,
-                 std::vector<std::vector<int>> faces,
+                 std::vector<std::vector<size_t>> faces,
                  const bool clean) {
   if(clean) {
     PMP::repair_polygon_soup(points, faces);
@@ -24,7 +24,7 @@ MeshT csoup2mesh(std::vector<PointT> points,
 }
 
 template EMesh3 csoup2mesh<EMesh3, EPoint3>(
-  std::vector<EPoint3>, std::vector<std::vector<int>>, const bool
+  std::vector<EPoint3>, std::vector<std::vector<size_t>>, const bool
 );
 
 
