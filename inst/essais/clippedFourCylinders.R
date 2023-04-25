@@ -1,7 +1,7 @@
 library(rgl)
 library(cgalMeshes)
 
-t_ <- seq(0, 1, length.out = 150)
+t_ <- seq(0, 1, length.out = 100)
 
 A1 <- c(2, 2, 2)
 B1 <- c(-2, -2, -2)
@@ -33,76 +33,37 @@ mesh2$assignFaceColors("darkgreen")
 mesh3$assignFaceColors("darkblue")
 mesh4$assignFaceColors("gold")
 
-meshes1 = mesh1$clip(mesh2, TRUE)
-cols <- mesh1$getFaceColors()
-cols[cols==""] <- "darkred"
-mesh1$assignFaceColors(cols)
+.meshes1 <- mesh1$clip(mesh2, TRUE)
+.meshes2 <- mesh1$clip(mesh3, TRUE)
+.meshes3 <- mesh1$clip(mesh4, TRUE)
 
-# m1 <- meshes1[[1]]
-# cols <- m1$getFaceColors()
-# cols[cols==""] <- "white"
-# m1$assignFaceColors(cols)
-# 
-# m2 <- meshes1[[2]]
-# mmm = m1$union(m2)
+rmesh1 <- mesh1$getMesh()
+shade3d(rmesh1, meshColor = "faces")
 
-meshes2 = mesh3$clip(mesh4, TRUE)
-cols <- mesh3$getFaceColors()
-cols[cols==""] <- "darkblue"
-mesh3$assignFaceColors(cols)
-
-mmesh1 <- mesh1$copy()
-mmesh3 <- mesh3$copy()
-
-# cols <- mmesh1$getFaceColors()
-# rmesh1 <- Rvcg::vcgClean(mmesh1$getMesh(), sel = 1:7)
-# ok <- rmesh1$remface == 0
-# rmesh1$material$color <- cols[ok]
-# 
-# cols <- mmesh3$getFaceColors()
-# rmesh3 <- Rvcg::vcgClean(mmesh3$getMesh(), sel = 0:7)
-# ok <- rmesh3$remface == 0
-# rmesh3$material$color <- cols[ok]
-# 
-# mmmesh1 <- cgalMesh$new(rmesh1)
-# mmmesh3 <- cgalMesh$new(rmesh3)
-
-. <- mesh3$clip(mesh1, FALSE)
-# table(mesh3$getFaceColors())
-# mesh3$computeNormals()
-# rmesh3 <- mesh3$getMesh()
-# shade3d(rmesh3, meshColor = "faces")
-
-. <- mmesh1$clip(mmesh3, FALSE)
-# table(mmesh1$getFaceColors())
-# mmesh1$computeNormals()
-# rmesh1 <- mmesh1$getMesh()
-# shade3d(rmesh1, meshColor = "faces")
-
-
-
-
-m1 = mesh3
-m2 = mmesh1
-
-gold <- which(m1$getFaceColors() == "gold")
-mm1 <- m1$filterMesh(gold)
-m1a <- mm1[[1]]
-m1b <- mm1[[2]]
+gold <- which(mesh1$getFaceColors() == "gold")
+mm1 <- mesh1$filterMesh(gold)
+mgold <- mm1[[1]]
+m2    <- mm1[[2]]
 
 red <- which(m2$getFaceColors() == "darkred")
 mm2 <- m2$filterMesh(red)
-m2a <- mm2[[1]]
-m2b <- mm2[[2]]
+mred <- mm2[[1]]
+m3   <- mm2[[2]]
 
-m1a$computeNormals()
-m1b$computeNormals()
-m2a$computeNormals()
-m2b$computeNormals()
-rm1 <- m1a$getMesh()
-rm2 <- m1b$getMesh()
-rm3 <- m2a$getMesh()
-rm4 <- m2b$getMesh()
+green <- which(m3$getFaceColors() == "darkgreen")
+mm3 <- m3$filterMesh(green)
+mgreen <- mm3[[1]]
+mblue  <- mm3[[2]]
+
+mgold$computeNormals()
+mred$computeNormals()
+mgreen$computeNormals()
+mblue$computeNormals()
+rm1 <- mgold$getMesh()
+rm2 <- mred$getMesh()
+rm3 <- mgreen$getMesh()
+rm4 <- mblue$getMesh()
+
 open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(30, 30, zoom = 0.6)
 shade3d(rm1, meshColor = "faces")
@@ -132,7 +93,7 @@ movie3d(
   dir = ".",
   movie = "cc",
   convert = FALSE,
-  webshot = FALSE
+  webshot = TRUE
 )
 
 library(gifski)

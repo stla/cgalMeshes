@@ -23,6 +23,8 @@ R6 based utilities for 3D meshes.
 
 ![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/clippedCylinders.gif)
 
+![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/clippedFourCylinders.gif)
+
 
 ### Fairing
 

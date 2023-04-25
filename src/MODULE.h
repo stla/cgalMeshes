@@ -296,7 +296,7 @@ public:
     std::map<face_descriptor, double> fscalarMap;
     std::map<face_descriptor, double> fscalarMap2;
     std::map<face_descriptor, double> fscalarMap_clipper;
-
+    
     if(hasColors) {
       fcolorMap = fcolorMap_.first;
       fcolorMap2 = fcolorMap2_.first;
@@ -308,7 +308,7 @@ public:
 
     {
       int fdi = 0;
-      for(auto it = ftargets.rbegin(); it != ftargets.rend(); ++it) {
+      for(auto it = ftargets.begin(); it != ftargets.end(); ++it) {
         face_descriptor fd = it->second;
         if(std::size_t(fd) >= nfaces_clipper) {
           fd = fmap_clipper[fd];
@@ -332,21 +332,23 @@ public:
     Fcolors_map newfcolor;
     Fscalars_map newfscalar;
     if(hasColors) {
-      newfcolor = 
-        mesh.add_property_map<face_descriptor, std::string>("f:color", "").first;
+      newfcolor = mesh.add_property_map<face_descriptor, std::string>(
+        "f:color", ""
+      ).first;
     }
     if(hasScalars) {
-      newfscalar = 
-        mesh.add_property_map<face_descriptor, double>("f:scalar", nan("")).first;
+      newfscalar = mesh.add_property_map<face_descriptor, double>(
+        "f:scalar", nan("")
+      ).first;
     }
 
     for(EMesh3::Face_index fi : mesh.faces()) {
       std::size_t ifi = fimap[fi];
       face_descriptor fd = CGAL::SM_Face_index(ifi);
-      if(fi != fd && ifi != undetermined) {
+      if(ifi != undetermined) {
         whichPart[fi] = 0;
         if(hasColors) {
-          newfcolor[fi] = fcolorMap[fmap_tm[fd]];
+          newfcolor[fi] = ifi < nfaces ? fcolorMap[fd] : fcolorMap[fmap_tm[fd]]; 
         }
         if(hasScalars) {
           newfscalar[fi] = fscalarMap[fmap_tm[fd]];
@@ -354,8 +356,7 @@ public:
       } else if(ifi != undetermined) {
         whichPart[fi] = 0;
         if(hasColors) {
-          newfcolor[fi] = 
-            ifi < nfaces ? fcolorMap[fd] : fcolorMap[fmap_tm[fd]];
+          newfcolor[fi] = fcolorMap[fd];
         }
         if(hasScalars) {
           newfscalar[fi] = 
