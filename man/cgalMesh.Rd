@@ -902,6 +902,8 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-getNormals}{\code{cgalMesh$getNormals()}}
 \item \href{#method-cgalMesh-getMesh}{\code{cgalMesh$getMesh()}}
 \item \href{#method-cgalMesh-getVertices}{\code{cgalMesh$getVertices()}}
+\item \href{#method-cgalMesh-HausdorffApproximate}{\code{cgalMesh$HausdorffApproximate()}}
+\item \href{#method-cgalMesh-HausdorffEstimate}{\code{cgalMesh$HausdorffEstimate()}}
 \item \href{#method-cgalMesh-intersection}{\code{cgalMesh$intersection()}}
 \item \href{#method-cgalMesh-isClosed}{\code{cgalMesh$isClosed()}}
 \item \href{#method-cgalMesh-isotropicRemeshing}{\code{cgalMesh$isotropicRemeshing()}}
@@ -2326,6 +2328,58 @@ Get the vertices of the mesh.
 
 \subsection{Returns}{
 The vertices in a matrix.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-HausdorffApproximate"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-HausdorffApproximate}{}}}
+\subsection{Method \code{HausdorffApproximate()}}{
+Approximate Hausdorff distance between the reference mesh
+  and another mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$HausdorffApproximate(mesh2, symmetric = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{mesh2}}{a \code{cgalMesh} object}
+
+\item{\code{symmetric}}{Boolean, whether to consider the symmetric Hausdorff 
+distance.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A number. The algorithm uses some simulations and thus the 
+  result can vary.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-HausdorffEstimate"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-HausdorffEstimate}{}}}
+\subsection{Method \code{HausdorffEstimate()}}{
+Estimate of Hausdorff distance between the reference mesh
+  and another mesh.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$HausdorffEstimate(mesh2, errorBound = 1e-04, symmetric = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{mesh2}}{a \code{cgalMesh} object}
+
+\item{\code{errorBound}}{a positive number, a bound on the error of the 
+estimate}
+
+\item{\code{symmetric}}{Boolean, whether to consider the symmetric Hausdorff 
+distance.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A number.
 }
 }
 \if{html}{\out{<hr>}}

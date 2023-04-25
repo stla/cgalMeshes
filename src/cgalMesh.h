@@ -6,6 +6,7 @@
 #include <RcppColors.h>
 
 #define CGAL_EIGEN3_ENABLED 1
+#define PIA_TAG CGAL::Parallel_if_available_tag
 
 #include "cgalMeshes_types.h"
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>

@@ -4,6 +4,8 @@
 
 - It is now possible to write a binary PLY file representing a mesh.
 
+- Hausdorff distance between two meshes.
+
 
 # cgalMeshes 2.0.0
 
