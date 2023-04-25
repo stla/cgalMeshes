@@ -21,7 +21,7 @@ R6 based utilities for 3D meshes.
 
 ![](https://raw.githubusercontent.com/stla/MeshesTools/main/inst/screenshots/Togliatti.gif)
 
-![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/clippedCylinders.gif)
+![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/clippedThreeCylinders.gif)
 
 ![](https://raw.githubusercontent.com/stla/cgalMeshes/main/inst/screenshots/clippedFourCylinders.gif)
 
