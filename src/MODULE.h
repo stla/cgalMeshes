@@ -357,25 +357,15 @@ public:
     for(EMesh3::Face_index fi : mesh.faces()) {
       std::size_t ifi = fimap[fi];
       face_descriptor fd = CGAL::SM_Face_index(ifi);
-      if(fi != fd && ifi != undetermined) {
+      if(ifi != undetermined) {
         whichPart[fi] = 0;
         if(hasColors) {
-          newfcolor[fi] = fcolorMap[fmap_tm[fd]];
+          newfcolor[fi] = ifi < nfaces ? fcolorMap[fd] : fcolorMap[fmap_tm[fd]]; 
         }
         if(hasScalars) {
           newfscalar[fi] = fscalarMap[fmap_tm[fd]];
         }
-      } else if(ifi != undetermined) {
-        whichPart[fi] = 0;
-        if(hasColors) {
-          newfcolor[fi] = 
-            ifi < nfaces ? fcolorMap[fd] : fcolorMap[fmap_tm[fd]];
-        }
-        if(hasScalars) {
-          newfscalar[fi] = 
-            ifi < nfaces ? fscalarMap[fd] : fscalarMap[fmap_tm[fd]];
-        }
-      } else if(ifi == undetermined) {
+      } else {
         whichPart[fi] = 1;
         if(hasColors) {
           newfcolor[fi] = fcolorMap_clipper[zeros[fi]];
@@ -385,7 +375,7 @@ public:
         }
       } 
     }
-
+    
     mesh.remove_property_map(fimap);
 
     EMesh3 tmesh;
