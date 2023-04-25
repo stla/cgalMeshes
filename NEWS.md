@@ -1,3 +1,8 @@
+# cgalMeshes 2.0.0.9000
+
+- The `$clip` method with `volume=TRUE` didn't correctly preserve the face properties (e.g. the face colors). Now it partially works: the face properties of the clipped mesh are correctly preserved, but not the face properties of the clipping mesh (help wanted).
+
+
 # cgalMeshes 2.0.0
 
 - It is now possible to assign colors and scalars to the faces and the vertices of a mesh. These properties are preserved by certain operations. For example, the computation of the connected components preserves all properties, the union preserves the face properties. The normals are also assigned to the mesh as such a property, and they are preserved when computing the connected components.

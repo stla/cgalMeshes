@@ -353,16 +353,7 @@ public:
         if(hasScalars) {
           newfscalar[fi] = fscalarMap[fmap_tm[fd]];
         }
-      } else if(ifi != undetermined) {
-        whichPart[fi] = 0;
-        if(hasColors) {
-          newfcolor[fi] = fcolorMap[fd];
-        }
-        if(hasScalars) {
-          newfscalar[fi] = 
-            ifi < nfaces ? fscalarMap[fd] : fscalarMap[fmap_tm[fd]];
-        }
-      } else if(ifi == undetermined) {
+      } else {
         whichPart[fi] = 1;
         if(hasColors) {
           newfcolor[fi] = fcolorMap_clipper[zeros[fi]];
