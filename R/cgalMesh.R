@@ -1390,7 +1390,15 @@ cgalMesh <- R6Class(
       private[[".CGALmesh"]]$reverseFaceOrientations()
       invisible(self)
     },
-    
+
+    #' @description Random sampling on the mesh. The mesh must be triangle.
+    #' @param nsims integer, the desired number of simulations
+    #' @return A \code{nsims x 3} matrix containing the simulations.
+    "sample" = function(nsims) {
+      stopifnot(isStrictPositiveInteger(nsims))
+      private[[".CGALmesh"]]$sampleMesh(as.integer(nsims))
+    },
+        
     #' @description Check whether the mesh self-intersects. The mesh must be 
     #'   triangle.
     #' @return A Boolean value, whether the mesh self-intersects.

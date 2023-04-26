@@ -6,6 +6,8 @@
 
 - Hausdorff distance between two meshes.
 
+- Random sampling on a mesh.
+
 
 # cgalMeshes 2.0.0
 
