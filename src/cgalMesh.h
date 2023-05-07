@@ -204,7 +204,7 @@ void copy_property(
   EMesh3&, EMesh3&, std::map<SourceDescriptor, TargetDescriptor>, std::string 
 );
 
-//////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 struct ClipVisitor : 
   public PMP::Corefinement::Default_visitor<EMesh3>
@@ -214,16 +214,7 @@ struct ClipVisitor :
   }
 
   void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
-    if(*is_tm) {
-      if(tm.property_map<face_descriptor, std::size_t>("f:i").second) {
-        (*fmap_tm).insert(std::make_pair(fnew, *ofaceindex));
-      } else {
-        *is_tm = false;
-        (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
-      }
-    } else {
-      (*fmap_clipper).insert(std::make_pair(fnew, *ofaceindex));
-    }
+    (*FACEMAPS[&tm])[fnew] = *ofaceindex;
   }
 
   void after_face_copy(
@@ -235,17 +226,44 @@ struct ClipVisitor :
   
   ClipVisitor()
     : ofaceindex(new face_descriptor()),
-      fmap_tm(new MapBetweenFaces()),
-      fmap_clipper(new MapBetweenFaces()),
-      ftargets(new MapBetweenFaces()),
-      is_tm(new bool(true))
+      ftargets(new MapBetweenFaces())
+  {
+    FACEMAPS.reserve(2);
+  }
+  
+  std::shared_ptr<face_descriptor> ofaceindex;
+  std::shared_ptr<MapBetweenFaces> ftargets;
+  boost::container::flat_map<const EMesh3*, MapBetweenFaces*> FACEMAPS;
+};
+
+struct ClipPlaneVisitor : 
+  public PMP::Corefinement::Default_visitor<EMesh3>
+{
+  void before_subface_creations(face_descriptor fsplit, const EMesh3 & tm) {
+    *ofaceindex = fsplit;
+  }
+  
+  void after_subface_created(face_descriptor fnew, const EMesh3 & tm) {
+    if(tm.property_map<face_descriptor, std::size_t>("f:dummy").second){ 
+      (*FACEMAP)[fnew] = *ofaceindex;
+    }
+  }
+  
+  void after_face_copy(
+      face_descriptor fsrc, const EMesh3 & tmsrc, 
+      face_descriptor ftgt, const EMesh3 & tmtgt
+  ) {
+    (*ftargets).insert(std::make_pair(ftgt, fsrc));
+  }
+  
+  ClipPlaneVisitor()
+    : ofaceindex(new face_descriptor()),
+      ftargets(new MapBetweenFaces())
   {}
   
   std::shared_ptr<face_descriptor> ofaceindex;
-  std::shared_ptr<MapBetweenFaces> fmap_tm;
-  std::shared_ptr<MapBetweenFaces> fmap_clipper;
   std::shared_ptr<MapBetweenFaces> ftargets;
-  std::shared_ptr<bool> is_tm;
+  MapBetweenFaces* FACEMAP;
 };
 
 
