@@ -236,7 +236,7 @@ struct ClipVisitor :
   boost::container::flat_map<const EMesh3*, MapBetweenFaces*> FACEMAPS;
 };
 
-struct ClipPlaneVisitor : 
+struct ClipVisitor2 : 
   public PMP::Corefinement::Default_visitor<EMesh3>
 {
   void before_subface_creations(face_descriptor fsplit, const EMesh3 & tm) {
@@ -256,7 +256,7 @@ struct ClipPlaneVisitor :
     (*ftargets).insert(std::make_pair(ftgt, fsrc));
   }
   
-  ClipPlaneVisitor()
+  ClipVisitor2()
     : ofaceindex(new face_descriptor()),
       ftargets(new MapBetweenFaces())
   {}

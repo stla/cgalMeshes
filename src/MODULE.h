@@ -33,6 +33,7 @@ public:
   
 
   // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
   double area() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -45,6 +46,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   void assignFaceColors(Rcpp::StringVector colors) {
     if(colors.size() != 1 && colors.size() != mesh.number_of_faces()) {
@@ -71,6 +73,7 @@ public:
 
 
   // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
   void assignFaceScalars(Rcpp::NumericVector scalars) {
     if(scalars.size() != mesh.number_of_faces()) {
       Rcpp::stop(
@@ -89,6 +92,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   void assignNormals(Rcpp::NumericMatrix normals) {
     if(normals.ncol() != mesh.number_of_vertices()) {
@@ -110,6 +114,7 @@ public:
 
 
   // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
   void assignVertexColors(Rcpp::StringVector colors) {
     if(colors.size() != mesh.number_of_vertices()) {
       Rcpp::stop(
@@ -128,6 +133,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   void assignVertexScalars(Rcpp::NumericVector scalars) {
     if(scalars.size() != mesh.number_of_vertices()) {
@@ -148,6 +154,7 @@ public:
 
 
   // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
   Rcpp::List boundingBox() {
     Bbox3 bbox = PMP::bbox(mesh);
     Rcpp::NumericVector lcorner = {bbox.xmin(), bbox.ymin(), bbox.zmin()};
@@ -159,6 +166,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   void CatmullClark(unsigned int iterations) {
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -173,6 +181,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   Rcpp::NumericVector centroid() {
     if(!CGAL::is_triangle_mesh(mesh)) {
@@ -442,7 +451,7 @@ public:
       copy_prop<face_descriptor, double>(mesh, "f:scalar");
     const bool hasScalars = fscalarMap_.second;
 
-    ClipPlaneVisitor vis;
+    ClipVisitor2 vis;
     MapBetweenFaces mesh_map;
     for(std::size_t i = 0; i < nfaces; i++) {
       face_descriptor fi(i);
@@ -618,14 +627,19 @@ public:
       copy_prop<face_descriptor, double>(mesh, "f:scalar");
     const bool hasScalars = fscalarMap_.second;
 
-    ClipVisitor vis;
+    ClipVisitor2 vis;
     MapBetweenFaces mesh_map;
     for(std::size_t i = 0; i < nfaces; i++) {
       face_descriptor fi(i);
       mesh_map[fi] = fi;
     }
-    vis.FACEMAPS[&mesh] = &mesh_map;
+    vis.FACEMAP = &mesh_map;
 
+    Face_index_map fdmap = 
+      mesh.add_property_map<face_descriptor, std::size_t>(
+          "f:dummy", 0
+      ).first;
+    
     const bool clipping = PMP::clip(
       mesh, isocuboid,
       PMP::parameters::clip_volume(clipVolume)
@@ -636,6 +650,8 @@ public:
       Rcpp::stop("Clipping has failed.");
     }
 
+    mesh.remove_property_map(fdmap);
+    
     Face_index_map fimap = 
       mesh.add_property_map<face_descriptor, std::size_t>(
         "f:i", 999999999
@@ -685,6 +701,7 @@ public:
       return Rcpp::List::create();
     }
 
+    
     /* --------------- clipVolume is true --------------- */
     MapBetweenFaces ftargets = *(vis.ftargets);
 
@@ -806,6 +823,7 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   Rcpp::List connectedComponents(const bool triangulate) {
 
