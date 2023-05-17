@@ -1,7 +1,7 @@
 Type: Package
 Package: cgalMeshes
 Title: R6 Based Utilities for 3D Meshes using 'CGAL'
-Version: 2.0.0.9000
+Version: 2.1.0
 Authors@R: 
     person("Stéphane", "Laurent", , "laurent_step@outlook.fr", role = c("aut", "cre"))
 Maintainer: Stéphane Laurent <laurent_step@outlook.fr>

@@ -1,4 +1,4 @@
-# cgalMeshes 2.0.0.9000
+# cgalMeshes 2.1.0
 
 - The `$clip` method with `volume=TRUE` didn't correctly preserve the face properties (e.g. the face colors). Now it partially works: the face properties of the clipped mesh are correctly preserved, but not the face properties of the clipping mesh (help wanted).
 
