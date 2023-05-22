@@ -223,7 +223,7 @@ public:
     if(PMP::does_self_intersect(clipper)) {
       Rcpp::stop("The clipping mesh self-intersects.");
     }
-      
+    
     MaybeFcolorMap fcolorMap_ = 
       copy_prop<face_descriptor, std::string>(mesh, "f:color");
     MaybeFcolorMap fcolorMap2_ = 
@@ -234,33 +234,46 @@ public:
     MaybeFscalarMap fscalarMap2_ = 
       copy_prop<face_descriptor, double>(clipper, "f:scalar");
     const bool hasScalars = fscalarMap_.second && fscalarMap2_.second;
-
+    
     std::size_t nfaces = mesh.number_of_faces();
     std::size_t nfaces_clipper = clipper.number_of_faces();
     
-    std::size_t undetermined = 9999999;
-
     ClipVisitor vis; 
+    
+    MapBetweenFaces mesh_map;
+    MapBetweenFaces clipper_map;
+    for(std::size_t i = 0; i < nfaces; i++) {
+      face_descriptor fi(i);
+      mesh_map[fi] = fi;
+    }
+    for(std::size_t i = 0; i < nfaces_clipper; i++) {
+      face_descriptor fi(i);
+      clipper_map[fi] = fi;
+    }
+    vis.FACEMAPS[&mesh]    = &mesh_map;
+    vis.FACEMAPS[&clipper] = &clipper_map;
+    
+    std::size_t undetermined = 999999999;
     Face_index_map fimap = 
       mesh.add_property_map<face_descriptor, std::size_t>(
-        "f:i", undetermined
+          "f:i", undetermined
       ).first;
+    
     const bool doNotModify = !clipVolume;
     const bool clipping = PMP::clip(
       mesh, clipper,
       PMP::parameters::clip_volume(clipVolume)
-        .visitor(vis).face_index_map(fimap),
+      .visitor(vis).face_index_map(fimap),
       PMP::parameters::clip_volume(clipVolume).do_not_modify(doNotModify)
     );
     if(!clipping) {
       Rcpp::stop("Clipping has failed.");
     }
-
+    
     mesh.collect_garbage();
-
+    
     /* --------------- clipVolume is false --------------- */
     if(!clipVolume) {
-      MapBetweenFaces fmap = *(vis.fmap_tm);
       if(hasColors || hasScalars) {
         std::map<face_descriptor, std::string> fcolorMap;
         Fcolors_map newfcolor;
@@ -270,19 +283,19 @@ public:
           fcolorMap = fcolorMap_.first;
           newfcolor = 
             mesh.add_property_map<face_descriptor, std::string>(
-              "f:color", ""
+                "f:color", ""
             ).first;
         }
         if(hasScalars) {
           fscalarMap = fscalarMap_.first;
           newfscalar = 
             mesh.add_property_map<face_descriptor, double>(
-              "f:scalar", nan("")
+                "f:scalar", nan("")
             ).first;
         }
         for(EMesh3::Face_index fi : mesh.faces()) {
           face_descriptor fd = CGAL::SM_Face_index(fimap[fi]);
-          face_descriptor fdnew = size_t(fd) < nfaces ? fd : fmap[fd];
+          face_descriptor fdnew = mesh_map[fd];
           if(hasColors) {
             newfcolor[fi] = fcolorMap[fdnew];
           }
@@ -294,11 +307,9 @@ public:
       mesh.remove_property_map(fimap);
       return Rcpp::List::create();
     }
-
+    
     /* --------------- clipVolume is true --------------- */
-    MapBetweenFaces fmap_tm      = *(vis.fmap_tm);
-    MapBetweenFaces fmap_clipper = *(vis.fmap_clipper);
-    MapBetweenFaces ftargets     = *(vis.ftargets);
+    MapBetweenFaces ftargets = *(vis.ftargets);
     MapBetweenFaces zeros;
     std::map<face_descriptor, std::string> fcolorMap;
     std::map<face_descriptor, std::string> fcolorMap2;
@@ -306,7 +317,7 @@ public:
     std::map<face_descriptor, double> fscalarMap;
     std::map<face_descriptor, double> fscalarMap2;
     std::map<face_descriptor, double> fscalarMap_clipper;
-
+    
     if(hasColors) {
       fcolorMap = fcolorMap_.first;
       fcolorMap2 = fcolorMap2_.first;
@@ -315,14 +326,11 @@ public:
       fscalarMap = fscalarMap_.first;
       fscalarMap2 = fscalarMap2_.first;
     }
-
+    
     {
       int fdi = 0;
-      for(auto it = ftargets.rbegin(); it != ftargets.rend(); ++it) {
-        face_descriptor fd = it->second;
-        if(std::size_t(fd) >= nfaces_clipper) {
-          fd = fmap_clipper[fd];
-        }
+      for(auto it = ftargets.begin(); it != ftargets.end(); ++it) {
+        face_descriptor fd = clipper_map[it->second];
         if(hasColors) {
           fcolorMap_clipper[it->first] = fcolorMap2[fd];
         }
@@ -335,35 +343,33 @@ public:
         zeros[CGAL::SM_Face_index(fdi++)] = it->first;
       }
     }
-
+    
     Face_index_map whichPart = 
       mesh.add_property_map<face_descriptor, std::size_t>("f:which").first;
-
+    
     Fcolors_map newfcolor;
     Fscalars_map newfscalar;
     if(hasColors) {
-      newfcolor = 
-        mesh.add_property_map<face_descriptor, std::string>(
-          "f:color", ""
-        ).first;
+      newfcolor = mesh.add_property_map<face_descriptor, std::string>(
+        "f:color", ""
+      ).first;
     }
     if(hasScalars) {
-      newfscalar = 
-        mesh.add_property_map<face_descriptor, double>(
-          "f:scalar", nan("")
-        ).first;
+      newfscalar = mesh.add_property_map<face_descriptor, double>(
+        "f:scalar", nan("")
+      ).first;
     }
-
+    
     for(EMesh3::Face_index fi : mesh.faces()) {
       std::size_t ifi = fimap[fi];
-      face_descriptor fd = CGAL::SM_Face_index(ifi);
+      face_descriptor fd = mesh_map[CGAL::SM_Face_index(ifi)];
       if(ifi != undetermined) {
         whichPart[fi] = 0;
         if(hasColors) {
-          newfcolor[fi] = ifi < nfaces ? fcolorMap[fd] : fcolorMap[fmap_tm[fd]]; 
+          newfcolor[fi] = fcolorMap[fd]; 
         }
         if(hasScalars) {
-          newfscalar[fi] = fscalarMap[fmap_tm[fd]];
+          newfscalar[fi] = fscalarMap[fd];
         }
       } else {
         whichPart[fi] = 1;
@@ -377,56 +383,54 @@ public:
     }
     
     mesh.remove_property_map(fimap);
-
+    
     EMesh3 tmesh;
     {
       Filtered_graph ffg(mesh, 0, whichPart);
       MapBetweenFaceDescriptors f2fmap_;
-      boost::associative_property_map<MapBetweenFaceDescriptors> 
-        f2fmap(f2fmap_);
+      boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
       CGAL::copy_face_graph(
         ffg, tmesh, CGAL::parameters::face_to_face_map(f2fmap)
       );
       copy_property<ffg_face_descriptor, face_descriptor, std::string>(
-        mesh, tmesh, f2fmap_, "f:color"
+          mesh, tmesh, f2fmap_, "f:color"
       );
       copy_property<ffg_face_descriptor, face_descriptor, double>(
-        mesh, tmesh, f2fmap_, "f:scalar"
+          mesh, tmesh, f2fmap_, "f:scalar"
       );
     }
-
+    
     EMesh3 tmesh2;
     {
       Filtered_graph ffg(mesh, 1, whichPart);
       MapBetweenFaceDescriptors f2fmap_;
-      boost::associative_property_map<MapBetweenFaceDescriptors> 
-        f2fmap(f2fmap_);
+      boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
       CGAL::copy_face_graph(
         ffg, tmesh2, CGAL::parameters::face_to_face_map(f2fmap)
       );
       copy_property<ffg_face_descriptor, face_descriptor, std::string>(
-        mesh, tmesh2, f2fmap_, "f:color"
+          mesh, tmesh2, f2fmap_, "f:color"
       );
       copy_property<ffg_face_descriptor, face_descriptor, double>(
-        mesh, tmesh2, f2fmap_, "f:scalar"
+          mesh, tmesh2, f2fmap_, "f:scalar"
       );
     }
-
+    
     Rcpp::List meshes = Rcpp::List::create(
       Rcpp::Named("mesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh), false),
       Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(tmesh2), false)
     );
-
+    
     return meshes;
   }
-
-
+  
+  
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   Rcpp::List clipToPlane(
-    Rcpp::NumericVector planePoint, 
-    Rcpp::NumericVector planeNormal, 
-    const bool clipVolume
+      Rcpp::NumericVector planePoint, 
+      Rcpp::NumericVector planeNormal, 
+      const bool clipVolume
   ) {
     EPoint3 point(planePoint[0], planePoint[1], planePoint[2]);
     EVector3 normal(planeNormal[0], planeNormal[1], planeNormal[2]);
@@ -437,44 +441,54 @@ public:
     if(clipVolume && PMP::does_self_intersect(mesh)) {
       Rcpp::stop("The mesh self-intersects.");
     }
-
+    
     std::size_t nfaces = mesh.number_of_faces();
-
+    
     MaybeFcolorMap fcolorMap_ = 
       copy_prop<face_descriptor, std::string>(mesh, "f:color");
     const bool hasColors = fcolorMap_.second;
     MaybeFscalarMap fscalarMap_ = 
       copy_prop<face_descriptor, double>(mesh, "f:scalar");
     const bool hasScalars = fscalarMap_.second;
-
-    Face_index_map fimap_tmp = 
-      mesh.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
-    ClipVisitor vis;
+    
+    ClipVisitor2 vis;
+    MapBetweenFaces mesh_map;
+    for(std::size_t i = 0; i < nfaces; i++) {
+      face_descriptor fi(i);
+      mesh_map[fi] = fi;
+    }
+    vis.FACEMAP = &mesh_map;
+    
+    Face_index_map fdmap = 
+      mesh.add_property_map<face_descriptor, std::size_t>(
+          "f:dummy", 0
+      ).first;
+    
     const bool clipping = PMP::clip(
       mesh, plane,
       PMP::parameters::clip_volume(clipVolume)
-                      .visitor(vis)
-                      .allow_self_intersections(!clipVolume)
+      .visitor(vis)
+      .allow_self_intersections(!clipVolume)
     );
     if(!clipping) {
       Rcpp::stop("Clipping has failed.");
     }
-    mesh.remove_property_map(fimap_tmp);
-
+    
+    mesh.remove_property_map(fdmap);
+    
     Face_index_map fimap = 
       mesh.add_property_map<face_descriptor, std::size_t>(
-        "f:i", 9999999
+          "f:i", 999999999
       ).first;
     for(face_descriptor fd : mesh.faces()) {
       fimap[fd] = std::size_t(fd);
     }
-
+    
     mesh.collect_garbage();
-
+    
     /* --------------- clipVolume is false --------------- */
     if(!clipVolume){
-      MapBetweenFaces fmap = *(vis.fmap_tm);
-
+      
       if(hasColors || hasScalars) {
         std::map<face_descriptor, std::string> fcolorMap;
         Fcolors_map newfcolor;
@@ -484,21 +498,20 @@ public:
           fcolorMap = fcolorMap_.first;
           newfcolor = 
             mesh.add_property_map<face_descriptor, std::string>(
-              "f:color", ""
+                "f:color", ""
             ).first;
         }
         if(hasScalars) {
           fscalarMap = fscalarMap_.first;
           newfscalar = 
             mesh.add_property_map<face_descriptor, double>(
-              "f:scalar", nan("")
+                "f:scalar", nan("")
             ).first;
         }
-
+        
         for(EMesh3::Face_index fi : mesh.faces()) {
           std::size_t ffi = fimap[fi];
-          face_descriptor fd = CGAL::SM_Face_index(ffi);
-          fd = ffi < nfaces ? fd : fmap[fd];
+          face_descriptor fd = mesh_map[CGAL::SM_Face_index(ffi)];
           if(hasColors) {
             newfcolor[fi] = fcolorMap[fd];
           }
@@ -507,15 +520,15 @@ public:
           }
         }
       }
-
+      
       mesh.remove_property_map(fimap);
       return Rcpp::List::create();
     }
-
+    
+    
     /* --------------- clipVolume is true --------------- */
-    MapBetweenFaces fmap     = *(vis.fmap_tm);
     MapBetweenFaces ftargets = *(vis.ftargets);
-
+    
     std::map<face_descriptor, std::string> fcolorMap;
     Fcolors_map newfcolor;
     std::map<face_descriptor, double> fscalarMap;
@@ -524,20 +537,20 @@ public:
       fcolorMap = fcolorMap_.first;
       newfcolor = 
         mesh.add_property_map<face_descriptor, std::string>(
-          "f:color", ""
+            "f:color", ""
         ).first;
     }
     if(hasScalars) {
       fscalarMap = fscalarMap_.first;
       newfscalar = 
         mesh.add_property_map<face_descriptor, double>(
-          "f:scalar", nan("")
+            "f:scalar", nan("")
         ).first;
     }
-
+    
     Face_index_map fwhich = 
       mesh.add_property_map<face_descriptor, std::size_t>("f:which", 1).first;
-
+    
     for(EMesh3::Face_index fi : mesh.faces()) {
       std::size_t ffi = fimap[fi];
       face_descriptor fd = CGAL::SM_Face_index(ffi);
@@ -545,7 +558,7 @@ public:
         fwhich[fi] = 2;
         ftargets.erase(fd);
       } else {
-        fd = ffi < nfaces ? fd : fmap[fd];
+        fd = mesh_map[fd];
         if(hasColors) {
           newfcolor[fi] = fcolorMap[fd];
         }
@@ -554,7 +567,7 @@ public:
         }
       }
     }
-
+    
     EMesh3 mesh1;
     {
       Filtered_graph ffg(mesh, 1, fwhich);
@@ -565,35 +578,35 @@ public:
         ffg, mesh1, CGAL::parameters::face_to_face_map(f2fmap)
       );
       copy_property<ffg_face_descriptor, face_descriptor, std::string>(
-        mesh, mesh1, f2fmap_, "f:color"
+          mesh, mesh1, f2fmap_, "f:color"
       );
       copy_property<ffg_face_descriptor, face_descriptor, double>(
-        mesh, mesh1, f2fmap_, "f:scalar"
+          mesh, mesh1, f2fmap_, "f:scalar"
       );
     }
-
+    
     EMesh3 mesh2;
     {
       Filtered_graph ffg(mesh, 2, fwhich);
       CGAL::copy_face_graph(ffg, mesh2);
     }
-
+    
     mesh.remove_property_map(fimap);
     mesh.remove_property_map(fwhich);
-
+    
     return Rcpp::List::create(
       Rcpp::Named("mesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(mesh1), false),
       Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(mesh2), false)
     );
   }
-
-
+  
+  
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   Rcpp::List clipToIsoCuboid(
-    Rcpp::NumericVector lcorner, 
-    Rcpp::NumericVector ucorner, 
-    const bool clipVolume
+      Rcpp::NumericVector lcorner, 
+      Rcpp::NumericVector ucorner, 
+      const bool clipVolume
   ) {
     EPoint3 lpoint(lcorner[0], lcorner[1], lcorner[2]);
     EPoint3 upoint(ucorner[0], ucorner[1], ucorner[2]);
@@ -604,44 +617,54 @@ public:
     if(clipVolume && PMP::does_self_intersect(mesh)) {
       Rcpp::stop("The mesh self-intersects.");
     }
-
+    
     std::size_t nfaces = mesh.number_of_faces();
-
+    
     MaybeFcolorMap fcolorMap_ = 
       copy_prop<face_descriptor, std::string>(mesh, "f:color");
     const bool hasColors = fcolorMap_.second;
     MaybeFscalarMap fscalarMap_ = 
       copy_prop<face_descriptor, double>(mesh, "f:scalar");
     const bool hasScalars = fscalarMap_.second;
-
-    Face_index_map fimap_tmp = 
-      mesh.add_property_map<face_descriptor, std::size_t>("f:i", 0).first;
-    ClipVisitor vis;
+    
+    ClipVisitor2 vis;
+    MapBetweenFaces mesh_map;
+    for(std::size_t i = 0; i < nfaces; i++) {
+      face_descriptor fi(i);
+      mesh_map[fi] = fi;
+    }
+    vis.FACEMAP = &mesh_map;
+    
+    Face_index_map fdmap = 
+      mesh.add_property_map<face_descriptor, std::size_t>(
+          "f:dummy", 0
+      ).first;
+    
     const bool clipping = PMP::clip(
       mesh, isocuboid,
       PMP::parameters::clip_volume(clipVolume)
-                      .visitor(vis)
-                      .allow_self_intersections(!clipVolume)
+      .visitor(vis)
+      .allow_self_intersections(!clipVolume)
     );
     if(!clipping) {
       Rcpp::stop("Clipping has failed.");
     }
-    mesh.remove_property_map(fimap_tmp);
-
+    
+    mesh.remove_property_map(fdmap);
+    
     Face_index_map fimap = 
       mesh.add_property_map<face_descriptor, std::size_t>(
-        "f:i", 9999999
+          "f:i", 999999999
       ).first;
     for(face_descriptor fd : mesh.faces()) {
       fimap[fd] = std::size_t(fd);
     }
-
+    
     mesh.collect_garbage();
-
+    
     /* --------------- clipVolume is false --------------- */
     if(!clipVolume){
-      MapBetweenFaces fmap = *(vis.fmap_tm);
-
+      
       if(hasColors || hasScalars) {
         std::map<face_descriptor, std::string> fcolorMap;
         Fcolors_map newfcolor;
@@ -651,21 +674,20 @@ public:
           fcolorMap = fcolorMap_.first;
           newfcolor = 
             mesh.add_property_map<face_descriptor, std::string>(
-              "f:color", ""
+                "f:color", ""
             ).first;
         }
         if(hasScalars) {
           fscalarMap = fscalarMap_.first;
           newfscalar = 
             mesh.add_property_map<face_descriptor, double>(
-              "f:scalar", nan("")
+                "f:scalar", nan("")
             ).first;
         }
-
+        
         for(EMesh3::Face_index fi : mesh.faces()) {
           std::size_t ffi = fimap[fi];
-          face_descriptor fd = CGAL::SM_Face_index(ffi);
-          fd = ffi < nfaces ? fd : fmap[fd];
+          face_descriptor fd = mesh_map[CGAL::SM_Face_index(ffi)];
           if(hasColors) {
             newfcolor[fi] = fcolorMap[fd];
           }
@@ -674,15 +696,15 @@ public:
           }
         }
       }
-
+      
       mesh.remove_property_map(fimap);
       return Rcpp::List::create();
     }
-
+    
+    
     /* --------------- clipVolume is true --------------- */
-    MapBetweenFaces fmap     = *(vis.fmap_tm);
     MapBetweenFaces ftargets = *(vis.ftargets);
-
+    
     std::map<face_descriptor, std::string> fcolorMap;
     Fcolors_map newfcolor;
     std::map<face_descriptor, double> fscalarMap;
@@ -691,20 +713,20 @@ public:
       fcolorMap = fcolorMap_.first;
       newfcolor = 
         mesh.add_property_map<face_descriptor, std::string>(
-          "f:color", ""
+            "f:color", ""
         ).first;
     }
     if(hasScalars) {
       fscalarMap = fscalarMap_.first;
       newfscalar = 
         mesh.add_property_map<face_descriptor, double>(
-          "f:scalar", nan("")
+            "f:scalar", nan("")
         ).first;
     }
-
+    
     Face_index_map fwhich = 
       mesh.add_property_map<face_descriptor, std::size_t>("f:which", 1).first;
-
+    
     for(EMesh3::Face_index fi : mesh.faces()) {
       std::size_t ffi = fimap[fi];
       face_descriptor fd = CGAL::SM_Face_index(ffi);
@@ -712,7 +734,7 @@ public:
         fwhich[fi] = 2;
         ftargets.erase(fd);
       } else {
-        fd = ffi < nfaces ? fd : fmap[fd];
+        fd = mesh_map[fd];
         if(hasColors) {
           newfcolor[fi] = fcolorMap[fd];
         }
@@ -721,39 +743,38 @@ public:
         }
       }
     }
-
+    
     EMesh3 mesh1;
     {
       Filtered_graph ffg(mesh, 1, fwhich);
       MapBetweenFaceDescriptors f2fmap_;
-      boost::associative_property_map<MapBetweenFaceDescriptors> 
-        f2fmap(f2fmap_);
+      boost::associative_property_map<MapBetweenFaceDescriptors> f2fmap(f2fmap_);
       CGAL::copy_face_graph(
         ffg, mesh1, CGAL::parameters::face_to_face_map(f2fmap)
       );
       copy_property<ffg_face_descriptor, face_descriptor, std::string>(
-        mesh, mesh1, f2fmap_, "f:color"
+          mesh, mesh1, f2fmap_, "f:color"
       );
       copy_property<ffg_face_descriptor, face_descriptor, double>(
-        mesh, mesh1, f2fmap_, "f:scalar"
+          mesh, mesh1, f2fmap_, "f:scalar"
       );
     }
-
+    
     EMesh3 mesh2;
     {
       Filtered_graph ffg(mesh, 2, fwhich);
       CGAL::copy_face_graph(ffg, mesh2);
     }
-
+    
     mesh.remove_property_map(fimap);
     mesh.remove_property_map(fwhich);
-
+    
     return Rcpp::List::create(
       Rcpp::Named("mesh1") = Rcpp::XPtr<EMesh3>(new EMesh3(mesh1), false),
       Rcpp::Named("mesh2") = Rcpp::XPtr<EMesh3>(new EMesh3(mesh2), false)
     );
   }
-
+  
   
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
