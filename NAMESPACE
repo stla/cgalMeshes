@@ -2,6 +2,7 @@
 
 export(AFSreconstruction)
 export(HopfTorusMesh)
+export(MinkowskiSum)
 export(SSSreconstruction)
 export(cgalMesh)
 export(cyclideMesh)

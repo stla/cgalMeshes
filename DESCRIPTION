@@ -1,7 +1,7 @@
 Type: Package
 Package: cgalMeshes
 Title: R6 Based Utilities for 3D Meshes using 'CGAL'
-Version: 2.1.0
+Version: 2.1.0.90000
 Authors@R: 
     person("Stéphane", "Laurent", , "laurent_step@outlook.fr", role = c("aut", "cre"))
 Maintainer: Stéphane Laurent <laurent_step@outlook.fr>
@@ -9,7 +9,7 @@ Description: Provides some utilities for 3D meshes: clipping of a mesh to
     the volume bounded by another mesh, decomposition into convex parts,
     distance between a mesh and a point, Hausdorff distance between two
     meshes, triangulation, geodesic distance, Boolean operations
-    (intersection, union, difference), connected components, subdivision
+    (intersection, union, difference), Minkowski sum, subdivision
     algorithms, random sampling on a mesh, volume, area, and centroid.
     Also provides two algorithms for surface reconstruction from a cloud
     of points. Meshes are represented by R6 classes. All algorithms are
