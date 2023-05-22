@@ -5,6 +5,10 @@ AFSreconstruction_cpp <- function(pts, nneighs) {
     .Call(`_cgalMeshes_AFSreconstruction_cpp`, pts, nneighs)
 }
 
+MinkowskiSum_cpp <- function(mesh1XPtr, mesh2XPtr) {
+    .Call(`_cgalMeshes_MinkowskiSum_cpp`, mesh1XPtr, mesh2XPtr)
+}
+
 SSSreconstruction_cpp <- function(pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle) {
     .Call(`_cgalMeshes_SSSreconstruction_cpp`, pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle)
 }

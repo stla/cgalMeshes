@@ -24,6 +24,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// MinkowskiSum_cpp
+Rcpp::XPtr<EMesh3> MinkowskiSum_cpp(Rcpp::XPtr<EMesh3> mesh1XPtr, Rcpp::XPtr<EMesh3> mesh2XPtr);
+RcppExport SEXP _cgalMeshes_MinkowskiSum_cpp(SEXP mesh1XPtrSEXP, SEXP mesh2XPtrSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<EMesh3> >::type mesh1XPtr(mesh1XPtrSEXP);
+    Rcpp::traits::input_parameter< Rcpp::XPtr<EMesh3> >::type mesh2XPtr(mesh2XPtrSEXP);
+    rcpp_result_gen = Rcpp::wrap(MinkowskiSum_cpp(mesh1XPtr, mesh2XPtr));
+    return rcpp_result_gen;
+END_RCPP
+}
 // SSSreconstruction_cpp
 Rcpp::XPtr<EMesh3> SSSreconstruction_cpp(const Rcpp::NumericMatrix pts, const size_t scaleIterations, const unsigned nneighs, const unsigned nsamples, const bool separateShells, const bool forceManifold, const double borderAngle);
 RcppExport SEXP _cgalMeshes_SSSreconstruction_cpp(SEXP ptsSEXP, SEXP scaleIterationsSEXP, SEXP nneighsSEXP, SEXP nsamplesSEXP, SEXP separateShellsSEXP, SEXP forceManifoldSEXP, SEXP borderAngleSEXP) {
@@ -91,6 +103,7 @@ RcppExport SEXP _rcpp_module_boot_class_CGALmesh();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 2},
+    {"_cgalMeshes_MinkowskiSum_cpp", (DL_FUNC) &_cgalMeshes_MinkowskiSum_cpp, 2},
     {"_cgalMeshes_SSSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_SSSreconstruction_cpp, 7},
     {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},
     {"_cgalMeshes_meshTopology", (DL_FUNC) &_cgalMeshes_meshTopology, 4},
