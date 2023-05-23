@@ -2161,11 +2161,13 @@ Get the edges of the mesh.
 }
 
 \subsection{Returns}{
-A dataframe with five columns; the first two ones give the 
+A dataframe with seven columns; the first two ones give the 
   vertex indices of each edge (one edge per row), the third one gives 
   the lengths of each edge, the fourth one indicates whether the edges 
-  is a border edge, and the fifth one gives the dihedral angles 
-  in degrees between the two faces adjacent to each edge
+  is a border edge, the fifth one gives the dihedral angles 
+  in degrees between the two faces adjacent to each edge, and the last 
+  two ones gives the indices of the faces the edge belongs to (the 
+  second index is \code{NA} if the edge is a border edge).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -2196,16 +2198,17 @@ The faces in a matrix if the mesh is triangle or quad,
 \if{html}{\out{<a id="method-cgalMesh-getFacesInfo"></a>}}
 \if{latex}{\out{\hypertarget{method-cgalMesh-getFacesInfo}{}}}
 \subsection{Method \code{getFacesInfo()}}{
-Get the centroids and the areas of the faces, for a 
-  triangle mesh only.
+Get the centroids, the circumcenters, and the areas of the 
+  faces, for a triangle mesh only.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$getFacesInfo()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-A matrix with four columns: the first three ones provide the 
-  Cartesian coordinates of the centroids, the fourth one provides the 
-  areas.
+A matrix with seven columns: the first three ones provide the 
+  Cartesian coordinates of the centroids, the three next ones provide 
+  the Cartesian coordinates of the circumcenters, and the last one 
+  provides the areas.
 }
 }
 \if{html}{\out{<hr>}}
