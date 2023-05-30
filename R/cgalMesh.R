@@ -672,6 +672,13 @@ cgalMesh <- R6Class(
       invisible(self)
     },
     
+    # #' @description Dual mesh.
+    # #' @return The dual mesh.
+    # "dual" = function() {
+    #   xptr <- private[[".CGALmesh"]]$dual()
+    #   cgalMesh$new(clean = xptr)
+    # },
+    
     #' @description Faces containing a given vertex.
     #' @param v a vertex index
     #' @return An integer vector, the indices of the faces containing \code{v}.
