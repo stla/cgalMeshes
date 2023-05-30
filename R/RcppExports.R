@@ -25,6 +25,10 @@ SSSreconstruction_cpp <- function(pts, scaleIterations, nneighs, nsamples, separ
     .Call(`_cgalMeshes_SSSreconstruction_cpp`, pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle)
 }
 
+alphaWrap_cpp <- function(pts, ralpha, roffset) {
+    .Call(`_cgalMeshes_alphaWrap_cpp`, pts, ralpha, roffset)
+}
+
 cxhull <- function(pts) {
     .Call(`_cgalMeshes_cxhull`, pts)
 }
