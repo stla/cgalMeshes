@@ -1,13 +1,10 @@
-library(rgl)
 library(cgalMeshes)
+library(rgl)
 
-data("teapot", package = "misc3d")
-pts <- teapot$vertices
+frog <- readSTL("Tree_Frog.stl", ascii = FALSE, plot = FALSE)
+pts <- t(frog)
 
-teapot <- readOBJ("teapot.obj")
-pts <- teapot$vb[-4L, ]
-
-xptr <- cgalMeshes:::alphaWrap_cpp(pts, 25, 200)
+xptr <- cgalMeshes:::alphaWrap_cpp(pts, 50, 1000)
 
 mesh <- cgalMesh$new(clean = xptr)
 #mesh$LoopSubdivision(3)
@@ -19,3 +16,5 @@ rmesh <- mesh$getMesh()
 
 shade3d(rmesh, color = "red")
 
+
+pmesh <- PoissonReconstruction(frog)
