@@ -762,7 +762,7 @@ library(rgl)
 rglMesh <- cyclideMesh(a = 97, c = 32, mu = 57, nu = 35L, nv = 20L)
 mesh <- cgalMesh$new(rglMesh)
 mesh$smoothAngle(iterations = 50, safety = FALSE)
-mesh$computeNormals()
+\donttest{mesh$computeNormals()
 rglSmoothMesh <- mesh$getMesh()
 open3d(windowRect = 50 + c(0, 0, 800, 400))
 mfrow3d(1, 2)
@@ -772,7 +772,7 @@ wire3d(rglMesh)
 next3d()
 view3d(0, 0, zoom = 0.85)
 shade3d(rglSmoothMesh, color = "orange")
-wire3d(rglSmoothMesh)    
+wire3d(rglSmoothMesh)}    
 
 ## ------------------------------------------------
 ## Method `cgalMesh$smoothShape`
@@ -2964,15 +2964,18 @@ wire3d(rglSmoothMesh)
 Smooths the overall shape of the mesh by using the mean
   curvature flow. The mesh must be triangle.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$smoothShape(time, iterations = 1)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$smoothShape(indices = NULL, time, iterations = 1)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{indices}}{the indices of the faces to be smoothed, or \code{NULL}
+to smooth the whole mesh}
+
 \item{\code{time}}{positive number, a time step that corresponds to the speed by
-which the surface is smoothed (the larger the faster); typical values lie
-between \code{1e-6} and \code{1}}
+which the surface is smoothed (the larger the faster); typical values 
+lie between \code{1e-6} and \code{1}}
 
 \item{\code{iterations}}{number of iterations, a positive integer}
 }

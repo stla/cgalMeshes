@@ -1821,12 +1821,16 @@ public:
 
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
-  void smoothShape(double time, unsigned int iterations) {
+  void smoothShape(
+      Rcpp::IntegerVector indices, double time, unsigned int iterations
+  ) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
+    
     Mesh3 smesh;
     CGAL::copy_face_graph(mesh, smesh);
+    
     std::set<Mesh3::Vertex_index> constrained_vertices;
     for(Mesh3::Vertex_index v : smesh.vertices()) {
       if(smesh.is_border(v)) {
@@ -1857,11 +1861,31 @@ public:
       }
       Message("Smoothing shape (" + tail);
     }
-    PMP::smooth_shape<Mesh3>(
-      smesh, time,
-      PMP::parameters::number_of_iterations(iterations)
-                      .vertex_is_constrained_map(vcmap)
-    );
+    
+    const int nindices = indices.size();
+    if(nindices == 0) {
+      PMP::smooth_shape<Mesh3>(
+        smesh, time,
+        PMP::parameters::number_of_iterations(iterations)
+                        .vertex_is_constrained_map(vcmap)
+      );
+    } else {
+      std::list<face_descriptor> selectedFaces;
+      const int nfaces = mesh.number_of_faces();
+      for(int i = 0; i < nindices; i++) {
+        const int idx = indices(i);
+        if(idx >= nfaces) {
+          Rcpp::stop("Too large face index.");
+        }
+        selectedFaces.push_back(*(mesh.faces().begin() + idx));
+        PMP::smooth_shape<Mesh3>(
+          selectedFaces, smesh, time,
+          PMP::parameters::number_of_iterations(iterations)
+                          .vertex_is_constrained_map(vcmap)
+        );
+      }
+    }
+    
     mesh.clear();
     CGAL::copy_face_graph(smesh, mesh);
   }
