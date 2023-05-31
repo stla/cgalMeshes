@@ -1878,12 +1878,12 @@ public:
           Rcpp::stop("Too large face index.");
         }
         selectedFaces.push_back(*(mesh.faces().begin() + idx));
-        PMP::smooth_shape<Mesh3>(
-          selectedFaces, smesh, time,
-          PMP::parameters::number_of_iterations(iterations)
-                          .vertex_is_constrained_map(vcmap)
-        );
       }
+      PMP::smooth_shape<Mesh3>(
+        selectedFaces, smesh, time,
+        PMP::parameters::number_of_iterations(iterations)
+                        .vertex_is_constrained_map(vcmap)
+      );
     }
     
     mesh.clear();

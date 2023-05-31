@@ -5,10 +5,15 @@ rglMesh <- HopfTorusMesh(nu = 80, nv = 60)
 mesh <- cgalMesh$new(rglMesh)
 
 areas <- mesh$getFacesInfo()[, "area"]
-bigFaces <- which(areas > 0.002)
+summary(areas)
+bigFaces <- which(areas > 0.00088)
 length(bigFaces)
 
-mesh$smoothShape(bigFaces, time = 0.005, iterations = 10)
+# cy <- mesh$getFacesInfo()[, "cy"]
+# bigFaces <- which(cy > -5.8)
+# length(bigFaces)
+
+mesh$smoothShape(bigFaces, time = 1, iterations = 4)
 mesh$computeNormals()
 rglSmoothMesh <- mesh$getMesh()
 
