@@ -1,9 +1,15 @@
 library(cgalMeshes)
 library(rgl)
 
-rglMesh <- HopfTorusMesh(nu = 50, nv = 50)
+rglMesh <- HopfTorusMesh(nu = 100, nv = 80)
+rglMesh <- cyclideMesh(a = 97, c = 32, mu = 57, nu = 30L, nv = 20L)
 mesh <- cgalMesh$new(rglMesh)
-mesh$smoothAngle(iterations = 3, safety = TRUE)
+
+areas <- mesh$getFacesInfo()[, "area"]
+bigFaces <- which(areas > 0.6)
+length(bigFaces)
+
+mesh$smoothAngle(bigFaces, iterations = 100, safety = FALSE)
 mesh$computeNormals()
 
 rglSmoothMesh <- mesh$getMesh()

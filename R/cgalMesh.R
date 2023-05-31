@@ -716,7 +716,7 @@ cgalMesh <- R6Class(
       if(!positive) {
         stop("The indices must be positive integers.")
       }
-      private[[".CGALmesh"]]$fair(as.integer(indices) - 1L)
+      private[[".CGALmesh"]]$fair(as.integer(unique(indices)) - 1L)
       invisible(self)
     },
 
@@ -1451,17 +1451,29 @@ cgalMesh <- R6Class(
     
     
     #' @description Angle-based smoothing. The mesh must be triangle.
+    #' @param indices xxx
     #' @param iterations number of iterations, a positive integer
     #' @param safety Boolean, wheter to xxx
     #' @return The smoothed reference mesh, invisibly.
     #' @examples 
     #' library(cgalMeshes)
     #' library(rgl)
-    "smoothAngle" = function(iterations = 1, safety = FALSE) {
+    "smoothAngle" = function(indices, iterations = 1, safety = FALSE) {
+      stopifnot(isAtomicVector(indices))
+      stopifnot(is.numeric(indices))
+      integers <- isTRUE(all.equal(indices, floor(indices)))
+      if(!integers) {
+        stop("The indices must be positive integers.")
+      }
+      positive <- all(indices >= 1)
+      if(!positive) {
+        stop("The indices must be positive integers.")
+      }
+      indices <- unique(indices)
       stopifnot(isStrictPositiveInteger(iterations))
       stopifnot(isBoolean(safety))
       private[[".CGALmesh"]]$smoothAngle(
-        as.integer(iterations), safety
+        as.integer(indices) - 1L, as.integer(iterations), safety
       )
       invisible(self)
     },
