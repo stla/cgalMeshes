@@ -1,26 +1,25 @@
 library(cgalMeshes)
 library(rgl)
+# take the diplodocus mesh
+off <- system.file("extdata", "diplodocus.off", package = "cgalMeshes")
+diplodocusMesh <- cgalMesh$new(off)
+diplodocusMesh$computeNormals()
+# reconstruct the mesh from its vertices
+pts <- diplodocusMesh$getVertices()
+wrapMesh <- alphaWrap(pts, 70, 3000)
+wrapMesh$computeNormals()
+# plot
+diplodocusRglMesh <- diplodocusMesh$getMesh()
+wrapRglMesh <- wrapMesh$getMesh()
+open3d(windowRect = 50 + c(0, 0, 800, 400))
+mfrow3d(1, 2)
+view3d(20, 0, zoom = 0.85)
+shade3d(diplodocusRglMesh, color = "forestgreen")
+next3d()
+view3d(20, 0, zoom = 0.85)
+shade3d(wrapRglMesh, color = "forestgreen")
 
-mesh <- cgalMesh$new("diplodocus.off")
-mesh$computeNormals()
 
-rmesh <- mesh$getMesh()
-
-shade3d(rmesh, color = "forestgreen")
-
-pts <- t(mesh$getVertices())
-
-xptr <- cgalMeshes:::alphaWrap_cpp(pts, 70, 3000)
-
-wmesh <- cgalMesh$new(clean = xptr)
-#wmesh$LoopSubdivision(1)
-#mesh$smoothShape(time = 0.01, iterations = 1)
-wmesh$computeNormals()
-
-rmesh <- wmesh$getMesh()
-rmesh
-open3d()
-shade3d(rmesh, color = "blue")
 
 
 pmesh <- PoissonReconstruction(mesh$getVertices(), spacing = 0.005, sm_distance = 0.2)
