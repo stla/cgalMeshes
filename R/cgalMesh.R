@@ -1451,29 +1451,49 @@ cgalMesh <- R6Class(
     
     
     #' @description Angle-based smoothing. The mesh must be triangle.
-    #' @param indices xxx
+    #' @param indices the indices of the faces to be smoothed, or \code{NULL}
+    #'   to smooth the whole mesh
     #' @param iterations number of iterations, a positive integer
-    #' @param safety Boolean, wheter to xxx
+    #' @param safety Boolean, whether to prevent vertex moves that would worsen 
+    #'   the mesh 
     #' @return The smoothed reference mesh, invisibly.
     #' @examples 
     #' library(cgalMeshes)
     #' library(rgl)
-    "smoothAngle" = function(indices, iterations = 1, safety = FALSE) {
-      stopifnot(isAtomicVector(indices))
-      stopifnot(is.numeric(indices))
-      integers <- isTRUE(all.equal(indices, floor(indices)))
-      if(!integers) {
-        stop("The indices must be positive integers.")
+    #' rglMesh <- cyclideMesh(a = 97, c = 32, mu = 57, nu = 35L, nv = 20L)
+    #' mesh <- cgalMesh$new(rglMesh)
+    #' mesh$smoothAngle(iterations = 50, safety = FALSE)
+    #' mesh$computeNormals()
+    #' rglSmoothMesh <- mesh$getMesh()
+    #' open3d(windowRect = 50 + c(0, 0, 800, 400))
+    #' mfrow3d(1, 2)
+    #' view3d(0, 0, zoom = 0.85)
+    #' shade3d(rglMesh, color = "orange")
+    #' wire3d(rglMesh)
+    #' next3d()
+    #' view3d(0, 0, zoom = 0.85)
+    #' shade3d(rglSmoothMesh, color = "orange")
+    #' wire3d(rglSmoothMesh)    
+    "smoothAngle" = function(indices = NULL, iterations = 1, safety = FALSE) {
+      if(!is.null(indices)) {
+        stopifnot(isAtomicVector(indices))
+        stopifnot(is.numeric(indices))
+        integers <- isTRUE(all.equal(indices, floor(indices)))
+        if(!integers) {
+          stop("The indices must be positive integers.")
+        }
+        positive <- all(indices >= 1)
+        if(!positive) {
+          stop("The indices must be positive integers.")
+        }
+        indices <- unique(as.integer(indices)) - 1L
+      } else {
+        indices <- integer(0L)
       }
-      positive <- all(indices >= 1)
-      if(!positive) {
-        stop("The indices must be positive integers.")
-      }
-      indices <- unique(indices)
       stopifnot(isStrictPositiveInteger(iterations))
       stopifnot(isBoolean(safety))
       private[[".CGALmesh"]]$smoothAngle(
-        as.integer(indices) - 1L, as.integer(iterations), safety
+        indices, as.integer(iterations), safety
       )
       invisible(self)
     },

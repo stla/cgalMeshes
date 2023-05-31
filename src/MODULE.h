@@ -1783,27 +1783,37 @@ public:
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
-    std::list<face_descriptor> selectedFaces;
-    const int nindices = indices.size();
-    const int nfaces = mesh.number_of_faces();
-    for(int i = 0; i < nindices; i++) {
-      const int idx = indices(i);
-      if(idx >= nfaces) {
-        Rcpp::stop("Too large index.");
-      }
-      selectedFaces.push_back(*(mesh.faces().begin() + idx));
-    }
 
     Mesh3 smesh;
     CGAL::copy_face_graph(mesh, smesh);
-    
-    PMP::angle_and_area_smoothing(
-      selectedFaces, smesh,
-      PMP::parameters::number_of_iterations(iterations)
-        .use_area_smoothing(false)
-        .use_Delaunay_flips(false)
-        .use_safety_constraints(safety)
-    );
+
+    const int nindices = indices.size();
+    if(nindices == 0) {
+      PMP::angle_and_area_smoothing(
+        smesh,
+        PMP::parameters::number_of_iterations(iterations)
+          .use_area_smoothing(false)
+          .use_Delaunay_flips(false)
+          .use_safety_constraints(safety)
+      );
+    } else {
+      std::list<face_descriptor> selectedFaces;
+      const int nfaces = mesh.number_of_faces();
+      for(int i = 0; i < nindices; i++) {
+        const int idx = indices(i);
+        if(idx >= nfaces) {
+          Rcpp::stop("Too large face index.");
+        }
+        selectedFaces.push_back(*(mesh.faces().begin() + idx));
+        PMP::angle_and_area_smoothing(
+          selectedFaces, smesh,
+          PMP::parameters::number_of_iterations(iterations)
+          .use_area_smoothing(false)
+          .use_Delaunay_flips(false)
+          .use_safety_constraints(safety)
+        );
+      }
+    }
 
     mesh.clear();
     CGAL::copy_face_graph(smesh, mesh);
