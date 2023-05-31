@@ -74,6 +74,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("reverseFaceOrientations", &CGALmesh::reverseFaceOrientations)
     .method("sampleMesh", &CGALmesh::sampleMesh)
     .method("sharpEdges", &CGALmesh::sharpEdges)
+    .method("smoothAngle", &CGALmesh::smoothAngle)
     .method("smoothShape", &CGALmesh::smoothShape)
     .method("Sqrt3Subdivision", &CGALmesh::Sqrt3Subdivision)
     .method("subtract", &CGALmesh::subtract)

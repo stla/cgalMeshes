@@ -712,7 +712,7 @@ cgalMesh <- R6Class(
       if(!integers) {
         stop("The indices must be positive integers.")
       }
-      positive <- isTRUE(all(indices >= 1))
+      positive <- all(indices >= 1)
       if(!positive) {
         stop("The indices must be positive integers.")
       }
@@ -1448,6 +1448,24 @@ cgalMesh <- R6Class(
       stopifnot(isNumber(angleBound))
       private[[".CGALmesh"]]$sharpEdges(angleBound - 180)
     },
+    
+    
+    #' @description Angle-based smoothing. The mesh must be triangle.
+    #' @param iterations number of iterations, a positive integer
+    #' @param safety Boolean, wheter to xxx
+    #' @return The smoothed reference mesh, invisibly.
+    #' @examples 
+    #' library(cgalMeshes)
+    #' library(rgl)
+    "smoothAngle" = function(iterations = 1, safety = FALSE) {
+      stopifnot(isStrictPositiveInteger(iterations))
+      stopifnot(isBoolean(safety))
+      private[[".CGALmesh"]]$smoothAngle(
+        as.integer(iterations), safety
+      )
+      invisible(self)
+    },
+    
     
     #' @description Smooths the overall shape of the mesh by using the mean
     #'   curvature flow. The mesh must be triangle.

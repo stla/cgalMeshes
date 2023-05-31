@@ -3,7 +3,6 @@
 #endif
 
 #include <CGAL/alpha_wrap_3.h>
-namespace AW3 = CGAL::Alpha_wraps_3;
 
 // [[Rcpp::export]]
 Rcpp::XPtr<EMesh3> alphaWrap_cpp(

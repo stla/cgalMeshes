@@ -1774,6 +1774,21 @@ public:
     return Edges;
   }
 
+  
+  // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
+  void smoothAngle(unsigned int iterations, bool safety) {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    PMP::angle_and_area_smoothing(
+      mesh,
+      PMP::parameters::number_of_iterations(iterations)
+        .use_area_smoothing(false)
+        .use_Delaunay_flips(false)
+        .use_safety_constraints(safety)
+    );
+  }
 
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //

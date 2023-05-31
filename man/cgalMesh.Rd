@@ -754,6 +754,13 @@ plotEdges(
 )}
 
 ## ------------------------------------------------
+## Method `cgalMesh$smoothAngle`
+## ------------------------------------------------
+
+library(cgalMeshes)
+library(rgl)
+
+## ------------------------------------------------
 ## Method `cgalMesh$smoothShape`
 ## ------------------------------------------------
 
@@ -943,6 +950,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-sample}{\code{cgalMesh$sample()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
 \item \href{#method-cgalMesh-sharpEdges}{\code{cgalMesh$sharpEdges()}}
+\item \href{#method-cgalMesh-smoothAngle}{\code{cgalMesh$smoothAngle()}}
 \item \href{#method-cgalMesh-smoothShape}{\code{cgalMesh$smoothShape()}}
 \item \href{#method-cgalMesh-Sqrt3Subdivision}{\code{cgalMesh$Sqrt3Subdivision()}}
 \item \href{#method-cgalMesh-subtract}{\code{cgalMesh$subtract()}}
@@ -2880,6 +2888,37 @@ plotEdges(
   mesh$getVertices(), sharpEdges[, c("v1", "v2")], 
   edgesAsTubes = FALSE, lwd = 5, verticesAsSpheres = FALSE
 )
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-smoothAngle"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-smoothAngle}{}}}
+\subsection{Method \code{smoothAngle()}}{
+Angle-based smoothing. The mesh must be triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$smoothAngle(iterations = 1, safety = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{iterations}}{number of iterations, a positive integer}
+
+\item{\code{safety}}{Boolean, wheter to xxx}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The smoothed reference mesh, invisibly.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(cgalMeshes)
+library(rgl)
 }
 \if{html}{\out{</div>}}
 

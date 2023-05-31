@@ -81,6 +81,8 @@
 
 #include <CGAL/Polygon_mesh_processing/smooth_shape.h>
 
+#include <CGAL/Polygon_mesh_processing/angle_and_area_smoothing.h>
+
 // -------------------------------------------------------------------------- //
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef K::Point_3                                          Point3;
