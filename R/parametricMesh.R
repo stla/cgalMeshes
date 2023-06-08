@@ -105,9 +105,10 @@ parametricMesh <- function(
   } else {
     normals <- NULL
   }
+  gather <- gatherVertices(vs, tris)
   tmesh3d(
-    vertices    = vs,
-    indices     = tris,
+    vertices    = gather[["vertices"]],
+    indices     = gather[["faces"]],
     normals     = normals,
     homogeneous = FALSE
   )

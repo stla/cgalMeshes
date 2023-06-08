@@ -29,8 +29,8 @@ alphaWrap_cpp <- function(pts, ralpha, roffset) {
     .Call(`_cgalMeshes_alphaWrap_cpp`, pts, ralpha, roffset)
 }
 
-testparam <- function() {
-    .Call(`_cgalMeshes_testparam`)
+testparam <- function(filename, method) {
+    .Call(`_cgalMeshes_testparam`, filename, method)
 }
 
 cxhull <- function(pts) {
@@ -39,6 +39,10 @@ cxhull <- function(pts) {
 
 cxhullsIntersection <- function(Pts, origin_) {
     .Call(`_cgalMeshes_cxhullsIntersection`, Pts, origin_)
+}
+
+gatherVertices <- function(Vertices, Faces) {
+    .Call(`_cgalMeshes_gatherVertices`, Vertices, Faces)
 }
 
 gTriangle <- function(A, B, C, s, iterations) {

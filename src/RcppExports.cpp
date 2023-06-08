@@ -108,12 +108,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // testparam
-Rcpp::NumericMatrix testparam();
-RcppExport SEXP _cgalMeshes_testparam() {
+Rcpp::NumericMatrix testparam(std::string filename, int method);
+RcppExport SEXP _cgalMeshes_testparam(SEXP filenameSEXP, SEXP methodSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(testparam());
+    Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< int >::type method(methodSEXP);
+    rcpp_result_gen = Rcpp::wrap(testparam(filename, method));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -137,6 +139,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::List >::type Pts(PtsSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::NumericVector> >::type origin_(origin_SEXP);
     rcpp_result_gen = Rcpp::wrap(cxhullsIntersection(Pts, origin_));
+    return rcpp_result_gen;
+END_RCPP
+}
+// gatherVertices
+Rcpp::List gatherVertices(Rcpp::NumericMatrix Vertices, Rcpp::IntegerMatrix Faces);
+RcppExport SEXP _cgalMeshes_gatherVertices(SEXP VerticesSEXP, SEXP FacesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type Vertices(VerticesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type Faces(FacesSEXP);
+    rcpp_result_gen = Rcpp::wrap(gatherVertices(Vertices, Faces));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -266,9 +280,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_Poisson_reconstruction_cpp", (DL_FUNC) &_cgalMeshes_Poisson_reconstruction_cpp, 7},
     {"_cgalMeshes_SSSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_SSSreconstruction_cpp, 7},
     {"_cgalMeshes_alphaWrap_cpp", (DL_FUNC) &_cgalMeshes_alphaWrap_cpp, 3},
-    {"_cgalMeshes_testparam", (DL_FUNC) &_cgalMeshes_testparam, 0},
+    {"_cgalMeshes_testparam", (DL_FUNC) &_cgalMeshes_testparam, 2},
     {"_cgalMeshes_cxhull", (DL_FUNC) &_cgalMeshes_cxhull, 1},
     {"_cgalMeshes_cxhullsIntersection", (DL_FUNC) &_cgalMeshes_cxhullsIntersection, 2},
+    {"_cgalMeshes_gatherVertices", (DL_FUNC) &_cgalMeshes_gatherVertices, 2},
     {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},
     {"_cgalMeshes_AlgebraicMesh", (DL_FUNC) &_cgalMeshes_AlgebraicMesh, 9},
     {"_cgalMeshes_AlgebraicMeshesIntersection", (DL_FUNC) &_cgalMeshes_AlgebraicMeshesIntersection, 7},
