@@ -286,8 +286,6 @@ template void removeProperty<vertex_descriptor, EVector3>(
 
 // -------------------------------------------------------------------------- //
 // -------------------------------------------------------------------------- //
-template <typename AA, typename BB, template<typename...> typename PM> 
-using XX = PM<AA, BB>;
 template <typename Keytype, typename Valuetype, typename KernelT>
 std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
   CGAL::Surface_mesh<typename KernelT::Point_3>& mesh, std::string propname
@@ -386,10 +384,10 @@ template void copy_property<
 // -------------------------------------------------------------------------- //
 void triangulateMesh(EMesh3& mesh) {
   MaybeFcolorMap fcolormap_ = 
-    copy_prop<face_descriptor, std::string>(mesh, "f:color");
+    copy_prop<face_descriptor, std::string, EK>(mesh, "f:color");
   const bool hasFcolors = fcolormap_.second;
   MaybeFscalarMap fscalarmap_ = 
-    copy_prop<face_descriptor, double>(mesh, "f:scalar");
+    copy_prop<face_descriptor, double, EK>(mesh, "f:scalar");
   const bool hasFscalars = fscalarmap_.second;
   removeProperties(mesh, {"v:normal"});
   TriangulateVisitor vis;

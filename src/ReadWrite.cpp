@@ -46,7 +46,7 @@ EMesh3 readValidMesh(const std::string filename, bool binary) {
   EMesh3 emesh = epick2epeck(mesh);
 
   std::pair<std::map<fdescr, Color>, bool> fcolor_ =
-    copy_prop<fdescr, Color, Mesh3>(mesh, "f:color");
+    copy_prop<fdescr, Color, K>(mesh, "f:color");
   if(fcolor_.second) {
     Fcolors_map fcolor_map =
       emesh.add_property_map<face_descriptor, std::string>(
@@ -62,7 +62,7 @@ EMesh3 readValidMesh(const std::string filename, bool binary) {
   }
   
   std::pair<std::map<vxdescr, Color>, bool> vcolor_ =
-    copy_prop<vxdescr, Color, Mesh3>(mesh, "v:color");
+    copy_prop<vxdescr, Color, K>(mesh, "v:color");
   if(vcolor_.second) {
     Vcolors_map vcolor_map =
       emesh.add_property_map<vertex_descriptor, std::string>(
@@ -78,7 +78,7 @@ EMesh3 readValidMesh(const std::string filename, bool binary) {
   }
   
   std::pair<std::map<vxdescr, Vector3>, bool> vnormal_ =
-    copy_prop<vxdescr, Vector3, Mesh3>(mesh, "v:normal");
+    copy_prop<vxdescr, Vector3, K>(mesh, "v:normal");
   if(vnormal_.second) {
     Normals_map vnormal_map =
       emesh.add_property_map<vertex_descriptor, Rcpp::NumericVector>(
