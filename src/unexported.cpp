@@ -286,12 +286,16 @@ template void removeProperty<vertex_descriptor, EVector3>(
 
 // -------------------------------------------------------------------------- //
 // -------------------------------------------------------------------------- //
-template <typename Keytype, typename Valuetype>
+template <typename AA, typename BB, template<typename...> typename PM> 
+using XX = PM<AA, BB>;
+template <typename Keytype, typename Valuetype, typename KernelT>
 std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
-  EMesh3& mesh, std::string propname
+  CGAL::Surface_mesh<typename KernelT::Point_3>& mesh, std::string propname
 ) {
-  std::pair<EMesh3::Property_map<Keytype, Valuetype>, bool> pmap_ = 
-    mesh.property_map<Keytype, Valuetype>(propname);
+  typedef typename KernelT::Point_3 Pt3;
+  typedef typename CGAL::Surface_mesh<Pt3>::template Property_map<Keytype, Valuetype> PPP;
+  std::pair<PPP, bool> pmap_ = 
+    mesh.template property_map<Keytype, Valuetype>(propname);
   bool has_prop = pmap_.second;
   std::map<Keytype, Valuetype> pmap;
   if(has_prop) {
@@ -306,27 +310,33 @@ std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
   return std::make_pair(pmap, has_prop);
 }
 
-template MaybeFcolorMap copy_prop<face_descriptor, std::string>(
+template MaybeFcolorMap copy_prop<face_descriptor, std::string, EK>(
   EMesh3&, std::string
 );
-template MaybeFscalarMap copy_prop<face_descriptor, double>(
+template MaybeFscalarMap copy_prop<face_descriptor, double, EK>(
   EMesh3&, std::string
 );
-template MaybeVcolorMap copy_prop<vertex_descriptor, std::string>(
+template MaybeVcolorMap copy_prop<vertex_descriptor, std::string, EK>(
   EMesh3&, std::string
 );
-template MaybeVscalarMap copy_prop<vertex_descriptor, double>(
+template MaybeVscalarMap copy_prop<vertex_descriptor, double, EK>(
   EMesh3&, std::string
 );
-template MaybeNormalMap copy_prop<vertex_descriptor, Rcpp::NumericVector>(
+template MaybeNormalMap copy_prop<vertex_descriptor, Rcpp::NumericVector, EK>(
   EMesh3&, std::string
 );
 template std::pair<std::map<face_descriptor, Color>, bool> 
-  copy_prop<face_descriptor, Color>(EMesh3&, std::string);
+  copy_prop<face_descriptor, Color, EK>(EMesh3&, std::string);
 template std::pair<std::map<vertex_descriptor, Color>, bool> 
-  copy_prop<vertex_descriptor, Color>(EMesh3&, std::string);
+  copy_prop<vertex_descriptor, Color, EK>(EMesh3&, std::string);
 template std::pair<std::map<vertex_descriptor, EVector3>, bool> 
-  copy_prop<vertex_descriptor, EVector3>(EMesh3&, std::string);
+  copy_prop<vertex_descriptor, EVector3, EK>(EMesh3&, std::string);
+template std::pair<std::map<fdescr, Color>, bool> 
+  copy_prop<fdescr, Color, K>(Mesh3&, std::string);
+template std::pair<std::map<vxdescr, Color>, bool> 
+  copy_prop<vxdescr, Color, K>(Mesh3&, std::string);
+template std::pair<std::map<vxdescr, Vector3>, bool> 
+  copy_prop<vxdescr, Vector3, K>(Mesh3&, std::string);
 
 
 // -------------------------------------------------------------------------- //

@@ -107,6 +107,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// testparam
+Rcpp::NumericMatrix testparam();
+RcppExport SEXP _cgalMeshes_testparam() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(testparam());
+    return rcpp_result_gen;
+END_RCPP
+}
 // cxhull
 Rcpp::XPtr<EMesh3> cxhull(Rcpp::NumericMatrix pts);
 RcppExport SEXP _cgalMeshes_cxhull(SEXP ptsSEXP) {
@@ -256,6 +266,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_Poisson_reconstruction_cpp", (DL_FUNC) &_cgalMeshes_Poisson_reconstruction_cpp, 7},
     {"_cgalMeshes_SSSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_SSSreconstruction_cpp, 7},
     {"_cgalMeshes_alphaWrap_cpp", (DL_FUNC) &_cgalMeshes_alphaWrap_cpp, 3},
+    {"_cgalMeshes_testparam", (DL_FUNC) &_cgalMeshes_testparam, 0},
     {"_cgalMeshes_cxhull", (DL_FUNC) &_cgalMeshes_cxhull, 1},
     {"_cgalMeshes_cxhullsIntersection", (DL_FUNC) &_cgalMeshes_cxhullsIntersection, 2},
     {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},

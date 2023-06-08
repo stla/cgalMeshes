@@ -225,14 +225,14 @@ public:
     }
     
     MaybeFcolorMap fcolorMap_ = 
-      copy_prop<face_descriptor, std::string>(mesh, "f:color");
+      copy_prop<face_descriptor, std::string, EK>(mesh, "f:color");
     MaybeFcolorMap fcolorMap2_ = 
-      copy_prop<face_descriptor, std::string>(clipper, "f:color");
+      copy_prop<face_descriptor, std::string, EK>(clipper, "f:color");
     const bool hasColors = fcolorMap_.second && fcolorMap2_.second;
     MaybeFscalarMap fscalarMap_ = 
-      copy_prop<face_descriptor, double>(mesh, "f:scalar");
+      copy_prop<face_descriptor, double, EK>(mesh, "f:scalar");
     MaybeFscalarMap fscalarMap2_ = 
-      copy_prop<face_descriptor, double>(clipper, "f:scalar");
+      copy_prop<face_descriptor, double, EK>(clipper, "f:scalar");
     const bool hasScalars = fscalarMap_.second && fscalarMap2_.second;
     
     std::size_t nfaces = mesh.number_of_faces();
@@ -445,10 +445,10 @@ public:
     std::size_t nfaces = mesh.number_of_faces();
     
     MaybeFcolorMap fcolorMap_ = 
-      copy_prop<face_descriptor, std::string>(mesh, "f:color");
+      copy_prop<face_descriptor, std::string, EK>(mesh, "f:color");
     const bool hasColors = fcolorMap_.second;
     MaybeFscalarMap fscalarMap_ = 
-      copy_prop<face_descriptor, double>(mesh, "f:scalar");
+      copy_prop<face_descriptor, double, EK>(mesh, "f:scalar");
     const bool hasScalars = fscalarMap_.second;
     
     ClipVisitor2 vis;
@@ -621,10 +621,10 @@ public:
     std::size_t nfaces = mesh.number_of_faces();
     
     MaybeFcolorMap fcolorMap_ = 
-      copy_prop<face_descriptor, std::string>(mesh, "f:color");
+      copy_prop<face_descriptor, std::string, EK>(mesh, "f:color");
     const bool hasColors = fcolorMap_.second;
     MaybeFscalarMap fscalarMap_ = 
-      copy_prop<face_descriptor, double>(mesh, "f:scalar");
+      copy_prop<face_descriptor, double, EK>(mesh, "f:scalar");
     const bool hasScalars = fscalarMap_.second;
     
     ClipVisitor2 vis;
@@ -2371,54 +2371,46 @@ public:
     Rcpp::Nullable<Rcpp::IntegerMatrix> fcolors_,
     Rcpp::Nullable<Rcpp::IntegerMatrix> vcolors_
   ) {
-    EMesh3 meshcopy;
-    MapBetweenFaces f2fmap_;
-    boost::associative_property_map<MapBetweenFaces> f2fmap(f2fmap_);
-    MapBetweenVertices v2vmap_;
-    boost::associative_property_map<MapBetweenVertices> v2vmap(v2vmap_);
-    CGAL::copy_face_graph(
-      mesh, meshcopy, 
-      CGAL::parameters::face_to_face_map(f2fmap).vertex_to_vertex_map(v2vmap)
-    );
+    Mesh3 meshcopy = epeck2epick(mesh);
     if(normals_.isNotNull()) {
       Rcpp::NumericMatrix normals(normals_);
-      CGALnormals_map vnormal = 
-        meshcopy.add_property_map<vertex_descriptor, EVector3>(
+      Mesh3::Property_map<vxdescr, Vector3> vnormal = 
+        meshcopy.add_property_map<vxdescr, Vector3>(
           "v:normal", CGAL::NULL_VECTOR
         ).first;
-      for(const auto& [vsource, vtarget] : v2vmap_) {
-        Rcpp::NumericVector normal = normals(Rcpp::_, int(vsource));
+      for(Mesh3::Vertex_index vd : meshcopy.vertices()) {
+        Rcpp::NumericVector normal = normals(Rcpp::_, int(vd));
         if(!Rcpp::NumericVector::is_na(normal(0))) {
-          vnormal[vtarget] = EVector3(normal(0), normal(1), normal(2));
+          vnormal[vd] = Vector3(normal(0), normal(1), normal(2));
         }
       }
     }
     if(fcolors_.isNotNull()) {
       Rcpp::IntegerMatrix fcolors(fcolors_);
-      EMesh3::Property_map<face_descriptor, Color> 
-        fcolor = meshcopy.add_property_map<face_descriptor, Color>(
+      Mesh3::Property_map<fdescr, Color> 
+        fcolor = meshcopy.add_property_map<fdescr, Color>(
           "f:color", Color()
         ).first;      
-      for(const auto& [fsource, ftarget] : f2fmap_) {
-        Rcpp::IntegerVector color = fcolors(Rcpp::_, int(fsource));
+      for(Mesh3::Face_index fd : meshcopy.faces()) {
+        Rcpp::IntegerVector color = fcolors(Rcpp::_, int(fd));
         unsigned char red   = color(0);
         unsigned char green = color(1);
         unsigned char blue  = color(2);
-        fcolor[ftarget] = Color(red, green, blue);
+        fcolor[fd] = Color(red, green, blue);
       }
     }
     if(vcolors_.isNotNull()) {
       Rcpp::IntegerMatrix vcolors(vcolors_);
-      EMesh3::Property_map<vertex_descriptor, Color> 
-        vcolor = meshcopy.add_property_map<vertex_descriptor, Color>(
+      Mesh3::Property_map<vxdescr, Color> 
+        vcolor = meshcopy.add_property_map<vxdescr, Color>(
           "v:color", Color()
         ).first;      
-      for(const auto& [vsource, vtarget] : v2vmap_) {
-        Rcpp::IntegerVector color = vcolors(Rcpp::_, int(vsource));
+      for(Mesh3::Vertex_index vd : meshcopy.vertices()) {
+        Rcpp::IntegerVector color = vcolors(Rcpp::_, int(vd));
         unsigned char red   = color(0);
         unsigned char green = color(1);
         unsigned char blue  = color(2);
-        vcolor[vtarget] = Color(red, green, blue);
+        vcolor[vd] = Color(red, green, blue);
       }
     }
     writeMeshFile(filename, precision, binary, comments, meshcopy);

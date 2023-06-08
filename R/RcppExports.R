@@ -29,6 +29,10 @@ alphaWrap_cpp <- function(pts, ralpha, roffset) {
     .Call(`_cgalMeshes_alphaWrap_cpp`, pts, ralpha, roffset)
 }
 
+testparam <- function() {
+    .Call(`_cgalMeshes_testparam`)
+}
+
 cxhull <- function(pts) {
     .Call(`_cgalMeshes_cxhull`, pts)
 }

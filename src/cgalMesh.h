@@ -88,6 +88,7 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef K::Point_3                                          Point3;
 typedef CGAL::Surface_mesh<Point3>                          Mesh3;
 typedef EK::Vector_3                                        EVector3;
+typedef K::Vector_3                                         Vector3;
 typedef EK::Plane_3                                         EPlane3;
 typedef CGAL::Bbox_3                                        Bbox3;
 typedef CGAL::Iso_cuboid_3<EK>                              IsoCuboid3;
@@ -102,6 +103,7 @@ typedef boost::graph_traits<EMesh3>::vertex_descriptor                    vertex
 typedef EMesh3::Property_map<vertex_descriptor, double>                   Vertex_distance_map;
 typedef EMesh3::Property_map<vertex_descriptor, std::size_t>              Vertex_index_map;
 typedef boost::graph_traits<EMesh3>::face_descriptor                      face_descriptor;
+typedef boost::graph_traits<Mesh3>::face_descriptor                       fdescr;
 typedef EMesh3::Property_map<face_descriptor, std::size_t>                Face_index_map;
 typedef boost::graph_traits<EMesh3>::halfedge_descriptor                  halfedge_descriptor;
 typedef EMesh3::Property_map<halfedge_descriptor, std::size_t>            Halfedge_index_map;
@@ -184,7 +186,7 @@ void Message(std::string);
 
 EMesh3 readMeshFile(const std::string, bool, bool);
 void writeMeshFile(
-  const std::string, const int, const bool, std::string, EMesh3&
+  const std::string, const int, const bool, std::string, Mesh3&
 );
 
 EMesh3 dualMesh(EMesh3&);
@@ -201,9 +203,9 @@ void removeProperties(EMesh3&, std::vector<std::string>);
 void triangulateMesh(EMesh3&);
 Rcpp::NumericVector defaultNormal();
 
-template <typename Keytype, typename Valuetype>
+template <typename Keytype, typename Valuetype, typename KernelT>
 std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
-  EMesh3&, std::string
+  CGAL::Surface_mesh<typename KernelT::Point_3>&, std::string
 );
 
 template <typename Keytype, typename Valuetype>
@@ -214,6 +216,8 @@ void copy_property(
   EMesh3&, EMesh3&, std::map<SourceDescriptor, TargetDescriptor>, std::string 
 );
 
+Mesh3 epeck2epick(EMesh3&);
+EMesh3 epick2epeck(Mesh3&);
 ////////////////////////////////////////////////////////////////////////////////
 
 struct ClipVisitor : 

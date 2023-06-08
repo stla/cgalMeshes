@@ -1,7 +1,7 @@
 library(cgalMeshes)
 library(rgl)
 
-rglMesh <- HopfTorusMesh(nu = 80, nv = 60)
+rglMesh <- HopfTorusMesh(nu = 30, nv = 20)
 mesh <- cgalMesh$new(rglMesh)
 
 areas <- mesh$getFacesInfo()[, "area"]
@@ -9,11 +9,13 @@ summary(areas)
 bigFaces <- which(areas > 0.00088)
 length(bigFaces)
 
-# cy <- mesh$getFacesInfo()[, "cy"]
-# bigFaces <- which(cy > -5.8)
-# length(bigFaces)
-
-mesh$smoothShape(bigFaces, time = 1, iterations = 4)
+summary(mesh$getFacesInfo())
+cy <- mesh$getFacesInfo()[, "ccx"]
+bigFaces <- which(cy > 0)
+length(bigFaces)
+#bigFaces <- 4801:9600
+bigFaces <- NULL
+mesh$smoothShape(bigFaces, time = 2, iterations = 2)
 mesh$computeNormals()
 rglSmoothMesh <- mesh$getMesh()
 
