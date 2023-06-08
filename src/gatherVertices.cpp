@@ -2,6 +2,12 @@
 #include "cgalMesh.h"
 #endif
 
+
+bool isEqual(double l, double r) {
+  return r == std::nextafter(l, r);
+}
+
+
 // [[Rcpp::export]]
 Rcpp::List gatherVertices(
     Rcpp::NumericMatrix Vertices, Rcpp::IntegerMatrix Faces
@@ -17,12 +23,10 @@ Rcpp::List gatherVertices(
       for(int j = index + 1; j < nvertices; j++) {
         Rcpp::NumericVector vertex = Vertices(Rcpp::_, index);
         Rcpp::NumericVector vertex_j = Vertices(Rcpp::_, j);
-        bool equal = (vertex(0) == vertex_j(0)) && 
-                     (vertex(1) == vertex_j(1)) && (vertex(2) == vertex_j(2));
+        bool equal = isEqual(vertex(0), vertex_j(0)) && 
+                     isEqual(vertex(1), vertex_j(1)) && 
+                     isEqual(vertex(2), vertex_j(2));
         if(equal) {
-          Rcpp::Rcout << "EQUAL\n";
-          Rcpp::Rcout << "index: " << index << "\n";
-          Rcpp::Rcout << "j: " << j << "\n";
           duplicated[j] = true;
           newindices[j + 1] = newindex;
         }
@@ -35,7 +39,7 @@ Rcpp::List gatherVertices(
     newindices[nvertices] = newindex;
   }
   
-  Rcpp::NumericMatrix NewVertices(3, newindex);
+  Rcpp::NumericMatrix NewVertices(3, newindex-1);
   int j = 0;
   for(auto const& [key, value] : newindices) {
     if(!duplicated[key - 1]) {

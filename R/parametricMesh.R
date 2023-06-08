@@ -14,6 +14,7 @@
 #'   \code{fnormal} is given.
 #' @export
 #' @importFrom rgl tmesh3d
+#' @importFrom data.table uniqueN
 #' @examples 
 #' library(cgalMeshes)
 #' library(rgl)
@@ -106,9 +107,10 @@ parametricMesh <- function(
     normals <- NULL
   }
   gather <- gatherVertices(vs, tris)
+  validFaces <- apply(gather[["faces"]], 2L, uniqueN) == 3L
   tmesh3d(
     vertices    = gather[["vertices"]],
-    indices     = gather[["faces"]],
+    indices     = gather[["faces"]][, validFaces],
     normals     = normals,
     homogeneous = FALSE
   )
