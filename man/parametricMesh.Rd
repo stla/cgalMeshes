@@ -11,6 +11,7 @@ parametricMesh(
   periodic = c(FALSE, FALSE),
   nu,
   nv,
+  clean = FALSE,
   fnormal = NULL
 )
 }
@@ -25,8 +26,12 @@ first variable and in the second variable}
 
 \item{nu, nv}{numbers of subdivisions}
 
+\item{clean}{Boolean, whether to merge the duplicated vertices in the 
+output mesh; use only if necessary because it costs time}
+
 \item{fnormal}{if given (i.e. not \code{NULL}), a vectorized function 
-returning at \code{(u,v)} the normal for the vertex \code{f(u,v)}}
+returning at \code{(u,v)} the normal for the vertex \code{f(u,v)}; 
+you cannot use this option if \code{clean=TRUE}}
 }
 \value{
 A \strong{rgl} mesh (\code{mesh3d} object), with normals if 

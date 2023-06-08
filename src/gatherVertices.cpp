@@ -20,8 +20,8 @@ Rcpp::List gatherVertices(
   for(int index = 0; index < nvertices - 1; index++) {
     if(!duplicated[index]) {
       newindices[index + 1] = newindex;
+      Rcpp::NumericVector vertex = Vertices(Rcpp::_, index);
       for(int j = index + 1; j < nvertices; j++) {
-        Rcpp::NumericVector vertex = Vertices(Rcpp::_, index);
         Rcpp::NumericVector vertex_j = Vertices(Rcpp::_, j);
         bool equal = isEqual(vertex(0), vertex_j(0)) && 
                      isEqual(vertex(1), vertex_j(1)) && 

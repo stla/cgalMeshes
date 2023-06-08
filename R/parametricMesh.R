@@ -7,8 +7,11 @@
 #' @param periodic two Boolean values, whether \code{f} is periodic in the 
 #'   first variable and in the second variable
 #' @param nu,nv numbers of subdivisions
+#' @param clean Boolean, whether to merge the duplicated vertices in the 
+#'   output mesh; use only if necessary because it costs time
 #' @param fnormal if given (i.e. not \code{NULL}), a vectorized function 
-#'   returning at \code{(u,v)} the normal for the vertex \code{f(u,v)}
+#'   returning at \code{(u,v)} the normal for the vertex \code{f(u,v)}; 
+#'   you cannot use this option if \code{clean=TRUE}
 #'
 #' @return A \strong{rgl} mesh (\code{mesh3d} object), with normals if 
 #'   \code{fnormal} is given.
@@ -76,10 +79,12 @@
 #' view3d(50, 10)
 #' shade3d(rmesh, color = "midnightblue", specular = "black")
 parametricMesh <- function(
-    f, urange, vrange, periodic = c(FALSE, FALSE), nu, nv, fnormal = NULL
+    f, urange, vrange, periodic = c(FALSE, FALSE), 
+    nu, nv, clean = FALSE, fnormal = NULL
 ) {
   stopifnot(isPositiveInteger(nu), nu >= 3)
   stopifnot(isPositiveInteger(nv), nv >= 3)
+  stopifnot(isBoolean(clean))
   nu <- as.integer(nu)
   nv <- as.integer(nv)
   uperiodic <- periodic[1L]
@@ -99,19 +104,28 @@ parametricMesh <- function(
   varray2 <- aperm(varray, c(1L, 3L, 2L))
   vs <- matrix(varray2, nrow = 3L, ncol = nu*nv)
   tris <- meshTopology(nu, nv, uperiodic, vperiodic)
-  if(!is.null(fnormal)) {
+  if(!clean && !is.null(fnormal)) {
     narray <- with(Grid, array(fnormal(U, V), dim = c(3L, nu, nv)))
     narray2 <- aperm(narray, c(1L, 3L, 2L))
     normals <- t(matrix(narray2, nrow = 3L, ncol = nu*nv))
   } else {
     normals <- NULL
   }
-  gather <- gatherVertices(vs, tris)
-  validFaces <- apply(gather[["faces"]], 2L, uniqueN) == 3L
-  tmesh3d(
-    vertices    = gather[["vertices"]],
-    indices     = gather[["faces"]][, validFaces],
-    normals     = normals,
-    homogeneous = FALSE
-  )
+  if(clean) {
+    gather <- gatherVertices(vs, tris)
+    validFaces <- apply(gather[["faces"]], 2L, uniqueN) == 3L
+    tmesh3d(
+      vertices    = gather[["vertices"]],
+      indices     = gather[["faces"]][, validFaces],
+      normals     = NULL,
+      homogeneous = FALSE
+    )
+  } else {
+    tmesh3d(
+      vertices    = vs,
+      indices     = tris,
+      normals     = normals,
+      homogeneous = FALSE
+    )
+  }
 }
