@@ -291,14 +291,15 @@ std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
   CGAL::Surface_mesh<typename KernelT::Point_3>& mesh, std::string propname
 ) {
   typedef typename KernelT::Point_3 Pt3;
-  typedef typename CGAL::Surface_mesh<Pt3>::template Property_map<Keytype, Valuetype> PPP;
-  std::pair<PPP, bool> pmap_ = 
+  typedef typename CGAL::Surface_mesh<Pt3>::template 
+                                    Property_map<Keytype, Valuetype> PptMap;
+  std::pair<PptMap, bool> pmap_ = 
     mesh.template property_map<Keytype, Valuetype>(propname);
-  bool has_prop = pmap_.second;
+  const bool has_prop = pmap_.second;
   std::map<Keytype, Valuetype> pmap;
   if(has_prop) {
-    std::string descriptor = propname.substr(0, 1);
-    std::size_t n = 
+    const std::string descriptor = propname.substr(0, 1);
+    const std::size_t n = 
       descriptor == "v" ? mesh.number_of_vertices() : mesh.number_of_faces();
     for(std::size_t idx = 0; idx < n; idx++) {
       pmap[Keytype(idx)] = pmap_.first[Keytype(idx)];

@@ -2,6 +2,9 @@
 #include "cgalMesh.h"
 #endif
 
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 std::string toLower(std::string s) {
   for(char& c : s) {
     c = std::tolower(c);
@@ -9,6 +12,9 @@ std::string toLower(std::string s) {
   return s;
 }
 
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 EMesh3 readValidMesh(const std::string filename, bool binary) {
   Mesh3 mesh;
   const std::string ext = toLower(filename.substr(filename.length() - 4, 4));
@@ -54,9 +60,9 @@ EMesh3 readValidMesh(const std::string filename, bool binary) {
                         ).first;
     for(Mesh3::Face_index fi : mesh.faces()) {
       const Color color = fcolor_.first[fi];
-      double red   = color.red();
-      double green = color.green();
-      double blue  = color.blue();
+      const double red   = color.red();
+      const double green = color.green();
+      const double blue  = color.blue();
       fcolor_map[fi] = RcppColors::rgb2hex(red, green, blue);
     }
   }
@@ -70,9 +76,9 @@ EMesh3 readValidMesh(const std::string filename, bool binary) {
                         ).first;
     for(Mesh3::Vertex_index vi : mesh.vertices()) {
       const Color color = vcolor_.first[vi];
-      double red   = color.red();
-      double green = color.green();
-      double blue  = color.blue();
+      const double red   = color.red();
+      const double green = color.green();
+      const double blue  = color.blue();
       vcolor_map[vi] = RcppColors::rgb2hex(red, green, blue);
     }
   }

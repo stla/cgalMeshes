@@ -85,7 +85,8 @@ Mesh3 epeck2epick(EMesh3& emesh) {
   }
   for(EMesh3::Face_index fd : emesh.faces()) {
     std::vector<int> face;
-    for(EMesh3::Vertex_index vd : vertices_around_face(emesh.halfedge(fd), emesh)) {
+    for(EMesh3::Vertex_index vd : 
+          vertices_around_face(emesh.halfedge(fd), emesh)) {
       face.push_back(vd);
     }
     mesh.add_face(
@@ -115,7 +116,8 @@ EMesh3 epick2epeck(Mesh3& mesh) {
   }
   for(Mesh3::Face_index fd : mesh.faces()) {
     std::vector<int> face;
-    for(Mesh3::Vertex_index vd : vertices_around_face(mesh.halfedge(fd), mesh)) {
+    for(Mesh3::Vertex_index vd : 
+          vertices_around_face(mesh.halfedge(fd), mesh)) {
       face.push_back(vd);
     }
     emesh.add_face(

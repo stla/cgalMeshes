@@ -1592,24 +1592,30 @@ public:
     const double targetEdgeLength, 
     const unsigned niters, const unsigned nrelaxsteps 
   ) {
-    std::vector<halfedge_descriptor> borderHalfedges;
+    Mesh3 kmesh;
+    CGAL::copy_face_graph(mesh, kmesh);
+    
+    std::vector<hgdescr> borderHalfedges;
     PMP::border_halfedges(
-      mesh.faces(), mesh, std::back_inserter(borderHalfedges)
+      kmesh.faces(), kmesh, std::back_inserter(borderHalfedges)
     );
-    std::vector<edge_descriptor> border;
+    std::vector<edescr> border;
     int nhborder = borderHalfedges.size();
     border.reserve(nhborder);
     for(int i = 0; i < nhborder; i++) {
-      border.emplace_back(mesh.edge(borderHalfedges[i]));
+      border.emplace_back(kmesh.edge(borderHalfedges[i]));
     }
-    PMP::split_long_edges(border, targetEdgeLength, mesh);
+    PMP::split_long_edges(border, targetEdgeLength, kmesh);
     PMP::isotropic_remeshing(
-      mesh.faces(), targetEdgeLength, mesh,
+      kmesh.faces(), targetEdgeLength, kmesh,
       PMP::parameters::number_of_iterations(niters)
                       .number_of_relaxation_steps(nrelaxsteps)
                       .protect_constraints(true)
     );
-    mesh.collect_garbage();
+    kmesh.collect_garbage();
+    
+    mesh.clear();
+    CGAL::copy_face_graph(kmesh, mesh);
   }
 
 

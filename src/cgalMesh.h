@@ -106,6 +106,7 @@ typedef boost::graph_traits<EMesh3>::face_descriptor                      face_d
 typedef boost::graph_traits<Mesh3>::face_descriptor                       fdescr;
 typedef EMesh3::Property_map<face_descriptor, std::size_t>                Face_index_map;
 typedef boost::graph_traits<EMesh3>::halfedge_descriptor                  halfedge_descriptor;
+typedef boost::graph_traits<Mesh3>::halfedge_descriptor                   hgdescr;
 typedef EMesh3::Property_map<halfedge_descriptor, std::size_t>            Halfedge_index_map;
 typedef EMesh3::Property_map<vertex_descriptor, Rcpp::NumericVector>      Normals_map;
 typedef std::pair<std::map<vertex_descriptor, Rcpp::NumericVector>, bool> MaybeNormalMap;
@@ -121,6 +122,7 @@ typedef std::pair<std::map<face_descriptor, double>, bool>                MaybeF
 typedef std::map<face_descriptor, face_descriptor>                        MapBetweenFaces;
 typedef std::map<vertex_descriptor, vertex_descriptor>                    MapBetweenVertices;
 typedef boost::graph_traits<EMesh3>::edge_descriptor                      edge_descriptor;
+typedef boost::graph_traits<Mesh3>::edge_descriptor                       edescr;
 
 typedef CGAL::Advancing_front_surface_reconstruction<>     AFS_reconstruction;
 typedef AFS_reconstruction::Triangulation_3                AFS_triangulation3;
@@ -218,6 +220,7 @@ void copy_property(
 
 Mesh3 epeck2epick(EMesh3&);
 EMesh3 epick2epeck(Mesh3&);
+
 ////////////////////////////////////////////////////////////////////////////////
 
 struct ClipVisitor : 
