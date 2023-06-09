@@ -2,29 +2,15 @@ library(cgalMeshes)
 setwd("~/Documents/R/MyPackages/cgalMeshes/inst/trash")
 library(rgl)
 
-
-alpha <- 0.15
-beta <- 1
-gamma <- 0.1
-n <- 2
-f <- function(u, v) {
-  rbind(
-    alpha * (1 - v/(2*pi)) * cos(n*v) * (1 + cos(u)) + gamma * cos(n * v),
-    alpha * (1 - v/(2*pi)) * sin(n*v) * (1 + cos(u)) + gamma * sin(n * v),
-    alpha * (1 - v/(2*pi)) * sin(u) + beta * v/(2*pi)
-  )
-}
-
-rmesh <- parametricMesh(
-  f, c(0, 2*pi), c(0, 2*pi), periodic = c(TRUE, FALSE), nu = 200, nv = 100, clean = TRUE
-)
+rmesh <- jacobi::CostaMesh(350, 350)
 
 mesh <- cgalMesh$new(rmesh)
 summary(mesh$getEdges())
-mesh$isotropicRemeshing(2.5e-3, iterations = 3, relaxSteps = 2)
-mesh$writeMeshFile("horn.off")
+mesh$isotropicRemeshing(0.03, iterations = 3, relaxSteps = 2)
+mesh
+mesh$writeMeshFile("costa.off")
 
-M <- cgalMeshes:::testparam(normalizePath("horn.off"), 4L)
+M <- cgalMeshes:::testparam(normalizePath("costa.off"), 1L)
 
 
 clrs <- ifelse(
@@ -51,7 +37,7 @@ movie3d(spin3d(axis = c(0, 0, 1), rpm = 10),
 library(gifski)
 gifski(
   png_files = Sys.glob("zzpic*.png"),
-  gif_file = "twisted-horn-ARAP.gif",
+  gif_file = "Costa-DCP.gif",
   width = 512,
   height = 512,
   delay = 1/8
