@@ -12,7 +12,7 @@ Enneper <- function(phi, r) {
 
 rmesh <- parametricMesh(
   Enneper, urange = c(0, 2*pi), vrange = c(0, 1.3),
-  periodic = c(TRUE, FALSE), nu = 400, nv = 200
+  periodic = c(TRUE, FALSE), nu = 400, nv = 200, clean = TRUE
 )
 rmesh <- Rvcg::vcgClean(rmesh, sel = 0)
 # rmesh <- Rvcg::vcgIsotropicRemeshing(rmesh, TargetLen = 0.01)

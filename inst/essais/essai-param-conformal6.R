@@ -1,4 +1,5 @@
 library(cgalMeshes)
+library(rgl)
 setwd("~/Documents/R/MyPackages/cgalMeshes/inst/trash")
 
 mobiusStrip <- function(c, w, k){
@@ -43,7 +44,7 @@ mesh <- cgalMesh$new(rmesh)
 mesh$isotropicRemeshing(0.01, iterations = 3, relaxSteps = 2)
 mesh$writeMeshFile("torus.off")
 
-M <- cgalMeshes:::testparam()
+M <- cgalMeshes:::testparam("torus.off", 3L)
 
 clrs <- rep("yellow", nrow(M))
 clrs[M[, 1] <= 0.25 & M[, 2] <= 0.25] <- "navy"

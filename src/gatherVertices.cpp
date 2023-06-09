@@ -36,7 +36,7 @@ Rcpp::List gatherVertices(
   }
   
   if(!duplicated[nvertices - 1]) {
-    newindices[nvertices] = newindex;
+    newindices[nvertices] = newindex++;
   }
   
   Rcpp::NumericMatrix NewVertices(3, newindex-1);
