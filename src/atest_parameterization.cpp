@@ -13,6 +13,8 @@
 #include <CGAL/Surface_mesh_parameterization/Iterative_authalic_parameterizer_3.h>
 #include <CGAL/Unique_hash_map.h>
 
+#include <CGAL/Surface_mesh_parameterization/Square_border_parameterizer_3.h>
+
 namespace SMP = CGAL::Surface_mesh_parameterization;
 typedef K::Point_2                                       Point2;
 
@@ -59,6 +61,10 @@ Rcpp::NumericMatrix testparam(std::string filename, int method) {
   typedef SMP::ARAP_parameterizer_3<Mesh3, Border_parameterizer> Parameterizer3;
   
   typedef SMP::Iterative_authalic_parameterizer_3<Mesh3, Border_parameterizer> Parameterizer4;
+
+  typedef SMP::Square_border_uniform_parameterizer_3<Mesh3> SquareBorder_parameterizer;
+  
+  typedef SMP::Discrete_conformal_map_parameterizer_3<Mesh3, SquareBorder_parameterizer> Parameterizer5;
   
   if(method == 1) {
     uv_map = sm.add_property_map<vertex_descriptor, Point2>("v:uv").first;
@@ -73,11 +79,14 @@ Rcpp::NumericMatrix testparam(std::string filename, int method) {
     // err = parameterizer.parameterize(sm, bhd, uv_map, vi_map, vb_map);
     SMP::ARAP_parameterizer_3<SurfaceMesh> parameterizer;
     err = SMP::parameterize(sm, parameterizer, bhd, uv_map);
-  } else {
+  } else if(method == 4) {
     Border_parameterizer border_parameterizer; // the border parameterizer will automatically compute the corner vertices
     Parameterizer4 parameterizer(border_parameterizer);
     const unsigned int iterations = 2;
     err = parameterizer.parameterize(sm, bhd, uv_map2, iterations);
+  } else {
+    SquareBorder_parameterizer border_param; // the border parameterizer will compute the corner vertices
+    err = SMP::parameterize(sm, Parameterizer5(border_param), bhd, uv_map2);    
   }
   
   if(err != SMP::OK) {
