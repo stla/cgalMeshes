@@ -1372,13 +1372,15 @@ cgalMesh <- R6Class(
     },
     
     #' @description Parameterization of the mesh. The mesh must be triangle.
-    #' @param method parameterization method, XXXX
+    #' @param method parameterization method, a string among \code{"ARAP"}, 
+    #'   \code{"DAP"}, \code{"DCP"}, \code{"IAP"}
     #' @param UVborder the shape of the border of the \code{uv}-space, either 
     #'   \code{"circle"} or \code{"square"}; ignored for the ARAP method
     #' @param iterations the number of iterations for the IAP method
     #' @param lambda the value of the \code{lambda} parameter for the ARAP 
     #'   method
-    #' @return The matrix of \code{uv} coordinates.
+    #' @return The matrix of \code{uv}-coordinates. The i-th row provides 
+    #'   the \code{uv}-coordinates of the i-th vertex.
     "parameterization" = function(
       method = "DCP", UVborder = "circle", iterations = 15, lambda = 1000
     ) {

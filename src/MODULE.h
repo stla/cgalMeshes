@@ -1308,8 +1308,9 @@ public:
   }
 
 
- // ----------------------------------------------------------------------- //
- Rcpp::List getFacesList() {
+  // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
+  Rcpp::List getFacesList() {
     return getFaces<EMesh3>(mesh);
   }
 
@@ -1761,7 +1762,7 @@ public:
       Rcpp::stop("This mesh has no border.");
     }
     
-    // The 2D points of the uv parametrisation will be written into this map
+    // The 2D points of the uv parameterization will be written into this map
     UV_pmap uv_map = smesh.add_property_map<vxdescr, Point2>("v:uv").first;
     
     // The error code will be written in `err`
@@ -1816,7 +1817,7 @@ public:
       Rcpp::stop("This mesh has no border.");
     }
     
-    // The 2D points of the uv parametrisation will be written into this map
+    // The 2D points of the uv parameterization will be written into this map
     UV_pmap uv_map = smesh.add_property_map<vxdescr, Point2>("v:uv").first;
     
     // The error code will be written in `err`
@@ -2038,6 +2039,7 @@ public:
     mesh.clear();
     CGAL::copy_face_graph(smesh, mesh);
   }
+  
 
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
@@ -2534,6 +2536,8 @@ public:
   }
 
 
+  // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
   double volume() {
     if(!CGAL::is_closed(mesh)) {
       Rcpp::stop("The mesh is not closed.");

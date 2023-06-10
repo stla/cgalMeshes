@@ -2787,10 +2787,11 @@ Parameterization of the mesh. The mesh must be triangle.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{method}}{parameterization method, XXXX}
+\item{\code{method}}{parameterization method, a string among \code{"ARAP"}, 
+\code{"DAP"}, \code{"DCP"}, \code{"IAP"}}
 
 \item{\code{UVborder}}{the shape of the border of the \code{uv}-space, either 
-\code{"circle"} or \code{"square"}}
+\code{"circle"} or \code{"square"}; ignored for the ARAP method}
 
 \item{\code{iterations}}{the number of iterations for the IAP method}
 
@@ -2800,7 +2801,8 @@ method}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The matrix of \code{uv} coordinates.
+The matrix of \code{uv}-coordinates. The i-th row provides 
+  the \code{uv}-coordinates of the i-th vertex.
 }
 }
 \if{html}{\out{<hr>}}
