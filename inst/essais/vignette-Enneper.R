@@ -18,11 +18,17 @@ rmesh <- Rvcg::vcgClean(rmesh, sel = 0)
 
 open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(-10, -35, zoom = 0.7)
-shade3d(rmesh, color = "maroon")
-shade3d(getBoundary3d(rmesh, sorted = TRUE, color = "black", lwd = 3))
+shade3d(rmesh, color = "maroon", polygon_offset = 1)
+shade3d(
+  getBoundary3d(
+    rmesh, sorted = TRUE, color = "black", 
+    lwd = 3, line_antialias = TRUE
+  )
+)
 contourLines3d(
   rmesh, fn = function(x, y, z) sqrt(x^2 + y^2), 
-  levels = seq(0.1, 1.1, by = 0.2), plot = TRUE, lwd = 2
+  levels = seq(0.1, 1.1, by = 0.2), 
+  plot = TRUE, lwd = 2, line_antialias = TRUE
 )
 
 # animation ####
@@ -102,3 +108,79 @@ shade3d(rmesh, meshColor = "vertices")
 snapshot3d(
   "Enneper-DCP-circleBorder.png", width = 512, height = 512, webshot = FALSE
 )
+
+# yin yang
+sphericalCoordinates <- function(θ, ϕ){
+  x <- cos(θ) * sin(ϕ)
+  y <- sin(θ) * sin(ϕ)
+  z <- cos(ϕ)
+  rbind(x, y, z)
+}
+
+rmesh <- parametricMesh(
+  sphericalCoordinates, urange = c(0, 2*pi), vrange = c(0, pi/4),
+  periodic = c(TRUE, FALSE), nu = 512, nv = 512, clean = FALSE
+)
+rmesh <- Rvcg::vcgClean(rmesh, sel = 0)
+
+mesh <- cgalMesh$new(rmesh)
+
+# look at the edge lengths
+summary(mesh$getEdges()[["length"]])
+
+# do an isotropic remeshing to get smaller faces
+mesh$isotropicRemeshing(5e-3, iterations = 3L, relaxSteps = 2L)
+summary(mesh$getEdges()[["length"]])
+
+# compute the discrete conformal parameterization
+UV <- mesh$parameterization("DCP", UVborder = "circle")
+
+yy <- function(uv) {
+  u <- uv[1L]
+  v <- uv[2L]
+  if(v > 0.5) {
+    if(u < 0.5) {
+      "yellow"
+    } else {
+      ifelse((u-0.5)^2 + (v-0.75)^2 < 0.25^2, "yellow", "navy")
+    }
+  } else {
+    if(u < 0.5) {
+      ifelse((u-0.5)^2 + (v-0.25)^2 < 0.25^2, "navy", "yellow")
+    } else {
+      "navy"
+    }
+  }
+}
+
+clrs <- apply(UV, 1L, yy)
+rmesh$material <- list(color = clrs)
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(-10, -15, zoom = 0.7)
+shade3d(rmesh, color = "darkorange", polygon_offset = 1)
+contourLines3d(
+  rmesh, fn = function(x, y, z) sqrt(x^2 + y^2), 
+  levels = seq(0.1, 0.6, by = 0.1), 
+  plot = TRUE, lwd = 2, line_antialias = TRUE
+)
+contourLines3d(
+  rmesh, fn = function(x, y, z) atan2(y, x), 
+  levels = seq(-pi, by = pi/4, length.out = 8L), 
+  plot = TRUE, lwd = 2, line_antialias = TRUE
+)
+snapshot3d("sphericalCap-orange.png", webshot = TRUE)
+
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(-10, -15, zoom = 0.7)
+shade3d(rmesh, meshColor = "vertices", polygon_offset = 1)
+contourLines3d(
+  rmesh, fn = function(x, y, z) sqrt(x^2 + y^2), 
+  levels = seq(0.1, 0.6, by = 0.1), 
+  plot = TRUE, lwd = 2, line_antialias = TRUE
+)
+contourLines3d(
+  rmesh, fn = function(x, y, z) atan2(y, x), 
+  levels = seq(-pi, by = pi/4, length.out = 8L), 
+  plot = TRUE, lwd = 2, line_antialias = TRUE
+)
+snapshot3d("sphericalCap-yinyang.png", webshot = TRUE)
