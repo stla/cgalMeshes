@@ -1,10 +1,10 @@
 library(cgalMeshes)
 setwd("~/Documents/R/MyPackages/cgalMeshes/inst/trash")
 
-alpha <- 0.15
-beta <- 1
+alpha <- 0.35
+beta <- 0.35
 gamma <- 0.1
-n <- 2
+n <- 1
 f <- function(u, v) {
   rbind(
     alpha * (1 - v/(2*pi)) * cos(n*v) * (1 + cos(u)) + gamma * cos(n * v),
@@ -14,17 +14,18 @@ f <- function(u, v) {
 }
 
 rmesh <- parametricMesh(
-  f, c(0, 2*pi), c(0, 2*pi), periodic = c(TRUE, FALSE), nu = 400, nv = 300, clean = TRUE
+  f, c(0, 2*pi), c(0, 2*pi), periodic = c(TRUE, FALSE), nu = 400, nv = 300, clean = FALSE
 )
+rmesh <- Rvcg::vcgClean(rmesh, 0)
 
 mesh <- cgalMesh$new(rmesh)
 summary(mesh$getEdges())
 mesh$isotropicRemeshing(0.0025, iterations = 3, relaxSteps = 2)
 summary(mesh$getEdges())
 mesh
-mesh$writeMeshFile("horn.off")
+mesh$writeMeshFile("horn2.off")
 
-M <- cgalMeshes:::testparam(normalizePath("horn.off"), 5L)
+M <- cgalMeshes:::testparam(normalizePath("horn2.off"), 5L)
 
 plot(M, type = "p", pch = ".", asp = 1)
 
@@ -62,10 +63,10 @@ rmesh$material <- list(color = clrs)
 
 library(rgl)
 open3d(windowRect = 50 + c(0, 0, 512, 512))
-view3d(180, 0, zoom = 0.9)
+view3d(90, 90, zoom = 0.9)
 shade3d(rmesh, meshColor = "vertices")
 
-movie3d(spin3d(axis = c(0, 0, 1), rpm = 10),
+movie3d(spin3d(axis = c(1, 0, 0), rpm = 10),
         duration = 6, fps = 10,
         movie = "zzpic", dir = ".",
         convert = FALSE, webshot = FALSE,
@@ -74,7 +75,7 @@ movie3d(spin3d(axis = c(0, 0, 1), rpm = 10),
 library(gifski)
 gifski(
   png_files = Sys.glob("zzpic*.png"),
-  gif_file = "Enneper_missPsychoCat.gif",
+  gif_file = "horn_missPsychoCat.gif",
   width = 512,
   height = 512,
   delay = 1/8

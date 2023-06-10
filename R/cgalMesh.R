@@ -1371,6 +1371,28 @@ cgalMesh <- R6Class(
       invisible(self)
     },
     
+    #' @description Parameterization of the mesh. The mesh must be triangle.
+    #' @param method parameterization method, XXXX
+    #' @param UVborder the shape of the border of the \code{uv}-space, either 
+    #'   \code{"circle"} or \code{"square"}
+    #' @param lambda the value of the \code{lambda} parameter for the ARAP 
+    #'   method
+    #' @return The matrix of \code{uv} coordinates.
+    "parameterization" = function(
+      method = "DCP", UVborder = "circle", lambda = 1000
+    ) {
+      method <- match.arg(method, c("DCP", "DAP", "ARAP"))
+      UVborder <- match.arg(UVborder, c("circle", "square"))
+      if(method == "DCP") {
+        private[[".CGALmesh"]]$parameterizationDCP(UVborder)
+      } else if(method == "DAP") {
+        private[[".CGALmesh"]]$parameterizationDAP(UVborder)
+      } else if(method == "ARAP") {
+        stopifnot(isPositiveNumber(lambda))
+        private[[".CGALmesh"]]$parameterizationARAP(UVborder, as.double(lambda))
+      }
+    },
+    
     #' @description Remove self-intersections (experimental). The mesh must 
     #'   be triangle.
     #' @return The modified \code{cgalMesh} object, invisibly.

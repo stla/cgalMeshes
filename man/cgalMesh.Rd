@@ -959,6 +959,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-LoopSubdivision}{\code{cgalMesh$LoopSubdivision()}}
 \item \href{#method-cgalMesh-merge}{\code{cgalMesh$merge()}}
 \item \href{#method-cgalMesh-orientToBoundVolume}{\code{cgalMesh$orientToBoundVolume()}}
+\item \href{#method-cgalMesh-parameterization}{\code{cgalMesh$parameterization()}}
 \item \href{#method-cgalMesh-removeSelfIntersections}{\code{cgalMesh$removeSelfIntersections()}}
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
 \item \href{#method-cgalMesh-sample}{\code{cgalMesh$sample()}}
@@ -2768,6 +2769,32 @@ mesh$boundsVolume() # TRUE
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-parameterization"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-parameterization}{}}}
+\subsection{Method \code{parameterization()}}{
+Parameterization of the mesh. The mesh must be triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$parameterization(method = "DCP", UVborder = "circle", lambda = 1000)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{method}}{parameterization method, XXXX}
+
+\item{\code{UVborder}}{the shape of the border of the \code{uv}-space, either 
+\code{"circle"} or \code{"square"}}
+
+\item{\code{lambda}}{the value of the \code{lambda} parameter for the ARAP 
+method}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The matrix of \code{uv} coordinates.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-removeSelfIntersections"></a>}}

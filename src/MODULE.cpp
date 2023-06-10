@@ -69,6 +69,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("LoopSubdivision", &CGALmesh::LoopSubdivision)
     .method("merge", &CGALmesh::merge)
     .method("orientToBoundVolume", &CGALmesh::orientToBoundVolume)
+    .method("parameterizationDCP", &CGALmesh::parameterizationDCP)
     .method("print", &CGALmesh::print)
     .method("removeSelfIntersections", &CGALmesh::removeSelfIntersections)
     .method("reverseFaceOrientations", &CGALmesh::reverseFaceOrientations)

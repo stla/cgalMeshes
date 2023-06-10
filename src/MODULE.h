@@ -1704,6 +1704,57 @@ public:
     // faut-il updater normals?
   }
 
+  
+  // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
+  Rcpp::NumericMatrix parameterizationDCP(std::string spaceBorder) {
+    Mesh3 smesh = epeck2epick(mesh);
+    
+    // A halfedge on the border
+    hgdescr bhg = PMP::longest_border(smesh).first;
+    if(bhg == Mesh3::null_halfedge()) {
+      Rcpp::stop("This mesh has no border.");
+    }
+    
+    // The 2D points of the uv parametrisation will be written into this map
+    UV_pmap uv_map = smesh.add_property_map<vxdescr, Point2>("v:uv").first;
+    
+    // The error code will be written in `err`
+    SMP::Error_code err;
+    
+    // Run parameterization
+    if(spaceBorder == "circle") {
+      typedef SMP::Circular_border_arc_length_parameterizer_3<Mesh3> 
+                                                            BorderParameterizer;
+      typedef DiscreteConformalParameterizer<BorderParameterizer> 
+                                                                  Parameterizer;
+      err = SMP::parameterize(smesh, Parameterizer(), bhg, uv_map);
+    } else if(spaceBorder == "square") {
+      typedef SMP::Square_border_uniform_parameterizer_3<Mesh3> 
+                                                            BorderParameterizer;
+      typedef DiscreteConformalParameterizer<BorderParameterizer> 
+        Parameterizer;
+      err = SMP::parameterize(smesh, Parameterizer(), bhg, uv_map);
+    } else {
+      Rcpp::stop("Invalid space border specification");
+    }
+    
+    if(err != SMP::OK) {
+      Rcpp::stop(SMP::get_error_message(err));
+    }
+    
+    // output matrix
+    const size_t nvertices = smesh.number_of_vertices();
+    Rcpp::NumericMatrix UVmatrix(2, nvertices);
+    int i = 0;
+    for(Mesh3::Vertex_index v : smesh.vertices()) {
+      Point2 pt = uv_map[v];
+      Rcpp::NumericVector UV = {pt.x(), pt.y()};
+      UVmatrix(Rcpp::_, i++) = UV;
+    }
+    return Rcpp::transpose(UVmatrix);
+  }
+  
 
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //

@@ -83,6 +83,21 @@
 
 #include <CGAL/Polygon_mesh_processing/angle_and_area_smoothing.h>
 
+#include <CGAL/Surface_mesh_parameterization/parameterize.h>
+#include <CGAL/Surface_mesh_parameterization/Discrete_conformal_map_parameterizer_3.h>
+#include <CGAL/Surface_mesh_parameterization/Discrete_authalic_parameterizer_3.h>
+#include <CGAL/Surface_mesh_parameterization/ARAP_parameterizer_3.h>
+#include <CGAL/Surface_mesh_parameterization/Iterative_authalic_parameterizer_3.h>
+#include <CGAL/Unique_hash_map.h>
+#include <CGAL/Surface_mesh_parameterization/Circular_border_parameterizer_3.h>
+#include <CGAL/Surface_mesh_parameterization/Square_border_parameterizer_3.h>
+
+
+// -------------------------------------------------------------------------- //
+namespace PMP = CGAL::Polygon_mesh_processing;
+namespace SMP = CGAL::Surface_mesh_parameterization;
+
+
 // -------------------------------------------------------------------------- //
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef K::Point_3                                          Point3;
@@ -157,8 +172,15 @@ typedef CGAL::Polynomial_type_generator<FT, 3>::Type     Poly3;
 typedef CGAL::Polynomial_traits_d<Poly3>                 PT3;
 typedef PT3::Innermost_coefficient_type                  Real;
 
-// -------------------------------------------------------------------------- //
-namespace PMP = CGAL::Polygon_mesh_processing;
+typedef K::Point_2                              Point2;
+typedef Mesh3::Property_map<vxdescr, Point2>    UV_pmap;
+typedef CGAL::Unique_hash_map<vxdescr, Point2>  UV_uhm;
+typedef boost::associative_property_map<UV_uhm> UV_phmap;
+
+template <class BorderParameterizer>
+using DiscreteConformalParameterizer = 
+  SMP::Discrete_conformal_map_parameterizer_3<Mesh3, BorderParameterizer>;
+
 
 // -------------------------------------------------------------------------- //
 template <typename MeshT, typename PointT>
