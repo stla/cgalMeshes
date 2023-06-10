@@ -1,0 +1,104 @@
+library(cgalMeshes)
+library(rgl)
+setwd("~/Documents/R/MyPackages/cgalMeshes/inst/trash/vignette")
+
+Enneper <- function(phi, r, n = 4) {
+  rbind(
+    r*cos(phi) - r^(2*n-1) * cos((2*n-1)*phi) / (2*n-1),
+    r*sin(phi) + r^(2*n-1) * sin((2*n-1)*phi) / (2*n-1),
+    2*r^n * cos(n*phi)/n
+  )
+}
+
+rmesh <- parametricMesh(
+  Enneper, urange = c(0, 2*pi), vrange = c(0, 1.1),
+  periodic = c(TRUE, FALSE), nu = 512, nv = 512, clean = FALSE
+)
+rmesh <- Rvcg::vcgClean(rmesh, sel = 0)
+
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(-10, -35, zoom = 0.7)
+shade3d(rmesh, color = "maroon")
+shade3d(getBoundary3d(rmesh, sorted = TRUE, color = "black", lwd = 3))
+contourLines3d(
+  rmesh, fn = function(x, y, z) sqrt(x^2 + y^2), 
+  levels = seq(0.1, 1.1, by = 0.2), plot = TRUE, lwd = 2
+)
+
+# animation ####
+movie3d(spin3d(axis = c(0, 0, 1), rpm = 10),
+        duration = 6, fps = 10,
+        movie = "zzpic", dir = ".",
+        convert = FALSE, webshot = FALSE,
+        startTime = 1/10)
+
+library(gifski)
+gifski(
+  png_files = Sys.glob("zzpic*.png"),
+  gif_file = "Enneper-maroon.gif",
+  width = 512,
+  height = 512,
+  delay = 1/8
+)
+file.remove(Sys.glob("zzpic*.png"))
+
+
+# checkerboard ####
+u <- v <- seq(0, 1, length.out = 513L)[-513L]
+Grid <- expand.grid(U = u, V = v)
+checkerboard <- ifelse(
+  (floor(10*Grid$U) %% 2) == (floor(10*Grid$V) %% 2), 
+  "yellow", "navy"
+)
+opar <- par(mar = c(2, 2, 1, 1))
+plot(
+  Grid$U, Grid$V, type = "p", asp = 1, pch = ".", 
+  col = checkerboard, xlab = "u", ylab = "v", axes = FALSE
+)
+axis(1); axis(2)
+par(opar)
+
+# assign these colors to the Enneper mesh
+rmesh$material <- list(color = checkerboard)
+
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(-10, -35, zoom = 0.7)
+shade3d(rmesh, meshColor = "vertices")
+
+snapshot3d(
+  "Enneper-checkerboard.png", width = 512, height = 512, webshot = TRUE
+)
+
+# convert the rgl mesh to cgalMesh
+mesh <- cgalMesh$new(rmesh)
+
+# look at the edge lengths
+summary(mesh$getEdges()[["length"]])
+
+# do an isotropic remeshing to get smaller faces
+mesh$isotropicRemeshing(5e-3, iterations = 3L, relaxSteps = 2L)
+summary(mesh$getEdges()[["length"]])
+
+# compute the discrete conformal parameterization
+UV <- mesh$parameterization("DCP", UVborder = "circle")
+head(UV)
+
+# make a checkerboard with these points
+UVcheckerboard <- ifelse(
+  (floor(10*UV[, 1L]) %% 2) == (floor(10*UV[, 2L]) %% 2), 
+  "yellow", "navy"
+)
+
+# compute mesh normals and convert to rgl mesh
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+
+# assign these colors to the mesh and plot
+rmesh$material <- list(color = UVcheckerboard)
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(-10, -35, zoom = 0.7)
+shade3d(rmesh, meshColor = "vertices")
+
+snapshot3d(
+  "Enneper-DCP-circleBorder.png", width = 512, height = 512, webshot = FALSE
+)
