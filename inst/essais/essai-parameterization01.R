@@ -18,3 +18,5 @@ rmesh <- parametricMesh(
 mesh <- cgalMesh$new(rmesh)
 
 UV <- mesh$parameterization("IAP", iterations = 2)
+
+plot(UV, type = "p", asp = 1, pch = ".")

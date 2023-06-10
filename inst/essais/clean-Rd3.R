@@ -1,3 +1,5 @@
+setwd("~/Documents/R/MyPackages/cgalMeshes")
+
 #' get i-th character of a string
 ithCharacter <- function(string, i) {
   substr(string, i, i)

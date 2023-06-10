@@ -1784,7 +1784,7 @@ public:
       typedef SMP::Square_border_uniform_parameterizer_3<Mesh3> 
                                                             BorderParameterizer;
       typedef DiscreteConformalParameterizer<BorderParameterizer> 
-        Parameterizer;
+                                                                  Parameterizer;
       err = SMP::parameterize(smesh, Parameterizer(), bhg, uv_map);
     } else {
       Rcpp::stop("Invalid space border specification");
