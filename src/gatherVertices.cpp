@@ -5,6 +5,8 @@
 typedef std::tuple<double, double, double> Vertex3;
 
 
+// -------------------------------------------------------------------------- //
+// author: Mikko Marttila --------------------------------------------------- //
 std::vector<std::vector<int>> duplicatedIndices(Rcpp::NumericMatrix Vertices) {
   std::map<Vertex3, std::vector<int>> positions;
   std::set<Vertex3> duplicates;
@@ -32,21 +34,21 @@ std::vector<std::vector<int>> duplicatedIndices(Rcpp::NumericMatrix Vertices) {
 }
 
 
-bool isEqual(double l, double r) {
-  return r == std::nextafter(l, r);
-}
+// bool isEqual(double l, double r) {
+//   return r == std::nextafter(l, r);
+// }
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 // [[Rcpp::export]]
 Rcpp::List gatherVertices(
     Rcpp::NumericMatrix Vertices, Rcpp::IntegerMatrix Faces
 ) {
   std::vector<std::vector<int>> dupIndices = duplicatedIndices(Vertices);
   const int ndups = dupIndices.size();
-  std::map<int, int> newindices;
   const int nvertices = Vertices.ncol(); 
   std::vector<int> duplicated(nvertices, 0);
-  int newindex = 1;
   
   for(int i = 0; i < ndups; i++) {
     std::vector<int> indices = dupIndices[i];
@@ -55,20 +57,23 @@ Rcpp::List gatherVertices(
       duplicated[indices[j]-1] = indices[0];
     }
   }
+
+  std::map<int, int> newindices;
+  int newindex = 1;
   
   for(int index = 0; index < nvertices; index++) {
     if(duplicated[index] == 0) {
-      newindices[index + 1] = newindex++;
+      newindices[index] = newindex++;
     } else {
-      newindices[index + 1] = duplicated[index];
+      newindices[index] = duplicated[index];
     }
   }
 
   Rcpp::NumericMatrix NewVertices(3, newindex-1);
   int j = 0;
   for(auto const& [key, value] : newindices) {
-    if(duplicated[key - 1] == 0) {
-      NewVertices(Rcpp::_, j++) = Vertices(Rcpp::_, key - 1);
+    if(duplicated[key] == 0) {
+      NewVertices(Rcpp::_, j++) = Vertices(Rcpp::_, key);
     }
   }
   
@@ -77,7 +82,7 @@ Rcpp::List gatherVertices(
   for(int i = 0; i < nfaces; i++) {
     Rcpp::IntegerVector face = Faces(Rcpp::_, i);
     Rcpp::IntegerVector newface = 
-      {newindices[face(0)], newindices[face(1)], newindices[face(2)]};
+      {newindices[face(0)-1], newindices[face(1)-1], newindices[face(2)-1]};
     NewFaces(Rcpp::_, i) = newface;
   }
   
