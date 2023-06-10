@@ -91,7 +91,7 @@ UV <- mesh$parameterization("DCP", UVborder = "circle")
 head(UV)
 
 # compute the ARAP parameterization
-UV <- mesh$parameterization("ARAP", lambda = 1000, UVborder = "square")
+UV <- mesh$parameterization("ARAP", lambda = 1000)
 head(UV)
 plot(UV, type = "p", asp = 1, pch = ".")
 UV[, 1L] <- UV[, 1L] - min(UV[, 1L])

@@ -12,7 +12,7 @@ Enneper <- function(phi, r) {
 
 rmesh <- parametricMesh(
   Enneper, urange = c(0, 2*pi), vrange = c(0, 1.3),
-  periodic = c(TRUE, FALSE), nu = 100, nv = 50, clean = TRUE
+  periodic = c(TRUE, FALSE), nu = 400, nv = 200, clean = TRUE
 )
 
 mesh <- cgalMesh$new(rmesh)

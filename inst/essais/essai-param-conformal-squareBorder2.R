@@ -14,7 +14,7 @@ f <- function(u, v) {
 }
 
 rmesh <- parametricMesh(
-  f, c(0, 2*pi), c(0, 2*pi), periodic = c(TRUE, FALSE), nu = 400, nv = 300, clean = FALSE
+  f, c(0, 2*pi), c(0, 2*pi), periodic = c(TRUE, FALSE), nu = 400, nv = 200, clean = TRUE
 )
 rmesh <- Rvcg::vcgClean(rmesh, 0)
 

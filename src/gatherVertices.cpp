@@ -2,6 +2,35 @@
 #include "cgalMesh.h"
 #endif
 
+typedef std::tuple<double, double, double> Vertex3;
+
+
+std::vector<std::vector<int>> duplicatedIndices(Rcpp::NumericMatrix Vertices) {
+  std::map<Vertex3, std::vector<int>> positions;
+  std::set<Vertex3> duplicates;
+  
+  const int nvertices = Vertices.ncol(); 
+  
+  for(int i = 0; i < nvertices; i++) {
+    Rcpp::NumericVector vi = Vertices(Rcpp::_, i);
+    Vertex3 vertex = { vi(0), vi(1), vi(2) };
+    if(positions.count(vertex) == 0) {
+      std::vector<int> position = { i + 1 };
+      positions.emplace(vertex, position);
+    } else {
+      duplicates.insert(vertex);
+      positions.at(vertex).push_back(i + 1);
+    }
+  }
+  
+  std::vector<std::vector<int>> result;
+  for(const Vertex3& vertex : duplicates) {
+    result.push_back(positions.at(vertex));
+  }
+  
+  return result;
+}
+
 
 bool isEqual(double l, double r) {
   return r == std::nextafter(l, r);
@@ -12,40 +41,33 @@ bool isEqual(double l, double r) {
 Rcpp::List gatherVertices(
     Rcpp::NumericMatrix Vertices, Rcpp::IntegerMatrix Faces
 ) {
-  int nvertices = Vertices.ncol();
-  std::vector<bool> duplicated(nvertices, false);
+  std::vector<std::vector<int>> dupIndices = duplicatedIndices(Vertices);
+  const int ndups = dupIndices.size();
   std::map<int, int> newindices;
+  const int nvertices = Vertices.ncol(); 
+  std::vector<int> duplicated(nvertices, 0);
   int newindex = 1;
   
-  for(int index = 0; index < nvertices - 1; index++) {
-    if(!duplicated[index]) {
-      newindices[index + 1] = newindex;
-//      Rcpp::NumericVector vertex = Vertices(Rcpp::_, index);
-      const Rcpp::NumericMatrix::Column& vertex = Vertices.column(index);
-      for(int j = index + 1; j < nvertices; j++) {
-        //Rcpp::NumericVector vertex_j = Vertices(Rcpp::_, j);
-        const Rcpp::NumericMatrix::Column& vertex_j = Vertices.column(j);
-        bool equal = Rcpp::max(Rcpp::abs(vertex - vertex_j)) < 1e-16;
-        // bool equal = isEqual(vertex(0), vertex_j(0)) && 
-        //              isEqual(vertex(1), vertex_j(1)) && 
-        //              isEqual(vertex(2), vertex_j(2));
-        if(equal) {
-          duplicated[j] = true;
-          newindices[j + 1] = newindex;
-        }
-      }
-      newindex++;
+  for(int i = 0; i < ndups; i++) {
+    std::vector<int> indices = dupIndices[i];
+    const int nindices = indices.size();
+    for(int j = 1; j < nindices; j++) {
+      duplicated[indices[j]-1] = indices[0];
     }
   }
   
-  if(!duplicated[nvertices - 1]) {
-    newindices[nvertices] = newindex++;
+  for(int index = 0; index < nvertices; index++) {
+    if(duplicated[index] == 0) {
+      newindices[index + 1] = newindex++;
+    } else {
+      newindices[index + 1] = duplicated[index];
+    }
   }
-  
+
   Rcpp::NumericMatrix NewVertices(3, newindex-1);
   int j = 0;
   for(auto const& [key, value] : newindices) {
-    if(!duplicated[key - 1]) {
+    if(duplicated[key - 1] == 0) {
       NewVertices(Rcpp::_, j++) = Vertices(Rcpp::_, key - 1);
     }
   }
