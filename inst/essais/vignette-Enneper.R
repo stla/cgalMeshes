@@ -91,13 +91,17 @@ UV <- mesh$parameterization("DCP", UVborder = "circle")
 head(UV)
 
 # compute the ARAP parameterization
-UV <- mesh$parameterization("ARAP", lambda = 1000)
+UV <- mesh$parameterization("ARAP", lambda = 1000, UVborder = "square")
 head(UV)
 plot(UV, type = "p", asp = 1, pch = ".")
 UV[, 1L] <- UV[, 1L] - min(UV[, 1L])
 UV[, 2L] <- UV[, 2L] - min(UV[, 2L])
 UV[, 1L] <- UV[, 1L] / max(UV[, 1L])
 UV[, 2L] <- UV[, 2L] / max(UV[, 2L])
+
+# compute the iterative authalic parameterization
+UV <- mesh$parameterization("IAP", UVborder = "square", iterations = 1)
+head(UV)
 
 # make a checkerboard with these points
 UVcheckerboard <- ifelse(
@@ -119,7 +123,51 @@ snapshot3d(
   "Enneper-ARAP-circleBorder.png", width = 512, height = 512, webshot = FALSE
 )
 
-# yin yang
+
+##| mapping an image ####
+mesh <- cgalMesh$new("Enneper-remeshed.off")
+# compute the discrete conformal parameterization with square border
+UV <- mesh$parameterization("DCP", UVborder = "square")
+
+# now we extract the colors from the image
+library(imager)
+# load the image
+img <- load.image("spiral512x512.png")
+# take the r, g, b channels
+r <- squeeze(R(img))
+g <- squeeze(G(img))
+b <- squeeze(B(img))
+
+# make interpolation functions to get the colors of the UV points
+library(cooltools) # to get the `approxfun2` function
+x_ <- y_ <- seq(0, 1, length.out = 512L)
+f_r <- approxfun2(x_, y_, r)
+f_g <- approxfun2(x_, y_, g)
+f_b <- approxfun2(x_, y_, b)
+
+# now, interpolate the r, g, b values
+UV_r <- f_r(UV[, 1L], UV[, 2L])
+UV_g <- f_g(UV[, 1L], UV[, 2L])
+UV_b <- f_b(UV[, 1L], UV[, 2L])
+
+# convert rgb to hex codes
+clrs <- rgb(UV_r, UV_g, UV_b)
+
+# we're done; now compute mesh normals, convert to rgl mesh, and assign colors
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+rmesh$material <- list(color = clrs)
+
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(-10, -35, zoom = 0.7)
+shade3d(rmesh, meshColor = "vertices")
+snapshot3d(
+  "Enneper-spiral.png", width = 512, height = 512, webshot = FALSE
+)
+
+
+##| yin yang ####
 sphericalCoordinates <- function(θ, ϕ){
   x <- cos(θ) * sin(ϕ)
   y <- sin(θ) * sin(ϕ)
