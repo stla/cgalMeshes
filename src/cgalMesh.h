@@ -189,6 +189,10 @@ template <class BorderParameterizer>
 using IterativeAuthalicParameterizer = 
   SMP::Iterative_authalic_parameterizer_3<Mesh3, BorderParameterizer>;
 
+template <class BorderParameterizer>
+using ARAPparameterizer = 
+  SMP::ARAP_parameterizer_3<Mesh3, BorderParameterizer>;
+
 
 // -------------------------------------------------------------------------- //
 template <typename MeshT, typename PointT>

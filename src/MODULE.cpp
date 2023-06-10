@@ -69,6 +69,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("LoopSubdivision", &CGALmesh::LoopSubdivision)
     .method("merge", &CGALmesh::merge)
     .method("orientToBoundVolume", &CGALmesh::orientToBoundVolume)
+    .method("parameterizationARAP", &CGALmesh::parameterizationARAP)
     .method("parameterizationDAP", &CGALmesh::parameterizationDAP)
     .method("parameterizationDCP", &CGALmesh::parameterizationDCP)
     .method("parameterizationIAP", &CGALmesh::parameterizationIAP)

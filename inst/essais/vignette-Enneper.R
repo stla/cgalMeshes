@@ -84,10 +84,20 @@ summary(mesh$getEdges()[["length"]])
 # do an isotropic remeshing to get smaller faces
 mesh$isotropicRemeshing(5e-3, iterations = 3L, relaxSteps = 2L)
 summary(mesh$getEdges()[["length"]])
+mesh$writeMeshFile("Enneper-remeshed.off")
 
 # compute the discrete conformal parameterization
 UV <- mesh$parameterization("DCP", UVborder = "circle")
 head(UV)
+
+# compute the ARAP parameterization
+UV <- mesh$parameterization("ARAP", lambda = 1000)
+head(UV)
+plot(UV, type = "p", asp = 1, pch = ".")
+UV[, 1L] <- UV[, 1L] - min(UV[, 1L])
+UV[, 2L] <- UV[, 2L] - min(UV[, 2L])
+UV[, 1L] <- UV[, 1L] / max(UV[, 1L])
+UV[, 2L] <- UV[, 2L] / max(UV[, 2L])
 
 # make a checkerboard with these points
 UVcheckerboard <- ifelse(
@@ -106,7 +116,7 @@ view3d(-10, -35, zoom = 0.7)
 shade3d(rmesh, meshColor = "vertices")
 
 snapshot3d(
-  "Enneper-DCP-circleBorder.png", width = 512, height = 512, webshot = FALSE
+  "Enneper-ARAP-circleBorder.png", width = 512, height = 512, webshot = FALSE
 )
 
 # yin yang
