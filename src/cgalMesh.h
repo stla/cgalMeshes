@@ -181,6 +181,14 @@ template <class BorderParameterizer>
 using DiscreteConformalParameterizer = 
   SMP::Discrete_conformal_map_parameterizer_3<Mesh3, BorderParameterizer>;
 
+template <class BorderParameterizer>
+using DiscreteAuthalicParameterizer = 
+  SMP::Discrete_authalic_parameterizer_3<Mesh3, BorderParameterizer>;
+
+template <class BorderParameterizer>
+using IterativeAuthalicParameterizer = 
+  SMP::Iterative_authalic_parameterizer_3<Mesh3, BorderParameterizer>;
+
 
 // -------------------------------------------------------------------------- //
 template <typename MeshT, typename PointT>

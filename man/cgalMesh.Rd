@@ -2776,7 +2776,12 @@ mesh$boundsVolume() # TRUE
 \subsection{Method \code{parameterization()}}{
 Parameterization of the mesh. The mesh must be triangle.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$parameterization(method = "DCP", UVborder = "circle", lambda = 1000)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$parameterization(
+  method = "DCP",
+  UVborder = "circle",
+  iterations = 15,
+  lambda = 1000
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -2786,6 +2791,8 @@ Parameterization of the mesh. The mesh must be triangle.
 
 \item{\code{UVborder}}{the shape of the border of the \code{uv}-space, either 
 \code{"circle"} or \code{"square"}}
+
+\item{\code{iterations}}{the number of iterations for the IAP method}
 
 \item{\code{lambda}}{the value of the \code{lambda} parameter for the ARAP 
 method}

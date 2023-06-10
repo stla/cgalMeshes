@@ -20,12 +20,15 @@ Rcpp::List gatherVertices(
   for(int index = 0; index < nvertices - 1; index++) {
     if(!duplicated[index]) {
       newindices[index + 1] = newindex;
-      Rcpp::NumericVector vertex = Vertices(Rcpp::_, index);
+//      Rcpp::NumericVector vertex = Vertices(Rcpp::_, index);
+      const Rcpp::NumericMatrix::Column& vertex = Vertices.column(index);
       for(int j = index + 1; j < nvertices; j++) {
-        Rcpp::NumericVector vertex_j = Vertices(Rcpp::_, j);
-        bool equal = isEqual(vertex(0), vertex_j(0)) && 
-                     isEqual(vertex(1), vertex_j(1)) && 
-                     isEqual(vertex(2), vertex_j(2));
+        //Rcpp::NumericVector vertex_j = Vertices(Rcpp::_, j);
+        const Rcpp::NumericMatrix::Column& vertex_j = Vertices.column(j);
+        bool equal = Rcpp::max(Rcpp::abs(vertex - vertex_j)) < 1e-16;
+        // bool equal = isEqual(vertex(0), vertex_j(0)) && 
+        //              isEqual(vertex(1), vertex_j(1)) && 
+        //              isEqual(vertex(2), vertex_j(2));
         if(equal) {
           duplicated[j] = true;
           newindices[j + 1] = newindex;

@@ -1375,18 +1375,24 @@ cgalMesh <- R6Class(
     #' @param method parameterization method, XXXX
     #' @param UVborder the shape of the border of the \code{uv}-space, either 
     #'   \code{"circle"} or \code{"square"}
+    #' @param iterations the number of iterations for the IAP method
     #' @param lambda the value of the \code{lambda} parameter for the ARAP 
     #'   method
     #' @return The matrix of \code{uv} coordinates.
     "parameterization" = function(
-      method = "DCP", UVborder = "circle", lambda = 1000
+      method = "DCP", UVborder = "circle", iterations = 15, lambda = 1000
     ) {
-      method <- match.arg(method, c("DCP", "DAP", "ARAP"))
+      method <- match.arg(method, c("DCP", "DAP", "IAP", "ARAP"))
       UVborder <- match.arg(UVborder, c("circle", "square"))
       if(method == "DCP") {
         private[[".CGALmesh"]]$parameterizationDCP(UVborder)
       } else if(method == "DAP") {
         private[[".CGALmesh"]]$parameterizationDAP(UVborder)
+      } else if(method == "IAP") {
+        stopifnot(isStrictPositiveInteger(iterations))
+        private[[".CGALmesh"]]$parameterizationIAP(
+          UVborder, as.integer(iterations)
+        )
       } else if(method == "ARAP") {
         stopifnot(isPositiveNumber(lambda))
         private[[".CGALmesh"]]$parameterizationARAP(UVborder, as.double(lambda))
