@@ -26,6 +26,8 @@ std::vector<std::vector<int>> duplicatedIndices(Rcpp::NumericMatrix Vertices) {
   }
   
   std::vector<std::vector<int>> result;
+  int nduplicates = duplicates.size();
+  result.reserve(nduplicates);
   for(const Vertex3& vertex : duplicates) {
     result.push_back(positions.at(vertex));
   }

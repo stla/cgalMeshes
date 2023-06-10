@@ -147,8 +147,8 @@ typedef AFS_reconstruction::Triangulation_data_structure_2 AFS_Tds2;
 typedef CGAL::Scale_space_surface_reconstruction_3<K>                SSS_reconstruction;
 typedef CGAL::Scale_space_reconstruction_3::Weighted_PCA_smoother<K> SSS_smoother;
 typedef CGAL::Scale_space_reconstruction_3::Alpha_shape_mesher<K>    SSS_mesher;
-typedef SSS_reconstruction::Facet_const_iterator                      SSS_facet_iterator;
-typedef SSS_reconstruction::Point_const_iterator                      SSS_point_iterator;
+typedef SSS_reconstruction::Facet_const_iterator                     SSS_facet_iterator;
+typedef SSS_reconstruction::Point_const_iterator                     SSS_point_iterator;
 
 typedef CGAL::Face_filtered_graph<EMesh3>                      Filtered_graph;
 typedef boost::graph_traits<Filtered_graph>::vertex_descriptor ffg_vertex_descriptor;

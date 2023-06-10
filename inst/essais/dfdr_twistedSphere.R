@@ -25,7 +25,7 @@ if(require("dfdr")) {
 }
 # compute mesh of the parametric surface
 rmesh <- cgalMeshes::parametricMesh(
-  f, c(0, 2*pi), c(0, 2*pi), c(FALSE, TRUE), nu = 60L, nv = 30L, fnormal
+  f, c(0, 2*pi), c(0, 2*pi), c(FALSE, TRUE), nu = 60L, nv = 30L, fnormal = fnormal
 )
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512))
