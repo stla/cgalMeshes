@@ -103,6 +103,10 @@ UV[, 2L] <- UV[, 2L] / max(UV[, 2L])
 UV <- mesh$parameterization("IAP", UVborder = "square", iterations = 1)
 head(UV)
 
+# compute the discrete authalic parameterization
+UV <- mesh$parameterization("DAP", UVborder = "circle")
+head(UV)
+
 # make a checkerboard with these points
 UVcheckerboard <- ifelse(
   (floor(10*UV[, 1L]) %% 2) == (floor(10*UV[, 2L]) %% 2), 
@@ -120,7 +124,7 @@ view3d(-10, -35, zoom = 0.7)
 shade3d(rmesh, meshColor = "vertices")
 
 snapshot3d(
-  "Enneper-ARAP-circleBorder.png", width = 512, height = 512, webshot = FALSE
+  "Enneper-DAP-circleBorder.png", width = 512, height = 512, webshot = FALSE
 )
 
 

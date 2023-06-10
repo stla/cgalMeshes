@@ -1374,7 +1374,7 @@ cgalMesh <- R6Class(
     #' @description Parameterization of the mesh. The mesh must be triangle.
     #' @param method parameterization method, XXXX
     #' @param UVborder the shape of the border of the \code{uv}-space, either 
-    #'   \code{"circle"} or \code{"square"}
+    #'   \code{"circle"} or \code{"square"}; ignored for the ARAP method
     #' @param iterations the number of iterations for the IAP method
     #' @param lambda the value of the \code{lambda} parameter for the ARAP 
     #'   method
@@ -1395,7 +1395,7 @@ cgalMesh <- R6Class(
         )
       } else if(method == "ARAP") {
         stopifnot(isPositiveNumber(lambda))
-        private[[".CGALmesh"]]$parameterizationARAP(UVborder, as.double(lambda))
+        private[[".CGALmesh"]]$parameterizationARAP(as.double(lambda))
       }
     },
     

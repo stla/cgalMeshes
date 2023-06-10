@@ -91,6 +91,7 @@
 #include <CGAL/Unique_hash_map.h>
 #include <CGAL/Surface_mesh_parameterization/Circular_border_parameterizer_3.h>
 #include <CGAL/Surface_mesh_parameterization/Square_border_parameterizer_3.h>
+#include <CGAL/Surface_mesh_parameterization/Two_vertices_parameterizer_3.h>
 
 
 // -------------------------------------------------------------------------- //

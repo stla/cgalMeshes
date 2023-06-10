@@ -1707,9 +1707,7 @@ public:
   
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
-  Rcpp::NumericMatrix parameterizationARAP(
-      std::string spaceBorder, const double lambda
-  ) {
+  Rcpp::NumericMatrix parameterizationARAP(const double lambda) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
@@ -1725,26 +1723,12 @@ public:
     // The 2D points of the uv parameterization will be written into this map
     UV_pmap uv_map = smesh.add_property_map<vxdescr, Point2>("v:uv").first;
     
-    // The error code will be written in `err`
-    SMP::Error_code err;
-    
     // Run parameterization
-    if(spaceBorder == "circle") {
-      typedef SMP::Circular_border_arc_length_parameterizer_3<Mesh3> 
-                                                            BorderParameterizer;
-      typedef ARAPparameterizer<BorderParameterizer> 
-                                                                  Parameterizer;
-      err = SMP::parameterize(smesh, Parameterizer(lambda), bhg, uv_map);
-    } else if(spaceBorder == "square") {
-      typedef SMP::Square_border_uniform_parameterizer_3<Mesh3> 
-                                                            BorderParameterizer;
-      typedef ARAPparameterizer<BorderParameterizer> 
-                                                                  Parameterizer;
-      err = SMP::parameterize(smesh, Parameterizer(lambda), bhg, uv_map);
-    } else {
-      Rcpp::stop("Invalid space border specification.");
-    }
-    
+    typedef SMP::Two_vertices_parameterizer_3<Mesh3> BorderParameterizer;
+    typedef ARAPparameterizer<BorderParameterizer> Parameterizer;
+    SMP::Error_code err = 
+      SMP::parameterize(smesh, Parameterizer(lambda), bhg, uv_map);
+
     if(err != SMP::OK) {
       Rcpp::stop(SMP::get_error_message(err));
     }
