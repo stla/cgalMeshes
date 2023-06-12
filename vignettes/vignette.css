@@ -1,0 +1,71 @@
+body {
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  font-size: 18px;
+}
+
+h1 {
+  font-size: 2.2em;
+  text-decoration: underline;
+}
+
+h2 {
+  font-size: 1.9em;
+}
+
+p {
+  text-align: justify;
+}
+
+p code {
+  color: #e83e8c;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-weight: bold;
+}
+
+pre.sourceCode {
+  border: 1px solid silver;
+  padding-left: 1rem;
+}
+
+code.sourceCode {
+  font-size: 1.1em;
+}
+
+code.sourceCode > span {
+  color: maroon;
+}
+
+code span.co {
+  color: darkmagenta;
+}
+
+code span.dv, code span.fl {
+  color: firebrick;
+}
+
+code span.st {
+  color: orangered;
+}
+
+code span.op {
+  color: #343940;
+}
+
+code span.dt {
+  color: olive;
+}
+
+code span.kw {
+  color: green;
+}
+
+div.sourceCode {
+  background-color: snow;
+  margin-left: 1em;
+}
+
+@media print {
+  div.sourceCode {
+    background-color: snow;
+  }
+}

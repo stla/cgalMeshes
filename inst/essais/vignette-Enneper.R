@@ -12,9 +12,8 @@ Enneper <- function(phi, r, n = 4) {
 
 rmesh <- parametricMesh(
   Enneper, urange = c(0, 2*pi), vrange = c(0, 1.1),
-  periodic = c(TRUE, FALSE), nu = 512, nv = 512, clean = FALSE
+  periodic = c(TRUE, FALSE), nu = 512, nv = 512, clean = TRUE
 )
-rmesh <- Rvcg::vcgClean(rmesh, sel = 0)
 
 open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(-10, -35, zoom = 0.7)
@@ -75,6 +74,43 @@ snapshot3d(
   "Enneper-checkerboard.png", width = 512, height = 512, webshot = TRUE
 )
 
+
+##| conformal Torus ####
+torus <- function(u, v, r = 1){
+  R <- sqrt(r^2 + 1)
+  b <- r / R
+  a <- 1 / R
+  d   <- 1 - b * cos(v)
+  rbind(
+    a * sin(u) / d, a * cos(u) / d, b * sin(v) / d
+  )
+}
+
+# construct the mesh
+rmesh <- parametricMesh(
+  torus, c(0, 2*pi), c(0, 2*pi), periodic = c(TRUE, TRUE),
+  nu = 512L, nv = 512L, clean = TRUE
+)
+rmesh <- addNormals(rmesh)
+
+# assign the checkerboard to the mesh
+u <- v <- seq(0, 1, length.out = 513L)[-513L]
+Grid <- expand.grid(U = u, V = v)
+checkerboard <- ifelse(
+  (floor(10*Grid$U) %% 2) == (floor(10*Grid$V) %% 2), 
+  "yellow", "navy"
+)
+rmesh$material <- list(color = checkerboard)
+
+# plot
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(0, -40, zoom = 0.7)
+shade3d(rmesh, meshColor = "vertices")
+snapshot3d("conformalTorus.png", webshot = TRUE)
+
+
+##| now we come back to Enneper and we will use CGAL
+
 # convert the rgl mesh to cgalMesh
 mesh <- cgalMesh$new(rmesh)
 
@@ -113,6 +149,20 @@ UVcheckerboard <- ifelse(
   "yellow", "navy"
 )
 
+# make a radial checkerboard
+UVnew <- UV - 0.5
+radii <- sqrt(apply(10 * UVnew, 1L, crossprod))
+angles <- 10 * (1 + atan2(UVnew[, 2L], UVnew[, 1L])/pi)
+UVcheckerboard <- ifelse(
+  floor(radii) %% 2 == 0,
+  ifelse(
+    floor(angles) %% 2 == 0, "navy", "yellow"
+  ),
+  ifelse(
+    floor(angles) %% 2 == 0, "yellow", "navy"
+  )
+)
+
 # compute mesh normals and convert to rgl mesh
 mesh$computeNormals()
 rmesh <- mesh$getMesh()
@@ -124,7 +174,7 @@ view3d(-10, -35, zoom = 0.7)
 shade3d(rmesh, meshColor = "vertices")
 
 snapshot3d(
-  "Enneper-DAP-circleBorder.png", width = 512, height = 512, webshot = FALSE
+  "Enneper-DCP-radialCheckerboard.png", width = 512, height = 512, webshot = FALSE
 )
 
 

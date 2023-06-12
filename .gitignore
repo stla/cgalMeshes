@@ -53,3 +53,4 @@ inst/trash/
 .settings/
 .project
 *.log
+inst/doc

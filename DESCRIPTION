@@ -29,9 +29,13 @@ Imports:
     tools,
     utils
 Suggests:
+    cooltools,
     dfdr,
+    imager,
+    knitr,
     randomcoloR,
     rmarchingcubes,
+    rmarkdown,
     spray,
     viridisLite
 LinkingTo: 
@@ -44,3 +48,4 @@ Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 7.2.3
 SystemRequirements: C++ 17, gmp, mpfr
+VignetteBuilder: knitr
