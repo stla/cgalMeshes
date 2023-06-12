@@ -71,7 +71,7 @@ contourLines3d(
 ![](Enneper-maroon.gif)
 
 This surface is parameterized by the `Enneper` function. So why would we want 
-to use CGAL to get a parameterization? Well, this parameterization is not 
+to use **CGAL** to get a parameterization? Well, this parameterization is not 
 "nice", as you will see. First of all, what can we do with a parameterization? 
 A parameterization allows to map a texture on the surface. Let's see. We are 
 going to map a checkerboard on the Enneper surface. To do so, we don't need 
@@ -151,7 +151,7 @@ As you can see, the right angles are not distorted (an angle on a curved
 surface is the angle between the tangents). This is a conformal 
 parameterization.
 
-Now we come back to the Enneper surface and we will use CGAL. Let's convert 
+Now we come back to the Enneper surface and we will use **CGAL**. Let's convert 
 the **rgl** mesh to a `cgalMesh` mesh and let's have a look at the edge lengths:
 
 ```{r}
@@ -175,14 +175,14 @@ summary(mesh$getEdges()[["length"]])
 Note that the isotropic remeshing does not change the shape of the mesh. 
 Visually the mesh is the same as before.
 
-Now we construct a parametrization. I choose the 
+Now we construct a parameterization. I choose the 
 *discrete conformal parameterization*. This one tries to be conformal, that is 
-to say it minimizes the angles distortion.
+to say it minimizes the distortion of the angles.
 
 Of course **CGAL** will not give us a function. It will give us a matrix 
 (`UV` below) with two columns, whose $i$-th row corresponds to the $u$ and $v$ 
 coordinates of the $i$-th vertex of the mesh. There are two choices for the 
-planar domain of the $uv$-coordinates: a square or a circle. I take the circle 
+planar domain of the $uv$-coordinates: a square or a disk. I take the disk 
 here.
 
 ```{r DCP}
@@ -224,6 +224,38 @@ shade3d(rmesh, meshColor = "vertices")
 ![](Enneper-DCP-circleBorder.png)
 
 Quite better, no?
+
+But I personally prefer a radial checkerboard:
+
+```{r radialCheckerboard, fig.width=5, fig.height=5, fig.align='center'}
+UVnew <- UV - 0.5 # center the circle at (0,0)
+radii <- sqrt(apply(10 * UVnew, 1L, crossprod))
+angles <- 10 * (1 + atan2(UVnew[, 2L], UVnew[, 1L])/pi)
+UVcheckerboard <- ifelse(
+  floor(radii) %% 2 == 0,
+  ifelse(
+    floor(angles) %% 2 == 0, "navy", "yellow"
+  ),
+  ifelse(
+    floor(angles) %% 2 == 0, "yellow", "navy"
+  )
+)
+# plot
+opar <- par(mar = c(2, 2, 1, 1))
+plot(
+  UV[, 1L], UV[, 2L], type = "p", asp = 1, pch = ".", 
+  col = UVcheckerboard, xlab = "u", ylab = "v", axes = FALSE
+)
+axis(1); axis(2)
+par(opar)
+```
+
+Then proceed as before. Here is the result:
+
+![](Enneper-radialCheckerboard.png)
+
+As an exercise, you can do an animation: make the same picture but with the 
+checkerboard rotating around its center.
 
 
 # Mapping an image

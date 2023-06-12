@@ -257,6 +257,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// testo
+Rcpp::NumericMatrix testo(std::string filename);
+RcppExport SEXP _cgalMeshes_testo(SEXP filenameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
+    rcpp_result_gen = Rcpp::wrap(testo(filename));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 RcppExport SEXP _rcpp_module_boot_class_CGALmesh();
 
@@ -278,6 +289,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_Mandelbulb", (DL_FUNC) &_cgalMeshes_Mandelbulb, 7},
     {"_cgalMeshes_meshTopology", (DL_FUNC) &_cgalMeshes_meshTopology, 4},
     {"_cgalMeshes_sTriangle", (DL_FUNC) &_cgalMeshes_sTriangle, 6},
+    {"_cgalMeshes_testo", (DL_FUNC) &_cgalMeshes_testo, 1},
     {"_rcpp_module_boot_class_CGALmesh", (DL_FUNC) &_rcpp_module_boot_class_CGALmesh, 0},
     {NULL, NULL, 0}
 };

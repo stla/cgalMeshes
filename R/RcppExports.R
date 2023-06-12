@@ -69,3 +69,7 @@ sTriangle <- function(A, B, C, center, radius, iterations) {
     .Call(`_cgalMeshes_sTriangle`, A, B, C, center, radius, iterations)
 }
 
+testo <- function(filename) {
+    .Call(`_cgalMeshes_testo`, filename)
+}
+
