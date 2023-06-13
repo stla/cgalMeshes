@@ -89,10 +89,29 @@ R6 based utilities for 3D meshes.
 ![](https://raw.githubusercontent.com/stla/SurfaceReconstruction/master/inst/AFSexamples/Skull.png)
 
 
+### Minkowski addition
+
+*Octahedron + sphere:*
+
+![](https://raw.githubusercontent.com/stla/MeshesOperations/master/inst/screenshots/OctahedronPlusSphere.gif)
+
+*Tetrahedron + truncated icosahedron:*
+
+![](https://raw.githubusercontent.com/stla/MeshesOperations/master/inst/screenshots/TetrahedronPlusTruncatedIcosahedron.gif)
+
+*Septuaginta + great stellated dodecahedron:*
+
+![](https://raw.githubusercontent.com/stla/MinkowskiSum/main/inst/screenshots/septuaginta_gsdodecahedron.gif)
+
+*Stanford bunny + sphere:*
+
+![](https://raw.githubusercontent.com/stla/MinkowskiSum/main/inst/screenshots/bunny.png)
+
+
 ### Other tools
 
 Volume, area, centroid, distance between a point and a mesh, connected 
-components.
+components, Haussdorf distance, random sampling on the surface of a mesh.
 
 
 ## More features
@@ -100,7 +119,7 @@ components.
 There are more features in the **github** branch, to install with:
 
 ```r
-remotes::install_github("stla/cgalMeshes@github")
+remotes::install_github("stla/cgalMeshes@github", dependencies = TRUE, build_vignettes = TRUE)
 ```
 
 ### Poisson reconstruction
@@ -123,25 +142,6 @@ parameter (0.05, 0.02, 0.005):
 ![](https://raw.githubusercontent.com/stla/SurfaceReconstruction/master/inst/PoissonExamples/StanfordDragon.png)
 
 
-### Minkowski addition
-
-*Octahedron + sphere:*
-
-![](https://raw.githubusercontent.com/stla/MeshesOperations/master/inst/screenshots/OctahedronPlusSphere.gif)
-
-*Tetrahedron + truncated icosahedron:*
-
-![](https://raw.githubusercontent.com/stla/MeshesOperations/master/inst/screenshots/TetrahedronPlusTruncatedIcosahedron.gif)
-
-*Septuaginta + great stellated dodecahedron:*
-
-![](https://raw.githubusercontent.com/stla/MinkowskiSum/main/inst/screenshots/septuaginta_gsdodecahedron.gif)
-
-*Stanford bunny + sphere:*
-
-![](https://raw.githubusercontent.com/stla/MinkowskiSum/main/inst/screenshots/bunny.png)
-
-
 ### Shape smoothing
 
 *Hopf torus:*
@@ -158,6 +158,8 @@ parameter (0.05, 0.02, 0.005):
 ![](https://raw.githubusercontent.com/stla/cgalMeshes/github/inst/screenshots/Enneper-radialCheckerboard-DCP.gif)
 
 ![](https://raw.githubusercontent.com/stla/cgalMeshes/github/inst/screenshots/halfHopfTorus-Schmidt.gif)
+
+![](https://raw.githubusercontent.com/stla/cgalMeshes/github/inst/screenshots/Togliatti-DCP.gif)
 
 
 ## Blog posts
