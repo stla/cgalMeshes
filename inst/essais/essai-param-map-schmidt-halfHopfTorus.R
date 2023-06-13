@@ -39,7 +39,7 @@ UV <- mesh$parameterization("DCP", "square")
 # now we extract the colors from the image
 library(imager)
 # load the image
-img <- load.image("schmidt2_square.png")
+img <- load.image("schmidt3_square.png")
 # take the r, g, b channels
 r <- squeeze(R(img))
 g <- squeeze(G(img))
@@ -80,7 +80,7 @@ movie3d(spin3d(axis = c(0, 0, 1), rpm = 10),
 library(gifski)
 gifski(
   png_files = Sys.glob("zzpic*.png"),
-  gif_file = "halfHopfTorus-Schmidt.gif",
+  gif_file = "halfHopfTorus-Schmidt3.gif",
   width = 512,
   height = 512,
   delay = 1/8

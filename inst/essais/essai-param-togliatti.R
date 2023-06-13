@@ -59,13 +59,13 @@ summary(mesh$getEdges())
 mesh
 mesh$writeMeshFile("togliatti.off")
 
-M <- cgalMeshes:::testparam(normalizePath("togliatti.off"), 1L)
+M <- mesh$parameterization("DCP", "circle")
 
 #### radial checkerboard
 M0 <- M
-M <- 9.999 * (M0 - 0.5)
+M <- 9.99999 * (M0 - 0.5)
 radii <- sqrt(apply(M, 1L, crossprod))
-angles <- 10 * (1 + atan2(M[, 2L], M[, 1L])/pi)
+angles <- 4 * (1 + atan2(M[, 2L], M[, 1L])/pi)
 clrs <- ifelse(
   floor(radii) %% 2 == 0,
   ifelse(
@@ -78,8 +78,18 @@ clrs <- ifelse(
 
 plot(M0, type = "p", asp = 1, pch = ".", col=clrs, xlab = "u", ylab = "v")
 
+# true normals
+library(spray) # define f as a polynomial (to get the gradient later)
+P <- f(lone(1,3), lone(2,3), lone(3,3))
+dfx <- as.function(deriv(P, 1))
+dfy <- as.function(deriv(P, 2))
+dfz <- as.function(deriv(P, 3))
+gradient <- function(xyz){
+  cbind(dfx(xyz), dfy(xyz), dfz(xyz))
+}
+normals <- -gradient(mesh$getVertices())
 
-mesh$computeNormals()
+mesh$assignNormals(normals)
 rmesh <- mesh$getMesh()
 rmesh$material <- list(color = clrs)
 
