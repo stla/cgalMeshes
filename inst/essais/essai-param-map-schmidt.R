@@ -68,3 +68,33 @@ gifski(
   delay = 1/8
 )
 file.remove(Sys.glob("zzpic*.png"))
+
+
+##| half Hopf torus ####
+HT <- function(u, v, nlobes=4, A=0.44, alpha=NULL){
+  B <- pi/2 - (pi/2 - A)*cos(u*nlobes)
+  C <- u + A*sin(2*u*nlobes)
+  y1 <- 1 + cos(B)
+  y2 <- sin(B) * cos(C)
+  y3 <- sin(B) * sin(C)
+  cos_v <- cos(v)
+  sin_v <- sin(v)
+  x1 <- cos_v*y3 + sin_v*y2
+  x2 <- cos_v*y2 - sin_v*y3
+  x3 <- sin_v*y1
+  x4 <- cos_v*y1
+  yden <- sqrt(2*y1)
+  if(is.null(alpha)){
+    t(cbind(x1, x2, x3) / (yden-x4))
+  }else{
+    t(acos(x4/yden)/(yden^alpha-abs(x4)^alpha)^(1/alpha) * cbind(x1, x2, x3))
+  }
+}
+
+rmesh <- parametricMesh(HT, c(-pi, pi), c(0, pi), c(TRUE, FALSE), 1024, 1024)
+
+shade3d(rmesh, col = "red")
+
+mesh <- cgalMesh$new(rmesh)
+# compute the discrete conformal parameterization with square border
+UV <- mesh$parameterization("DCP", UVborder = "square")
