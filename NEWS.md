@@ -2,7 +2,7 @@
 
 - Implementation of the Minkowski sum of two meshes.
 
-- The two methods `$getEdges` and `getFacesInfo` return more information.
+- The two methods `$getEdges` and `$getFacesInfo` return more information.
 
 
 # cgalMeshes 2.1.0

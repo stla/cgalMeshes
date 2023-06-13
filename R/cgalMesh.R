@@ -1625,14 +1625,15 @@ cgalMesh <- R6Class(
     
     #' @description Write mesh to a file.
     #' @param filename path to the file to be written, with extension 
-    #'   \code{off} or \code{ply}
+    #'   \code{off} or \code{ply}; if you use the \code{ply} format, the mesh 
+    #'   properties (vertex colors, face colors, normals) are written in the 
+    #'   file
     #' @param precision a positive integer, the desired number of decimal 
     #'   places
     #' @param comments for \code{ply} extension only, a string to be included 
     #'   in the header of the PLY file
     #' @param binary Boolean, for \code{ply} extension only, whether to write 
-    #'   a binary \code{ply} file; the mesh properties (vertex colors, face 
-    #'   colors, normals) are lost with this format
+    #'   a binary \code{ply} file
     #' @return Nothing, just writes a file.
     "writeMeshFile" = function(
       filename, precision = 17, comments = "", binary = FALSE

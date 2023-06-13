@@ -3114,7 +3114,9 @@ Write mesh to a file.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{filename}}{path to the file to be written, with extension 
-\code{off} or \code{ply}}
+\code{off} or \code{ply}; if you use the \code{ply} format, the mesh 
+properties (vertex colors, face colors, normals) are written in the 
+file}
 
 \item{\code{precision}}{a positive integer, the desired number of decimal 
 places}
@@ -3123,8 +3125,7 @@ places}
 in the header of the PLY file}
 
 \item{\code{binary}}{Boolean, for \code{ply} extension only, whether to write 
-a binary \code{ply} file; the mesh properties (vertex colors, face 
-colors, normals) are lost with this format}
+a binary \code{ply} file}
 }
 \if{html}{\out{</div>}}
 }

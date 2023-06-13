@@ -270,17 +270,22 @@ template void removeProperty<vertex_descriptor, EVector3>(
 );
 
 
-template <typename Keytype, typename Valuetype>
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+template <typename Keytype, typename Valuetype, typename KernelT>
 std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
-  EMesh3& mesh, std::string propname
+    CGAL::Surface_mesh<typename KernelT::Point_3>& mesh, std::string propname
 ) {
-  std::pair<EMesh3::Property_map<Keytype, Valuetype>, bool> pmap_ = 
-    mesh.property_map<Keytype, Valuetype>(propname);
-  bool has_prop = pmap_.second;
+  typedef typename KernelT::Point_3 Pt3;
+  typedef typename CGAL::Surface_mesh<Pt3>::template 
+    Property_map<Keytype, Valuetype> PptMap;
+  std::pair<PptMap, bool> pmap_ = 
+    mesh.template property_map<Keytype, Valuetype>(propname);
+  const bool has_prop = pmap_.second;
   std::map<Keytype, Valuetype> pmap;
   if(has_prop) {
-    std::string descriptor = propname.substr(0, 1);
-    std::size_t n = 
+    const std::string descriptor = propname.substr(0, 1);
+    const std::size_t n = 
       descriptor == "v" ? mesh.number_of_vertices() : mesh.number_of_faces();
     for(std::size_t idx = 0; idx < n; idx++) {
       pmap[Keytype(idx)] = pmap_.first[Keytype(idx)];
@@ -290,29 +295,37 @@ std::pair<std::map<Keytype, Valuetype>, bool> copy_prop(
   return std::make_pair(pmap, has_prop);
 }
 
-template MaybeFcolorMap copy_prop<face_descriptor, std::string>(
-  EMesh3&, std::string
+template MaybeFcolorMap copy_prop<face_descriptor, std::string, EK>(
+    EMesh3&, std::string
 );
-template MaybeFscalarMap copy_prop<face_descriptor, double>(
-  EMesh3&, std::string
+template MaybeFscalarMap copy_prop<face_descriptor, double, EK>(
+    EMesh3&, std::string
 );
-template MaybeVcolorMap copy_prop<vertex_descriptor, std::string>(
-  EMesh3&, std::string
+template MaybeVcolorMap copy_prop<vertex_descriptor, std::string, EK>(
+    EMesh3&, std::string
 );
-template MaybeVscalarMap copy_prop<vertex_descriptor, double>(
-  EMesh3&, std::string
+template MaybeVscalarMap copy_prop<vertex_descriptor, double, EK>(
+    EMesh3&, std::string
 );
-template MaybeNormalMap copy_prop<vertex_descriptor, Rcpp::NumericVector>(
-  EMesh3&, std::string
+template MaybeNormalMap copy_prop<vertex_descriptor, Rcpp::NumericVector, EK>(
+    EMesh3&, std::string
 );
 template std::pair<std::map<face_descriptor, Color>, bool> 
-  copy_prop<face_descriptor, Color>(EMesh3&, std::string);
+  copy_prop<face_descriptor, Color, EK>(EMesh3&, std::string);
 template std::pair<std::map<vertex_descriptor, Color>, bool> 
-  copy_prop<vertex_descriptor, Color>(EMesh3&, std::string);
+  copy_prop<vertex_descriptor, Color, EK>(EMesh3&, std::string);
 template std::pair<std::map<vertex_descriptor, EVector3>, bool> 
-  copy_prop<vertex_descriptor, EVector3>(EMesh3&, std::string);
+  copy_prop<vertex_descriptor, EVector3, EK>(EMesh3&, std::string);
+template std::pair<std::map<fdescr, Color>, bool> 
+  copy_prop<fdescr, Color, K>(Mesh3&, std::string);
+template std::pair<std::map<vxdescr, Color>, bool> 
+  copy_prop<vxdescr, Color, K>(Mesh3&, std::string);
+template std::pair<std::map<vxdescr, Vector3>, bool> 
+  copy_prop<vxdescr, Vector3, K>(Mesh3&, std::string);
 
 
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
 template <
   typename SourceDescriptor, typename TargetDescriptor, typename Valuetype
 >
@@ -356,10 +369,10 @@ template void copy_property<
 
 void triangulateMesh(EMesh3& mesh) {
   MaybeFcolorMap fcolormap_ = 
-    copy_prop<face_descriptor, std::string>(mesh, "f:color");
+    copy_prop<face_descriptor, std::string, EK>(mesh, "f:color");
   const bool hasFcolors = fcolormap_.second;
   MaybeFscalarMap fscalarmap_ = 
-    copy_prop<face_descriptor, double>(mesh, "f:scalar");
+    copy_prop<face_descriptor, double, EK>(mesh, "f:scalar");
   const bool hasFscalars = fscalarmap_.second;
   removeProperties(mesh, {"v:normal"});
   TriangulateVisitor vis;
