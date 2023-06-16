@@ -161,6 +161,8 @@ parameter (0.05, 0.02, 0.005):
 
 ![](https://raw.githubusercontent.com/stla/cgalMeshes/github/inst/screenshots/Togliatti-DCP.gif)
 
+![](https://raw.githubusercontent.com/stla/cgalMeshes/github/inst/screenshots/SphericalCap-FermatSpiral.gif)
+
 
 ## Blog posts
 
