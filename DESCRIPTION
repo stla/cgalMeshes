@@ -29,6 +29,7 @@ Imports:
     tools,
     utils
 Suggests:
+    colorspace,
     cooltools,
     dfdr,
     imager,

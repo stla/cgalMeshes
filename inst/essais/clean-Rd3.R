@@ -1,4 +1,4 @@
-setwd("~/Documents/R/MyPackages/cgalMeshes")
+#setwd("~/Documents/R/MyPackages/cgalMeshes")
 
 #' get i-th character of a string
 ithCharacter <- function(string, i) {

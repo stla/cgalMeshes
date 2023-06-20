@@ -12,6 +12,7 @@ parametricMesh(
   nu,
   nv,
   clean = FALSE,
+  fcolor = NULL,
   fnormal = NULL
 )
 }
@@ -29,9 +30,13 @@ first variable and in the second variable}
 \item{clean}{Boolean, whether to merge the duplicated vertices in the 
 output mesh; use only if necessary because it costs time}
 
+\item{fcolor}{if given (i.e. not \code{NULL}), a vectorized function 
+returning at \code{(u,v)} a color for the vertex \code{f(u,v)}; 
+the behavior is undefined if some vertices are merged by \code{clean=TRUE}}
+
 \item{fnormal}{if given (i.e. not \code{NULL}), a vectorized function 
 returning at \code{(u,v)} the normal for the vertex \code{f(u,v)}; 
-you cannot use this option if \code{clean=TRUE}}
+the behavior is undefined if some vertices are merged by \code{clean=TRUE}}
 }
 \value{
 A \strong{rgl} mesh (\code{mesh3d} object), with normals if 
@@ -99,6 +104,37 @@ rmesh <- cgalMeshes::parametricMesh(
 )
 # plot
 open3d(windowRect = 50 + c(0, 0, 512, 512))
-view3d(50, 10)
+view3d(50, 10) 
 shade3d(rmesh, color = "midnightblue", specular = "black")
+
+##| example with colors: torus figure 8 ####
+library(rgl)
+library(cgalMeshes)
+library(colorspace) # to use the  lighten  function
+# function mapping (u,v) to a color
+clrs <- c(
+  hcl.colors(128L, "Rocket"), 
+  hcl.colors(128L, "Rocket", rev = TRUE)
+)
+framp <- colorRamp(clrs)
+fcolor <- function(u, v) {
+  cols <- framp(v/(2*pi))
+  cols <- rgb(cols[, 1L], cols[, 2L], cols[, 3L], maxColorValue = 255)
+  lighten(cols, 0.3*cos(u))
+}
+# parameterization
+f <- function(u, v, c = 1){
+  h <- c + sin(v) * cos(u) - sin(2*v) * sin(u) / 2
+  x <- h * cos(u)
+  y <- h * sin(u)
+  z <- sin(u) * sin(v) + cos(u) * sin(2*v) / 2
+  rbind(x, y, z)  
+}
+# make the mesh and plot it
+\donttest{rmesh <- parametricMesh(
+  f, c(0, 2*pi), c(0, 2*pi), periodic = c(TRUE, TRUE),
+  nu = 100L, nv = 100L, fcolor = fcolor)
+rmesh <- addNormals(rmesh)
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(rmesh, meshColor = "vertices")}
 }

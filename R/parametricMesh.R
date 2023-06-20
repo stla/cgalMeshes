@@ -9,9 +9,12 @@
 #' @param nu,nv numbers of subdivisions
 #' @param clean Boolean, whether to merge the duplicated vertices in the 
 #'   output mesh; use only if necessary because it costs time
+#' @param fcolor if given (i.e. not \code{NULL}), a vectorized function 
+#'   returning at \code{(u,v)} a color for the vertex \code{f(u,v)}; 
+#'   the behavior is undefined if some vertices are merged by \code{clean=TRUE}
 #' @param fnormal if given (i.e. not \code{NULL}), a vectorized function 
 #'   returning at \code{(u,v)} the normal for the vertex \code{f(u,v)}; 
-#'   you cannot use this option if \code{clean=TRUE}
+#'   the behavior is undefined if some vertices are merged by \code{clean=TRUE}
 #'
 #' @return A \strong{rgl} mesh (\code{mesh3d} object), with normals if 
 #'   \code{fnormal} is given.
@@ -77,11 +80,42 @@
 #' )
 #' # plot
 #' open3d(windowRect = 50 + c(0, 0, 512, 512))
-#' view3d(50, 10)
+#' view3d(50, 10) 
 #' shade3d(rmesh, color = "midnightblue", specular = "black")
+#' 
+#' ##| example with colors: torus figure 8 ####
+#' library(rgl)
+#' library(cgalMeshes)
+#' library(colorspace) # to use the  lighten  function
+#' # function mapping (u,v) to a color
+#' clrs <- c(
+#'   hcl.colors(128L, "Rocket"), 
+#'   hcl.colors(128L, "Rocket", rev = TRUE)
+#' )
+#' framp <- colorRamp(clrs)
+#' fcolor <- function(u, v) {
+#'   cols <- framp(v/(2*pi))
+#'   cols <- rgb(cols[, 1L], cols[, 2L], cols[, 3L], maxColorValue = 255)
+#'   lighten(cols, 0.3*cos(u))
+#' }
+#' # parameterization
+#' f <- function(u, v, c = 1){
+#'   h <- c + sin(v) * cos(u) - sin(2*v) * sin(u) / 2
+#'   x <- h * cos(u)
+#'   y <- h * sin(u)
+#'   z <- sin(u) * sin(v) + cos(u) * sin(2*v) / 2
+#'   rbind(x, y, z)  
+#' }
+#' # make the mesh and plot it
+#' \donttest{rmesh <- parametricMesh(
+#'   f, c(0, 2*pi), c(0, 2*pi), periodic = c(TRUE, TRUE),
+#'   nu = 100L, nv = 100L, fcolor = fcolor)
+#' rmesh <- addNormals(rmesh)
+#' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+#' shade3d(rmesh, meshColor = "vertices")}
 parametricMesh <- function(
     f, urange, vrange, periodic = c(FALSE, FALSE), 
-    nu, nv, clean = FALSE, fnormal = NULL
+    nu, nv, clean = FALSE, fcolor = NULL, fnormal = NULL
 ) {
   stopifnot(isPositiveInteger(nu), nu >= 3)
   stopifnot(isPositiveInteger(nv), nv >= 3)
@@ -105,6 +139,9 @@ parametricMesh <- function(
   varray2 <- aperm(varray, c(1L, 3L, 2L))
   vs <- matrix(varray2, nrow = 3L, ncol = nu*nv)
   tris <- meshTopology(nu, nv, uperiodic, vperiodic)
+  if(!is.null(fcolor)) {
+    colors <- with(Grid, fcolor(U, V))
+  }
   if(!clean && !is.null(fnormal)) {
     narray <- with(Grid, array(fnormal(U, V), dim = c(3L, nu, nv)))
     narray2 <- aperm(narray, c(1L, 3L, 2L))
@@ -119,6 +156,7 @@ parametricMesh <- function(
       vertices    = gather[["vertices"]],
       indices     = gather[["faces"]][, validFaces],
       normals     = NULL,
+      material    = if(!is.null(fcolor)) list(color = colors),
       homogeneous = FALSE
     )
   } else {
@@ -126,6 +164,7 @@ parametricMesh <- function(
       vertices    = vs,
       indices     = tris,
       normals     = normals,
+      material    = if(!is.null(fcolor)) list(color = colors),
       homogeneous = FALSE
     )
   }
