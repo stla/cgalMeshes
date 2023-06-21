@@ -30,6 +30,7 @@ Imports:
     tools,
     utils
 Suggests:
+    dfdr,
     colorspace,
     randomcoloR,
     rmarchingcubes,
