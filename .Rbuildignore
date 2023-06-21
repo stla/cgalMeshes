@@ -8,3 +8,4 @@
 ^inst/trash$
 ^CRAN-SUBMISSION$
 ^inst/keep$
+^src/\.vscode$

@@ -4,6 +4,11 @@
 
 - The two methods `$getEdges` and `$getFacesInfo` return more information.
 
+- The function `parametricMesh` gains three new arguments:
+  * `clean`, to merge duplicated vertices;
+  * `fcolor`, a function to assign a color at each vertex from its `(u,v)`-coordinates;
+  * `fnormal`, a function to assign a normal at each vertex from its `(u,v)`-coordinates.
+
 
 # cgalMeshes 2.1.0
 
