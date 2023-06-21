@@ -80,6 +80,17 @@ Rcpp::List gatherVertices(
       NewVertices(Rcpp::_, j++) = Vertices(Rcpp::_, key);
     }
   }
+
+  int nremoved = nvertices - newindex + 2;
+  std::string msg;
+  if(nremoved == 0) {
+    msg = "No duplicated vertex.";
+  } else if(nremoved == 1) {
+    msg = "One duplicated vertex has been removed.";
+  } else {
+    msg = std::to_string(nremoved) + " duplicated vertices removed.";
+  }
+  Message(msg);
   
   int nfaces = Faces.ncol();
   Rcpp::IntegerMatrix NewFaces(3, nfaces);

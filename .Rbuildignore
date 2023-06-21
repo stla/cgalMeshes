@@ -8,3 +8,7 @@
 ^inst/trash$
 ^CRAN-SUBMISSION$
 ^inst/keep$
+^src/\.settings$
+^src/\.vscode$
+^src/\.cproject$
+^src/\.project$

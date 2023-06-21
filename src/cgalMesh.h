@@ -310,7 +310,8 @@ struct ClipVisitor2 :
   
   ClipVisitor2()
     : ofaceindex(new face_descriptor()),
-      ftargets(new MapBetweenFaces())
+      ftargets(new MapBetweenFaces()),
+      FACEMAP(new MapBetweenFaces())
   {}
   
   std::shared_ptr<face_descriptor> ofaceindex;
