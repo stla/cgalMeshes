@@ -142,7 +142,7 @@ parametricMesh <- function(
   if(!is.null(fcolor)) {
     colors <- with(Grid, fcolor(U, V))
   }
-  if(!clean && !is.null(fnormal)) {
+  if(!is.null(fnormal)) {
     narray <- with(Grid, array(fnormal(U, V), dim = c(3L, nu, nv)))
     narray2 <- aperm(narray, c(1L, 3L, 2L))
     normals <- t(matrix(narray2, nrow = 3L, ncol = nu*nv))
@@ -151,12 +151,13 @@ parametricMesh <- function(
   }
   if(clean) {
     gather <- gatherVertices(vs, tris)
+    newindices <- gather[["indices"]]
     validFaces <- apply(gather[["faces"]], 2L, uniqueN) == 3L
     tmesh3d(
       vertices    = gather[["vertices"]],
       indices     = gather[["faces"]][, validFaces],
-      normals     = NULL,
-      material    = if(!is.null(fcolor)) list(color = colors),
+      normals     = if(!is.null(normals)) normals[newindices, ],
+      material    = if(!is.null(fcolor)) list(color = colors[newindices]),
       homogeneous = FALSE
     )
   } else {

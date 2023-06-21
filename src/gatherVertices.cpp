@@ -71,10 +71,12 @@ Rcpp::List gatherVertices(
     }
   }
 
-  Rcpp::NumericMatrix NewVertices(3, newindex-1);
+  Rcpp::IntegerVector NewIndices(newindex - 1);
+  Rcpp::NumericMatrix NewVertices(3, newindex - 1);
   int j = 0;
   for(auto const& [key, value] : newindices) {
     if(duplicated[key] == 0) {
+      NewIndices(j) = key + 1;
       NewVertices(Rcpp::_, j++) = Vertices(Rcpp::_, key);
     }
   }
@@ -90,6 +92,7 @@ Rcpp::List gatherVertices(
   
   return Rcpp::List::create(
     Rcpp::Named("vertices") = NewVertices,
-    Rcpp::Named("faces")    = NewFaces
+    Rcpp::Named("faces")    = NewFaces,
+    Rcpp::Named("indices")  = NewIndices
   );
 }
