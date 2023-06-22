@@ -168,7 +168,11 @@ getVF <- function(mesh) {
   list("vertices" = vertices, "faces" = faces)
 }
 
-# Cross product of two 3D vectors.
+#' @title Cross product
+#' @description Cross product of two 3D vectors.
+#' @param v,w two 3D vectors
+#' @return A 3D vector.
+#' @export
 crossProduct <- function(v, w){
   c(
     v[2L] * w[3L] - v[3L] * w[2L],
