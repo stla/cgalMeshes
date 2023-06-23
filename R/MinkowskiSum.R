@@ -21,13 +21,13 @@
 #' mesh$triangulate()
 #' # plot
 #' rmesh <- mesh$getMesh()
-#' open3d(windowRect = 50 + c(0, 0, 512, 512))
+#' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
 #' view3d(20, 40, zoom = 0.85)
 #' shade3d(rmesh, color = "turquoise")
 #' plotEdges(
 #'   mesh$getVertices(), edges[, c("i1", "i2")], 
 #'   color = "darkred", tubesRadius = 0.07, spheresRadius = 0.1
-#' )
+#' )}
 MinkowskiSum <- function(mesh1, mesh2) {
   stopifnot(isCGALmesh(mesh1))
   stopifnot(isCGALmesh(mesh2))

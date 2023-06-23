@@ -26,12 +26,12 @@ plotEdges(
 )}
 
 # this one has colors: ####
-meshFile <- system.file(
+\donttest{meshFile <- system.file(
   "extdata", "pentagrammicDipyramid.ply", package = "cgalMeshes"
 )
 mesh <- cgalMesh$new(meshFile)
 rmesh <- mesh$getMesh()
-\donttest{library(rgl)
+library(rgl)
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.85)
 shade3d(rmesh, meshColor = "faces")}
 
@@ -104,7 +104,7 @@ mesh$centroid()}
 ## ------------------------------------------------
 
 # cube clipped to sphere ####
-library(cgalMeshes)
+\donttest{library(cgalMeshes)
 library(rgl)
 mesh    <- cgalMesh$new(cube3d())$triangulate()
 clipper <- cgalMesh$new(sphereMesh(r= sqrt(2)))
@@ -116,7 +116,7 @@ mesh2 <- meshes[[2]]
 mesh2$computeNormals()
 rglmesh1 <- mesh1$getMesh()
 rglmesh2 <- mesh2$getMesh()
-\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(45, 45, zoom = 0.9)
 shade3d(rglmesh1, meshColor = "faces")
 shade3d(rglmesh2, meshColor = "faces")}
@@ -171,7 +171,7 @@ shade3d(sphere, color = "yellow", alpha = 0.15)}
 ## Method `cgalMesh$clipToPlane`
 ## ------------------------------------------------
 
-library(cgalMeshes)
+\donttest{library(cgalMeshes)
 library(rgl)
 rmesh <- sphereMesh()
 mesh <- cgalMesh$new(rmesh)
@@ -193,7 +193,7 @@ mesh2 <- meshes[[2]]
 mesh1$computeNormals()
 rClippedMesh1 <- mesh1$getMesh()
 rClippedMesh2 <- mesh2$getMesh()
-\donttest{open3d(windowRect = 50 + c(0, 0, 512, 512))
+open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(70, 0)
 shade3d(rClippedMesh1, meshColor = "faces")
 shade3d(rClippedMesh2, color = "orange")}
@@ -336,7 +336,7 @@ wire3d(rmesh, color = "black")}
 ## Method `cgalMesh$fair`
 ## ------------------------------------------------
 
-library(cgalMeshes)
+\donttest{library(cgalMeshes)
 rglHopf <- HopfTorusMesh(nu = 100, nv = 100)
 hopf <- cgalMesh$new(rglHopf)
 # squared norms of the vertices
@@ -346,7 +346,7 @@ indices <- which(normsq > 19)
 hopf$fair(indices)
 rglHopf_faired <- hopf$getMesh()
 # plot
-\donttest{library(rgl)
+library(rgl)
 open3d(windowRect = 50 + c(0, 0, 900, 450))
 mfrow3d(1L, 2L)
 view3d(0, 0, zoom = 0.8)
@@ -877,7 +877,6 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-clip}{\code{cgalMesh$clip()}}
 \item \href{#method-cgalMesh-clipToPlane}{\code{cgalMesh$clipToPlane()}}
 \item \href{#method-cgalMesh-clipToIsoCuboid}{\code{cgalMesh$clipToIsoCuboid()}}
-\item \href{#method-cgalMesh-collectGarbage}{\code{cgalMesh$collectGarbage()}}
 \item \href{#method-cgalMesh-computeNormals}{\code{cgalMesh$computeNormals()}}
 \item \href{#method-cgalMesh-connectedComponents}{\code{cgalMesh$connectedComponents()}}
 \item \href{#method-cgalMesh-convexParts}{\code{cgalMesh$convexParts()}}
@@ -1500,19 +1499,6 @@ shade3d(bxmesh, color = "cyan", alpha = 0.3)
 
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cgalMesh-collectGarbage"></a>}}
-\if{latex}{\out{\hypertarget{method-cgalMesh-collectGarbage}{}}}
-\subsection{Method \code{collectGarbage()}}{
-tmp.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$collectGarbage()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-tmp.
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-cgalMesh-computeNormals"></a>}}
