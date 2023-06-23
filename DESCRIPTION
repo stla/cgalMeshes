@@ -27,8 +27,7 @@ Imports:
     R6,
     Rcpp (>= 1.0.9),
     rgl,
-    tools,
-    utils
+    tools
 Suggests:
     dfdr,
     colorspace,
