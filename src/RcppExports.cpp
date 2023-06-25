@@ -54,14 +54,24 @@ BEGIN_RCPP
 END_RCPP
 }
 // gatherVertices
-Rcpp::List gatherVertices(Rcpp::NumericMatrix Vertices, Rcpp::IntegerMatrix Faces);
-RcppExport SEXP _cgalMeshes_gatherVertices(SEXP VerticesSEXP, SEXP FacesSEXP) {
+Rcpp::List gatherVertices(Rcpp::NumericMatrix Vertices);
+RcppExport SEXP _cgalMeshes_gatherVertices(SEXP VerticesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type Vertices(VerticesSEXP);
+    rcpp_result_gen = Rcpp::wrap(gatherVertices(Vertices));
+    return rcpp_result_gen;
+END_RCPP
+}
+// facesToDelete
+Rcpp::IntegerVector facesToDelete(Rcpp::IntegerMatrix Faces);
+RcppExport SEXP _cgalMeshes_facesToDelete(SEXP FacesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type Faces(FacesSEXP);
-    rcpp_result_gen = Rcpp::wrap(gatherVertices(Vertices, Faces));
+    rcpp_result_gen = Rcpp::wrap(facesToDelete(Faces));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -117,7 +127,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 2},
     {"_cgalMeshes_MinkowskiSum_cpp", (DL_FUNC) &_cgalMeshes_MinkowskiSum_cpp, 2},
     {"_cgalMeshes_SSSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_SSSreconstruction_cpp, 7},
-    {"_cgalMeshes_gatherVertices", (DL_FUNC) &_cgalMeshes_gatherVertices, 2},
+    {"_cgalMeshes_gatherVertices", (DL_FUNC) &_cgalMeshes_gatherVertices, 1},
+    {"_cgalMeshes_facesToDelete", (DL_FUNC) &_cgalMeshes_facesToDelete, 1},
     {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},
     {"_cgalMeshes_meshTopology", (DL_FUNC) &_cgalMeshes_meshTopology, 4},
     {"_cgalMeshes_sTriangle", (DL_FUNC) &_cgalMeshes_sTriangle, 6},

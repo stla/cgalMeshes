@@ -13,8 +13,12 @@ SSSreconstruction_cpp <- function(pts, scaleIterations, nneighs, nsamples, separ
     .Call(`_cgalMeshes_SSSreconstruction_cpp`, pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle)
 }
 
-gatherVertices <- function(Vertices, Faces) {
-    .Call(`_cgalMeshes_gatherVertices`, Vertices, Faces)
+gatherVertices <- function(Vertices) {
+    .Call(`_cgalMeshes_gatherVertices`, Vertices)
+}
+
+facesToDelete <- function(Faces) {
+    .Call(`_cgalMeshes_facesToDelete`, Faces)
 }
 
 gTriangle <- function(A, B, C, s, iterations) {

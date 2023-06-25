@@ -150,14 +150,19 @@ parametricMesh <- function(
     normals <- NULL
   }
   if(clean) {
-    gather <- gatherVertices(vs, tris)
-    newindices <- gather[["indices"]]
-    validFaces <- apply(gather[["faces"]], 2L, uniqueN) == 3L
+    gather <- gatherVertices(vs)
+    newindices <- gather[["newindices"]]
+    extraction <- gather[["extraction"]]
+    newFaces <- matrix(newindices[tris], nrow = 3L, ncol = ncol(tris))
+    toDelete <- facesToDelete(newFaces)
+    if(length(toDelete) > 0L) {
+      newFaces <- newFaces[, -toDelete]
+    }
     tmesh3d(
-      vertices    = gather[["vertices"]],
-      indices     = gather[["faces"]][, validFaces],
-      normals     = if(!is.null(normals)) normals[newindices, ],
-      material    = if(!is.null(fcolor)) list(color = colors[newindices]),
+      vertices    = vs[, extraction],
+      indices     = newFaces,
+      normals     = if(!is.null(normals)) normals[extraction, ],
+      material    = if(!is.null(fcolor)) list(color = colors[extraction]),
       homogeneous = FALSE
     )
   } else {

@@ -1,3 +1,8 @@
+# cgalMeshes 2.3.0
+
+- The function `parametricMesh` was slow with the argument `clean=TRUE`. This has been improved.
+
+
 # cgalMeshes 2.2.0
 
 - Implementation of the Minkowski sum of two meshes.
