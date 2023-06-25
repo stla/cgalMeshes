@@ -33,7 +33,6 @@ Suggests:
     colorspace,
     randomcoloR,
     rmarchingcubes,
-    spray,
     viridisLite
 LinkingTo: 
     BH,
