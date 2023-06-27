@@ -37,8 +37,12 @@ cxhullsIntersection <- function(Pts, origin_) {
     .Call(`_cgalMeshes_cxhullsIntersection`, Pts, origin_)
 }
 
-gatherVertices <- function(Vertices, Faces) {
-    .Call(`_cgalMeshes_gatherVertices`, Vertices, Faces)
+gatherVertices <- function(Vertices) {
+    .Call(`_cgalMeshes_gatherVertices`, Vertices)
+}
+
+facesToDelete <- function(Faces) {
+    .Call(`_cgalMeshes_facesToDelete`, Faces)
 }
 
 gTriangle <- function(A, B, C, s, iterations) {

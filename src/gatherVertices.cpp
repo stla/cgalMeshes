@@ -44,9 +44,7 @@ std::vector<std::vector<int>> duplicatedIndices(Rcpp::NumericMatrix Vertices) {
 // -------------------------------------------------------------------------- //
 // -------------------------------------------------------------------------- //
 // [[Rcpp::export]]
-Rcpp::List gatherVertices(
-    Rcpp::NumericMatrix Vertices, Rcpp::IntegerMatrix Faces
-) {
+Rcpp::List gatherVertices(Rcpp::NumericMatrix Vertices) {
   std::vector<std::vector<int>> dupIndices = duplicatedIndices(Vertices);
   const int ndups = dupIndices.size();
   const int nvertices = Vertices.ncol(); 
@@ -60,24 +58,22 @@ Rcpp::List gatherVertices(
     }
   }
 
-  std::map<int, int> newindices;
+  Rcpp::IntegerVector NewIndices(nvertices);
   int newindex = 1;
   
   for(int index = 0; index < nvertices; index++) {
     if(duplicated[index] == 0) {
-      newindices[index] = newindex++;
+      NewIndices(index) = newindex++;
     } else {
-      newindices[index] = duplicated[index];
+      NewIndices(index) = duplicated[index];
     }
   }
 
-  Rcpp::IntegerVector NewIndices(newindex - 1);
-  Rcpp::NumericMatrix NewVertices(3, newindex - 1);
+  Rcpp::IntegerVector Extraction(newindex - 1);
   int j = 0;
-  for(auto const& [key, value] : newindices) {
-    if(duplicated[key] == 0) {
-      NewIndices(j) = key + 1;
-      NewVertices(Rcpp::_, j++) = Vertices(Rcpp::_, key);
+  for(int i = 0; i < nvertices; i++) {
+    if(duplicated[i] == 0) {
+      Extraction(j++) = i + 1;
     }
   }
 
@@ -92,18 +88,25 @@ Rcpp::List gatherVertices(
   }
   Message(msg);
   
-  int nfaces = Faces.ncol();
-  Rcpp::IntegerMatrix NewFaces(3, nfaces);
-  for(int i = 0; i < nfaces; i++) {
-    Rcpp::IntegerVector face = Faces(Rcpp::_, i);
-    Rcpp::IntegerVector newface = 
-      {newindices[face(0)-1], newindices[face(1)-1], newindices[face(2)-1]};
-    NewFaces(Rcpp::_, i) = newface;
-  }
-  
   return Rcpp::List::create(
-    Rcpp::Named("vertices") = NewVertices,
-    Rcpp::Named("faces")    = NewFaces,
-    Rcpp::Named("indices")  = NewIndices
+    Rcpp::Named("extraction") = Extraction,
+    Rcpp::Named("newindices") = NewIndices
   );
+}
+
+
+// -------------------------------------------------------------------------- //
+// -------------------------------------------------------------------------- //
+// [[Rcpp::export]]
+Rcpp::IntegerVector facesToDelete(Rcpp::IntegerMatrix Faces) {
+  int nfaces = Faces.ncol();
+  std::vector<int> todelete;
+  for(int j = 0; j < nfaces; j++) {
+    Rcpp::IntegerVector F = Faces(Rcpp::_, j);
+    if(F(0) == F(1) || F(0) == F(2) || F(1) == F(2)) {
+      todelete.push_back(j + 1);
+    }
+  }
+  Rcpp::IntegerVector ToDelete(todelete.begin(), todelete.end());
+  return ToDelete;
 }
