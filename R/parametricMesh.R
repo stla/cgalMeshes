@@ -20,7 +20,6 @@
 #'   \code{fnormal} is given.
 #' @export
 #' @importFrom rgl tmesh3d
-#' @importFrom data.table uniqueN
 #' @examples 
 #' library(cgalMeshes)
 #' library(rgl)
