@@ -2,6 +2,8 @@
 
 - The function `parametricMesh` was slow with the argument `clean=TRUE`. This has been improved.
 
+- Implementation of the 3D alpha wrapping.
+
 
 # cgalMeshes 2.2.0
 

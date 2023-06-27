@@ -13,6 +13,10 @@ SSSreconstruction_cpp <- function(pts, scaleIterations, nneighs, nsamples, separ
     .Call(`_cgalMeshes_SSSreconstruction_cpp`, pts, scaleIterations, nneighs, nsamples, separateShells, forceManifold, borderAngle)
 }
 
+alphaWrap_cpp <- function(pts, ralpha, roffset) {
+    .Call(`_cgalMeshes_alphaWrap_cpp`, pts, ralpha, roffset)
+}
+
 gatherVertices <- function(Vertices) {
     .Call(`_cgalMeshes_gatherVertices`, Vertices)
 }

@@ -53,6 +53,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// alphaWrap_cpp
+Rcpp::XPtr<EMesh3> alphaWrap_cpp(const Rcpp::NumericMatrix pts, const double ralpha, const double roffset);
+RcppExport SEXP _cgalMeshes_alphaWrap_cpp(SEXP ptsSEXP, SEXP ralphaSEXP, SEXP roffsetSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericMatrix >::type pts(ptsSEXP);
+    Rcpp::traits::input_parameter< const double >::type ralpha(ralphaSEXP);
+    Rcpp::traits::input_parameter< const double >::type roffset(roffsetSEXP);
+    rcpp_result_gen = Rcpp::wrap(alphaWrap_cpp(pts, ralpha, roffset));
+    return rcpp_result_gen;
+END_RCPP
+}
 // gatherVertices
 Rcpp::List gatherVertices(Rcpp::NumericMatrix Vertices);
 RcppExport SEXP _cgalMeshes_gatherVertices(SEXP VerticesSEXP) {
@@ -127,6 +140,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_cgalMeshes_AFSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_AFSreconstruction_cpp, 2},
     {"_cgalMeshes_MinkowskiSum_cpp", (DL_FUNC) &_cgalMeshes_MinkowskiSum_cpp, 2},
     {"_cgalMeshes_SSSreconstruction_cpp", (DL_FUNC) &_cgalMeshes_SSSreconstruction_cpp, 7},
+    {"_cgalMeshes_alphaWrap_cpp", (DL_FUNC) &_cgalMeshes_alphaWrap_cpp, 3},
     {"_cgalMeshes_gatherVertices", (DL_FUNC) &_cgalMeshes_gatherVertices, 1},
     {"_cgalMeshes_facesToDelete", (DL_FUNC) &_cgalMeshes_facesToDelete, 1},
     {"_cgalMeshes_gTriangle", (DL_FUNC) &_cgalMeshes_gTriangle, 5},

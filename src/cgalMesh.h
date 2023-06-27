@@ -77,6 +77,7 @@
 // #include <CGAL/convex_hull_3.h>
 // #include <CGAL/Convex_hull_3/dual/halfspace_intersection_3.h>
 #include <CGAL/Side_of_triangle_mesh.h>
+#include <CGAL/alpha_wrap_3.h>
 
 // -------------------------------------------------------------------------- //
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
