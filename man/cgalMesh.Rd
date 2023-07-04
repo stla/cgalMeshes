@@ -684,7 +684,10 @@ shade3d(rmesh, meshColor = "faces")}
 \donttest{library(rgl)
 cyclide <- cyclideMesh(a = 97, c = 32, mu = 57)
 mesh <- cgalMesh$new(cyclide)
-mesh$optimalBoundingBox()}
+obb <- mesh$optimalBoundingBox()
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(cyclide, color = "green")
+shade3d(obbMesh, color = "yellow", alpha = 0.25)}
 
 ## ------------------------------------------------
 ## Method `cgalMesh$orientToBoundVolume`
@@ -2749,7 +2752,10 @@ A \strong{rgl} mesh of the optimal hexahedron enclosing the mesh.
 \preformatted{library(rgl)
 cyclide <- cyclideMesh(a = 97, c = 32, mu = 57)
 mesh <- cgalMesh$new(cyclide)
-mesh$optimalBoundingBox()
+obb <- mesh$optimalBoundingBox()
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+shade3d(cyclide, color = "green")
+shade3d(obbMesh, color = "yellow", alpha = 0.25)
 }
 \if{html}{\out{</div>}}
 

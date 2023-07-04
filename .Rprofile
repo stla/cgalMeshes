@@ -23,5 +23,5 @@ mydocument <- function() {
   } else {
     roxygen2::roxygenise(load_code = roxygen2::load_installed)
   }
-  source(here("inst", "essais", "cleanRd3.R"))
+  source(here::here("inst", "essais", "clean-Rd3.R"))
 }

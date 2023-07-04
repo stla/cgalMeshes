@@ -6,7 +6,7 @@
 ## enable compilation with C++11 (or even C++14) where available
 CXX_STD = CXX17
 PKG_LIBS = -lmpfr -lgmp
-PKG_CXXFLAGS = -DCGAL_HEADER_ONLY=1 # -Wno-ignored-attributes -Wfatal-errors #-UNDEBUG #-UNDBOOST_GCC #
+PKG_CXXFLAGS = -DCGAL_HEADER_ONLY=1 -Wno-ignored-attributes # -Wfatal-errors #-UNDEBUG #-UNDBOOST_GCC #
 #-Wl,--whole-archive -lpthread -Wl,--no-whole-archive
 #PKG_CPPFLAGS=-UNDEBUG
 

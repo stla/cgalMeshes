@@ -1341,9 +1341,17 @@ cgalMesh <- R6Class(
     #' \donttest{library(rgl)
     #' cyclide <- cyclideMesh(a = 97, c = 32, mu = 57)
     #' mesh <- cgalMesh$new(cyclide)
-    #' mesh$optimalBoundingBox()}
+    #' obb <- mesh$optimalBoundingBox()
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+    #' shade3d(cyclide, color = "green")
+    #' shade3d(obbMesh, color = "yellow", alpha = 0.25)}
     "optimalBoundingBox" = function() {
-      private[[".CGALmesh"]]$optimalBoundingBox()
+      hx <- private[[".CGALmesh"]]$optimalBoundingBox()
+      obb <- hx[["rmesh"]]
+      qmesh3d(
+        vertices = obb[["vertices"]],
+        indices  = obb[["faces"]]
+      )
     },
     
     #' @description Reorient the connected components of the mesh in order that 

@@ -1,13 +1,18 @@
 library(cgalMeshes)
 library(rgl)
 cyclide <- cyclideMesh(a = 97, c = 32, mu = 57)
+cyclide <- HopfTorusMesh(nu = 50, nv = 50)
 mesh <- cgalMesh$new(cyclide)
 x <- mesh$optimalBoundingBox()
 obb <- x[["rmesh"]]
+obbMesh <- qmesh3d(
+  vertices = obb[["vertices"]],
+  indices  = obb[["faces"]]
+)
 
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 shade3d(cyclide, color = "green")
-shade3d(obb, color = "yellow", alpha = 0.3)
+shade3d(obbMesh, color = "yellow", alpha = 0.3)
 
 # tetrahedra ####
 faces <- cbind(
@@ -51,5 +56,5 @@ shade3d(tth2, color = "green")
 shade3d(tth3, color = "blue")
 shade3d(tth4, color = "yellow")
 shade3d(tth5, color = "gray")
-wire3d(obb, color = "black")
+wire3d(obbMesh, color = "black")
 
