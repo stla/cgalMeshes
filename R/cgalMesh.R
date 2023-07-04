@@ -1344,7 +1344,7 @@ cgalMesh <- R6Class(
     #' obb <- mesh$optimalBoundingBox()
     #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
     #' shade3d(cyclide, color = "green")
-    #' shade3d(obbMesh, color = "yellow", alpha = 0.25)}
+    #' shade3d(obb, color = "yellow", alpha = 0.25)}
     "optimalBoundingBox" = function() {
       hx <- private[[".CGALmesh"]]$optimalBoundingBox()
       obb <- hx[["rmesh"]]
