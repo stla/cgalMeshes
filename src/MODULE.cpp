@@ -68,6 +68,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("isValidPolygonMesh", &CGALmesh::isValidPolygonMesh)
     .method("LoopSubdivision", &CGALmesh::LoopSubdivision)
     .method("merge", &CGALmesh::merge)
+    .method("optimalBoundingBox", &CGALmesh::optimalBoundingBox)
     .method("orientToBoundVolume", &CGALmesh::orientToBoundVolume)
     .method("parameterizationARAP", &CGALmesh::parameterizationARAP)
     .method("parameterizationDAP", &CGALmesh::parameterizationDAP)

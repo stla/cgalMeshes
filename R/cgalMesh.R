@@ -1334,6 +1334,17 @@ cgalMesh <- R6Class(
       . <- private[[".CGALmesh"]]$merge(mesh2XPtr)
       invisible(self)
     },
+
+    #' @description Optimal bounding box.
+    #' @return A \strong{rgl} mesh of the optimal hexahedron enclosing the mesh. 
+    #' @examples 
+    #' \donttest{library(rgl)
+    #' cyclide <- cyclideMesh(a = 97, c = 32, mu = 57)
+    #' mesh <- cgalMesh$new(cyclide)
+    #' mesh$optimalBoundingBox()}
+    "optimalBoundingBox" = function() {
+      private[[".CGALmesh"]]$optimalBoundingBox()
+    },
     
     #' @description Reorient the connected components of the mesh in order that 
     #' it bounds a volume. The mesh must be triangle.

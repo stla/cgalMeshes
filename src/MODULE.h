@@ -1693,6 +1693,37 @@ public:
 
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
+  Rcpp::List optimalBoundingBox() {
+    Mesh3 kmesh;
+    CGAL::copy_face_graph(mesh, kmesh);
+    std::array<Point3, 8> obb_points;
+    CGAL::oriented_bounding_box(kmesh, obb_points,
+                                CGAL::parameters::use_convex_hull(true));
+    // Make a mesh out of the oriented bounding box
+    Mesh3 obbMesh;
+    CGAL::make_hexahedron(
+      obb_points[0], obb_points[1], obb_points[2], obb_points[3],
+      obb_points[4], obb_points[5], obb_points[6], obb_points[7], obbMesh
+    );
+    EMesh3 obbEMesh;
+    CGAL::copy_face_graph(obbMesh, obbEMesh);
+    Rcpp::List rmesh = RSurfEKMesh2(obbEMesh, false, 4);
+    Rcpp::NumericMatrix hxVertices(3, 8);
+    for(int i = 0; i < 8; i++) {
+      Point3 pt = obb_points[i];
+      Rcpp::NumericVector v = 
+        Rcpp::NumericVector::create(pt.x(), pt.y(), pt.z());
+      hxVertices(Rcpp::_, i) = v;
+    }
+    return Rcpp::List::create(
+      Rcpp::Named("rmesh") = rmesh,
+      Rcpp::Named("hxVertices") = hxVertices
+    );
+  }
+
+
+  // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
   void orientToBoundVolume() {
     if(mesh.is_empty()) {
       Message("The mesh is empty.");
