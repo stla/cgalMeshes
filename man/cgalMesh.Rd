@@ -678,6 +678,15 @@ open3d(windowRect = c(50, 50, 562, 562))
 shade3d(rmesh, meshColor = "faces")}
 
 ## ------------------------------------------------
+## Method `cgalMesh$optimalBoundingBox`
+## ------------------------------------------------
+
+\donttest{library(rgl)
+cyclide <- cyclideMesh(a = 97, c = 32, mu = 57)
+mesh <- cgalMesh$new(cyclide)
+mesh$optimalBoundingBox()}
+
+## ------------------------------------------------
 ## Method `cgalMesh$orientToBoundVolume`
 ## ------------------------------------------------
 
@@ -958,6 +967,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-isValidPolygonMesh}{\code{cgalMesh$isValidPolygonMesh()}}
 \item \href{#method-cgalMesh-LoopSubdivision}{\code{cgalMesh$LoopSubdivision()}}
 \item \href{#method-cgalMesh-merge}{\code{cgalMesh$merge()}}
+\item \href{#method-cgalMesh-optimalBoundingBox}{\code{cgalMesh$optimalBoundingBox()}}
 \item \href{#method-cgalMesh-orientToBoundVolume}{\code{cgalMesh$orientToBoundVolume()}}
 \item \href{#method-cgalMesh-parameterization}{\code{cgalMesh$parameterization()}}
 \item \href{#method-cgalMesh-removeSelfIntersections}{\code{cgalMesh$removeSelfIntersections()}}
@@ -2716,6 +2726,30 @@ mesh1$merge(mesh2)
 rmesh <- mesh1$getMesh()
 open3d(windowRect = c(50, 50, 562, 562))
 shade3d(rmesh, meshColor = "faces")
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-optimalBoundingBox"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-optimalBoundingBox}{}}}
+\subsection{Method \code{optimalBoundingBox()}}{
+Optimal bounding box.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$optimalBoundingBox()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+A \strong{rgl} mesh of the optimal hexahedron enclosing the mesh.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(rgl)
+cyclide <- cyclideMesh(a = 97, c = 32, mu = 57)
+mesh <- cgalMesh$new(cyclide)
+mesh$optimalBoundingBox()
 }
 \if{html}{\out{</div>}}
 
