@@ -257,6 +257,14 @@ void copy_property(
 Mesh3 epeck2epick(EMesh3&);
 EMesh3 epick2epeck(Mesh3&);
 
+double volumeTetrahedron(Point3, Point3, Point3, Point3);
+Vector3 P3toV3(Point3);
+Point3 V3toP3(Vector3);
+std::array<std::array<Vector3, 4>, 5> hexahedronTetrahedra(
+    std::array<Point3, 8>
+);
+Vector3 sampleTetrahedron(Vector3, Vector3, Vector3, Vector3);
+
 ////////////////////////////////////////////////////////////////////////////////
 
 struct ClipVisitor : 

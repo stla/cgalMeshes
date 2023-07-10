@@ -1446,9 +1446,18 @@ cgalMesh <- R6Class(
     #' @description Random sampling on the mesh. The mesh must be triangle.
     #' @param nsims integer, the desired number of simulations
     #' @return A \code{nsims x 3} matrix containing the simulations.
-    "sample" = function(nsims) {
+    "sampleOnMesh" = function(nsims) {
       stopifnot(isStrictPositiveInteger(nsims))
-      private[[".CGALmesh"]]$sampleMesh(as.integer(nsims))
+      private[[".CGALmesh"]]$sampleOnMesh(as.integer(nsims))
+    },
+
+    #' @description Random sampling in the volume bounded by the mesh. The 
+    #'   mesh must be closed and triangle.
+    #' @param nsims integer, the desired number of simulations
+    #' @return A \code{nsims x 3} matrix containing the simulations.
+    "sampleInMesh" = function(nsims) {
+      stopifnot(isStrictPositiveInteger(nsims))
+      private[[".CGALmesh"]]$sampleInMesh(as.integer(nsims))
     },
     
     #' @description Check whether the mesh self-intersects. The mesh must be 
