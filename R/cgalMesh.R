@@ -1452,7 +1452,9 @@ cgalMesh <- R6Class(
     },
 
     #' @description Random sampling in the volume bounded by the mesh. The 
-    #'   mesh must be closed and triangle.
+    #'   mesh must be closed and triangle. The method consists in sampling in 
+    #'   the optimal bounding box of the mesh and rejecting the points that 
+    #'   do not fall inside the volume.
     #' @param nsims integer, the desired number of simulations
     #' @return A \code{nsims x 3} matrix containing the simulations.
     "sampleInMesh" = function(nsims) {

@@ -2028,13 +2028,12 @@ public:
       vol1, vol2, vol3, vol4, vol5
     );
     Rcpp::NumericVector probs = volumes / sum(volumes);
-    boost::random::discrete_distribution<> dist(probs.begin(), probs.end());
+    boost::random::discrete_distribution<> die5(probs.begin(), probs.end());
     // sampling
     Rcpp::NumericMatrix Sims(3, nsims);
     unsigned i = 0;
     while(i < nsims) {
-//      Rcpp::IntegerVector index = Rcpp::sample(5, 1, true, probs, false);
-      int index = dist(gen);
+      int index = die5(gen);
       std::array<Vector3, 4> th = ths[index];
       Vector3 v = sampleTetrahedron(th[0], th[1], th[2], th[3], gen);
       Point3 p = V3toP3(v);

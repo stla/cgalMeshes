@@ -1,7 +1,7 @@
 library(cgalMeshes)
 cyclide <- cyclideMesh(a = 97, c = 32, mu = 57)
 mesh <- cgalMesh$new(cyclide)
-sims <- mesh$sampleInMesh(100)
+sims <- mesh$sampleInMesh(10)
 mean(sims[, 3] > 0)
 summary(sims)
 

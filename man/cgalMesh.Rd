@@ -2912,7 +2912,9 @@ A \code{nsims x 3} matrix containing the simulations.
 \if{latex}{\out{\hypertarget{method-cgalMesh-sampleInMesh}{}}}
 \subsection{Method \code{sampleInMesh()}}{
 Random sampling in the volume bounded by the mesh. The 
-  mesh must be closed and triangle.
+  mesh must be closed and triangle. The method consists in sampling in 
+  the optimal bounding box of the mesh and rejecting the points that 
+  do not fall inside the volume.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{cgalMesh$sampleInMesh(nsims)}\if{html}{\out{</div>}}
 }

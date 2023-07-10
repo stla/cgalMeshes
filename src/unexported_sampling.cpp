@@ -40,7 +40,9 @@ std::array<std::array<Vector3, 4>, 5> hexahedronTetrahedra(
   return tetrahedra;
 }
 
-Vector3 sampleTetrahedron(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, boost::mt19937 gen) {
+Vector3 sampleTetrahedron(
+  Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, boost::mt19937 gen
+) {
   boost::random::uniform_real_distribution<double> runif(0.0, 1.0);
   double c1 = runif(gen);
   double c2 = runif(gen);
