@@ -98,3 +98,65 @@ std::vector<Point3> runifHexahedron(int n, std::array<Point3, 8> hxh) {
   return Sims;
 }
 
+
+// ----------------------------------------------------------------------- //
+// ----------------------------------------------------------------------- //
+Rcpp::NumericMatrix runifInMesh(int n, Mesh3 kmesh) {
+  
+  if(!CGAL::is_triangle_mesh(kmesh)) {
+    Rcpp::stop("The mesh is not triangle.");
+  }
+  if(!CGAL::is_closed(kmesh)) {
+    Rcpp::stop("The mesh is not closed.");
+  }
+  
+  CGAL::Side_of_triangle_mesh<Mesh3, K> Where(kmesh);
+  
+  std::array<Point3, 8> hxh;
+  CGAL::oriented_bounding_box(
+    kmesh, hxh, CGAL::parameters::use_convex_hull(true)
+  );
+  
+  std::array<std::array<Vector3, 4>, 5> ths = hexahedronTetrahedra(hxh);
+  std::array<Vector3, 4> th1 = ths[0];
+  std::array<Vector3, 4> th2 = ths[1];
+  std::array<Vector3, 4> th3 = ths[2];
+  std::array<Vector3, 4> th4 = ths[3];
+  std::array<Vector3, 4> th5 = ths[4];
+  double vol1 = volumeTetrahedron(
+    V3toP3(th1[0]), V3toP3(th1[1]), V3toP3(th1[2]), V3toP3(th1[3])
+  );
+  double vol2 = volumeTetrahedron(
+    V3toP3(th2[0]), V3toP3(th2[1]), V3toP3(th2[2]), V3toP3(th2[3])
+  );
+  double vol3 = volumeTetrahedron(
+    V3toP3(th3[0]), V3toP3(th3[1]), V3toP3(th3[2]), V3toP3(th3[3])
+  );
+  double vol4 = volumeTetrahedron(
+    V3toP3(th4[0]), V3toP3(th4[1]), V3toP3(th4[2]), V3toP3(th4[3])
+  );
+  double vol5 = volumeTetrahedron(
+    V3toP3(th5[0]), V3toP3(th5[1]), V3toP3(th5[2]), V3toP3(th5[3])
+  );
+  Rcpp::NumericVector volumes = Rcpp::NumericVector::create(
+    vol1, vol2, vol3, vol4, vol5
+  );
+  Rcpp::NumericVector probs = volumes / sum(volumes);
+  // sampling
+  Rcpp::NumericMatrix Sims(3, n);
+  int i = 0;
+  while(i < n) {
+    Rcpp::IntegerVector index = Rcpp::sample(5, 1, true, probs, false);
+    std::array<Vector3, 4> th = ths[index(1)];
+    Vector3 v = sampleTetrahedron(th[0], th[1], th[2], th[3]);
+    Point3 p = V3toP3(v);
+    CGAL::Bounded_side side = Where(p);
+    if(side == CGAL::ON_BOUNDED_SIDE || side == CGAL::ON_BOUNDARY) {
+      Rcpp::NumericVector sim = 
+        Rcpp::NumericVector::create(p.x(), p.y(), p.z());
+      Sims(Rcpp::_, i++) = sim;
+    } 
+  }
+  return Sims;
+}
+
