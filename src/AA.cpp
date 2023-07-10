@@ -61,7 +61,7 @@ Vector3 sampleTetrahedron(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4) {
   return c1 * v1 + c2 * v2 + c3 * v3 + c4 * v4;
 }
 
-Rcpp::NumericMatrix runifHexahedron(int n, std::array<Point3, 8> hxh) {
+std::vector<Point3> runifHexahedron(int n, std::array<Point3, 8> hxh) {
   std::array<std::array<Vector3, 4>, 5> ths = hexahedronTetrahedra(hxh);
   std::array<Vector3, 4> th1 = ths[0];
   std::array<Vector3, 4> th2 = ths[1];
@@ -86,15 +86,14 @@ Rcpp::NumericMatrix runifHexahedron(int n, std::array<Point3, 8> hxh) {
   Rcpp::NumericVector volumes = Rcpp::NumericVector::create(
     vol1, vol2, vol3, vol4, vol5
   );
-  Rcpp::NumericVectors probs = volumes / sum(volumes);
+  Rcpp::NumericVector probs = volumes / sum(volumes);
   // sampling
   Rcpp::IntegerVector indices = Rcpp::sample(5, n, true, probs, false);
-  Rcpp::NumericMatrix Sims(3, n);
+  std::vector<Point3> Sims(n);
   for(int i = 0; i < n; i++) {
     std::array<Vector3, 4> th = ths[indices(i)];
     Vector3 v = sampleTetrahedron(th[0], th[1], th[2], th[3]);
-    Rcpp::NumericVector sim = Rcpp::NumericVector::create(v.x(), v.y(), v.z());
-    Sims(Rcpp::_, i) = sim;
+    Sims[i] = V3toP3(v);
   }
   return Sims;
 }
