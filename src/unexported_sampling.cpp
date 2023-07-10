@@ -4,7 +4,7 @@
 
 
 double volumeTetrahedron(Point3 p1, Point3 p2, Point3 p3, Point3 p4) {
-  Vector3 v = p1 - p2;
+  Vector3 v = p1 - p4;
   Vector3 w = CGAL::cross_product(p2 - p4, p3 - p4);
   double dotprod = CGAL::scalar_product(v, w);
   return fabs(dotprod) / 6.0;
@@ -40,10 +40,11 @@ std::array<std::array<Vector3, 4>, 5> hexahedronTetrahedra(
   return tetrahedra;
 }
 
-Vector3 sampleTetrahedron(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4) {
-  double c1 = R::runif(0, 1);
-  double c2 = R::runif(0, 1);
-  double c3 = R::runif(0, 1);
+Vector3 sampleTetrahedron(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, boost::mt19937 gen) {
+  boost::random::uniform_real_distribution<double> runif(0.0, 1.0);
+  double c1 = runif(gen);
+  double c2 = runif(gen);
+  double c3 = runif(gen);
   double t;
   if(c1 + c2 > 1) {
     c1 = 1 - c1;

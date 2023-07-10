@@ -95,6 +95,10 @@
 
 #include <CGAL/optimal_bounding_box.h>
 
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/discrete_distribution.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
+
 // -------------------------------------------------------------------------- //
 namespace PMP = CGAL::Polygon_mesh_processing;
 namespace SMP = CGAL::Surface_mesh_parameterization;
@@ -263,7 +267,7 @@ Point3 V3toP3(Vector3);
 std::array<std::array<Vector3, 4>, 5> hexahedronTetrahedra(
     std::array<Point3, 8>
 );
-Vector3 sampleTetrahedron(Vector3, Vector3, Vector3, Vector3);
+Vector3 sampleTetrahedron(Vector3, Vector3, Vector3, Vector3, boost::mt19937);
 
 ////////////////////////////////////////////////////////////////////////////////
 

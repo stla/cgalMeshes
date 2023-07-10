@@ -1986,6 +1986,7 @@ public:
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   Rcpp::NumericMatrix sampleInMesh(const unsigned nsims) {
+    boost::mt19937 gen;
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
@@ -2027,20 +2028,22 @@ public:
       vol1, vol2, vol3, vol4, vol5
     );
     Rcpp::NumericVector probs = volumes / sum(volumes);
+    boost::random::discrete_distribution<> dist(probs.begin(), probs.end());
     // sampling
     Rcpp::NumericMatrix Sims(3, nsims);
     unsigned i = 0;
     while(i < nsims) {
-      Rcpp::IntegerVector index = Rcpp::sample(5, 1, true, probs, false);
-      std::array<Vector3, 4> th = ths[index(1)];
-      Vector3 v = sampleTetrahedron(th[0], th[1], th[2], th[3]);
+//      Rcpp::IntegerVector index = Rcpp::sample(5, 1, true, probs, false);
+      int index = dist(gen);
+      std::array<Vector3, 4> th = ths[index];
+      Vector3 v = sampleTetrahedron(th[0], th[1], th[2], th[3], gen);
       Point3 p = V3toP3(v);
       CGAL::Bounded_side side = Where(p);
       if(side == CGAL::ON_BOUNDED_SIDE || side == CGAL::ON_BOUNDARY) {
         Rcpp::NumericVector sim = 
           Rcpp::NumericVector::create(p.x(), p.y(), p.z());
         Sims(Rcpp::_, i++) = sim;
-      } 
+      }
     }
     return Rcpp::transpose(Sims);  
   }  

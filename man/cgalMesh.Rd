@@ -975,7 +975,8 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-parameterization}{\code{cgalMesh$parameterization()}}
 \item \href{#method-cgalMesh-removeSelfIntersections}{\code{cgalMesh$removeSelfIntersections()}}
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
-\item \href{#method-cgalMesh-sample}{\code{cgalMesh$sample()}}
+\item \href{#method-cgalMesh-sampleOnMesh}{\code{cgalMesh$sampleOnMesh()}}
+\item \href{#method-cgalMesh-sampleInMesh}{\code{cgalMesh$sampleInMesh()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
 \item \href{#method-cgalMesh-sharpEdges}{\code{cgalMesh$sharpEdges()}}
 \item \href{#method-cgalMesh-smoothAngle}{\code{cgalMesh$smoothAngle()}}
@@ -2887,12 +2888,33 @@ mesh$isOutwardOriented() # FALSE
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cgalMesh-sample"></a>}}
-\if{latex}{\out{\hypertarget{method-cgalMesh-sample}{}}}
-\subsection{Method \code{sample()}}{
+\if{html}{\out{<a id="method-cgalMesh-sampleOnMesh"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-sampleOnMesh}{}}}
+\subsection{Method \code{sampleOnMesh()}}{
 Random sampling on the mesh. The mesh must be triangle.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$sample(nsims)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$sampleOnMesh(nsims)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{nsims}}{integer, the desired number of simulations}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A \code{nsims x 3} matrix containing the simulations.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-sampleInMesh"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-sampleInMesh}{}}}
+\subsection{Method \code{sampleInMesh()}}{
+Random sampling in the volume bounded by the mesh. The 
+  mesh must be closed and triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$sampleInMesh(nsims)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
