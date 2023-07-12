@@ -1986,7 +1986,7 @@ public:
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   Rcpp::NumericMatrix sampleInMesh(const unsigned nsims) {
-    boost::mt19937 gen;
+
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }
@@ -2030,6 +2030,7 @@ public:
     Rcpp::NumericVector probs = volumes / sum(volumes);
     boost::random::discrete_distribution<> die5(probs.begin(), probs.end());
     // sampling
+    boost::mt19937 gen;
     Rcpp::NumericMatrix Sims(3, nsims);
     unsigned i = 0;
     while(i < nsims) {

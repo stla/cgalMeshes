@@ -3,6 +3,8 @@
 #endif
 
 
+// ------------------------------------------------------------------------- //
+// - volume of tetrahedron p1p2p3p4 ---------------------------------------- //
 double volumeTetrahedron(Point3 p1, Point3 p2, Point3 p3, Point3 p4) {
   Vector3 v = p1 - p4;
   Vector3 w = CGAL::cross_product(p2 - p4, p3 - p4);
@@ -10,16 +12,25 @@ double volumeTetrahedron(Point3 p1, Point3 p2, Point3 p3, Point3 p4) {
   return fabs(dotprod) / 6.0;
 }
 
+
+// ------------------------------------------------------------------------- //
+// - point to vector ------------------------------------------------------- //
 Vector3 P3toV3(Point3 p) {
   Vector3 v(p.x(), p.y(), p.z());
   return v;
 }
 
+
+// ------------------------------------------------------------------------- //
+// - vector to point ------------------------------------------------------- //
 Point3 V3toP3(Vector3 v) {
   Point3 p(v.x(), v.y(), v.z());
   return p;
 }
 
+
+// ------------------------------------------------------------------------- //
+// - five tetrahedra partitioning a hexahedron ----------------------------- //
 std::array<std::array<Vector3, 4>, 5> hexahedronTetrahedra(
     std::array<Point3, 8> hxh
 ) {
@@ -40,6 +51,9 @@ std::array<std::array<Vector3, 4>, 5> hexahedronTetrahedra(
   return tetrahedra;
 }
 
+
+// ------------------------------------------------------------------------- //
+// - sample one point in tetrahedron v1v2v3v4  ----------------------------- //
 Vector3 sampleTetrahedron(
   Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4, boost::mt19937 gen
 ) {
