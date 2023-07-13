@@ -1649,6 +1649,37 @@ public:
 
 
   // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
+  Rcpp::List optimalBoundingBox() {
+    Mesh3 kmesh;
+    CGAL::copy_face_graph(mesh, kmesh);
+    std::array<Point3, 8> obb_points;
+    CGAL::oriented_bounding_box(kmesh, obb_points,
+                                CGAL::parameters::use_convex_hull(true));
+    // Make a mesh out of the oriented bounding box
+    Mesh3 obbMesh;
+    CGAL::make_hexahedron(
+      obb_points[0], obb_points[1], obb_points[2], obb_points[3],
+      obb_points[4], obb_points[5], obb_points[6], obb_points[7], obbMesh
+    );
+    EMesh3 obbEMesh;
+    CGAL::copy_face_graph(obbMesh, obbEMesh);
+    Rcpp::List rmesh = RSurfEKMesh2(obbEMesh, false, 4);
+    Rcpp::NumericMatrix hxVertices(3, 8);
+    for(int i = 0; i < 8; i++) {
+      Point3 pt = obb_points[i];
+      Rcpp::NumericVector v = 
+        Rcpp::NumericVector::create(pt.x(), pt.y(), pt.z());
+      hxVertices(Rcpp::_, i) = v;
+    }
+    return Rcpp::List::create(
+      Rcpp::Named("rmesh") = rmesh,
+      Rcpp::Named("hxVertices") = hxVertices
+    );
+  }
+
+
+  // ----------------------------------------------------------------------- //
   void orientToBoundVolume() {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
@@ -1689,7 +1720,73 @@ public:
   
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
-  Rcpp::NumericMatrix sampleMesh(const unsigned nsims) {
+  Rcpp::NumericMatrix sampleInMesh(const unsigned nsims) {
+
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
+    if(!CGAL::is_closed(mesh)) {
+      Rcpp::stop("The mesh is not closed.");
+    }
+
+    Mesh3 kmesh = epeck2epick(mesh);
+  
+    CGAL::Side_of_triangle_mesh<Mesh3, K> Where(kmesh);
+    
+    std::array<Point3, 8> hxh;
+    CGAL::oriented_bounding_box(
+      kmesh, hxh, CGAL::parameters::use_convex_hull(true)
+    );
+    
+    std::array<std::array<Vector3, 4>, 5> ths = hexahedronTetrahedra(hxh);
+    std::array<Vector3, 4> th1 = ths[0];
+    std::array<Vector3, 4> th2 = ths[1];
+    std::array<Vector3, 4> th3 = ths[2];
+    std::array<Vector3, 4> th4 = ths[3];
+    std::array<Vector3, 4> th5 = ths[4];
+    const double vol1 = volumeTetrahedron(
+      V3toP3(th1[0]), V3toP3(th1[1]), V3toP3(th1[2]), V3toP3(th1[3])
+    );
+    const double vol2 = volumeTetrahedron(
+      V3toP3(th2[0]), V3toP3(th2[1]), V3toP3(th2[2]), V3toP3(th2[3])
+    );
+    const double vol3 = volumeTetrahedron(
+      V3toP3(th3[0]), V3toP3(th3[1]), V3toP3(th3[2]), V3toP3(th3[3])
+    );
+    const double vol4 = volumeTetrahedron(
+      V3toP3(th4[0]), V3toP3(th4[1]), V3toP3(th4[2]), V3toP3(th4[3])
+    );
+    const double vol5 = volumeTetrahedron(
+      V3toP3(th5[0]), V3toP3(th5[1]), V3toP3(th5[2]), V3toP3(th5[3])
+    );
+    Rcpp::NumericVector volumes = Rcpp::NumericVector::create(
+      vol1, vol2, vol3, vol4, vol5
+    );
+    Rcpp::NumericVector probs = volumes / sum(volumes);
+    boost::random::discrete_distribution<> die5(probs.begin(), probs.end());
+    // sampling
+    boost::mt19937 gen;
+    Rcpp::NumericMatrix Sims(3, nsims);
+    unsigned i = 0;
+    while(i < nsims) {
+      int index = die5(gen);
+      std::array<Vector3, 4> th = ths[index];
+      Vector3 v = sampleTetrahedron(th[0], th[1], th[2], th[3], gen);
+      Point3 p = V3toP3(v);
+      CGAL::Bounded_side side = Where(p);
+      if(side == CGAL::ON_BOUNDED_SIDE || side == CGAL::ON_BOUNDARY) {
+        Rcpp::NumericVector sim = 
+          Rcpp::NumericVector::create(p.x(), p.y(), p.z());
+        Sims(Rcpp::_, i++) = sim;
+      }
+    }
+    return Rcpp::transpose(Sims);  
+  }  
+
+    
+  // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
+  Rcpp::NumericMatrix sampleOnMesh(const unsigned nsims) {
     if(!CGAL::is_triangle_mesh(mesh)) {
       Rcpp::stop("The mesh is not triangle.");
     }

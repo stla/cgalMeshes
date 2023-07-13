@@ -1339,7 +1339,26 @@ cgalMesh <- R6Class(
       . <- private[[".CGALmesh"]]$merge(mesh2XPtr)
       invisible(self)
     },
-    
+
+    #' @description Optimal bounding box.
+    #' @return A \strong{rgl} mesh of the optimal hexahedron enclosing the mesh. 
+    #' @examples 
+    #' \donttest{library(rgl)
+    #' cyclide <- cyclideMesh(a = 97, c = 32, mu = 57)
+    #' mesh <- cgalMesh$new(cyclide)
+    #' obb <- mesh$optimalBoundingBox()
+    #' open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
+    #' shade3d(cyclide, color = "green")
+    #' shade3d(obb, color = "yellow", alpha = 0.25)}
+    "optimalBoundingBox" = function() {
+      hx <- private[[".CGALmesh"]]$optimalBoundingBox()
+      obb <- hx[["rmesh"]]
+      qmesh3d(
+        vertices = obb[["vertices"]],
+        indices  = obb[["faces"]]
+      )
+    },
+
     #' @description Reorient the connected components of the mesh in order that 
     #' it bounds a volume. The mesh must be triangle.
     #' @return The modified \code{cgalMesh} object, invisibly. \strong{WARNING}: 
@@ -1399,14 +1418,27 @@ cgalMesh <- R6Class(
       invisible(self)
     },
 
+    #' @description Random sampling in the volume bounded by the mesh. The 
+    #'   mesh must be closed and triangle. The method consists in sampling in 
+    #'   the optimal bounding box of the mesh and rejecting the points that 
+    #'   do not fall inside the volume; therefore this is inefficient when 
+    #'   the volume of the mesh is small as compared to the volume of its 
+    #'   bounding box.
+    #' @param nsims integer, the desired number of simulations
+    #' @return A \code{nsims x 3} matrix containing the simulations.
+    "sampleInMesh" = function(nsims) {
+      stopifnot(isStrictPositiveInteger(nsims))
+      private[[".CGALmesh"]]$sampleInMesh(as.integer(nsims))
+    },
+
     #' @description Random sampling on the mesh. The mesh must be triangle.
     #' @param nsims integer, the desired number of simulations
     #' @return A \code{nsims x 3} matrix containing the simulations.
-    "sample" = function(nsims) {
+    "sampleOnMesh" = function(nsims) {
       stopifnot(isStrictPositiveInteger(nsims))
-      private[[".CGALmesh"]]$sampleMesh(as.integer(nsims))
+      private[[".CGALmesh"]]$sampleOnMesh(as.integer(nsims))
     },
-        
+            
     #' @description Check whether the mesh self-intersects. The mesh must be 
     #'   triangle.
     #' @return A Boolean value, whether the mesh self-intersects.

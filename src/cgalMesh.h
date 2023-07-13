@@ -79,6 +79,12 @@
 #include <CGAL/Side_of_triangle_mesh.h>
 #include <CGAL/alpha_wrap_3.h>
 
+#include <CGAL/optimal_bounding_box.h>
+
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/discrete_distribution.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
+
 // -------------------------------------------------------------------------- //
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef K::Point_3                                          Point3;
@@ -214,6 +220,14 @@ void copy_property(
 
 Mesh3 epeck2epick(EMesh3&);
 EMesh3 epick2epeck(Mesh3&);
+
+double volumeTetrahedron(Point3, Point3, Point3, Point3);
+Vector3 P3toV3(Point3);
+Point3 V3toP3(Vector3);
+std::array<std::array<Vector3, 4>, 5> hexahedronTetrahedra(
+    std::array<Point3, 8>
+);
+Vector3 sampleTetrahedron(Vector3, Vector3, Vector3, Vector3, boost::mt19937);
 
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -4,6 +4,10 @@
 
 - Implementation of the 3D alpha wrapping.
 
+- Optimal bounding box of a mesh.
+
+- New method `$sampleInMesh` to uniformly sample in the volume bounded by a mesh. The `$sample` method has been renamed to `$sampleOnMesh`.
+
 
 # cgalMeshes 2.2.0
 
