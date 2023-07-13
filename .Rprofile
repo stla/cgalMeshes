@@ -1,4 +1,5 @@
 myinstall <- function() {
+  try(pkgload::unload("cgalMeshes"))
   if(rstudioapi::isAvailable()) {
     rstudioapi::restartSession(
       "devtools::install(quick = TRUE, keep_source = TRUE)"
@@ -7,7 +8,9 @@ myinstall <- function() {
     devtools::install(quick = TRUE, keep_source = TRUE)
   }
 }
+
 mydocument <- function() {
+  try(pkgload::unload("cgalMeshes"))
   if(rstudioapi::isAvailable()) {
     rstudioapi::restartSession(
       "roxygen2::roxygenise(load_code = roxygen2::load_installed)" 
@@ -15,4 +18,5 @@ mydocument <- function() {
   } else {
     roxygen2::roxygenise(load_code = roxygen2::load_installed)
   }
+  source("C:/SL/MyPackages/cgalMeshes/inst/essais/clean-Rd3.R")
 }
