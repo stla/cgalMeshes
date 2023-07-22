@@ -11,8 +11,9 @@ Description: Provides some utilities for 3D meshes: clipping of a mesh to
     meshes, triangulation, geodesic distance, Boolean operations
     (intersection, union, difference), Minkowski sum, subdivision
     algorithms, random sampling on a mesh, volume, area, and centroid.
-    Also provides two algorithms for surface reconstruction from a cloud
-    of points. Meshes are represented by R6 classes. All algorithms are
+    Also provides three algorithms for surface reconstruction from a cloud
+    of points: advanced front surface, scale-space surface, and alpha
+    wrapping. Meshes are represented by R6 classes. All algorithms are
     performed by the 'C++' library 'CGAL' (<https://www.cgal.org/>).
 License: GPL-3
 URL: https://github.com/stla/cgalMeshes
@@ -29,8 +30,8 @@ Imports:
     rgl,
     tools
 Suggests:
-    dfdr,
     colorspace,
+    dfdr,
     randomcoloR,
     rmarchingcubes,
     viridisLite
