@@ -2,7 +2,7 @@
 #' @description Returns the edges of a mesh whose corresponding dihedral angles 
 #'   are not too flat.
 #'
-#' @param edgesDF the dataframe returned by the \code{edges} method of 
+#' @param edgesDF the dataframe returned by the \code{getEdges} method of 
 #'   \code{\link{cgalMesh}}
 #' @param angleThreshold maximum deviation in degrees from the flat angle; for 
 #'   example if \code{angleThreshold=1}, then an edge is considered as exterior 

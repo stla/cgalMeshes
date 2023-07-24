@@ -7,7 +7,7 @@
 exteriorEdges(edgesDF, angleThreshold = 1)
 }
 \arguments{
-\item{edgesDF}{the dataframe returned by the \code{edges} method of 
+\item{edgesDF}{the dataframe returned by the \code{getEdges} method of 
 \code{\link{cgalMesh}}}
 
 \item{angleThreshold}{maximum deviation in degrees from the flat angle; for 
