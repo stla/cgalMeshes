@@ -143,3 +143,15 @@ septuaginta <- mesh3d(
   ) + 1
 )
 
+
+
+library(cgalMeshes)
+mesh <- cgalMesh$new(septuaginta)
+vertices <- mesh$getVertices()
+edges <- mesh$getEdges()
+
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
+shade3d(septuaginta, color = "navy")
+plotEdges(
+  vertices, edges, color = "gold"
+)
