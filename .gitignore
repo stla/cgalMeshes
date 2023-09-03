@@ -53,4 +53,8 @@ inst/trash/
 .settings/
 .project
 *.log
+
+# vignettes
 inst/doc
+/doc/
+/Meta/
