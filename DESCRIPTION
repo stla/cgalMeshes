@@ -45,7 +45,7 @@ LinkingTo:
     RcppCGAL,
     RcppColors,
     RcppEigen
-Remotes: ericdunipace/RcppCGAL
+Remotes: stla/RcppCGAL
 Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 7.2.3
