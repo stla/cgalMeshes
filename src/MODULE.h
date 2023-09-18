@@ -1073,8 +1073,10 @@ public:
       const bool success = std::get<0>(
         PMP::triangulate_refine_and_fair_hole(
           mesh, h, 
-          std::back_inserter(patch_faces), std::back_inserter(patch_vertices)
-        )
+          CGAL::parameters::face_output_iterator(
+            std::back_inserter(patch_faces))
+            .vertex_output_iterator(std::back_inserter(patch_vertices))  
+        );
       );
       if(!success) {
         Message("Fairing failed.");
@@ -1082,7 +1084,9 @@ public:
     } else {
       PMP::triangulate_and_refine_hole(
         mesh, h, 
-        std::back_inserter(patch_faces), std::back_inserter(patch_vertices)
+        CGAL::parameters::face_output_iterator(
+          std::back_inserter(patch_faces))
+          .vertex_output_iterator(std::back_inserter(patch_vertices))  
       );
     }
     Face_index_map fimap = mesh.add_property_map<face_descriptor, std::size_t>(
