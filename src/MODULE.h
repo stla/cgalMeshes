@@ -1075,8 +1075,8 @@ public:
           mesh, h, 
           CGAL::parameters::face_output_iterator(
             std::back_inserter(patch_faces))
-            .vertex_output_iterator(std::back_inserter(patch_vertices))  
-        );
+            .vertex_output_iterator(std::back_inserter(patch_vertices)) 
+        )
       );
       if(!success) {
         Message("Fairing failed.");
