@@ -975,8 +975,8 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-parameterization}{\code{cgalMesh$parameterization()}}
 \item \href{#method-cgalMesh-removeSelfIntersections}{\code{cgalMesh$removeSelfIntersections()}}
 \item \href{#method-cgalMesh-reverseOrientation}{\code{cgalMesh$reverseOrientation()}}
-\item \href{#method-cgalMesh-sampleOnMesh}{\code{cgalMesh$sampleOnMesh()}}
 \item \href{#method-cgalMesh-sampleInMesh}{\code{cgalMesh$sampleInMesh()}}
+\item \href{#method-cgalMesh-sampleOnMesh}{\code{cgalMesh$sampleOnMesh()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
 \item \href{#method-cgalMesh-sharpEdges}{\code{cgalMesh$sharpEdges()}}
 \item \href{#method-cgalMesh-smoothAngle}{\code{cgalMesh$smoothAngle()}}
@@ -2821,7 +2821,8 @@ Parameterization of the mesh. The mesh must be triangle.
   method = "DCP",
   UVborder = "circle",
   iterations = 15,
-  lambda = 1000
+  lambda = 1000,
+  corners = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -2838,6 +2839,12 @@ Parameterization of the mesh. The mesh must be triangle.
 
 \item{\code{lambda}}{the value of the \code{lambda} parameter for the ARAP 
 method}
+
+\item{\code{corners}}{for the \code{"DCP"} method, a vector of four vertex 
+indices corresponding to vertices at the border of the mesh; this 
+implies \code{UVborder="square"} and the purpose is to give the 
+four corners of the square; if not given, i.e. \code{NULL}, the 
+corners are automatically picked}
 }
 \if{html}{\out{</div>}}
 }
@@ -2888,12 +2895,17 @@ mesh$isOutwardOriented() # FALSE
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cgalMesh-sampleOnMesh"></a>}}
-\if{latex}{\out{\hypertarget{method-cgalMesh-sampleOnMesh}{}}}
-\subsection{Method \code{sampleOnMesh()}}{
-Random sampling on the mesh. The mesh must be triangle.
+\if{html}{\out{<a id="method-cgalMesh-sampleInMesh"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-sampleInMesh}{}}}
+\subsection{Method \code{sampleInMesh()}}{
+Random sampling in the volume bounded by the mesh. The 
+  mesh must be closed and triangle. The method consists in sampling in 
+  the optimal bounding box of the mesh and rejecting the points that 
+  do not fall inside the volume; therefore this is inefficient when 
+  the volume of the mesh is small as compared to the volume of its 
+  bounding box.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$sampleOnMesh(nsims)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$sampleInMesh(nsims)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -2908,15 +2920,12 @@ A \code{nsims x 3} matrix containing the simulations.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-cgalMesh-sampleInMesh"></a>}}
-\if{latex}{\out{\hypertarget{method-cgalMesh-sampleInMesh}{}}}
-\subsection{Method \code{sampleInMesh()}}{
-Random sampling in the volume bounded by the mesh. The 
-  mesh must be closed and triangle. The method consists in sampling in 
-  the optimal bounding box of the mesh and rejecting the points that 
-  do not fall inside the volume.
+\if{html}{\out{<a id="method-cgalMesh-sampleOnMesh"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-sampleOnMesh}{}}}
+\subsection{Method \code{sampleOnMesh()}}{
+Random sampling on the mesh. The mesh must be triangle.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$sampleInMesh(nsims)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$sampleOnMesh(nsims)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

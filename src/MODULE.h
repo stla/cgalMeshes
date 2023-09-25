@@ -1069,13 +1069,31 @@ public:
     halfedge_descriptor h = border_cycles[border];
     std::vector<face_descriptor>   patch_faces;
     std::vector<vertex_descriptor> patch_vertices;
+    // if(fairhole) {
+    //   const bool success = std::get<0>(
+    //     PMP::triangulate_refine_and_fair_hole(
+    //       mesh, h, 
+    //       CGAL::parameters::face_output_iterator(
+    //         std::back_inserter(patch_faces))
+    //         .vertex_output_iterator(std::back_inserter(patch_vertices)) 
+    //     )
+    //   );
+    //   if(!success) {
+    //     Message("Fairing failed.");
+    //   }
+    // } else {
+    //   PMP::triangulate_and_refine_hole(
+    //     mesh, h, 
+    //     CGAL::parameters::face_output_iterator(
+    //       std::back_inserter(patch_faces))
+    //       .vertex_output_iterator(std::back_inserter(patch_vertices))  
+    //   );
+    // }
     if(fairhole) {
       const bool success = std::get<0>(
         PMP::triangulate_refine_and_fair_hole(
           mesh, h, 
-          CGAL::parameters::face_output_iterator(
-            std::back_inserter(patch_faces))
-            .vertex_output_iterator(std::back_inserter(patch_vertices)) 
+          std::back_inserter(patch_faces), std::back_inserter(patch_vertices)
         )
       );
       if(!success) {
@@ -1084,11 +1102,10 @@ public:
     } else {
       PMP::triangulate_and_refine_hole(
         mesh, h, 
-        CGAL::parameters::face_output_iterator(
-          std::back_inserter(patch_faces))
-          .vertex_output_iterator(std::back_inserter(patch_vertices))  
+        std::back_inserter(patch_faces), std::back_inserter(patch_vertices)
       );
     }
+    //    
     Face_index_map fimap = mesh.add_property_map<face_descriptor, std::size_t>(
       "f:i", 0
     ).first;
@@ -1920,8 +1937,8 @@ public:
     vxdescr vd3(v3);
     vxdescr vd4(v4);
 
-    if(!is.border(vd1, mesh) || !is.border(vd2, mesh)
-        !is.border(vd3, mesh) || !is.border(vd4, mesh)) {
+    if(!is_border(vd1, mesh) || !is_border(vd2, mesh)
+        || !is_border(vd3, mesh) || !is_border(vd4, mesh)) {
       Rcpp::stop("Found a vertex not located on the border.");
     }
         
@@ -1935,8 +1952,7 @@ public:
     // Run parameterization
     typedef SMP::Square_border_arc_length_parameterizer_3<Mesh3> 
                                                             BorderParameterizer;
-    typedef DiscreteConformalParameterizer<Mesh3, BorderParameterizer> 
-                                                                  Parameterizer;
+    typedef DiscreteConformalParameterizer<BorderParameterizer> Parameterizer;
 
     BorderParameterizer borderParam(vd1, vd2, vd3, vd4);
 
