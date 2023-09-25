@@ -1891,7 +1891,73 @@ public:
     return Rcpp::transpose(UVmatrix);
   }
 
+
+  // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
+  Rcpp::NumericMatrix parameterizationDCPgivenCorners(
+    int v1, int v2, int v3, int v4
+  ) {
+    if(!CGAL::is_triangle_mesh(mesh)) {
+      Rcpp::stop("The mesh is not triangle.");
+    }
   
+    const int nvertices = mesh.number_of_vertices();
+    if(v1 >= nvertices || v2 >= nvertices 
+        || v3 >= nvertices || v4 >= nvertices) {
+      Rcpp::stop("Found a too large vertex index.");
+    }
+
+    Mesh3 smesh = epeck2epick(mesh);
+
+    // A halfedge on the border
+    hgdescr bhg = PMP::longest_border(smesh).first;
+    if(bhg == Mesh3::null_halfedge()) {
+      Rcpp::stop("This mesh has no border.");
+    }
+
+    vxdescr vd1(v1);
+    vxdescr vd2(v2);
+    vxdescr vd3(v3);
+    vxdescr vd4(v4);
+
+    if(!is.border(vd1, mesh) || !is.border(vd2, mesh)
+        !is.border(vd3, mesh) || !is.border(vd4, mesh)) {
+      Rcpp::stop("Found a vertex not located on the border.");
+    }
+        
+    // The 2D points of the uv parameterization will be written into this map
+    UV_uhm uv_uhm;
+    UV_phmap uv_map(uv_uhm);
+    
+    // The error code will be written in `err`
+    SMP::Error_code err;
+    
+    // Run parameterization
+    typedef SMP::Square_border_arc_length_parameterizer_3<Mesh3> 
+                                                            BorderParameterizer;
+    typedef DiscreteConformalParameterizer<Mesh3, BorderParameterizer> 
+                                                                  Parameterizer;
+
+    BorderParameterizer borderParam(vd1, vd2, vd3, vd4);
+
+    err = SMP::parameterize(smesh, Parameterizer(borderParam), bhg, uv_map);
+    
+    if(err != SMP::OK) {
+      Rcpp::stop(SMP::get_error_message(err));
+    }
+    
+    // output matrix
+    Rcpp::NumericMatrix UVmatrix(2, nvertices);
+    int i = 0;
+    for(Mesh3::Vertex_index v : smesh.vertices()) {
+      Point2 pt = uv_map[v];
+      Rcpp::NumericVector UV = {pt.x(), pt.y()};
+      UVmatrix(Rcpp::_, i++) = UV;
+    }
+    return Rcpp::transpose(UVmatrix);
+  }
+
+    
   // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   Rcpp::NumericMatrix parameterizationIAP(

@@ -73,6 +73,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("parameterizationARAP", &CGALmesh::parameterizationARAP)
     .method("parameterizationDAP", &CGALmesh::parameterizationDAP)
     .method("parameterizationDCP", &CGALmesh::parameterizationDCP)
+    .method("parameterizationDCPgivenCorners", &CGALmesh::parameterizationDCPgivenCorners)
     .method("parameterizationIAP", &CGALmesh::parameterizationIAP)
     .method("print", &CGALmesh::print)
     .method("removeSelfIntersections", &CGALmesh::removeSelfIntersections)

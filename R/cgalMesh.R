@@ -1398,15 +1398,32 @@ cgalMesh <- R6Class(
     #' @param iterations the number of iterations for the IAP method
     #' @param lambda the value of the \code{lambda} parameter for the ARAP 
     #'   method
+    #' @param corners for the \code{"DCP"} method, a vector of four vertex 
+    #'   indices corresponding to vertices at the border of the mesh; this 
+    #'   implies \code{UVborder="square"} and the purpose is to give the 
+    #'   four corners of the square; if not given, i.e. \code{NULL}, the 
+    #'   corners are automatically picked
     #' @return The matrix of \code{uv}-coordinates. The i-th row provides 
     #'   the \code{uv}-coordinates of the i-th vertex.
     "parameterization" = function(
-      method = "DCP", UVborder = "circle", iterations = 15, lambda = 1000
+      method = "DCP", UVborder = "circle", iterations = 15, lambda = 1000, 
+      corners = NULL
     ) {
       method <- match.arg(method, c("DCP", "DAP", "IAP", "ARAP"))
       UVborder <- match.arg(UVborder, c("circle", "square"))
       if(method == "DCP") {
-        private[[".CGALmesh"]]$parameterizationDCP(UVborder)
+        if(is.null(corners)) {
+          private[[".CGALmesh"]]$parameterizationDCP(UVborder)  
+        } else {
+          stopifnot(length(corners) == 4L)
+          storage.mode(corners) <- "integer"
+          stopifnot(all(corners > 0L))
+          v1 <- corners[1L] - 1L
+          v2 <- corners[2L] - 1L
+          v3 <- corners[3L] - 1L
+          v4 <- corners[4L] - 1L
+          private[[".CGALmesh"]]$parameterizationDCPgivenCorners(v1, v2, v3, v4)
+        }
       } else if(method == "DAP") {
         private[[".CGALmesh"]]$parameterizationDAP(UVborder)
       } else if(method == "IAP") {
