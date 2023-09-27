@@ -2840,7 +2840,8 @@ Parameterization of the mesh. The mesh must be triangle.
 \item{\code{lambda}}{the value of the \code{lambda} parameter for the ARAP 
 method}
 
-\item{\code{corners}}{for the \code{"DCP"} method, a vector of four vertex 
+\item{\code{corners}}{for the \code{"DAP"} method or the \code{"DCP"} method, 
+a vector of four vertex 
 indices corresponding to vertices at the border of the mesh; this 
 implies \code{UVborder="square"} and the purpose is to give the 
 four corners of the square; if not given, i.e. \code{NULL}, the 
