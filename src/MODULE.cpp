@@ -72,6 +72,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("orientToBoundVolume", &CGALmesh::orientToBoundVolume)
     .method("parameterizationARAP", &CGALmesh::parameterizationARAP)
     .method("parameterizationDAP", &CGALmesh::parameterizationDAP)
+    .method("parameterizationDAPgivenCorners", &CGALmesh::parameterizationDAPgivenCorners)
     .method("parameterizationDCP", &CGALmesh::parameterizationDCP)
     .method("parameterizationDCPgivenCorners", &CGALmesh::parameterizationDCPgivenCorners)
     .method("parameterizationIAP", &CGALmesh::parameterizationIAP)

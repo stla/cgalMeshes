@@ -63,11 +63,11 @@ points3d(rbind(vs[v2, ]), col = "green", size = 12)
 points3d(rbind(vs[v3, ]), col = "blue", size = 12)
 points3d(rbind(vs[v4, ]), col = "black", size = 12)
 
-UV <- mesh1$parameterization(corners = c(v1, v2, v3, v4))
+UV <- mesh1$parameterization(method = "DAP", corners = c(v1, v2, v3, v4))
 
 # square checkerboard ####
 clrs1 <- ifelse(
-  (floor(5 * UV[, 1L] * gdv3) %% 2) == (floor(5 * UV[, 2L] * gdv1) %% 2), 
+  (floor(5 * UV[, 1L]) %% 2) == (floor(5 * UV[, 2L]) %% 2), 
   "yellow", "navy"
 )
 
