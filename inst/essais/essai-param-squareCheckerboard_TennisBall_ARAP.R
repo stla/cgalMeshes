@@ -23,12 +23,38 @@ mesh1$isotropicRemeshing(0.002, iterations = 3, relaxSteps = 2)
 
 # compute mesh1 parameterization ####
 UV <- mesh1$parameterization(method = "ARAP")
+plot(UV, asp = 1, pch = ".")
+
+
+vs <- mesh1$getVertices()
+vsz <- vs[, 3L]
+summary(vsz)
+o <- head(order(vsz, decreasing = FALSE))
+vz1 <- o[1L]
+vz2 <- o[2L]
 
 # square checkerboard ####
+# clrs1 <- ifelse(
+#   (floor(5 * UV[, 1L]) %% 2) == (floor(5 * UV[, 2L]) %% 2), 
+#   "yellow", "navy"
+# )
+
+rot <- function(alpha, uv) {
+  t(rbind(
+    c(cos(alpha), -sin(alpha)),
+    c(sin(alpha),  cos(alpha))
+  ) %*% t(uv))
+}
+uv1 <- UV[vz1, ]
+uv2 <- UV[vz2, ]
+alpha <- atan2(uv2[1L]-uv1[1L], uv2[2L]-uv1[2L])
+UVx <- rot(alpha, UV)
+
 clrs1 <- ifelse(
-  (floor(5 * UV[, 1L]) %% 2) == (floor(5 * UV[, 2L]) %% 2), 
+  (floor(5 * UVx[, 1L] + 0.1) %% 2) == (floor(5 * UVx[, 2L] + 0.05) %% 2),
   "yellow", "navy"
 )
+plot(UV, col = clrs1, asp = 1, pch = ".")
 
 # convert to 'rgl' mesh, and add normals and colors ####
 rmesh1 <- mesh1$getMesh()
@@ -38,12 +64,12 @@ rmesh1$material <- list(color = clrs1)
 # make the other part of the tennis ball ####
 rmesh2 <- rotate3d(rotate3d(rmesh1, pi, 1, 0, 0), pi/2, 0, 0, 1)
 clrs2 <- rmesh2$material$color
-clrs2[clrs2 =="navy"] <- "white"
-clrs2[clrs2 =="yellow"] <- "black"
+clrs2[clrs2 =="navy"] <- "green"
+clrs2[clrs2 =="yellow"] <- "darkred"
 rmesh2$material$color <- clrs2
 
 # extract the boundary ####
-b <- getBoundary3d(rmesh1, sorted = TRUE, color = "red")
+b <- getBoundary3d(rmesh1, sorted = TRUE, color = "black")
 
 # plot ####
 library(rgl)
@@ -54,7 +80,7 @@ shade3d(rmesh1, meshColor = "vertices", polygon_offset = 1)
 shade3d(rmesh2, meshColor = "vertices", polygon_offset = 1)
 shade3d(b, lwd = 2)
 
-snapshot3d(sprintf("TennisBallWithCheckerboard_ARAP.png"), webshot = FALSE)
+snapshot3d(sprintf("TennisBallWithCheckerboard_ARAP_aligned.png"), webshot = FALSE)
 
 
 # animation ####
@@ -85,7 +111,7 @@ movie3d(
 library(gifski)
 gifski(
   png_files = Sys.glob("zzpic*.png"),
-  gif_file = "TennisBallWithCheckerboard_ARAP.gif",
+  gif_file = "TennisBallWithCheckerboard_ARAP_aligned.gif",
   width = 512,
   height = 512,
   delay = 1/8

@@ -71,6 +71,18 @@ clrs1 <- ifelse(
   "yellow", "navy"
 )
 
+clrs <- ifelse(
+  (floor(5 * (UV[, 1L]+UV[, 2L])) %% 2) == (floor(5 * (UV[, 1L]-UV[, 2L])) %% 2), 
+  "yellow", "navy"
+)
+plot(UV, col = clrs)
+
+clrs <- ifelse(
+  (floor(5 * (G$U+G$V)) %% 2) == (floor(5 * (G$U-G$V)) %% 2), 
+  "yellow", "navy"
+)
+plot(G$U, G$V, col = clrs, asp = 1, pch = ".")
+
 # convert to 'rgl' mesh, and add normals and colors ####
 rmesh1 <- mesh1$getMesh()
 rmesh1$normals <- rmesh1$vb[-4L, ]
@@ -95,7 +107,7 @@ shade3d(rmesh1, meshColor = "vertices", polygon_offset = 1)
 shade3d(rmesh2, meshColor = "vertices", polygon_offset = 1)
 shade3d(b, lwd = 2)
 
-snapshot3d(sprintf("TennisBallWithCheckerboard_FourCorners.png"), webshot = FALSE)
+snapshot3d(sprintf("TennisBallWithCheckerboard_DAP_FourCorners.png"), webshot = FALSE)
 
 
 # animation ####
@@ -126,7 +138,7 @@ movie3d(
 library(gifski)
 gifski(
   png_files = Sys.glob("zzpic*.png"),
-  gif_file = "TennisBallWithCheckerboard_FourCorners.gif",
+  gif_file = "TennisBallWithCheckerboard_DAP_FourCorners.gif",
   width = 512,
   height = 512,
   delay = 1/8
