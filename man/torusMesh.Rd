@@ -4,7 +4,17 @@
 \alias{torusMesh}
 \title{Torus mesh}
 \usage{
-torusMesh(R, r, p1 = NULL, p2 = NULL, p3 = NULL, nu = 50, nv = 30)
+torusMesh(
+  R,
+  r,
+  p1 = NULL,
+  p2 = NULL,
+  p3 = NULL,
+  nu = 50,
+  nv = 30,
+  normals = TRUE,
+  conformal = FALSE
+)
 }
 \arguments{
 \item{R, r}{major and minor radii, positive numbers; \code{R} is 
@@ -17,6 +27,11 @@ through these three points and with minor radius \code{r}; if
 z-axis as revolution axis}
 
 \item{nu, nv}{numbers of subdivisions, integers (at least 3)}
+
+\item{normals}{a Boolean value, whether to compute the normals of the mesh}
+
+\item{conformal}{a Boolean value, whether to use a conformal 
+parameterization of the torus}
 }
 \value{
 A triangle \strong{rgl} mesh (class \code{mesh3d}).
@@ -30,8 +45,8 @@ library(rgl)
 mesh <- torusMesh(R = 3, r = 1)
 open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(0, 0, zoom = 0.75)
-shade3d(mesh, color = "green")
-wire3d(mesh)
+shade3d(mesh, color = "green", polygon_offset = 1)
+wire3d(mesh, color = "black")
 
 # Villarceau circles ####
 Villarceau <- function(beta, theta0, phi) {

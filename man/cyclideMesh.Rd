@@ -4,13 +4,16 @@
 \alias{cyclideMesh}
 \title{Cyclide mesh}
 \usage{
-cyclideMesh(a, c, mu, nu = 90L, nv = 40L)
+cyclideMesh(a, c, mu, nu = 90L, nv = 40L, conformal = FALSE)
 }
 \arguments{
 \item{a, c, mu}{cyclide parameters, positive numbers such that
 \code{c < mu < a}}
 
 \item{nu, nv}{numbers of subdivisions, integers (at least 3)}
+
+\item{conformal}{a Boolean value, whether to use a conformal 
+parameterization of the torus}
 }
 \value{
 A triangle \strong{rgl} mesh (class \code{mesh3d}).
