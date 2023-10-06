@@ -101,29 +101,28 @@ torusMesh2 <- function(R, r, nu, nv) {
   vs    <- matrix(NA_real_, nrow = 3L, ncol = nunv)
   tris1 <- matrix(NA_integer_, nrow = 3L, ncol = nunv)
   tris2 <- matrix(NA_integer_, nrow = 3L, ncol = nunv)
-  u_ <- seq(0, 2*pi, length.out = nu + 1L)[-1L]
-  cosu_ <- cos(u_)
-  sinu_ <- sin(u_)
-  v_ <- seq(0, 2*pi, length.out = nv + 1L)[-1L]
-  cosv_ <- cos(v_)
-  sinv_ <- sin(v_)
-  kxy <- R*R - r*r
-  kz <- sqrt(kxy) * r
-  kcosu_ <- kxy * cosu_
-  ksinu_ <- kxy * sinu_
-  w_ <- R - r * cosv_
-  h_ <- kz * sinv_ / w_
+  rho <- R/r
+  s <- sqrt(rho*rho - 1)
+  r <- s*r
+  u_ <- seq(0, 2, length.out = nu + 1L)[-1L]
+  ccu_ <- s * cospi(u_)
+  ssu_ <- s * sinpi(u_)
+  v_ <- seq(0, 2, length.out = nv + 1L)[-1L]
+  cospiv_ <- cospi(v_)
+  sinpiv_ <- sinpi(v_)
+  w_ <- rho - cospiv_
+  h_ <- sinpiv_ / w_
   jp1_ <- c(2L:nv, 1L)
   j_ <- 1L:nv
   for(i in 1L:(nu-1L)){
     i_nv <- i*nv
     k1 <- i_nv - nv
     rg <- (k1 + 1L):i_nv
-    kcosu_i <- kcosu_[i]
-    ksinu_i <- ksinu_[i]
-    vs[, rg] <- rbind(
-      kcosu_i / w_,
-      ksinu_i / w_,
+    ccu_i <- ccu_[i]
+    ssu_i <- ssu_[i]
+    vs[, rg] <- r * rbind(
+      ccu_i / w_,
+      ssu_i / w_,
       h_
     )
     k_ <- k1 + j_
@@ -135,8 +134,8 @@ torusMesh2 <- function(R, r, nu, nv) {
   i_nv <- nunv
   k1 <- i_nv - nv
   rg <- (k1 + 1L):i_nv
-  vs[, rg] <- rbind(
-    kxy / w_,
+  vs[, rg] <- r * rbind(
+    s / w_,
     0,
     h_
   )
