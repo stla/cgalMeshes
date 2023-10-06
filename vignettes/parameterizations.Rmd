@@ -116,40 +116,95 @@ checkerboard: the lengths are not preserved, the angles are not preserved.
 
 A parameterization which preserves the angles is called a *conformal* 
 parameterization. Let's see an example. I know a conformal parameterization 
-of a torus with a minor radius $r$ and a major radius $R=\sqrt{1+r^2}$:
+of a torus:
 
 ```{r conformalTorus}
-# the conformal parameterization
-torus <- function(u, v, r = 1){
-  R <- sqrt(1 + r^2)
-  b <- r / R
-  a <- 1 / R
-  d   <- 1 - b * cos(v)
-  rbind(
-    a * sin(u) / d, a * cos(u) / d, b * sin(v) / d
+# the conformal torus mesh
+torus_mesh <- function(R, r, nu, nv) {
+  h <- R/r
+  s <- sqrt(h*h - 1)
+  f <- function(u, v) {
+    w <- h - cospi(v)
+    s * r * rbind(
+      s * cospi(u) / w,
+      s * sinpi(u) / w,
+      sinpi(v) / w
+    )
+  }
+  parametricMesh(
+    f, urange = c(0, 2), vrange = c(0, 2), periodic = c(TRUE, TRUE), nu, nv
   )
 }
-# construct the mesh
-torusMesh <- parametricMesh(
-  torus, c(0, 2*pi), c(0, 2*pi), periodic = c(TRUE, TRUE),
-  nu = 512L, nv = 512L, clean = TRUE
+TorusMesh <- addNormals(torus_mesh(R = sqrt(2), r = 1, nu = 1024L, nv = 1024L))
+```
+
+I take $R/r = \sqrt{2}$ ($\iff s=1$) to have a "square torus", 
+on which we can map a square regular checkerboard. If you want to see 
+how to deal with a rectangular torus, see the paper 
+[Conformal Tiling on a Torus](https://static1.bridgesmathart.org/2011/cdrom/proceedings/134/paper_134.pdf)
+This paper is the one in which I found the conformal parameterization.
+
+Now we make a rotated checkerboard, that we will map to the torus surface.
+
+```{r rotatedCheckerboard, eval=FALSE}
+# make a grid of pairs (u, v) with as many pairs as the 
+# number of vertices of the torus
+x_ <- seq(0, 1, length.out = 1024L)
+UV <- as.matrix(
+  expand.grid(U = x_, V = x_)
 )
-torusMesh <- addNormals(torusMesh)
-# assign the checkerboard (the same as before) to the mesh
-torusMesh$material <- list(color = checkerboard)
+# we need a rotation for the checkerboard
+rotation <- function(alpha, uv) {
+  t(rbind(
+    c(cos(alpha), -sin(alpha)),
+    c(sin(alpha),  cos(alpha))
+  ) %*% t(uv))
+}
+# make the rotated checkerboard colors
+UVrot <- rotation(pi/4, UV)
+K <- 4*sqrt(2) # we want 4 rotated squares of length edge 1
+               # (hence diagonal sqrt(2))
+rotatedCheckerboardColors <- ifelse(
+  (floor(K*UVrot[, 1L]) %% 2) == (floor(K*UVrot[, 2L]) %% 2),
+  "yellow", "navy"
+)
+```
+
+```{r plotRotatedCheckerboard, eval=FALSE}
+opar <- par(mar = c(0, 0, 0, 0))
+plot(
+  UV, col = rotatedCheckerboardColors, asp = 1, pch = ".", 
+  xaxs = "i", yaxs = "i", axes = FALSE
+)
+par(opar)
+```
+
+![](rotatedCheckerboard.png)
+
+```{r}
+# assign the rotated checkerboard colors to the torus mesh
+TorusMesh[["material"]] <- list("color" = rotatedCheckerboardColors)
 ```
 
 ```{r plotTorus, eval=FALSE}
+# plot the torus
 open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(0, -40, zoom = 0.7)
-shade3d(torusMesh, meshColor = "vertices")
+shade3d(TorusMesh, meshColor = "vertices")
 ```
 
 ![](conformalTorus.png)
 
-As you can see, the right angles are not distorted (an angle on a curved 
-surface is the angle between the tangents). This is a conformal 
-parameterization.
+The parameterization is conformal.
+It is not very obvious to see, but the right angles are not distorted 
+(an angle on a curved surface is the angle between the tangents).
+In fact, the boundaries of the yellow and blue squares form the *Villarceau 
+circles* of the torus, shown in black on the following picture, and which are 
+known to meet at right angles.
+
+
+
+
 
 Now we come back to the Enneper surface and we will use **CGAL**. Let's convert 
 the **rgl** mesh to a `cgalMesh` mesh and let's have a look at the edge lengths:

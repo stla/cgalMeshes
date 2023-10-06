@@ -1,5 +1,7 @@
 library(rgl)
 
+# wrong - see the correct version in someMeshes.R
+
 torusMesh2 <- function(R, r, p1 = NULL, p2 = NULL, p3 = NULL, nu = 50, nv = 30) {
   transformation <- !is.null(p1) && !is.null(p2) && !is.null(p3)
   if(transformation) {

@@ -11,20 +11,20 @@ g <- function(phi) {
 }
 
 phi <- pi/4 # c'est la root de g=1
-r <- sin(phi) / sqrt(1 - sin(phi)^2)
-R <- cos(phi) / (1 - sin(phi)) - r
+r <- sin(phi) / sqrt(1 - sin(phi)^2) # 1
+R <- cos(phi) / (1 - sin(phi)) - r   # sqrt(2)
 
 torus <- function(R, r) {
   h <- R/r
   s <- sqrt(h*h - 1)
-  r <- 1/s/r
+  r <- s*r
   f <- function(u, v) {
     w <- h - cospi(2*v)
     rbind(
       s * cospi(2*u/s) / w,
       s * sinpi(2*u/s) / w,
       sinpi(2*v) / w
-    ) / r
+    ) * r
   }
   parametricMesh(
     f, c(0, s), c(0, 1), c(TRUE, TRUE),
@@ -32,37 +32,92 @@ torus <- function(R, r) {
   )
 }
 
-mesh <- torus(7, 3)
+mesh <- addNormals(torus(sqrt(2), 1))
 summary(t(mesh$vb))
 # r = 1/sqrt((h-1)*(h+1))
 
 
-u_ <- seq(0, 1, length.out = N)
-v_ <- seq(0, 1, length.out = N)
+x_ <- seq(0, 1, length.out = N)
 UV <- as.matrix(
-  expand.grid(V = v_, U = u_)
+  expand.grid(U = x_, V = x_)
 )
 
-rot <- function(alpha, uv) {
+rotation <- function(alpha, uv) {
   t(rbind(
     c(cos(alpha), -sin(alpha)),
     c(sin(alpha),  cos(alpha))
   ) %*% t(uv))
 }
 
-UVrot <- rot(pi/4, UV)
+UVrot <- rotation(pi/4, UV)
 
-clrs1 <- ifelse(
+rotatedCheckerboardColors <- ifelse(
   (floor(4*sqrt(2)*UVrot[, 1L]) %% 2) == (floor(4*sqrt(2)*UVrot[, 2L]) %% 2),
   "yellow", "navy"
 )
-plot(UV, col = clrs1, asp = 1, pch = ".")
 
-mesh$material <- list(color = clrs1)
+png("rotatedCheckerboard.png", width = 384, height = 384)
+opar <- par(mar = c(0, 0, 0, 0))
+plot(
+  UV, col = rotatedCheckerboardColors, asp = 1, pch = ".", 
+  xaxs = "i", yaxs = "i", axes = FALSE
+)
+dev.off()
+
+mesh$material <- list(color = rotatedCheckerboardColors)
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(-15, -25, zoom = 0.7)
 shade3d(mesh, polygon_offset = 1) 
 #bbox3d()
+snapshot3d("conformalTorus.png", webshot = FALSE)
 
-Villarceau <- function(beta, theta0 = 0) {
+movie3d(spin3d(axis = c(0, 0, 1), rpm = 10),
+        duration = 1.5, fps = 20,
+        movie = "zzpic", dir = ".",
+        convert = FALSE, webshot = FALSE,
+        startTime = 1/20)
+
+pngs <- Sys.glob("zzpic*.png")
+gifski::gifski(
+  pngs,
+  "conformalTorus.gif",
+  width = 512, height = 512,
+  delay = 1/10
+)
+
+Villarceau <- function(beta, theta0) {
+  d <- (1 - sin(beta) * sin(phi))
+  cbind(
+    cos(theta0 - beta) * cos(phi) / d,
+    sin(theta0 - beta) * cos(phi) / d,
+    cos(beta) * sin(phi) / d
+  ) 
+}
+
+beta_ <- seq(0, 2*pi, len = 400)
+pts <- Villarceau(beta_, theta0 = 0)
+tube <- addNormals(
+  cylinder3d(pts, radius = 0.04, sides = 30)
+)
+shade3d(tube, color = "black")
+pts <- Villarceau(beta_, theta0 = pi/2)
+tube <- addNormals(
+  cylinder3d(pts, radius = 0.04, sides = 30)
+)
+shade3d(tube, color = "black")
+pts <- Villarceau(beta_, theta0 = pi)
+tube <- addNormals(
+  cylinder3d(pts, radius = 0.04, sides = 30)
+)
+shade3d(tube, color = "black")
+pts <- Villarceau(beta_, theta0 = 3*pi/2)
+tube <- addNormals(
+  cylinder3d(pts, radius = 0.04, sides = 30)
+)
+shade3d(tube, color = "black")
+
+
+Villarceau <- function(beta, theta0) {
   d <- (1 - sin(beta) * sin(phi))
   cbind(
     cos(theta0 + beta) * cos(phi) / d,
@@ -72,6 +127,25 @@ Villarceau <- function(beta, theta0 = 0) {
 }
 
 beta_ <- seq(0, 2*pi, len = 400)
-pts <- Villarceau(beta_)
+pts <- Villarceau(beta_, theta0 = 0)
+tube <- addNormals(
+  cylinder3d(pts, radius = 0.04, sides = 30)
+)
+shade3d(tube, color = "black")
+pts <- Villarceau(beta_, theta0 = pi/2)
+tube <- addNormals(
+  cylinder3d(pts, radius = 0.04, sides = 30)
+)
+shade3d(tube, color = "black")
+pts <- Villarceau(beta_, theta0 = pi)
+tube <- addNormals(
+  cylinder3d(pts, radius = 0.04, sides = 30)
+)
+shade3d(tube, color = "black")
+pts <- Villarceau(beta_, theta0 = 3*pi/2)
+tube <- addNormals(
+  cylinder3d(pts, radius = 0.04, sides = 30)
+)
+shade3d(tube, color = "black")
 
-points3d(pts, size = 7)
+snapshot3d("Villarceau.png", webshot = FALSE)
