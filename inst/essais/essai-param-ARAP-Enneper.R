@@ -35,7 +35,7 @@ UV <- mesh$parameterization(method = "ARAP", lambda = 1000)
 
 png("EnneperARAP_UVspace.png", width = 384, height = 384)
 opar <- par(mar = c(4, 4, 0, 0))
-plot(UV, asp = 1, pch = 19, xlab = "u", ylab = "v", axes = FALSE)
+plot(UV, asp = 1, pch = ".", xlab = "u", ylab = "v", axes = FALSE)
 axis(1, at = seq(-3.5, 1.5, by = 0.5))
 axis(2, at = seq(-1.5, 2.5, by = 0.5))
 par(opar)

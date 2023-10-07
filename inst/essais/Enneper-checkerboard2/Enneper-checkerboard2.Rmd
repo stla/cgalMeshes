@@ -143,7 +143,100 @@ shade3d(bndry, lwd = 4)
 
 ![](./figures/EnneperCheckerboard_FourCorners.gif)
 
-Now you see what I mean by "align". It is quite better, no?
+Now you see what I mean by "aligned". It is quite better, no?
 
 
 ### Second method: ARAP parameterization
+
+The UV-space of the ARAP (As Rigid As Possible) parameterization is not 
+a square nor a circle in general. It looks like a "flattening" of the mesh.
+For example, I tried to apply it to the 
+[half of the tennis ball](https://laustep.github.io/stlahblog/posts/TennisBall.html) 
+and the shape of the UV-space looked like a eight.
+
+Let's try it. 
+
+```{r ARAP, eval=FALSE}
+# compute ARAP mesh parameterization ####
+# a large value of lambda for a high rigidity
+UV <- mesh$parameterization(method = "ARAP", lambda = 1000)
+```
+
+No luck, the UV-space is a circle:
+
+```{r UVspaceARAP, eval=FALSE}
+plot(UV, asp = 1, pch = ".", xlab = "u", ylab = "v", axes = FALSE)
+axis(1, at = seq(-3.5, 1.5, by = 0.5))
+axis(2, at = seq(-1.5, 2.5, by = 0.5))
+```
+
+![](./figures/EnneperARAP_UVspace.png)
+
+If we draw a checkerboard on this circle with horizontal and vertical lines, 
+then, the checkerboard mapped on the Enneper surface will not be "aligned". 
+So we need to draw a rotated checkerboard.
+
+We take the two vertices at the "top" of the Ennerper surface: the ones 
+having the highest value of the $z$ coordinate.
+
+```{r vz1_vz2}
+vs <- mesh$getVertices()
+vsz <- vs[, 3L]
+odec <- order(vsz, decreasing = TRUE)
+vz1 <- odec[1L]; vz2 <- odec[2L]
+```
+
+These two vertices are on the border of the mesh, therefore their 
+corresponding uv-points are on the border of the UV-space, and they are 
+diametrically opposite on the circle:
+
+![](./figures/EnneperARAP_UVspaceWithTheTwoExtremeZPoints.png)
+
+We rotate the circle in order to bring these two points to the north and 
+south poles:
+
+```{r rotation}
+uv1 <- UV[vz1, ]
+uv2 <- UV[vz2, ]
+alpha <- atan2(uv2[1L]-uv1[1L], uv2[2L]-uv1[2L])
+#
+rotation <- function(alpha, uv) {
+  t(rbind(
+    c(cos(alpha), -sin(alpha)),
+    c(sin(alpha),  cos(alpha))
+  ) %*% t(uv))
+}
+#
+UVrot <- rotation(alpha, UV)
+Urot <- UVrot[, 1L]
+Vrot <- UVrot[, 2L]
+```
+
+Now we can do the rotated checkerboard:
+
+```{r rotatedCheckeboard}
+Un <- (Urot - min(Urot)) / (max(Urot) - min(Urot))
+Vn <- (Vrot - min(Vrot)) / (max(Vrot) - min(Vrot))
+checkerboard <- ifelse( 
+  (floor(5 * Un) %% 2) == (floor(5 * Vn) %% 2), 
+  "yellow", "navy"
+)
+```
+
+Here is the rotated checkerboard:
+
+![](./figures/Enneper_UVcheckerboard_ARAP.png)
+
+So now it remains to do the plot of the mesh with the mapped checkerboard:
+
+```{r EnneperCheckerboardARAP, eval=FALSE}
+rmesh[["material"]] <- list("color" = checkerboard)
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
+bg3d("#363940")
+shade3d(rmesh, meshColor = "vertices", polygon_offset = 1)
+shade3d(b, lwd = 4)
+```
+
+![](./figures/EnneperCheckerboard_ARAP.gif)
+
+Perfectly "aligned" and symmetric.
