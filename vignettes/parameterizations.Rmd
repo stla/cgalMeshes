@@ -203,11 +203,9 @@ It is not very obvious to see, but the right angles are not distorted
 (an angle on a curved surface is the angle between the tangents).
 In fact, the boundaries of the yellow and blue squares form the *Villarceau 
 circles* of the torus, shown in black on the following picture, and which are 
-known to meet at right angles.
+known to meet at right angles for the square torus.
 
 ![](Villarceau.png)
-
-
 
 Now we come back to the Enneper surface and we will use **CGAL**. Let's convert 
 the **rgl** mesh to a `cgalMesh` mesh and let's have a look at the edge lengths:
@@ -221,7 +219,7 @@ summary(mesh$getEdges()[["length"]])
 
 If I constructed a parameterization with **CGAL** on this mesh to map the 
 checkerboard, it would have irregular lines because there's not enough faces. 
-Then we use an isotropic remeshing to get smaller faces:
+Then we perform an isotropic remeshing to get smaller faces:
 
 ```{r isotropicRemeshing}
 mesh$isotropicRemeshing(

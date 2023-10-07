@@ -79,12 +79,12 @@ rmesh <- mesh$getMesh()
 rmesh[["material"]] <- list("color" = checkerboard)
 ```
 
-```{r plotDCPcheckerboardNoCorners}
+```{r plotDCPcheckerboardNoCorners, eval=FALSE}
 # plot ####
 open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
 bg3d("#363940")
 shade3d(rmesh, meshColor = "vertices", polygon_offset = 1)
-shade3d(b, lwd = 4)
+shade3d(bndry, lwd = 4)
 ```
 
 ![](./figures/EnneperCheckerboard_NoCorners.png)
@@ -195,7 +195,7 @@ diametrically opposite on the circle:
 We rotate the circle in order to bring these two points to the north and 
 south poles:
 
-```{r rotation}
+```{r rotation, eval=FALSE}
 uv1 <- UV[vz1, ]
 uv2 <- UV[vz2, ]
 alpha <- atan2(uv2[1L]-uv1[1L], uv2[2L]-uv1[2L])
@@ -214,7 +214,7 @@ Vrot <- UVrot[, 2L]
 
 Now we can do the rotated checkerboard:
 
-```{r rotatedCheckeboard}
+```{r rotatedCheckeboard, eval=FALSE}
 Un <- (Urot - min(Urot)) / (max(Urot) - min(Urot))
 Vn <- (Vrot - min(Vrot)) / (max(Vrot) - min(Vrot))
 checkerboard <- ifelse( 
@@ -244,7 +244,7 @@ Perfectly "aligned" and symmetric.
 It's not easy to decide which one is better on this example, the DCP with 
 the four fixed corners or the ARAP?
 
-I applied the same steps for the two halves of the two halves of the 
+I applied the same steps for the two halves of the 
 [tennis ball](https://laustep.github.io/stlahblog/posts/TennisBall.html), 
 and the decision was clear for this example: ARAP is better, because it 
 minimizes the distortion the squares whereas DCP distorts them into 
