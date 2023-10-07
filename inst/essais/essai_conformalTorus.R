@@ -149,3 +149,61 @@ tube <- addNormals(
 shade3d(tube, color = "black")
 
 snapshot3d("Villarceau.png", webshot = FALSE)
+
+
+
+################################################################################
+
+f <- function(beta, theta0, phi = pi/4) {
+  d <- (1 - sin(beta) * sin(phi))
+  rbind(
+    cos(theta0 + beta) * cos(phi) / d,
+    sin(theta0 + beta) * cos(phi) / d,
+    cos(beta) * sin(phi) / d
+  ) 
+}
+
+mesh <- parametricMesh(
+  f, c(0, 2*pi), c(0, 2*pi), c(TRUE, TRUE),
+  nu = 256, nv = 256
+)
+
+f <- function(u, v) { # clifford
+  rbind(
+    cospi(u) / (sqrt(2) - sinpi(v)),
+    sinpi(u) / (sqrt(2) - sinpi(v)),
+    cospi(v) / (sqrt(2) - sinpi(v))
+  ) 
+}
+
+N <- 256
+
+mesh <- parametricMesh(
+  f, c(0, 2), c(0, 2), c(TRUE, TRUE),
+  nu = 256, nv = 256
+)
+
+x_ <- seq(0, 1, length.out = N)
+UV <- as.matrix(
+  expand.grid(U = x_, V = x_)
+)
+
+rotation <- function(alpha, uv) {
+  t(rbind(
+    c(cos(alpha), -sin(alpha)),
+    c(sin(alpha),  cos(alpha))
+  ) %*% t(uv))
+}
+
+UVrot <- rotation(pi/4, UV)
+
+K <- 4*sqrt(2)
+rotatedCheckerboardColors <- ifelse(
+  (floor(K*UVrot[, 1L]) %% 2) == (floor(K*UVrot[, 2L]) %% 2),
+  "yellow", "navy"
+)
+
+mesh$material <- list(color = rotatedCheckerboardColors)
+open3d(windowRect = 50 + c(0, 0, 512, 512))
+view3d(-15, -25, zoom = 0.7)
+shade3d(mesh, polygon_offset = 1) 

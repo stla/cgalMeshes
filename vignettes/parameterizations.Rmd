@@ -116,7 +116,7 @@ checkerboard: the lengths are not preserved, the angles are not preserved.
 
 A parameterization which preserves the angles is called a *conformal* 
 parameterization. Let's see an example. I know a conformal parameterization 
-of a torus:
+of the torus:
 
 ```{r conformalTorus}
 # the conformal torus mesh
@@ -171,6 +171,7 @@ rotatedCheckerboardColors <- ifelse(
 ```
 
 ```{r plotRotatedCheckerboard, eval=FALSE}
+# plot the rotated checkerboard
 opar <- par(mar = c(0, 0, 0, 0))
 plot(
   UV, col = rotatedCheckerboardColors, asp = 1, pch = ".", 
@@ -180,6 +181,8 @@ par(opar)
 ```
 
 ![](rotatedCheckerboard.png)
+
+Now we assign the colors to the vertices of the torus mesh, and we plot.
 
 ```{r}
 # assign the rotated checkerboard colors to the torus mesh
@@ -193,7 +196,7 @@ view3d(0, -40, zoom = 0.7)
 shade3d(TorusMesh, meshColor = "vertices")
 ```
 
-![](conformalTorus.png)
+![](conformalTorus.gif)
 
 The parameterization is conformal.
 It is not very obvious to see, but the right angles are not distorted 
@@ -202,7 +205,7 @@ In fact, the boundaries of the yellow and blue squares form the *Villarceau
 circles* of the torus, shown in black on the following picture, and which are 
 known to meet at right angles.
 
-
+![](Villarceau.png)
 
 
 
