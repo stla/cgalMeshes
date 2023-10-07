@@ -115,41 +115,22 @@ par3d(userMatrix = um)
 shade3d(rmesh, meshColor = "vertices", polygon_offset = 1)
 shade3d(b, lwd = 4)
 
-snapshot3d(sprintf("EnneperWithCheckerboard_ARAP.png"), webshot = FALSE)
-saveRDS(um, "userMatrix.rds")
+movie3d(spin3d(axis = c(0, 0, 1), rpm = 10),
+        duration = 6, fps = 20,
+        movie = "zzpic", dir = ".",
+        convert = FALSE, webshot = FALSE,
+        startTime = 1/20)
 
-# animation ####
-M <- par3d("userMatrix")
-movie3d(
-  par3dinterp(
-    time = seq(0, 1, len = 9),
-    userMatrix = list(
-      M,
-      rotate3d(M, pi, 1, 0, 0),
-      rotate3d(M, pi, 1, 1, 0),
-      rotate3d(M, pi, 1, 1, 1),
-      rotate3d(M, pi, 0, 1, 1),
-      rotate3d(M, pi, 0, 1, 0),
-      rotate3d(M, pi, 1, 0, 1),
-      rotate3d(M, pi, 0, 0, 1),
-      M
-    )
-  ),
-  fps = 100,
-  duration = 1,
-  dir = ".",
-  movie = "zzpic",
-  convert = FALSE, webshot = FALSE
-)
+#snapshot3d(sprintf("EnneperWithCheckerboard_ARAP.png"), webshot = FALSE)
 
 # mount animation
 library(gifski)
 gifski(
   png_files = Sys.glob("zzpic*.png"),
-  gif_file = "TennisBallWithCheckerboard_FourCorners.gif",
+  gif_file = "EnneperCheckerboard_ARAP.gif",
   width = 512,
   height = 512,
-  delay = 1/8
+  delay = 1/10
 )
 file.remove(Sys.glob("zzpic*.png"))
 
