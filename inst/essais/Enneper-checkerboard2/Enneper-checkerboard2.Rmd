@@ -1,0 +1,17 @@
+---
+title: "Enneper surface with square checkerboard"
+author: "Stéphane Laurent"
+date: "2023-10-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+In a 
+[previous post](https://laustep.github.io/stlahblog/posts/Enneper-checkerboard.html), 
+I showed how to use the **CGAL** parameterizations ported to my package 
+**cgalMeshes** to decorate the Enneper surface of order three with a radial 
+checkerboard.
+
