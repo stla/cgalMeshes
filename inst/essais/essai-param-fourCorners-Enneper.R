@@ -19,8 +19,11 @@ rmesh <- parametricMesh(
 
 bndry <- getBoundary3d(rmesh, sorted = TRUE, color = "black")
 
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
+par3d(userMatrix = um)
 shade3d(rmesh, col = "deeppink4")
-bbox3d()
+shade3d(bndry, lwd = 4)
+snapshot3d("EnneperOrderTwo.png", webshot = FALSE)
 
 # convert to CGAL mesh ####
 mesh <- cgalMesh$new(rmesh)
@@ -33,6 +36,28 @@ summary(edges[["length"]])
 mesh$isotropicRemeshing(0.008, iterations = 3, relaxSteps = 2)
 
 # compute mesh parameterization ####
+# without the four corners
+UV <- mesh$parameterization(method = "DCP")
+# the UV-space is the square [0,1]x[0,1]
+# make square checkerboard with 5 squares x 5 squares ####
+checkerboard <- ifelse(
+  (floor(5 * UV[, 1L]) %% 2) == (floor(5 * UV[, 2L]) %% 2), 
+  "gold", "magenta4"
+)
+# add normals, convert to 'rgl' mesh, and add colors ####
+mesh$computeNormals()
+rmesh <- mesh$getMesh()
+rmesh[["material"]] <- list("color" = checkerboard)
+# plot ####
+library(rgl)
+open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.8)
+bg3d("#363940")
+par3d(userMatrix = um)
+shade3d(rmesh, meshColor = "vertices", polygon_offset = 1)
+shade3d(b, lwd = 4)
+snapshot3d(sprintf("EnneperCheckerboard_NoCorners.png"), webshot = FALSE)
+
+# now we will fix four corners ####
 # first, find the four corners
 vs <- mesh$getVertices()
 vsx <- vs[, 1L]
@@ -47,9 +72,9 @@ open3d(windowRect = 50 + c(0, 0, 512, 512))
 view3d(0, -25, zoom = 0.8)
 shade3d(rmesh, color = "deeppink4", polygon_offset = 1)
 shade3d(bndry, lwd = 3)
-points3d(rbind(vs[v1, ]), col = "red", size = 12)
-points3d(rbind(vs[v2, ]), col = "green", size = 12)
-points3d(rbind(vs[v3, ]), col = "blue", size = 12)
+points3d(rbind(vs[v1, ]), col = "red",    size = 12)
+points3d(rbind(vs[v2, ]), col = "green",  size = 12)
+points3d(rbind(vs[v3, ]), col = "blue",   size = 12)
 points3d(rbind(vs[v4, ]), col = "yellow", size = 12)
 snapshot3d("Enneper_fourCorners.png", webshot = FALSE)
 
