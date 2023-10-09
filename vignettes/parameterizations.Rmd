@@ -146,7 +146,7 @@ This paper is the one in which I found the conformal parameterization.
 
 Now we make a rotated checkerboard, that we will map to the torus surface.
 
-```{r rotatedCheckerboard, eval=FALSE}
+```{r rotatedCheckerboard}
 # make a grid of pairs (u, v) with as many pairs as the 
 # number of vertices of the torus
 x_ <- seq(0, 1, length.out = 1024L)
