@@ -163,12 +163,17 @@ torusMesh2 <- function(R, r, nu, nv) {
 #' @param nu,nv numbers of subdivisions, integers (at least 3)
 #' @param normals a Boolean value, whether to compute the normals of the mesh
 #' @param conformal a Boolean value, whether to use a conformal 
-#'   parameterization of the torus
+#'   parameterization of the torus (with aspect ratio 
+#'   \code{sqrt(R^2/r^2-1)})
 #'
 #' @return A triangle \strong{rgl} mesh (class \code{mesh3d}).
 #' @export
 #'
-#' @importFrom rgl tmesh3d translate3d rotate3d
+#' @importFrom rgl tmesh3d translate3d rotate3d addNormals
+#' 
+#' @references See J.M. Sullivan, 
+#' \href{https://static1.bridgesmathart.org/2011/cdrom/proceedings/134/paper_134.pdf}{Conformal Tiling on a Torus}
+#' (2011) for information about the conformal parameterization.
 #'
 #' @examples
 #' library(cgalMeshes)
@@ -233,7 +238,7 @@ torusMesh <- function(
       )
     }
     if(normals) {
-      rmesh <- addNormals(rmesh)
+      rmesh <- addNormals(rmesh, angleWeighted = FALSE)
     }
   } else {
     rmesh <- torusMesh1(R, r, nu, nv, normals)

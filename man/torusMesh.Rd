@@ -31,7 +31,8 @@ z-axis as revolution axis}
 \item{normals}{a Boolean value, whether to compute the normals of the mesh}
 
 \item{conformal}{a Boolean value, whether to use a conformal 
-parameterization of the torus}
+parameterization of the torus (with aspect ratio 
+\code{sqrt(R^2/r^2-1)})}
 }
 \value{
 A triangle \strong{rgl} mesh (class \code{mesh3d}).
@@ -74,4 +75,9 @@ for(i in seq_along(theta0_)) {
   rmesh <- torusMesh(r = 0.05, p1 = p1, p2 = p2, p3 = p3)
   shade3d(rmesh, color = colors[i])
 }}
+}
+\references{
+See J.M. Sullivan, 
+\href{https://static1.bridgesmathart.org/2011/cdrom/proceedings/134/paper_134.pdf}{Conformal Tiling on a Torus}
+(2011) for information about the conformal parameterization.
 }
