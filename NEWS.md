@@ -1,3 +1,10 @@
+# cgalMeshes 2.4.0
+
+- New method `$smoothShape`, to smooth a mesh.
+
+- Now the `torusMesh` function can return a mesh of a torus constructed from a conformal parameterization.
+
+
 # cgalMeshes 2.3.0
 
 - The function `parametricMesh` was slow with the argument `clean=TRUE`. This has been improved.
@@ -38,7 +45,7 @@
 
 - Writing a mesh to a file includes the colors and the normals in this file if they are present, and reading a mesh file including colors or normals includes these properties in the mesh. 
 
-- The function `torusMesh` now allows to construct a mesh of the torus with a given minor radius and whose equator passes through three given points.
+- The function `torusMesh` now allows to construct a mesh of the torus with a given minor radius and whose centerline passes through three given points.
 
 - New function `parametricMesh`, to get a mesh of a parametric surface.
 

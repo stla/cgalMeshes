@@ -25,22 +25,155 @@ sphereMesh <- function(x = 0, y = 0, z = 0, r = 1, iterations = 3L) {
   sphere
 }
 
+torusMesh1 <- function(R, r, nu, nv, nrmls) {
+  nu <- as.integer(nu)
+  nv <- as.integer(nv)
+  nunv <- nu*nv
+  vs      <- matrix(NA_real_, nrow = 3L, ncol = nunv)
+  normals <- if(nrmls) matrix(NA_real_, nrow = nunv, ncol = 3L)
+  tris1   <- matrix(NA_integer_, nrow = 3L, ncol = nunv)
+  tris2   <- matrix(NA_integer_, nrow = 3L, ncol = nunv)
+  u_ <- seq(0, 2*pi, length.out = nu + 1L)[-1L]
+  cosu_ <- cos(u_)
+  sinu_ <- sin(u_)
+  v_ <- seq(0, 2*pi, length.out = nv + 1L)[-1L]
+  cosv_ <- cos(v_)
+  sinv_ <- sin(v_)
+  Rrcosv_ <- R + r*cosv_
+  rsinv_ <- r*sinv_
+  jp1_ <- c(2L:nv, 1L)
+  j_ <- 1L:nv
+  for(i in 1L:(nu-1L)){
+    i_nv <- i*nv
+    k1 <- i_nv - nv
+    rg <- (k1 + 1L):i_nv
+    cosu_i <- cosu_[i]
+    sinu_i <- sinu_[i]
+    vs[, rg] <- rbind(
+      cosu_i * Rrcosv_,
+      sinu_i * Rrcosv_,
+      rsinv_
+    )
+    if(nrmls) {
+      normals[rg, ] <- cbind(
+        cosu_i * cosv_,
+        sinu_i * cosv_,
+        sinv_
+      )
+    }
+    k_ <- k1 + j_
+    l_ <- k1 + jp1_
+    m_ <- i_nv + j_
+    tris1[, k_] <- rbind(m_, l_, k_)
+    tris2[, k_] <- rbind(m_, i_nv + jp1_, l_)
+  }
+  i_nv <- nunv
+  k1 <- i_nv - nv
+  rg <- (k1 + 1L):i_nv
+  vs[, rg] <- rbind(
+    Rrcosv_,
+    0,
+    rsinv_
+  )
+  if(nrmls) {
+    normals[rg, ] <- cbind(
+      cosv_,
+      0,
+      sinv_
+    )
+  }
+  l_ <- k1 + jp1_
+  k_ <- k1 + j_
+  tris1[, k_] <- rbind(j_, l_, k_)
+  tris2[, k_] <- rbind(j_, jp1_, l_)
+  tmesh3d(
+    vertices    = vs,
+    indices     = cbind(tris1, tris2),
+    normals     = normals,
+    homogeneous = FALSE
+  )
+}
+
+torusMesh2 <- function(R, r, nu, nv) {
+  nu <- as.integer(nu)
+  nv <- as.integer(nv)
+  nunv <- nu*nv
+  vs    <- matrix(NA_real_, nrow = 3L, ncol = nunv)
+  tris1 <- matrix(NA_integer_, nrow = 3L, ncol = nunv)
+  tris2 <- matrix(NA_integer_, nrow = 3L, ncol = nunv)
+  rho <- R/r
+  s <- sqrt(rho*rho - 1)
+  r <- s*r
+  u_ <- seq(0, 2, length.out = nu + 1L)[-1L]
+  ccu_ <- s * cospi(u_)
+  ssu_ <- s * sinpi(u_)
+  v_ <- seq(0, 2, length.out = nv + 1L)[-1L]
+  cospiv_ <- cospi(v_)
+  sinpiv_ <- sinpi(v_)
+  w_ <- rho - cospiv_
+  h_ <- sinpiv_ / w_
+  jp1_ <- c(2L:nv, 1L)
+  j_ <- 1L:nv
+  for(i in 1L:(nu-1L)){
+    i_nv <- i*nv
+    k1 <- i_nv - nv
+    rg <- (k1 + 1L):i_nv
+    ccu_i <- ccu_[i]
+    ssu_i <- ssu_[i]
+    vs[, rg] <- r * rbind(
+      ccu_i / w_,
+      ssu_i / w_,
+      h_
+    )
+    k_ <- k1 + j_
+    l_ <- k1 + jp1_
+    m_ <- i_nv + j_
+    tris1[, k_] <- rbind(m_, l_, k_)
+    tris2[, k_] <- rbind(m_, i_nv + jp1_, l_)
+  }
+  i_nv <- nunv
+  k1 <- i_nv - nv
+  rg <- (k1 + 1L):i_nv
+  vs[, rg] <- r * rbind(
+    s / w_,
+    0,
+    h_
+  )
+  l_ <- k1 + jp1_
+  k_ <- k1 + j_
+  tris1[, k_] <- rbind(j_, l_, k_)
+  tris2[, k_] <- rbind(j_, jp1_, l_)
+  tmesh3d(
+    vertices    = vs,
+    indices     = cbind(tris1, tris2),
+    homogeneous = FALSE
+  )
+}
+
 #' @title Torus mesh
 #' @description Triangle mesh of a torus.
 #'
 #' @param R,r major and minor radii, positive numbers; \code{R} is 
 #'   ignored if \code{p1}, \code{p2} and \code{p3} are given
 #' @param p1,p2,p3 three points or \code{NULL}; if not \code{NULL}, 
-#'   the function returns a mesh of the torus whose equator passes 
+#'   the function returns a mesh of the torus whose centerline passes 
 #'   through these three points and with minor radius \code{r}; if 
 #'   \code{NULL}, the torus has equatorial plane z=0 and the 
 #'   z-axis as revolution axis
 #' @param nu,nv numbers of subdivisions, integers (at least 3)
+#' @param normals a Boolean value, whether to compute the normals of the mesh
+#' @param conformal a Boolean value, whether to use a conformal 
+#'   parameterization of the torus (with aspect ratio 
+#'   \code{sqrt(R^2/r^2-1)})
 #'
 #' @return A triangle \strong{rgl} mesh (class \code{mesh3d}).
 #' @export
 #'
 #' @importFrom rgl tmesh3d translate3d rotate3d
+#'
+#' @references See J.M. Sullivan, 
+#' \href{https://static1.bridgesmathart.org/2011/cdrom/proceedings/134/paper_134.pdf}{Conformal Tiling on a Torus}
+#' (2011) for information about the conformal parameterization.
 #'
 #' @examples
 #' library(cgalMeshes)
@@ -77,7 +210,10 @@ sphereMesh <- function(x = 0, y = 0, z = 0, r = 1, iterations = 3L) {
 #'   rmesh <- torusMesh(r = 0.05, p1 = p1, p2 = p2, p3 = p3)
 #'   shade3d(rmesh, color = colors[i])
 #' }}
-torusMesh <- function(R, r, p1 = NULL, p2 = NULL, p3 = NULL, nu = 50, nv = 30) {
+torusMesh <- function(
+    R, r, p1 = NULL, p2 = NULL, p3 = NULL, nu = 50, nv = 30, 
+    normals = TRUE, conformal = FALSE
+) {
   transformation <- !is.null(p1) && !is.null(p2) && !is.null(p3)
   if(transformation) {
     ccircle <- circumcircle(p1, p2, p3)
@@ -89,75 +225,31 @@ torusMesh <- function(R, r, p1 = NULL, p2 = NULL, p3 = NULL, nu = 50, nv = 30) {
   stopifnot(isPositiveNumber(R), isPositiveNumber(r))
   stopifnot(R > r)
   stopifnot(nu >= 3, nv >= 3)
-  nu <- as.integer(nu)
-  nv <- as.integer(nv)
-  nunv <- nu*nv
-  vs      <- matrix(NA_real_, nrow = 3L, ncol = nunv)
-  normals <- matrix(NA_real_, nrow = nunv, ncol = 3L)
-  tris1   <- matrix(NA_integer_, nrow = 3L, ncol = nunv)
-  tris2   <- matrix(NA_integer_, nrow = 3L, ncol = nunv)
-  u_ <- seq(0, 2*pi, length.out = nu + 1L)[-1L]
-  cosu_ <- cos(u_)
-  sinu_ <- sin(u_)
-  v_ <- seq(0, 2*pi, length.out = nv + 1L)[-1L]
-  cosv_ <- cos(v_)
-  sinv_ <- sin(v_)
-  Rrcosv_ <- R + r*cosv_
-  rsinv_ <- r*sinv_
-  jp1_ <- c(2L:nv, 1L)
-  j_ <- 1L:nv
-  for(i in 1L:(nu-1L)){
-    i_nv <- i*nv
-    k1 <- i_nv - nv
-    rg <- (k1 + 1L):i_nv
-    cosu_i <- cosu_[i]
-    sinu_i <- sinu_[i]
-    vs[, rg] <- rbind(
-      cosu_i * Rrcosv_,
-      sinu_i * Rrcosv_,
-      rsinv_
-    )
-    normals[rg, ] <- cbind(
-      cosu_i * cosv_,
-      sinu_i * cosv_,
-      sinv_
-    )
-    k_ <- k1 + j_
-    l_ <- k1 + jp1_
-    m_ <- i_nv + j_
-    tris1[, k_] <- rbind(m_, l_, k_)
-    tris2[, k_] <- rbind(m_, i_nv + jp1_, l_)
-  }
-  i_nv <- nunv
-  k1 <- i_nv - nv
-  rg <- (k1 + 1L):i_nv
-  vs[, rg] <- rbind(
-    Rrcosv_,
-    0,
-    rsinv_
-  )
-  normals[rg, ] <- cbind(
-    cosv_,
-    0,
-    sinv_
-  )
-  l_ <- k1 + jp1_
-  k_ <- k1 + j_
-  tris1[, k_] <- rbind(j_, l_, k_)
-  tris2[, k_] <- rbind(j_, jp1_, l_)
-  rmesh <- tmesh3d(
-    vertices    = vs,
-    indices     = cbind(tris1, tris2),
-    normals     = normals,
-    homogeneous = FALSE
-  )
-  if(transformation) {
-    rmesh <- translate3d(
-      rotate3d(
-        rmesh, matrix = rotMatrix
-      ),
-      x = center[1L], y = center[2L], z = center[3L]
-    )
+  stopifnot(isBoolean(normals))
+  stopifnot(isBoolean(conformal))
+  if(conformal) {
+    rmesh <- torusMesh2(R, r, nu, nv)
+    if(transformation) {
+      rmesh <- translate3d(
+        rotate3d(
+          rmesh, matrix = rotMatrix
+        ),
+        x = center[1L], y = center[2L], z = center[3L]
+      )
+    }
+    if(normals) {
+      rmesh <- addNormals(rmesh, angleWeighted = FALSE)
+    }
+  } else {
+    rmesh <- torusMesh1(R, r, nu, nv, normals)
+    if(transformation) {
+      rmesh <- translate3d(
+        rotate3d(
+          rmesh, matrix = rotMatrix
+        ),
+        x = center[1L], y = center[2L], z = center[3L]
+      )
+    }
   }
   rmesh
 }

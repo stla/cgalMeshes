@@ -85,6 +85,8 @@
 #include <boost/random/discrete_distribution.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
 
+#include <CGAL/Polygon_mesh_processing/smooth_shape.h>
+
 // -------------------------------------------------------------------------- //
 typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
 typedef K::Point_3                                          Point3;

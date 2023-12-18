@@ -1485,6 +1485,57 @@ cgalMesh <- R6Class(
       stopifnot(isNumber(angleBound))
       private[[".CGALmesh"]]$sharpEdges(angleBound - 180)
     },
+
+    #' @description Smooths the overall shape of the mesh by using the mean
+    #'   curvature flow. The mesh must be triangle.
+    #' @param indices the indices of the faces to be smoothed, or \code{NULL}
+    #'   to smooth the whole mesh
+    #' @param time positive number, a time step that corresponds to the speed by
+    #'   which the surface is smoothed (the larger the faster); typical values 
+    #'   lie between \code{1e-6} and \code{1}
+    #' @param iterations number of iterations, a positive integer
+    #' @return The smoothed reference mesh, invisibly.
+    #' @examples 
+    #' library(cgalMeshes)
+    #' library(rgl)
+    #' # parabola ####
+    #' x <- seq(-1, 1, length.out = 30)
+    #' parabola <- cylinder3d(cbind(x, x^2, 0), radius = 0.2, closed = -2)
+    #' mesh <- cgalMesh$new(parabola)$triangulate()
+    #' mesh$smoothShape(time = 0.0005, iterations = 10)
+    #' sparabola <- mesh$getMesh()
+    #' \donttest{open3d(windowRect = 50 + c(0, 0, 900, 450))
+    #' mfrow3d(1, 2)
+    #' view3d(0, 0, zoom = 0.9)
+    #' shade3d(parabola, color = "orange")
+    #' wire3d(parabola)
+    #' next3d()
+    #' view3d(0, 0)
+    #' shade3d(sparabola, color = "green")
+    #' wire3d(sparabola)}
+    "smoothShape" = function(indices = NULL, time, iterations = 1) {
+      stopifnot(isPositiveNumber(time))
+      stopifnot(isStrictPositiveInteger(iterations))
+      if(!is.null(indices)) {
+        stopifnot(isAtomicVector(indices))
+        stopifnot(is.numeric(indices))
+        integers <- isTRUE(all.equal(indices, floor(indices)))
+        if(!integers) {
+          stop("The indices must be positive integers.")
+        }
+        positive <- all(indices >= 1)
+        if(!positive) {
+          stop("The indices must be positive integers.")
+        }
+        indices <- unique(as.integer(indices)) - 1L
+      } else {
+        indices <- integer(0L)
+      }
+      private[[".CGALmesh"]]$smoothShape(
+        indices, as.double(time), as.integer(iterations)
+      )
+      invisible(self)
+    },
     
     #' @description Performs the 'Sqrt3' subdivision and deformation. The mesh 
     #'   must be triangle.

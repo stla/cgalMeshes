@@ -140,6 +140,8 @@ parametricMesh <- function(
   tris <- meshTopology(nu, nv, uperiodic, vperiodic)
   if(!is.null(fcolor)) {
     colors <- with(Grid, fcolor(U, V))
+    dim(colors) <- c(nu, nv)
+    colors <- c(t(colors))
   }
   if(!is.null(fnormal)) {
     narray <- with(Grid, array(fnormal(U, V), dim = c(3L, nu, nv)))

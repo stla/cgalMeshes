@@ -76,6 +76,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("sampleInMesh", &CGALmesh::sampleInMesh)
     .method("sampleOnMesh", &CGALmesh::sampleOnMesh)
     .method("sharpEdges", &CGALmesh::sharpEdges)
+    .method("smoothShape", &CGALmesh::smoothShape)
     .method("Sqrt3Subdivision", &CGALmesh::Sqrt3Subdivision)
     .method("subtract", &CGALmesh::subtract)
     .method("triangulate", &CGALmesh::triangulate)
