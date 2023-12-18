@@ -4,19 +4,35 @@
 \alias{torusMesh}
 \title{Torus mesh}
 \usage{
-torusMesh(R, r, p1 = NULL, p2 = NULL, p3 = NULL, nu = 50, nv = 30)
+torusMesh(
+  R,
+  r,
+  p1 = NULL,
+  p2 = NULL,
+  p3 = NULL,
+  nu = 50,
+  nv = 30,
+  normals = TRUE,
+  conformal = FALSE
+)
 }
 \arguments{
 \item{R, r}{major and minor radii, positive numbers; \code{R} is 
 ignored if \code{p1}, \code{p2} and \code{p3} are given}
 
 \item{p1, p2, p3}{three points or \code{NULL}; if not \code{NULL}, 
-the function returns a mesh of the torus whose equator passes 
+the function returns a mesh of the torus whose centerline passes 
 through these three points and with minor radius \code{r}; if 
 \code{NULL}, the torus has equatorial plane z=0 and the 
 z-axis as revolution axis}
 
 \item{nu, nv}{numbers of subdivisions, integers (at least 3)}
+
+\item{normals}{a Boolean value, whether to compute the normals of the mesh}
+
+\item{conformal}{a Boolean value, whether to use a conformal 
+parameterization of the torus (with aspect ratio 
+\code{sqrt(R^2/r^2-1)})}
 }
 \value{
 A triangle \strong{rgl} mesh (class \code{mesh3d}).
@@ -59,4 +75,9 @@ for(i in seq_along(theta0_)) {
   rmesh <- torusMesh(r = 0.05, p1 = p1, p2 = p2, p3 = p3)
   shade3d(rmesh, color = colors[i])
 }}
+}
+\references{
+See J.M. Sullivan, 
+\href{https://static1.bridgesmathart.org/2011/cdrom/proceedings/134/paper_134.pdf}{Conformal Tiling on a Torus}
+(2011) for information about the conformal parameterization.
 }

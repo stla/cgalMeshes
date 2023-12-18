@@ -766,6 +766,28 @@ plotEdges(
 )}
 
 ## ------------------------------------------------
+## Method `cgalMesh$smoothShape`
+## ------------------------------------------------
+
+library(cgalMeshes)
+library(rgl)
+# parabola ####
+x <- seq(-1, 1, length.out = 30)
+parabola <- cylinder3d(cbind(x, x^2, 0), radius = 0.2, closed = -2)
+mesh <- cgalMesh$new(parabola)$triangulate()
+mesh$smoothShape(time = 0.0005, iterations = 10)
+sparabola <- mesh$getMesh()
+\donttest{open3d(windowRect = 50 + c(0, 0, 900, 450))
+mfrow3d(1, 2)
+view3d(0, 0, zoom = 0.9)
+shade3d(parabola, color = "orange")
+wire3d(parabola)
+next3d()
+view3d(0, 0)
+shade3d(sparabola, color = "green")
+wire3d(sparabola)}
+
+## ------------------------------------------------
 ## Method `cgalMesh$Sqrt3Subdivision`
 ## ------------------------------------------------
 
@@ -934,6 +956,7 @@ mesh$whereIs(rbind(pt1, pt2))
 \item \href{#method-cgalMesh-sampleOnMesh}{\code{cgalMesh$sampleOnMesh()}}
 \item \href{#method-cgalMesh-selfIntersects}{\code{cgalMesh$selfIntersects()}}
 \item \href{#method-cgalMesh-sharpEdges}{\code{cgalMesh$sharpEdges()}}
+\item \href{#method-cgalMesh-smoothShape}{\code{cgalMesh$smoothShape()}}
 \item \href{#method-cgalMesh-Sqrt3Subdivision}{\code{cgalMesh$Sqrt3Subdivision()}}
 \item \href{#method-cgalMesh-subtract}{\code{cgalMesh$subtract()}}
 \item \href{#method-cgalMesh-triangulate}{\code{cgalMesh$triangulate()}}
@@ -2909,6 +2932,58 @@ plotEdges(
   mesh$getVertices(), sharpEdges[, c("v1", "v2")], 
   edgesAsTubes = FALSE, lwd = 5, verticesAsSpheres = FALSE
 )
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-cgalMesh-smoothShape"></a>}}
+\if{latex}{\out{\hypertarget{method-cgalMesh-smoothShape}{}}}
+\subsection{Method \code{smoothShape()}}{
+Smooths the overall shape of the mesh by using the mean
+  curvature flow. The mesh must be triangle.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{cgalMesh$smoothShape(indices = NULL, time, iterations = 1)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{indices}}{the indices of the faces to be smoothed, or \code{NULL}
+to smooth the whole mesh}
+
+\item{\code{time}}{positive number, a time step that corresponds to the speed by
+which the surface is smoothed (the larger the faster); typical values 
+lie between \code{1e-6} and \code{1}}
+
+\item{\code{iterations}}{number of iterations, a positive integer}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The smoothed reference mesh, invisibly.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{library(cgalMeshes)
+library(rgl)
+# parabola ####
+x <- seq(-1, 1, length.out = 30)
+parabola <- cylinder3d(cbind(x, x^2, 0), radius = 0.2, closed = -2)
+mesh <- cgalMesh$new(parabola)$triangulate()
+mesh$smoothShape(time = 0.0005, iterations = 10)
+sparabola <- mesh$getMesh()
+open3d(windowRect = 50 + c(0, 0, 900, 450))
+mfrow3d(1, 2)
+view3d(0, 0, zoom = 0.9)
+shade3d(parabola, color = "orange")
+wire3d(parabola)
+next3d()
+view3d(0, 0)
+shade3d(sparabola, color = "green")
+wire3d(sparabola)
 }
 \if{html}{\out{</div>}}
 
