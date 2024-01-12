@@ -62,7 +62,8 @@ exteriorEdges <- function(edgesDF, angleThreshold = 1) {
 #' vertices <- mesh$getVertices()
 #' edges <- mesh$getEdges()
 #' extEdges <- exteriorEdges(edges)
-#' tmesh <- mesh$triangulate()$getMesh()
+#' mesh$triangulate()
+#' tmesh <- mesh$getMesh()
 #' 
 #' \donttest{open3d(windowRect = 50 + c(0, 0, 512, 512), zoom = 0.9)
 #' shade3d(tmesh, color = "navy")
