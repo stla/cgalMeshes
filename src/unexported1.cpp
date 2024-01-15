@@ -81,16 +81,12 @@ Mesh3 epeck2epick(EMesh3& emesh) {
     mesh.add_vertex(Point3(x, y, z));
   }
   for(EMesh3::Face_index fd : emesh.faces()) {
-    std::vector<int> face;
+    std::vector<EMesh3::Vertex_index> face;
     for(EMesh3::Vertex_index vd : 
           vertices_around_face(emesh.halfedge(fd), emesh)) {
       face.push_back(vd);
     }
-    mesh.add_face(
-      CGAL::SM_Vertex_index(face[0]), 
-      CGAL::SM_Vertex_index(face[1]), 
-      CGAL::SM_Vertex_index(face[2])
-    );
+    mesh.add_face(face);
   }
   return mesh;
 }
@@ -112,16 +108,12 @@ EMesh3 epick2epeck(Mesh3& mesh) {
     emesh.add_vertex(EPoint3(x, y, z));
   }
   for(Mesh3::Face_index fd : mesh.faces()) {
-    std::vector<int> face;
+    std::vector<Mesh3::Vertex_index> face;
     for(Mesh3::Vertex_index vd : 
           vertices_around_face(mesh.halfedge(fd), mesh)) {
       face.push_back(vd);
     }
-    emesh.add_face(
-      CGAL::SM_Vertex_index(face[0]), 
-      CGAL::SM_Vertex_index(face[1]), 
-      CGAL::SM_Vertex_index(face[2])
-    );
+    emesh.add_face(face);
   }
   return emesh;
 }
