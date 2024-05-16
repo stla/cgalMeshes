@@ -5,7 +5,7 @@
 #include "MODULE.h"
 
 RCPP_MODULE(class_CGALmesh) {
-  using namespace Rcpp;
+  using namespace Rcpp; 
   class_<CGALmesh>("CGALmesh")
     .constructor<
       const NumericMatrix, const List, bool,
@@ -80,6 +80,7 @@ RCPP_MODULE(class_CGALmesh) {
     .method("Sqrt3Subdivision", &CGALmesh::Sqrt3Subdivision)
     .method("subtract", &CGALmesh::subtract)
     .method("triangulate", &CGALmesh::triangulate)
+    .method("triangulate2", &CGALmesh::triangulate2)
     .method("Union", &CGALmesh::Union)
     .method("volume", &CGALmesh::volume)
     .method("whereIs", &CGALmesh::whereIs)

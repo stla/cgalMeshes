@@ -2080,11 +2080,22 @@ public:
 
 
   // ----------------------------------------------------------------------- //
+  // ----------------------------------------------------------------------- //
   void triangulate() {
     triangulateMesh(mesh);
   }
 
+  void triangulate2() {
+    TriangulateVisitor vis;
+    const bool success = 
+      PMP::triangulate_faces(mesh, CGAL::parameters::visitor(vis));
+    if(!success) {
+      Rcpp::stop("Triangulation has failed.");
+    }
+  }
 
+
+  // ----------------------------------------------------------------------- //
   // ----------------------------------------------------------------------- //
   Rcpp::List Union(Rcpp::XPtr<EMesh3> mesh2XPtr) {
     if(!CGAL::is_triangle_mesh(mesh)) {

@@ -195,9 +195,7 @@ conformalCyclideMesh <- function(
     k0 <- i * nv - nv
     for(j in 1L:nv){
       k <- k0 + j
-      xvertex <- xvertices[, k]
-      vertex <- inversion(xvertex)
-      vertices[, k] <- vertex
+      vertices[, k] <- inversion(xvertices[, k])
     }
   }
   mesh <- tmesh3d(

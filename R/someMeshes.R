@@ -340,6 +340,75 @@ cyclideMesh <- function(a, c, mu, nu = 90L, nv = 40L){
   )
 }
 
+#' @title Conformal cyclide mesh
+#' @description Cyclide mesh of a Dupin cyclide constructed from a 
+#'   conformal parameterization.
+#'
+#' @param a,c cyclide parameters, \code{a > c > 0}; see the figure in the
+#'   documentation of \code{\link{cyclideMesh}}
+#' @param aspectRatio the aspect ratio, positive number
+#' @param normals Boolean, whether to add normals to the mesh
+#' @param nu,nv numbers of subdivisions, integers (at least 3)
+#'
+#' @return A triangle \strong{rgl} mesh (class \code{mesh3d}).
+#' @export
+#' @importFrom rgl tmesh3d addNormals
+conformalCyclideMesh <- function(
+    a, c, aspectRatio, normals = TRUE, nu = 90L, nv = 40L
+){
+  stopifnot(c > 0, a > c, aspectRatio > 0)
+  stopifnot(nu >= 3, nv >= 3)
+  nu <- as.integer(nu)
+  nv <- as.integer(nv)
+  vertices <- matrix(NA_real_, nrow = 3L, ncol = nu*nv)
+  b2 <- a*a - c*c
+  ar2plus1 <- aspectRatio*aspectRatio + 1
+  ratio <- sqrt(ar2plus1)
+  mu <- sqrt(c*c + b2/ar2plus1)
+  msg <- sprintf("The value of `mu` is %s.", formatC(mu))
+  bb <- b2/ratio
+  bb2 <- b2 * b2 / ar2plus1
+  omega <- (a * mu + bb) / c
+  Omega0 <- c(omega, 0, 0)
+  inversion <- function(M) {
+    OmegaM <- M - Omega0
+    k <- c(crossprod(OmegaM))
+    OmegaM / k + Omega0
+  }
+  h <- (c * c) / ((a - c) * (mu - c) + bb)
+  r <- (h * (mu - c)) / ((a + c) * (mu - c) + bb)
+  R <- ratio * r
+  # a' = a/c; mu' = mu/c
+  # R/r = (a'-1)/(mu'-1) * ((a'+1)*(mu'-1) + sqrt((a'^2-1)*(mu'^2-1))) / ((a'-1)*(mu'+1)+sqrt((a'^2-1)*(mu'^2-1)))
+  # = (a'-1)/(mu'-1) * ((a'+1)*(mu'-1)/(a'-1) + sqrt((mu'^2-1)*(a'+1)/(a'-1))) / ((mu'+1) + sqrt((mu'^2-1)*(a'+1)/(a'-1)))
+  # = ((aa+1) * (1 + sqrt((aa-1)/(aa+1))*sqrt((muu+1)/(muu-1))) / ((muu+1) * (1  + sqrt((aa+1)/(aa-1))*sqrt((muu-1)/(muu+1))))) 
+  #(Wolfram) muu = sqrt(1 + (aa^2-1)/ratio^2)
+  denb1 <- c * (a*c - mu*c + c*c - a*mu - bb)
+  b1 <- (a*mu*(c-mu)*(a+c) - bb2 + c*c + bb*(c*(a-mu+c) - 2*a*mu))/denb1
+  denb2 <- c * (a*c - mu*c - c*c + a*mu + bb)
+  b2 <- (a*mu*(c+mu)*(a-c) + bb2 - c*c + bb*(c*(a-mu-c) + 2*a*mu))/denb2
+  omegaT <- (b1 + b2)/2
+  OmegaT <- c(omegaT, 0, 0)
+  tormesh <- torusMesh2(R, r, nu = nu, nv = nv)
+  xvertices <- tormesh[["vb"]][1L:3L, ] + OmegaT
+  for(i in 1L:nu){
+    k0 <- i * nv - nv
+    for(j in 1L:nv){
+      k <- k0 + j
+      vertices[, k] <- inversion(xvertices[, k])
+    }
+  }
+  mesh <- tmesh3d(
+    vertices    = vertices,
+    indices     = tormesh[["it"]],
+    homogeneous = FALSE
+  )
+  if(normals) {
+    mesh <- addNormals(mesh)
+  }
+  mesh
+}
+
 HopfTorusMeshHelper <- function(u, cos_v, sin_v, nlobes, A, alpha){
   B <- pi/2 - (pi/2 - A)*cos(u*nlobes)
   C <- u + A*sin(2*u*nlobes)

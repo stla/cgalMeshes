@@ -370,11 +370,14 @@ template void copy_property<
 void triangulateMesh(EMesh3& mesh) {
   MaybeFcolorMap fcolormap_ = 
     copy_prop<face_descriptor, std::string, EK>(mesh, "f:color");
+  Rcpp::Rcout << "A\n";
   const bool hasFcolors = fcolormap_.second;
   MaybeFscalarMap fscalarmap_ = 
     copy_prop<face_descriptor, double, EK>(mesh, "f:scalar");
+  Rcpp::Rcout << "B\n";
   const bool hasFscalars = fscalarmap_.second;
   removeProperties(mesh, {"v:normal"});
+  Rcpp::Rcout << "C\n";
   TriangulateVisitor vis;
   const bool success = 
     PMP::triangulate_faces(mesh, CGAL::parameters::visitor(vis));
