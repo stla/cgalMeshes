@@ -6,5 +6,5 @@ NULL
 CGALmesh <- setRcppClass("CGALmesh")
 
 CGALversion <- function() {
-  5.5
+  5.6
 }

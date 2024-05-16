@@ -293,7 +293,7 @@ cyclideMesh <- function(a, c, mu, nu = 90L, nv = 40L){
   nv <- as.integer(nv)
   vertices <- matrix(NA_real_, nrow = 3L, ncol = nu*nv)
   normals  <- matrix(NA_real_, nrow = nu*nv, ncol = 3L)
-  b2 <- a * a - c * c;
+  b2 <- a * a - c * c
   bb <- sqrt(b2 * (mu * mu - c * c))
   omega <- (a * mu + bb) / c
   Omega0 <- c(omega, 0, 0)
@@ -305,6 +305,11 @@ cyclideMesh <- function(a, c, mu, nu = 90L, nv = 40L){
   h <- (c * c) / ((a - c) * (mu - c) + bb)
   r <- (h * (mu - c)) / ((a + c) * (mu - c) + bb)
   R <- (h * (a - c)) / ((a - c) * (mu + c) + bb)
+  # a' = a/c; mu' = mu/c
+  # R/r = (a'-1)/(mu'-1) * ((a'+1)*(mu'-1) + sqrt((a'^2-1)*(mu'^2-1))) / ((a'-1)*(mu'+1)+sqrt((a'^2-1)*(mu'^2-1)))
+  # = (a'-1)/(mu'-1) * ((a'+1)*(mu'-1)/(a'-1) + sqrt((mu'^2-1)*(a'+1)/(a'-1))) / ((mu'+1) + sqrt((mu'^2-1)*(a'+1)/(a'-1)))
+  # = ((aa+1) * (1 + sqrt((aa-1)/(aa+1))*sqrt((muu+1)/(muu-1))) / ((muu+1) * (1  + sqrt((aa+1)/(aa-1))*sqrt((muu-1)/(muu+1))))) 
+  #(Wolfram) muu = sqrt(1 + (aa^2-1)/ratio^2)
   bb2 <- b2 * (mu * mu - c * c)
   denb1 <- c * (a*c - mu*c + c*c - a*mu - bb)
   b1 <- (a*mu*(c-mu)*(a+c) - bb2 + c*c + bb*(c*(a-mu+c) - 2*a*mu))/denb1

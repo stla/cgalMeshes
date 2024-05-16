@@ -1628,6 +1628,16 @@ cgalMesh <- R6Class(
       invisible(self)
     },
 
+    #' @description Triangulate mesh.
+    #' @return The modified \code{cgalMesh} object, invisibly. \strong{WARNING}: 
+    #'   even if you store the result in a new variable, the original mesh is 
+    #'   modified (see the example). You may want to triangulate a copy of the 
+    #'   mesh; see the \code{copy} method.
+    "triangulate2" = function() {
+      private[[".CGALmesh"]]$triangulate2()
+      invisible(self)
+    },
+
     #' @description Union with another mesh. Both meshes must be triangle. Face 
     #'   properties of the two united meshes are copied to the union mesh. 
     #'  \strong{WARNING}: this modifies the reference mesh and \code{mesh2}. 
