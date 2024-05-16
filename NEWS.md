@@ -4,6 +4,8 @@
 
 - Now the `torusMesh` function can return a mesh of a torus constructed from a conformal parameterization.
 
+- New function `conformalCyclideMesh`, to get a mesh of a Dupin cyclide constructed from a conformal parameterization.
+
 
 # cgalMeshes 2.3.0
 
